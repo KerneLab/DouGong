@@ -1,0 +1,61 @@
+package org.kernelab.dougong;
+
+import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.Table;
+import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.dml.ListItem;
+import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.SingleItem;
+import org.kernelab.dougong.core.dml.Subquery;
+
+public class SQL
+{
+	public static final String	NULL	= "NULL";
+
+	public static void main(String[] args)
+	{
+
+	}
+
+	private final Provider	provider;
+
+	public SQL(Provider provider)
+	{
+		this.provider = provider;
+	}
+
+	public Select from(View view)
+	{
+		return provider().provideSelect().from(view);
+	}
+
+	public SingleItem item(String string)
+	{
+		return provider().provideStringItem(string);
+	}
+
+	public ListItem list(Object... items)
+	{
+		return provider().provideListItem().list(items);
+	}
+
+	protected Provider provider()
+	{
+		return provider;
+	}
+
+	public <T extends Subquery> T subquery(Class<T> cls, Select select)
+	{
+		return provider().provideSubquery(cls, select);
+	}
+
+	public <T extends Table> T table(Class<T> cls)
+	{
+		return table(cls, null);
+	}
+
+	public <T extends Table> T table(Class<T> cls, String alias)
+	{
+		return provider().provideTable(cls).as(alias);
+	}
+}
