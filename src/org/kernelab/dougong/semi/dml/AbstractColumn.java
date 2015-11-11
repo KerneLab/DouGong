@@ -47,9 +47,7 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 
 	public AbstractColumn as(String alias)
 	{
-		AbstractColumn column = this.copy();
-		column.alias(alias);
-		return column;
+		return this.replicate().alias(alias);
 	}
 
 	public AbstractColumn ascend()
@@ -62,8 +60,6 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 	{
 		return order;
 	}
-
-	protected abstract AbstractColumn copy();
 
 	public AbstractColumn descend()
 	{

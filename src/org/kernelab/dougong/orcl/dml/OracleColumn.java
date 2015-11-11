@@ -1,6 +1,5 @@
 package org.kernelab.dougong.orcl.dml;
 
-import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.semi.dml.AbstractColumn;
 
@@ -12,22 +11,9 @@ public class OracleColumn extends AbstractColumn
 	}
 
 	@Override
-	protected AbstractColumn copy()
+	protected AbstractColumn replicate()
 	{
-		try
-		{
-			return (AbstractColumn) this.clone();
-		}
-		catch (CloneNotSupportedException e)
-		{
-			return null;
-		}
-	}
-
-	@Override
-	protected OracleColumn replicate()
-	{
-		return new OracleColumn(this.view(), this.name());
+		return new OracleColumn(view(), name());
 	}
 
 	@Override
@@ -38,9 +24,10 @@ public class OracleColumn extends AbstractColumn
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		if (Tools.notNullOrWhite(view().alias()))
+		String alias = this.view().provider().provideAliasLabel(view().alias());
+		if (alias != null)
 		{
-			buffer.append(view().alias());
+			buffer.append(alias);
 			buffer.append('.');
 		}
 		buffer.append(name());
@@ -50,10 +37,11 @@ public class OracleColumn extends AbstractColumn
 	public StringBuilder toStringAliased(StringBuilder buffer)
 	{
 		toString(buffer);
-		if (Tools.notNullOrWhite(this.alias()))
+		String alias = this.view().provider().provideAliasLabel(this.alias());
+		if (alias != null)
 		{
 			buffer.append(' ');
-			buffer.append(this.alias());
+			buffer.append(alias);
 		}
 		return buffer;
 	}
