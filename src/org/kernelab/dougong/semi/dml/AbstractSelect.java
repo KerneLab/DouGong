@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
@@ -11,30 +12,34 @@ import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
 
-public abstract class AbstractSelect extends AbstractView implements Select
+public abstract class AbstractSelect extends AbstractFilterable implements Select, View
 {
-	protected boolean				distinct		= false;
+	private String					alias		= null;
 
-	protected Object[]				items			= null;
+	protected boolean				distinct	= false;
 
-	protected List<View>			from			= new LinkedList<View>();
+	protected Object[]				items		= null;
 
-	protected List<Join>			joins			= new LinkedList<Join>();
+	protected List<View>			from		= new LinkedList<View>();
 
-	protected Condition				where			= null;
+	protected List<Join>			joins		= new LinkedList<Join>();
 
-	protected Object[]				groupBy			= null;
+	protected Object[]				groupBy		= null;
 
-	protected Condition				having			= null;
+	protected Condition				having		= null;
 
-	protected List<AbstractSetopr>	AbstractSetopr	= new LinkedList<AbstractSetopr>();
+	protected List<AbstractSetopr>	setopr		= new LinkedList<AbstractSetopr>();
 
-	protected Object[]				orderBy			= null;
+	protected Object[]				orderBy		= null;
 
-	@Override
+	public String alias()
+	{
+		return alias;
+	}
+
 	public AbstractSelect alias(String alias)
 	{
-		super.alias(alias);
+		this.alias = alias;
 		return this;
 	}
 
@@ -86,7 +91,7 @@ public abstract class AbstractSelect extends AbstractView implements Select
 
 	public AbstractSelect intersect(Select select)
 	{
-		this.AbstractSetopr.add(new AbstractSetopr().setopr(Setopr.INTERSECT, select));
+		this.setopr.add(new AbstractSetopr().setopr(Setopr.INTERSECT, select));
 		return this;
 	}
 
@@ -104,13 +109,20 @@ public abstract class AbstractSelect extends AbstractView implements Select
 
 	public AbstractSelect minus(Select select)
 	{
-		this.AbstractSetopr.add(new AbstractSetopr().setopr(Setopr.MINUS, select));
+		this.setopr.add(new AbstractSetopr().setopr(Setopr.MINUS, select));
 		return this;
 	}
 
 	public AbstractSelect orderBy(Object... items)
 	{
 		this.orderBy = items;
+		return this;
+	}
+
+	@Override
+	public AbstractSelect provider(Provider provider)
+	{
+		super.provider(provider);
 		return this;
 	}
 
@@ -128,7 +140,7 @@ public abstract class AbstractSelect extends AbstractView implements Select
 
 	protected void textOfAbstractSetopr(StringBuilder buffer)
 	{
-		for (AbstractSetopr opr : AbstractSetopr)
+		for (AbstractSetopr opr : setopr)
 		{
 			if (opr != null)
 			{
@@ -264,10 +276,10 @@ public abstract class AbstractSelect extends AbstractView implements Select
 
 	protected void textOfWhere(StringBuilder buffer)
 	{
-		if (where != null)
+		if (where() != null)
 		{
 			buffer.append(" WHERE ");
-			where.toString(buffer);
+			where().toString(buffer);
 		}
 	}
 
@@ -314,19 +326,19 @@ public abstract class AbstractSelect extends AbstractView implements Select
 
 	public AbstractSelect union(Select select)
 	{
-		this.AbstractSetopr.add(new AbstractSetopr().setopr(Setopr.UNION, select));
+		this.setopr.add(new AbstractSetopr().setopr(Setopr.UNION, select));
 		return this;
 	}
 
 	public AbstractSelect unionAll(Select select)
 	{
-		this.AbstractSetopr.add(new AbstractSetopr().setopr(Setopr.UNION_ALL, select));
+		this.setopr.add(new AbstractSetopr().setopr(Setopr.UNION_ALL, select));
 		return this;
 	}
 
 	public AbstractSelect where(Condition condition)
 	{
-		this.where = condition;
+		super.where(condition);
 		return this;
 	}
 }
