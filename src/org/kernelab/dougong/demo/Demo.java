@@ -13,7 +13,7 @@ public class Demo
 		USER_INFO t;
 
 		Select s = SQL.from(t = SQL.table(USER_INFO.class).as("t")) //
-				.select(t.NAME.as("title")) //
+				.select(t.NAME.as("Title")) //
 				.where(t.ID.eq(SQL.item("?")));
 
 		System.out.println(s);

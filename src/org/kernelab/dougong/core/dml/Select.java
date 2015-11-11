@@ -3,7 +3,7 @@ package org.kernelab.dougong.core.dml;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
 
-public interface Select extends DML, View, Scope
+public interface Select extends DML, View, Scope, Filterable
 {
 	public Select select(Object... items);
 

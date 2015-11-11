@@ -8,11 +8,9 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
 
-public abstract class AbstractView implements View
+public abstract class AbstractView extends AbstractProvidable implements View
 {
-	private Provider	provider	= null;
-
-	private String		alias		= null;
+	private String	alias	= null;
 
 	public AbstractView()
 	{
@@ -58,14 +56,10 @@ public abstract class AbstractView implements View
 		}
 	}
 
-	public Provider provider()
-	{
-		return provider;
-	}
-
+	@Override
 	public AbstractView provider(Provider provider)
 	{
-		this.provider = provider;
+		super.provider(provider);
 		this.initColumns();
 		return this;
 	}

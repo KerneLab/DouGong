@@ -48,4 +48,10 @@ public abstract class AbstractProvider implements Provider
 			return null;
 		}
 	}
+
+	public String provideTableNameAliased(Table table)
+	{
+		String alias = this.provideAliasLabel(table.alias());
+		return this.provideTableName(table) + (alias != null ? " " + alias : "");
+	}
 }

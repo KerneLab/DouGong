@@ -25,6 +25,11 @@ public class OracleProvider extends AbstractProvider
 		// SQL q = new SQL(new OracleProvider());
 	}
 
+	public String provideAliasLabel(String alias)
+	{
+		return Tools.notNullOrWhite(alias) ? "\"" + alias + "\"" : null;
+	}
+
 	public Column provideColumn(View view, String name)
 	{
 		return new OracleColumn(view, name);
@@ -85,11 +90,5 @@ public class OracleProvider extends AbstractProvider
 		}
 		buffer.append(Utils.getTableNameFromClass(table.getClass()));
 		return buffer.toString();
-	}
-
-	public String provideTableNameAliased(Table table)
-	{
-		String alias = table.alias();
-		return this.provideTableName(table) + (Tools.notNullOrWhite(alias) ? " " + alias : "");
 	}
 }
