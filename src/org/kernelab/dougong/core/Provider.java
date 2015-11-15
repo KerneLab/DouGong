@@ -1,10 +1,12 @@
 package org.kernelab.dougong.core;
 
+import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.ListItem;
 import org.kernelab.dougong.core.dml.Select;
-import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.StringItem;
+import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -38,6 +40,10 @@ public interface Provider
 	public RangeCondition provideRangeCondition();
 
 	public Select provideSelect();
+
+	public Update provideUpdate();
+
+	public Delete provideDelete();
 
 	public StringItem provideStringItem(String item);
 

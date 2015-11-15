@@ -5,7 +5,9 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Join;
+import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleJoin;
 import org.kernelab.dougong.orcl.dml.OracleListItem;
@@ -90,5 +92,17 @@ public class OracleProvider extends AbstractProvider
 		}
 		buffer.append(Utils.getTableNameFromClass(table.getClass()));
 		return buffer.toString();
+	}
+
+	public Update provideUpdate()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Delete provideDelete()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
