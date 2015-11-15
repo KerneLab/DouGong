@@ -4,7 +4,7 @@ import org.kernelab.dougong.core.View;
 
 public interface Delete extends DML, Filterable
 {
-	public Delete delete(View view);
+	public Delete from(View view);
 
 	// //////////////////////////////////////////////////////
 

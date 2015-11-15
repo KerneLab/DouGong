@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
@@ -16,21 +17,21 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 {
 	private String					alias		= null;
 
-	protected boolean				distinct	= false;
+	private boolean					distinct	= false;
 
-	protected Object[]				items		= null;
+	private Expression[]			items		= null;
 
-	protected List<View>			from		= new LinkedList<View>();
+	private List<View>				froms		= new LinkedList<View>();
 
-	protected List<Join>			joins		= new LinkedList<Join>();
+	private List<Join>				joins		= new LinkedList<Join>();
 
-	protected Object[]				groupBy		= null;
+	private Expression[]			groupBy		= null;
 
-	protected Condition				having		= null;
+	private Condition				having		= null;
 
-	protected List<AbstractSetopr>	setopr		= new LinkedList<AbstractSetopr>();
+	private List<AbstractSetopr>	setopr		= new LinkedList<AbstractSetopr>();
 
-	protected Object[]				orderBy		= null;
+	private Expression[]			orderBy		= null;
 
 	public String alias()
 	{
@@ -59,28 +60,66 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
+	protected boolean distinct()
+	{
+		return distinct;
+	}
+
 	public AbstractSelect distinct(boolean distinct)
 	{
 		this.distinct = distinct;
 		return this;
 	}
 
+	/**
+	 * Get the first view specified by from.
+	 * 
+	 * @return
+	 */
+	@Override
+	public View from()
+	{
+		return froms().isEmpty() ? null : froms().get(0);
+	}
+
+	/**
+	 * Add a view to the views' set.
+	 * 
+	 * @param view
+	 * @return
+	 */
+	@Override
 	public AbstractSelect from(View view)
 	{
-		this.from.add(view);
+		froms().add(view);
 		return this;
+	}
+
+	protected List<View> froms()
+	{
+		return froms;
 	}
 
 	public AbstractSelect fullJoin(View view, Condition on)
 	{
-		this.joins.add(provider().provideJoin().join(AbstractJoin.FULL_JOIN, view, view.alias(), on));
+		joins().add(provider().provideJoin().join(AbstractJoin.FULL_JOIN, view, view.alias(), on));
 		return this;
 	}
 
-	public AbstractSelect groupBy(Object... items)
+	protected Expression[] groupBy()
 	{
-		this.groupBy = items;
+		return groupBy;
+	}
+
+	public AbstractSelect groupBy(Expression... exprs)
+	{
+		this.groupBy = exprs;
 		return this;
+	}
+
+	protected Condition having()
+	{
+		return having;
 	}
 
 	public AbstractSelect having(Condition condition)
@@ -91,31 +130,41 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public AbstractSelect intersect(Select select)
 	{
-		this.setopr.add(new AbstractSetopr().setopr(Setopr.INTERSECT, select));
+		setopr().add(new AbstractSetopr().setopr(Setopr.INTERSECT, select));
 		return this;
 	}
 
 	public AbstractSelect join(View view, Condition on)
 	{
-		this.joins.add(provider().provideJoin().join(AbstractJoin.INNER_JOIN, view, view.alias(), on));
+		joins().add(provider().provideJoin().join(AbstractJoin.INNER_JOIN, view, view.alias(), on));
 		return this;
+	}
+
+	protected List<Join> joins()
+	{
+		return joins;
 	}
 
 	public AbstractSelect leftJoin(View view, Condition on)
 	{
-		this.joins.add(provider().provideJoin().join(AbstractJoin.LEFT_JOIN, view, view.alias(), on));
+		joins().add(provider().provideJoin().join(AbstractJoin.LEFT_JOIN, view, view.alias(), on));
 		return this;
 	}
 
 	public AbstractSelect minus(Select select)
 	{
-		this.setopr.add(new AbstractSetopr().setopr(Setopr.MINUS, select));
+		setopr().add(new AbstractSetopr().setopr(Setopr.MINUS, select));
 		return this;
 	}
 
-	public AbstractSelect orderBy(Object... items)
+	protected Expression[] orderBy()
 	{
-		this.orderBy = items;
+		return orderBy;
+	}
+
+	public AbstractSelect orderBy(Expression... exprs)
+	{
+		this.orderBy = exprs;
 		return this;
 	}
 
@@ -128,19 +177,29 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public AbstractSelect rightJoin(View view, Condition on)
 	{
-		this.joins.add(provider().provideJoin().join(AbstractJoin.RIGHT_JOIN, view, view.alias(), on));
+		joins().add(provider().provideJoin().join(AbstractJoin.RIGHT_JOIN, view, view.alias(), on));
 		return this;
 	}
 
-	public AbstractSelect select(Object... items)
+	protected Expression[] select()
 	{
-		this.items = items;
+		return items;
+	}
+
+	public AbstractSelect select(Expression... exprs)
+	{
+		this.items = exprs;
 		return this;
+	}
+
+	protected List<AbstractSetopr> setopr()
+	{
+		return setopr;
 	}
 
 	protected void textOfAbstractSetopr(StringBuilder buffer)
 	{
-		for (AbstractSetopr opr : setopr)
+		for (AbstractSetopr opr : setopr())
 		{
 			if (opr != null)
 			{
@@ -149,13 +208,14 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
+	@Override
 	protected void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(" FROM");
 
 		boolean first = true;
 
-		for (View fr : from)
+		for (View fr : froms())
 		{
 			if (fr != null)
 			{
@@ -175,13 +235,13 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	protected void textOfGroup(StringBuilder buffer)
 	{
-		if (groupBy != null && groupBy.length > 0)
+		if (groupBy() != null && groupBy().length > 0)
 		{
 			buffer.append(" GROUP BY");
 
 			boolean first = true;
 
-			for (Object item : groupBy)
+			for (Expression expr : groupBy())
 			{
 				if (first)
 				{
@@ -192,17 +252,17 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, item);
+				Utils.text(buffer, expr);
 			}
 		}
 	}
 
 	protected void textOfHaving(StringBuilder buffer)
 	{
-		if (having != null)
+		if (having() != null)
 		{
 			buffer.append(" HAVING ");
-			having.toString(buffer);
+			having().toString(buffer);
 		}
 	}
 
@@ -210,7 +270,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		buffer.append("SELECT");
 
-		if (distinct)
+		if (distinct())
 		{
 			buffer.append(" DISTINCT");
 		}
@@ -220,7 +280,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		boolean first = true;
 
-		for (Object item : items)
+		for (Expression item : select())
 		{
 			if (item != null)
 			{
@@ -240,7 +300,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	protected void textOfJoin(StringBuilder buffer)
 	{
-		for (Join join : joins)
+		for (Join join : joins())
 		{
 			if (join != null)
 			{
@@ -252,13 +312,13 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	protected void textOfOrder(StringBuilder buffer)
 	{
-		if (orderBy != null && orderBy.length > 0)
+		if (orderBy() != null && orderBy().length > 0)
 		{
 			buffer.append(" ORDER BY");
 
 			boolean first = true;
 
-			for (Object item : orderBy)
+			for (Expression expr : orderBy())
 			{
 				if (first)
 				{
@@ -269,17 +329,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, item);
+				Utils.text(buffer, expr);
 			}
-		}
-	}
-
-	protected void textOfWhere(StringBuilder buffer)
-	{
-		if (where() != null)
-		{
-			buffer.append(" WHERE ");
-			where().toString(buffer);
 		}
 	}
 
@@ -326,16 +377,17 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public AbstractSelect union(Select select)
 	{
-		this.setopr.add(new AbstractSetopr().setopr(Setopr.UNION, select));
+		setopr().add(new AbstractSetopr().setopr(Setopr.UNION, select));
 		return this;
 	}
 
 	public AbstractSelect unionAll(Select select)
 	{
-		this.setopr.add(new AbstractSetopr().setopr(Setopr.UNION_ALL, select));
+		setopr().add(new AbstractSetopr().setopr(Setopr.UNION_ALL, select));
 		return this;
 	}
 
+	@Override
 	public AbstractSelect where(Condition condition)
 	{
 		super.where(condition);

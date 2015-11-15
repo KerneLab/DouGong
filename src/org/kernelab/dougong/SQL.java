@@ -5,19 +5,14 @@ import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.ListItem;
 import org.kernelab.dougong.core.dml.Select;
-import org.kernelab.dougong.core.dml.SingleItem;
+import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 
 public class SQL
 {
 	public static final String	NULL	= "NULL";
 
-	public static void main(String[] args)
-	{
-
-	}
-
-	private final Provider	provider;
+	private final Provider		provider;
 
 	public SQL(Provider provider)
 	{
@@ -29,7 +24,7 @@ public class SQL
 		return provider().provideSelect().from(view);
 	}
 
-	public SingleItem item(String string)
+	public StringItem item(String string)
 	{
 		return provider().provideStringItem(string);
 	}

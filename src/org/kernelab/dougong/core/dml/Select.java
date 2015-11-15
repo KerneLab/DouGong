@@ -1,11 +1,12 @@
 package org.kernelab.dougong.core.dml;
 
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
 
 public interface Select extends DML, View, Scope, Filterable
 {
-	public Select select(Object... items);
+	public Select select(Expression... exprs);
 
 	// //////////////////////////////////////////////////////
 
@@ -31,7 +32,7 @@ public interface Select extends DML, View, Scope, Filterable
 
 	// //////////////////////////////////////////////////////
 
-	public Select groupBy(Object... items);
+	public Select groupBy(Expression... exprs);
 
 	// //////////////////////////////////////////////////////
 
@@ -49,7 +50,7 @@ public interface Select extends DML, View, Scope, Filterable
 
 	// //////////////////////////////////////////////////////
 
-	public Select orderBy(Object... items);
+	public Select orderBy(Expression... exprs);
 
 	// //////////////////////////////////////////////////////
 
