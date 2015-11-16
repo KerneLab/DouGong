@@ -3,6 +3,7 @@ package org.kernelab.dougong.core;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.ListItem;
+import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -27,6 +28,8 @@ public interface Provider
 
 	public ComparisonCondition provideComparisonCondition();
 
+	public Delete provideDelete();
+
 	public Join provideJoin();
 
 	public LikeCondition provideLikeCondition();
@@ -37,13 +40,11 @@ public interface Provider
 
 	public NullCondition provideNullCondition();
 
+	public Primitive providePrimitive();
+
 	public RangeCondition provideRangeCondition();
 
 	public Select provideSelect();
-
-	public Update provideUpdate();
-
-	public Delete provideDelete();
 
 	public StringItem provideStringItem(String item);
 
@@ -67,4 +68,6 @@ public interface Provider
 	 * @return
 	 */
 	public String provideTableNameAliased(Table table);
+
+	public Update provideUpdate();
 }

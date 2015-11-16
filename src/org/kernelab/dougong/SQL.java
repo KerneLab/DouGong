@@ -4,6 +4,7 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.ListItem;
+import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -19,9 +20,9 @@ public class SQL
 		this.provider = provider;
 	}
 
-	public Select from(View view)
+	public Primitive from(View view)
 	{
-		return provider().provideSelect().from(view);
+		return provider().providePrimitive().from(view);
 	}
 
 	public StringItem item(String string)

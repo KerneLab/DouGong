@@ -4,9 +4,15 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 
 public abstract class AbstractProvider implements Provider
 {
+	public AbstractPrimitive providePrimitive()
+	{
+		return (AbstractPrimitive) new AbstractPrimitive().provider(this);
+	}
+
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select)
 	{
 		try
