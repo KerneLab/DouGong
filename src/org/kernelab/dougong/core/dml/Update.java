@@ -8,6 +8,8 @@ public interface Update extends DML, Filterable
 {
 	public Update update(View view);
 
+	public Update from(View view);
+
 	// //////////////////////////////////////////////////////
 
 	public Update set(Column column, Expression expr);

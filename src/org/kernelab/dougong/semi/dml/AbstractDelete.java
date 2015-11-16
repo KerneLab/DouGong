@@ -1,5 +1,6 @@
 package org.kernelab.dougong.semi.dml;
 
+import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
@@ -13,6 +14,13 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 		return this;
 	}
 
+	@Override
+	public AbstractDelete provider(Provider provider)
+	{
+		super.provider(provider);
+		return this;
+	}
+	
 	protected void textOfHead(StringBuilder buffer)
 	{
 		buffer.append("DELETE");

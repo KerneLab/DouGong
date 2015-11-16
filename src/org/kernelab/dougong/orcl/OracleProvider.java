@@ -5,14 +5,14 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Join;
-import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
+import org.kernelab.dougong.orcl.dml.OracleDelete;
 import org.kernelab.dougong.orcl.dml.OracleJoin;
 import org.kernelab.dougong.orcl.dml.OracleListItem;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
+import org.kernelab.dougong.orcl.dml.OracleUpdate;
 import org.kernelab.dougong.orcl.dml.cond.OracleComparisonCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleLikeCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleMembershipCondition;
@@ -25,6 +25,16 @@ public class OracleProvider extends AbstractProvider
 	public static void main(String[] args)
 	{
 		// SQL q = new SQL(new OracleProvider());
+	}
+
+	public OracleUpdate provideUpdate()
+	{
+		return new OracleUpdate().provider(this);
+	}
+
+	public OracleDelete provideDelete()
+	{
+		return new OracleDelete().provider(this);
 	}
 
 	public String provideAliasLabel(String alias)
@@ -92,17 +102,5 @@ public class OracleProvider extends AbstractProvider
 		}
 		buffer.append(Utils.getTableNameFromClass(table.getClass()));
 		return buffer.toString();
-	}
-
-	public Update provideUpdate()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Delete provideDelete()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
