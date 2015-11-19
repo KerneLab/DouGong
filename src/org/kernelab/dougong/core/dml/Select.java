@@ -1,5 +1,6 @@
 package org.kernelab.dougong.core.dml;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
@@ -25,6 +26,14 @@ public interface Select extends DML, View, Scope, Filterable
 	public Select rightJoin(View view, Condition cond);
 
 	public Select fullJoin(View view, Condition cond);
+
+	public Select join(View view, Column... using);
+
+	public Select leftJoin(View view, Column... using);
+
+	public Select rightJoin(View view, Column... using);
+
+	public Select fullJoin(View view, Column... using);
 
 	// //////////////////////////////////////////////////////
 

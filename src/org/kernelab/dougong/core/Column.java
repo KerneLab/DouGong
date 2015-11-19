@@ -14,7 +14,7 @@ public interface Column extends SingleItem, OrderableItem
 	public Column as(String alias);
 
 	/**
-	 * Get the name of this Column.
+	 * Get the name of this Column without the alias nor the view name.
 	 * 
 	 * @return
 	 */

@@ -1,16 +1,45 @@
 package org.kernelab.dougong.orcl.dml;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.semi.dml.AbstractJoin;
 
 public class OracleJoin extends AbstractJoin
 {
-	public StringBuilder toString(StringBuilder buffer)
+	@Override
+	protected StringBuilder toStringOnCondition(StringBuilder buffer)
 	{
-		buffer.append(JOINS[super.type]);
-		buffer.append(" JOIN ");
-		super.view.toString(buffer);
 		buffer.append(" ON ");
-		super.cond.toString(buffer);
+		this.on().toString(buffer);
+		return buffer;
+	}
+
+	@Override
+	protected StringBuilder toStringUsingColumns(StringBuilder buffer)
+	{
+		buffer.append(" USING (");
+		boolean first = true;
+		for (Column c : this.using())
+		{
+			if (first)
+			{
+				first = false;
+			}
+			else
+			{
+				buffer.append(',');
+			}
+			buffer.append(c.name());
+		}
+		buffer.append(')');
+		return buffer;
+	}
+
+	@Override
+	protected StringBuilder toStringJoinTable(StringBuilder buffer)
+	{
+		buffer.append(JOINS[type()]);
+		buffer.append(" JOIN ");
+		super.view().toStringAliased(buffer);
 		return buffer;
 	}
 }

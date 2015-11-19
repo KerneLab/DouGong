@@ -1,5 +1,6 @@
 package org.kernelab.dougong.semi.dml;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
@@ -22,9 +23,19 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 		return this;
 	}
 
+	public Select fullJoin(View view, Column... using)
+	{
+		return this.provider().provideSelect().from(this.from()).where(this.where()).fullJoin(view, using);
+	}
+
 	public Select fullJoin(View view, Condition cond)
 	{
 		return this.provider().provideSelect().from(this.from()).where(this.where()).fullJoin(view, cond);
+	}
+
+	public Select join(View view, Column... using)
+	{
+		return this.provider().provideSelect().from(this.from()).where(this.where()).join(view, using);
 	}
 
 	public Select join(View view, Condition cond)
@@ -32,9 +43,19 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 		return this.provider().provideSelect().from(this.from()).where(this.where()).join(view, cond);
 	}
 
+	public Select leftJoin(View view, Column... using)
+	{
+		return this.provider().provideSelect().from(this.from()).where(this.where()).leftJoin(view, using);
+	}
+
 	public Select leftJoin(View view, Condition cond)
 	{
 		return this.provider().provideSelect().from(this.from()).where(this.where()).leftJoin(view, cond);
+	}
+
+	public Select rightJoin(View view, Column... using)
+	{
+		return this.provider().provideSelect().from(this.from()).where(this.where()).rightJoin(view, using);
 	}
 
 	public Select rightJoin(View view, Condition cond)

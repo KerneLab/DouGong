@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Utils;
@@ -100,6 +101,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return froms;
 	}
 
+	public AbstractSelect fullJoin(View view, Column... using)
+	{
+		joins().add(provider().provideJoin().join(AbstractJoin.FULL_JOIN, view, view.alias(), using));
+		return this;
+	}
+
 	public AbstractSelect fullJoin(View view, Condition on)
 	{
 		joins().add(provider().provideJoin().join(AbstractJoin.FULL_JOIN, view, view.alias(), on));
@@ -134,6 +141,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public AbstractSelect join(View view, Column... using)
+	{
+		joins().add(provider().provideJoin().join(AbstractJoin.INNER_JOIN, view, view.alias(), using));
+		return this;
+	}
+
 	public AbstractSelect join(View view, Condition on)
 	{
 		joins().add(provider().provideJoin().join(AbstractJoin.INNER_JOIN, view, view.alias(), on));
@@ -143,6 +156,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	protected List<Join> joins()
 	{
 		return joins;
+	}
+
+	public AbstractSelect leftJoin(View view, Column... using)
+	{
+		joins().add(provider().provideJoin().join(AbstractJoin.LEFT_JOIN, view, view.alias(), using));
+		return this;
 	}
 
 	public AbstractSelect leftJoin(View view, Condition on)
@@ -172,6 +191,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public AbstractSelect provider(Provider provider)
 	{
 		super.provider(provider);
+		return this;
+	}
+
+	public AbstractSelect rightJoin(View view, Column... using)
+	{
+		joins().add(provider().provideJoin().join(AbstractJoin.RIGHT_JOIN, view, view.alias(), using));
 		return this;
 	}
 
