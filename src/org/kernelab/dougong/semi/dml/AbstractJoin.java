@@ -7,6 +7,10 @@ import org.kernelab.dougong.core.dml.Join;
 
 public abstract class AbstractJoin implements Join
 {
+	private View		leading;
+
+	private Join		former;
+
 	private byte		type;
 
 	private View		view;
@@ -15,27 +19,35 @@ public abstract class AbstractJoin implements Join
 
 	private Column[]	using;
 
-	public AbstractJoin join(byte type, View view, String alias, Column... using)
+	protected Join former()
 	{
+		return former;
+	}
+
+	public AbstractJoin join(View leading, Join former, byte type, View view, String alias)
+	{
+		this.leading = leading;
+		this.former = former;
 		this.type = type;
 		this.view = view.alias(alias);
-		this.using = using;
-		this.on = null;
 		return this;
 	}
 
-	public AbstractJoin join(byte type, View view, String alias, Condition cond)
+	protected View leading()
 	{
-		this.type = type;
-		this.view = view.alias(alias);
-		this.on = cond;
-		this.using = null;
-		return this;
+		return leading;
 	}
 
 	protected Condition on()
 	{
 		return on;
+	}
+
+	public Join on(Condition condition)
+	{
+		this.on = condition;
+		this.using = null;
+		return this;
 	}
 
 	@Override
@@ -74,6 +86,55 @@ public abstract class AbstractJoin implements Join
 	protected Column[] using()
 	{
 		return using;
+	}
+
+	public Join using(Column... columns)
+	{
+		if (this.on() == null && this.using() == null)
+		{
+			this.using = columns;
+		}
+		this.on = null;
+
+		if (columns != null)
+		{
+			Column column = null;
+
+			for (Column col : columns)
+			{
+				if (col != null)
+				{
+					column = view().columns().get(col.name());
+
+					if (column != null)
+					{
+						column.usingByJoin(true);
+					}
+				}
+			}
+
+			if (former() != null)
+			{
+				former().using(columns);
+			}
+			else if (leading() != null)
+			{
+				for (Column col : columns)
+				{
+					if (col != null)
+					{
+						column = leading().columns().get(col.name());
+
+						if (column != null)
+						{
+							column.usingByJoin(true);
+						}
+					}
+				}
+			}
+		}
+
+		return this;
 	}
 
 	protected View view()

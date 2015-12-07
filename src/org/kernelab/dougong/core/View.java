@@ -1,21 +1,18 @@
 package org.kernelab.dougong.core;
 
-public interface View extends Text, Alias
+import java.util.Map;
+
+/**
+ * The interface which could be selected from or joined.
+ */
+public interface View extends Text, Alias, Providable
 {
 	public View alias(String alias);
 
 	/**
-	 * Get the SQL Provider.
+	 * Return the <name, Column> map.
 	 * 
 	 * @return
 	 */
-	public Provider provider();
-
-	/**
-	 * Specify a SQL Provider.
-	 * 
-	 * @param provider
-	 * @return
-	 */
-	public View provider(Provider provider);
+	public Map<String, Column> columns();
 }

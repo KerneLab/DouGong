@@ -18,12 +18,15 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 
 	private boolean	order;
 
+	private boolean	using;
+
 	public AbstractColumn(View view, String name)
 	{
 		this.view = view;
 		this.name = name;
 		this.alias = null;
 		this.order = true;
+		this.using = false;
 	}
 
 	@Override
@@ -47,7 +50,7 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 
 	public AbstractColumn as(String alias)
 	{
-		return this.replicate().alias(alias);
+		return this.replicate().alias(alias).usingByJoin(this.isUsingByJoin());
 	}
 
 	public AbstractColumn ascend()
@@ -65,6 +68,11 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 	{
 		order = false;
 		return this;
+	}
+
+	public boolean isUsingByJoin()
+	{
+		return using;
 	}
 
 	public String name()
@@ -103,6 +111,12 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 	}
 
 	protected abstract AbstractColumn replicate();
+
+	public AbstractColumn usingByJoin(boolean using)
+	{
+		this.using = using;
+		return this;
+	}
 
 	public View view()
 	{

@@ -1,5 +1,6 @@
 package org.kernelab.dougong.semi.dml;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
 
-public abstract class AbstractSelect extends AbstractFilterable implements Select, View
+public abstract class AbstractSelect extends AbstractFilterable implements Select
 {
 	private String					alias		= null;
 
@@ -22,9 +23,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private Expression[]			items		= null;
 
-	private List<View>				froms		= new LinkedList<View>();
+	private List<View>				froms		= new ArrayList<View>();
 
-	private List<Join>				joins		= new LinkedList<Join>();
+	private List<Join>				joins		= new ArrayList<Join>();
 
 	private Expression[]			groupBy		= null;
 
@@ -103,14 +104,26 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public AbstractSelect fullJoin(View view, Column... using)
 	{
-		joins().add(provider().provideJoin().join(AbstractJoin.FULL_JOIN, view, view.alias(), using));
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.FULL_JOIN, view, view.alias()).using(using));
 		return this;
 	}
 
 	public AbstractSelect fullJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin().join(AbstractJoin.FULL_JOIN, view, view.alias(), on));
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.FULL_JOIN, view, view.alias()).on(on));
 		return this;
+	}
+
+	protected View getLastFrom()
+	{
+		return froms().isEmpty() ? null : froms().get(froms().size() - 1);
+	}
+
+	protected Join getLastJoin()
+	{
+		return joins().isEmpty() ? null : joins().get(joins().size() - 1);
 	}
 
 	protected Expression[] groupBy()
@@ -143,13 +156,15 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public AbstractSelect join(View view, Column... using)
 	{
-		joins().add(provider().provideJoin().join(AbstractJoin.INNER_JOIN, view, view.alias(), using));
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).using(using));
 		return this;
 	}
 
 	public AbstractSelect join(View view, Condition on)
 	{
-		joins().add(provider().provideJoin().join(AbstractJoin.INNER_JOIN, view, view.alias(), on));
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).on(on));
 		return this;
 	}
 
@@ -160,13 +175,15 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public AbstractSelect leftJoin(View view, Column... using)
 	{
-		joins().add(provider().provideJoin().join(AbstractJoin.LEFT_JOIN, view, view.alias(), using));
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.LEFT_JOIN, view, view.alias()).using(using));
 		return this;
 	}
 
 	public AbstractSelect leftJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin().join(AbstractJoin.LEFT_JOIN, view, view.alias(), on));
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.LEFT_JOIN, view, view.alias()).on(on));
 		return this;
 	}
 
@@ -196,13 +213,15 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public AbstractSelect rightJoin(View view, Column... using)
 	{
-		joins().add(provider().provideJoin().join(AbstractJoin.RIGHT_JOIN, view, view.alias(), using));
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.RIGHT_JOIN, view, view.alias()).using(using));
 		return this;
 	}
 
 	public AbstractSelect rightJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin().join(AbstractJoin.RIGHT_JOIN, view, view.alias(), on));
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.RIGHT_JOIN, view, view.alias()).on(on));
 		return this;
 	}
 

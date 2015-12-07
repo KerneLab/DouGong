@@ -16,7 +16,9 @@ public interface Join extends Relation
 
 	public static final String[]	JOINS		= new String[] { "INNER", "LEFT", "RIGHT", "FULL" };
 
-	public Join join(byte type, View view, String alias, Condition cond);
+	public Join join(View leading, Join former, byte type, View view, String alias);
 
-	public Join join(byte type, View view, String alias, Column... using);
+	public Join on(Condition condition);
+
+	public Join using(Column... columns);
 }

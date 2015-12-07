@@ -18,7 +18,7 @@ public abstract class AbstractProvider implements Provider
 		try
 		{
 			T s = cls.newInstance();
-			s.setSelect(select);
+			s.select(select);
 			s.provider(this);
 			return s;
 		}

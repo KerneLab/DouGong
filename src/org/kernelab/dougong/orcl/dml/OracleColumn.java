@@ -25,7 +25,7 @@ public class OracleColumn extends AbstractColumn
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		String alias = this.view().provider().provideAliasLabel(view().alias());
-		if (alias != null)
+		if (alias != null && !isUsingByJoin())
 		{
 			buffer.append(alias);
 			buffer.append('.');

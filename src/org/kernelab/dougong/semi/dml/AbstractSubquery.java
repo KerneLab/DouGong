@@ -37,7 +37,7 @@ public class AbstractSubquery extends AbstractView implements Subquery
 		try
 		{
 			sq = this.getClass().newInstance();
-			sq.setSelect(this.getSelect());
+			sq.select(this.select());
 			sq.provider(this.provider());
 		}
 		catch (Exception e)
@@ -46,12 +46,12 @@ public class AbstractSubquery extends AbstractView implements Subquery
 		return sq;
 	}
 
-	public Select getSelect()
+	public Select select()
 	{
 		return select;
 	}
 
-	public AbstractSubquery setSelect(Select select)
+	public AbstractSubquery select(Select select)
 	{
 		this.select = select;
 		return this;
@@ -59,7 +59,7 @@ public class AbstractSubquery extends AbstractView implements Subquery
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		this.getSelect().toString(buffer);
+		this.select().toString(buffer);
 		return buffer;
 	}
 

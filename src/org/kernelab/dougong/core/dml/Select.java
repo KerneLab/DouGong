@@ -1,11 +1,14 @@
 package org.kernelab.dougong.core.dml;
 
+import org.kernelab.dougong.core.Alias;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Scope;
+import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.View;
 
-public interface Select extends DML, View, Scope, Filterable
+public interface Select extends DML, Text, Alias, Scope, Providable, Filterable
 {
 	public Select select(Expression... exprs);
 
