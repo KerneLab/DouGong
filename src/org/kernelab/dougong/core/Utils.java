@@ -5,7 +5,7 @@ import org.kernelab.dougong.SQL;
 
 public class Utils
 {
-	public static String getSchemaNameFromPackage(Class<?> cls)
+	public static String getSchemaFromPackage(Class<?> cls)
 	{
 		if (cls != null)
 		{
@@ -18,7 +18,7 @@ public class Utils
 		}
 	}
 
-	public static String getTableNameFromClass(Class<?> cls)
+	public static String getNameFromClass(Class<?> cls)
 	{
 		if (cls != null)
 		{

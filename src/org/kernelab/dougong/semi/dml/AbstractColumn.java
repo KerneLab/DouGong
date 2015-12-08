@@ -50,12 +50,18 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 
 	public AbstractColumn as(String alias)
 	{
-		return this.replicate().alias(alias).usingByJoin(this.isUsingByJoin());
+		return this.replicate().alias(this.alias()).ascend(this.ascending()) //
+				.usingByJoin(this.isUsingByJoin());
 	}
 
 	public AbstractColumn ascend()
 	{
-		order = true;
+		return ascend(true);
+	}
+
+	public AbstractColumn ascend(boolean ascend)
+	{
+		this.order = ascend;
 		return this;
 	}
 
@@ -66,8 +72,7 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 
 	public AbstractColumn descend()
 	{
-		order = false;
-		return this;
+		return ascend(false);
 	}
 
 	public boolean isUsingByJoin()
@@ -83,31 +88,31 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 	@Override
 	protected ComparisonCondition provideComparisonCondition()
 	{
-		return view.provider().provideComparisonCondition();
+		return view().provider().provideComparisonCondition();
 	}
 
 	@Override
 	protected LikeCondition provideLikeCondition()
 	{
-		return view.provider().provideLikeCondition();
+		return view().provider().provideLikeCondition();
 	}
 
 	@Override
 	protected MembershipCondition provideMembershipCondition()
 	{
-		return view.provider().provideMembershipCondition();
+		return view().provider().provideMembershipCondition();
 	}
 
 	@Override
 	protected NullCondition provideNullCondition()
 	{
-		return view.provider().provideNullCondition();
+		return view().provider().provideNullCondition();
 	}
 
 	@Override
 	protected RangeCondition provideRangeCondition()
 	{
-		return view.provider().provideRangeCondition();
+		return view().provider().provideRangeCondition();
 	}
 
 	protected abstract AbstractColumn replicate();

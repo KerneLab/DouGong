@@ -1,9 +1,9 @@
 package org.kernelab.dougong.core;
 
-import org.kernelab.dougong.core.dml.OrderableItem;
+import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.SingleItem;
 
-public interface Column extends SingleItem, OrderableItem
+public interface Column extends SingleItem, Sortable
 {
 	/**
 	 * Get a copy of this Column with the given alias.
@@ -14,7 +14,8 @@ public interface Column extends SingleItem, OrderableItem
 	public Column as(String alias);
 
 	/**
-	 * Determine whether this column is using by a join. The Default value is false.
+	 * Determine whether this column is using by a join. The Default value is
+	 * false.
 	 * 
 	 * @return
 	 */
@@ -29,8 +30,9 @@ public interface Column extends SingleItem, OrderableItem
 
 	/**
 	 * Get the string of this Column including the table alias if specified but
-	 * excluding the column alias. The table alias should disappear when this
-	 * column is using by a join or the table alias is not specified.
+	 * excluding the column alias. The table alias would disappear when the
+	 * table alias is not specified. It might also disappear when this column is
+	 * using by a join in some SQL language.
 	 */
 	public StringBuilder toString(StringBuilder buffer);
 
@@ -40,7 +42,8 @@ public interface Column extends SingleItem, OrderableItem
 	public StringBuilder toStringAliased(StringBuilder buffer);
 
 	/**
-	 * Specify whether this column is using by a join or not. The Default value is false.
+	 * Specify whether this column is using by a join or not. The Default value
+	 * is false.
 	 * 
 	 * @param using
 	 * @return The column object itself.

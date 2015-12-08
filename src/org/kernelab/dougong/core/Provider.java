@@ -1,10 +1,12 @@
 package org.kernelab.dougong.core;
 
 import org.kernelab.dougong.core.dml.Delete;
+import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.ListItem;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.Update;
@@ -30,6 +32,16 @@ public interface Provider
 
 	public Delete provideDelete();
 
+	public <T extends Function> T provideFunction(Class<T> cls);
+
+	/**
+	 * Provide function text including the function name and parameters' list.
+	 * 
+	 * @param function
+	 * @return
+	 */
+	public String provideFunctionText(Function function);
+
 	public Join provideJoin();
 
 	public LikeCondition provideLikeCondition();
@@ -39,6 +51,26 @@ public interface Provider
 	public MembershipCondition provideMembershipCondition();
 
 	public NullCondition provideNullCondition();
+
+	/**
+	 * Output the alias name, if given, to the buffer including the white
+	 * separating characters before the alias.
+	 * 
+	 * @param buffer
+	 * @param alias
+	 * @return The given buffer.
+	 */
+	public StringBuilder provideOutputAlias(StringBuilder buffer, Alias alias);
+
+	/**
+	 * Output the order to the buffer including the white separating characters
+	 * before the order.
+	 * 
+	 * @param buffer
+	 * @param sort
+	 * @return The given buffer.
+	 */
+	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort);
 
 	public Primitive providePrimitive();
 

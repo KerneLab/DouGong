@@ -1,7 +1,6 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.SQL;
-import org.kernelab.dougong.core.dml.OrderableItem;
 import org.kernelab.dougong.core.dml.StringItem;
 
 public abstract class AbstractStringItem extends AbstractSingleItem implements StringItem
@@ -22,9 +21,14 @@ public abstract class AbstractStringItem extends AbstractSingleItem implements S
 		return this;
 	}
 
-	public OrderableItem ascend()
+	public AbstractStringItem ascend()
 	{
-		order = true;
+		return ascend(true);
+	}
+
+	public AbstractStringItem ascend(boolean ascend)
+	{
+		this.order = ascend;
 		return this;
 	}
 
@@ -33,10 +37,9 @@ public abstract class AbstractStringItem extends AbstractSingleItem implements S
 		return order;
 	}
 
-	public OrderableItem descend()
+	public AbstractStringItem descend()
 	{
-		order = false;
-		return this;
+		return ascend(false);
 	}
 
 	public String getString()

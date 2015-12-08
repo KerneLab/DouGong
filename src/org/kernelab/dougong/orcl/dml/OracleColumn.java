@@ -37,27 +37,12 @@ public class OracleColumn extends AbstractColumn
 	public StringBuilder toStringAliased(StringBuilder buffer)
 	{
 		toString(buffer);
-		String alias = this.view().provider().provideAliasLabel(this.alias());
-		if (alias != null)
-		{
-			buffer.append(' ');
-			buffer.append(alias);
-		}
-		return buffer;
+		return this.view().provider().provideOutputAlias(buffer, this);
 	}
 
 	public StringBuilder toStringOrdered(StringBuilder buffer)
 	{
 		toString(buffer);
-		buffer.append(' ');
-		if (this.ascending())
-		{
-			buffer.append("ASC");
-		}
-		else
-		{
-			buffer.append("DESC");
-		}
-		return buffer;
+		return this.view().provider().provideOutputOrder(buffer, this);
 	}
 }

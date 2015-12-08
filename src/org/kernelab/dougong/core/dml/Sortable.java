@@ -2,14 +2,23 @@ package org.kernelab.dougong.core.dml;
 
 import org.kernelab.dougong.core.Item;
 
-public interface OrderableItem extends Item
+public interface Sortable extends Item
 {
 	/**
-	 * Return a new OrderableItem object in ascending order.
+	 * Return an Sortable object in ascending order.
 	 * 
 	 * @return
 	 */
-	public OrderableItem ascend();
+	public Sortable ascend();
+
+	/**
+	 * Return an Sortable object according to the given order.
+	 * 
+	 * @param ascend
+	 *            true if in ascending order otherwise false.
+	 * @return
+	 */
+	public Sortable ascend(boolean ascend);
 
 	/**
 	 * true if and only if this item is in ascending order otherwise descend.
@@ -19,11 +28,11 @@ public interface OrderableItem extends Item
 	public boolean ascending();
 
 	/**
-	 * Return a new OrderableItem object in descending order.
+	 * Return an Sortable object in descending order.
 	 * 
 	 * @return
 	 */
-	public OrderableItem descend();
+	public Sortable descend();
 
 	/**
 	 * Get the text with order.

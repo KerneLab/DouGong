@@ -12,6 +12,7 @@ import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Join;
+import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
 
@@ -373,7 +374,15 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, expr);
+
+				if (expr instanceof Sortable)
+				{
+					((Sortable) expr).toStringOrdered(buffer);
+				}
+				else
+				{
+					Utils.text(buffer, expr);
+				}
 			}
 		}
 	}
