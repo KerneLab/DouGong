@@ -53,13 +53,13 @@ public class OracleProvider extends AbstractProvider
 	{
 		StringBuilder buffer = new StringBuilder();
 
-		if (function.usingSchema())
+		if (Tools.notNullOrEmpty(function.schema()))
 		{
-			buffer.append(Utils.getSchemaFromPackage(function.getClass()));
+			buffer.append(function.schema());
 			buffer.append('.');
 		}
 
-		buffer.append(Utils.getNameFromClass(function.getClass()));
+		buffer.append(function.name());
 
 		Expression[] args = function.args();
 
@@ -131,12 +131,12 @@ public class OracleProvider extends AbstractProvider
 	public String provideTableName(Table table)
 	{
 		StringBuilder buffer = new StringBuilder(40);
-		if (table.usingSchema())
+		if (Tools.notNullOrEmpty(table.schema()))
 		{
-			buffer.append(Utils.getSchemaFromPackage(table.getClass()));
+			buffer.append(table.schema());
 			buffer.append('.');
 		}
-		buffer.append(Utils.getNameFromClass(table.getClass()));
+		buffer.append(table.name());
 		return buffer.toString();
 	}
 

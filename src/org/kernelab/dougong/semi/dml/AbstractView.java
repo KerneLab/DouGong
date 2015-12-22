@@ -8,6 +8,7 @@ import java.util.Map;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 
 public abstract class AbstractView extends AbstractProvidable implements View
@@ -53,16 +54,12 @@ public abstract class AbstractView extends AbstractProvidable implements View
 						&& Modifier.isPublic(mod) && !Modifier.isStatic(mod) && !Modifier.isFinal(mod) //
 						&& field.get(this) == null)
 				{
-					col = provider().provideColumn(this, field.getName());
+					col = provider().provideColumn(this, Utils.getNameFromField(field));
 					field.set(this, col);
 					columns().put(col.name(), col);
 				}
 			}
-			catch (IllegalArgumentException e)
-			{
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e)
+			catch (Exception e)
 			{
 				e.printStackTrace();
 			}
