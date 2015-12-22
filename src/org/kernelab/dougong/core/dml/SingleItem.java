@@ -10,6 +10,14 @@ import org.kernelab.dougong.core.dml.cond.RangeCondition;
 
 public interface SingleItem extends Item
 {
+	/**
+	 * Get a copy of this SingleItem with the given alias.
+	 * 
+	 * @param alias
+	 * @return
+	 */
+	public SingleItem as(String alias);
+
 	public RangeCondition between(Item from, Item to);
 
 	public ComparisonCondition eq(SingleItem item);

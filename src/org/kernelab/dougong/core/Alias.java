@@ -11,10 +11,10 @@ public interface Alias extends Cloneable
 	public String alias();
 
 	/**
-	 * Return this Object with the given alias name.
+	 * Set the alias name.
 	 * 
 	 * @param alias
-	 * @return
+	 * @return This object itself.
 	 */
 	public Alias alias(String alias);
 

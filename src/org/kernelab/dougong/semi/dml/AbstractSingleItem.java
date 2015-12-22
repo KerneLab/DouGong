@@ -20,9 +20,13 @@ public abstract class AbstractSingleItem extends AbstractReplicable implements S
 
 	public AbstractSingleItem alias(String alias)
 	{
-		AbstractSingleItem rep = this.replicate();
-		rep.alias = alias;
-		return rep;
+		this.alias = alias;
+		return this;
+	}
+
+	public AbstractSingleItem as(String alias)
+	{
+		return this.replicate().alias(alias);
 	}
 
 	public RangeCondition between(Item from, Item to)
