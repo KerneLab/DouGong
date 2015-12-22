@@ -11,7 +11,7 @@ public class MariaColumn extends AbstractColumn
 	}
 
 	@Override
-	protected AbstractColumn replicate()
+	protected MariaColumn replicate()
 	{
 		return new MariaColumn(view(), name());
 	}

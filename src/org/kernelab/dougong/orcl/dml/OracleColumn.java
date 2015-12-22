@@ -11,7 +11,7 @@ public class OracleColumn extends AbstractColumn
 	}
 
 	@Override
-	protected AbstractColumn replicate()
+	protected OracleColumn replicate()
 	{
 		return new OracleColumn(view(), name());
 	}
