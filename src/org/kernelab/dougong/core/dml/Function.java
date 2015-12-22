@@ -1,10 +1,11 @@
 package org.kernelab.dougong.core.dml;
 
 import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.Member;
+import org.kernelab.dougong.core.Named;
 import org.kernelab.dougong.core.Providable;
-import org.kernelab.dougong.core.Schema;
 
-public interface Function extends SingleItem, Sortable, Schema, Providable
+public interface Function extends Named, SingleItem, Sortable, Member, Providable
 {
 	public Expression[] args();
 

@@ -1,6 +1,6 @@
 package org.kernelab.dougong.core;
 
-public interface Table extends View, Schema
+public interface Table extends Named, View, Member
 {
 	public Table alias(String alias);
 

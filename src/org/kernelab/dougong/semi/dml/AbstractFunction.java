@@ -2,6 +2,7 @@ package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
@@ -13,15 +14,30 @@ public class AbstractFunction extends AbstractSingleItem implements Function
 {
 	private Provider		provider;
 
+	private String			name;
+
 	private Expression[]	arguments;
 
-	private boolean			order		= true;
+	private boolean			order	= true;
 
-	private boolean			usingSchema	= false;
+	private String			schema	= null;
 
 	public Expression[] args()
 	{
 		return arguments;
+	}
+
+	@Override
+	public AbstractFunction as(String alias)
+	{
+		return this.replicate() //
+				.alias(alias);
+	}
+
+	@Override
+	public AbstractFunction alias(String alias)
+	{
+		return (AbstractFunction) super.alias(alias);
 	}
 
 	public AbstractFunction ascend()
@@ -49,6 +65,23 @@ public class AbstractFunction extends AbstractSingleItem implements Function
 	public AbstractFunction descend()
 	{
 		return ascend(false);
+	}
+
+	protected void initFunction()
+	{
+		this.schema(Utils.getSchemaFromMember(this));
+		this.name(Utils.getNameFromNamed(this));
+	}
+
+	public String name()
+	{
+		return name;
+	}
+
+	protected AbstractFunction name(String name)
+	{
+		this.name = name;
+		return this;
 	}
 
 	@Override
@@ -83,6 +116,7 @@ public class AbstractFunction extends AbstractSingleItem implements Function
 	public AbstractFunction provider(Provider provider)
 	{
 		this.provider = provider;
+		this.initFunction();
 		return this;
 	}
 
@@ -95,8 +129,23 @@ public class AbstractFunction extends AbstractSingleItem implements Function
 	@Override
 	protected AbstractFunction replicate()
 	{
-		return new AbstractFunction().provider(this.provider()).call(this.args()) //
-				.ascend(this.ascending()).usingSchema(this.usingSchema());
+		return new AbstractFunction() //
+				.schema(this.schema()) //
+				.name(this.name()) //
+				.call(this.args()) //
+				.ascend(this.ascending()) //
+				.provider(this.provider());
+	}
+
+	public String schema()
+	{
+		return schema;
+	}
+
+	protected AbstractFunction schema(String schema)
+	{
+		this.schema = schema;
+		return this;
 	}
 
 	public StringBuilder toString(StringBuilder buffer)
@@ -117,16 +166,5 @@ public class AbstractFunction extends AbstractSingleItem implements Function
 		this.toString(buffer);
 		this.provider().provideOutputOrder(buffer, this);
 		return buffer;
-	}
-
-	public boolean usingSchema()
-	{
-		return usingSchema;
-	}
-
-	public AbstractFunction usingSchema(boolean using)
-	{
-		this.usingSchema = using;
-		return this;
 	}
 }

@@ -3,14 +3,8 @@ package org.kernelab.dougong.core;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.SingleItem;
 
-public interface Column extends SingleItem, Sortable
+public interface Column extends Named, SingleItem, Sortable
 {
-	/**
-	 * Get a copy of this Column with the given alias.
-	 * 
-	 * @param alias
-	 * @return
-	 */
 	public Column as(String alias);
 
 	/**
@@ -20,13 +14,6 @@ public interface Column extends SingleItem, Sortable
 	 * @return
 	 */
 	public boolean isUsingByJoin();
-
-	/**
-	 * Get the name of this Column without the alias nor the view name.
-	 * 
-	 * @return
-	 */
-	public String name();
 
 	/**
 	 * Get the string of this Column including the table alias if specified but

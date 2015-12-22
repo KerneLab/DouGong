@@ -35,12 +35,6 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 		return alias;
 	}
 
-	/**
-	 * Return this Column with the given alias name.
-	 * 
-	 * @param alias
-	 * @return
-	 */
 	@Override
 	public AbstractColumn alias(String alias)
 	{
@@ -48,9 +42,13 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 		return this;
 	}
 
+	@Override
 	public AbstractColumn as(String alias)
 	{
-		return this.replicate().alias(this.alias()).ascend(this.ascending()) //
+		return this.replicate() //
+				.name(this.name()) //
+				.alias(alias) //
+				.ascend(this.ascending()) //
 				.usingByJoin(this.isUsingByJoin());
 	}
 
@@ -83,6 +81,12 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 	public String name()
 	{
 		return name;
+	}
+
+	public AbstractColumn name(String name)
+	{
+		this.name = name;
+		return this;
 	}
 
 	@Override
