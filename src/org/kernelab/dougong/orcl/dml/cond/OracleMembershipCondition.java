@@ -19,7 +19,7 @@ public class OracleMembershipCondition extends AbstractMembershipCondition
 			buffer.append(" NOT");
 		}
 		buffer.append(" IN (");
-		this.scope.toString(buffer);
+		this.scope.toStringScoped(buffer);
 		return buffer.append(')');
 	}
 }
