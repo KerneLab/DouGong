@@ -1,6 +1,6 @@
 package org.kernelab.dougong.core;
 
-public interface Member
+public interface Member extends Named
 {
 	/**
 	 * Get the schema name which should leading the object name.

@@ -36,6 +36,7 @@ public interface Provider
 
 	/**
 	 * Provide function text including the function name and parameters' list.
+	 * The schema name should also be considered if given.
 	 * 
 	 * @param function
 	 * @return
@@ -50,6 +51,17 @@ public interface Provider
 
 	public MembershipCondition provideMembershipCondition();
 
+	/**
+	 * Get the name text.<br />
+	 * Usually the text might be surrounding with boundary characters.
+	 * 
+	 * @param buffer
+	 * @param name
+	 *            The name String without boundary characters.
+	 * @return The text or SQL.NULL if the name is null.
+	 */
+	public String provideNameText(String name);
+
 	public NullCondition provideNullCondition();
 
 	/**
@@ -63,6 +75,25 @@ public interface Provider
 	public StringBuilder provideOutputAlias(StringBuilder buffer, Alias alias);
 
 	/**
+	 * Output the member text with the schema name, if given, to the buffer.
+	 * 
+	 * @param buffer
+	 * @param member
+	 * @return The given buffer.
+	 */
+	public StringBuilder provideOutputMember(StringBuilder buffer, Member member);
+
+	/**
+	 * Output the name text to the buffer.
+	 * 
+	 * @param buffer
+	 * @param name
+	 *            The name without boundary characters.
+	 * @return The given buffer.
+	 */
+	public StringBuilder provideOutputNameText(StringBuilder buffer, String name);
+
+	/**
 	 * Output the order to the buffer including the white separating characters
 	 * before the order.
 	 * 
@@ -71,6 +102,10 @@ public interface Provider
 	 * @return The given buffer.
 	 */
 	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort);
+
+	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table);
+
+	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table);
 
 	public Primitive providePrimitive();
 
@@ -84,22 +119,22 @@ public interface Provider
 
 	public <T extends Table> T provideTable(Class<T> cls);
 
-	/**
-	 * Provide table name may be including schema name but excluding the alias
-	 * name.
-	 * 
-	 * @param table
-	 * @return
-	 */
-	public String provideTableName(Table table);
-
-	/**
-	 * Provide table name including alias name.
-	 * 
-	 * @param table
-	 * @return
-	 */
-	public String provideTableNameAliased(Table table);
+	// /**
+	// * Provide table name text may be including schema name but excluding the
+	// * alias name.
+	// *
+	// * @param table
+	// * @return
+	// */
+	// public String provideTableNameText(Table table);
+	//
+	// /**
+	// * Provide table name text including alias name.
+	// *
+	// * @param table
+	// * @return
+	// */
+	// public String provideTableNameTextAliased(Table table);
 
 	public Update provideUpdate();
 }
