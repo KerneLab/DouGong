@@ -1,9 +1,10 @@
 package org.kernelab.dougong.core.dml;
 
 import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
 
-public interface Subquery extends View, Expression
+public interface Subquery extends View, Scope, Expression
 {
 	public Subquery alias(String alias);
 

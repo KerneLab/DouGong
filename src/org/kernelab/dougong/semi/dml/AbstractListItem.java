@@ -74,4 +74,9 @@ public abstract class AbstractListItem implements ListItem
 
 		return buffer;
 	}
+
+	public StringBuilder toStringScoped(StringBuilder buffer)
+	{
+		return toString(buffer);
+	}
 }

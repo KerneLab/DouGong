@@ -82,4 +82,9 @@ public class AbstractSubquery extends AbstractView implements Subquery
 
 		return buffer;
 	}
+
+	public StringBuilder toStringScoped(StringBuilder buffer)
+	{
+		return this.select().toStringScoped(buffer);
+	}
 }

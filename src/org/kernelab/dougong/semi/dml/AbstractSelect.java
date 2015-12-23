@@ -409,7 +409,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public StringBuilder toStringAliased(StringBuilder buffer)
 	{
-		// TODO Lang Spec
 		String alias = this.alias();
 
 		if (alias != null)
@@ -425,6 +424,19 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 			buffer.append(alias);
 		}
 
+		return buffer;
+	}
+
+	public StringBuilder toStringScoped(StringBuilder buffer)
+	{
+		this.textOfHead(buffer);
+		this.textOfItems(buffer);
+		this.textOfFrom(buffer);
+		this.textOfJoin(buffer);
+		this.textOfWhere(buffer);
+		this.textOfGroup(buffer);
+		this.textOfHaving(buffer);
+		this.textOfAbstractSetopr(buffer);
 		return buffer;
 	}
 
