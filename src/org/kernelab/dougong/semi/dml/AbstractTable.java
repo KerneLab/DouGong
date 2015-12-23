@@ -87,11 +87,11 @@ public abstract class AbstractTable extends AbstractView implements Table
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		return buffer.append(provider().provideTableName(this));
+		return this.provider().provideOutputTableName(buffer, this);
 	}
 
 	public StringBuilder toStringAliased(StringBuilder buffer)
 	{
-		return buffer.append(provider().provideTableNameAliased(this));
+		return this.provider().provideOutputTableNameAliased(buffer, this);
 	}
 }

@@ -121,6 +121,16 @@ public abstract class AbstractColumn extends AbstractSingleItem implements Colum
 
 	protected abstract AbstractColumn replicate();
 
+	public StringBuilder toStringAliased(StringBuilder buffer)
+	{
+		return this.view().provider().provideOutputAlias(toString(buffer), this);
+	}
+
+	public StringBuilder toStringOrdered(StringBuilder buffer)
+	{
+		return this.view().provider().provideOutputOrder(toString(buffer), this);
+	}
+
 	public AbstractColumn usingByJoin(boolean using)
 	{
 		this.using = using;

@@ -1,6 +1,8 @@
 package org.kernelab.dougong.semi;
 
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Alias;
+import org.kernelab.dougong.core.Member;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.Function;
@@ -11,6 +13,13 @@ import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 
 public abstract class AbstractProvider implements Provider
 {
+	public static final char	OBJECT_SEPARATOR_CHAR	= '.';
+
+	public String provideAliasLabel(String alias)
+	{
+		return Tools.notNullOrEmpty(alias) ? provideNameText(alias) : null;
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T extends Function> T provideFunction(Class<T> cls)
 	{
@@ -41,6 +50,15 @@ public abstract class AbstractProvider implements Provider
 		return buffer;
 	}
 
+	public StringBuilder provideOutputNameText(StringBuilder buffer, String name)
+	{
+		if (buffer != null)
+		{
+			buffer.append(this.provideNameText(name));
+		}
+		return buffer;
+	}
+
 	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort)
 	{
 		if (buffer != null && sort != null)
@@ -55,6 +73,20 @@ public abstract class AbstractProvider implements Provider
 			{
 				buffer.append("DESC");
 			}
+		}
+		return buffer;
+	}
+
+	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)
+	{
+		if (buffer != null)
+		{
+			if (Tools.notNullOrEmpty(member.schema()))
+			{
+				this.provideOutputNameText(buffer, member.schema());
+				buffer.append(OBJECT_SEPARATOR_CHAR);
+			}
+			this.provideOutputNameText(buffer, member.name());
 		}
 		return buffer;
 	}
@@ -106,9 +138,30 @@ public abstract class AbstractProvider implements Provider
 		}
 	}
 
-	public String provideTableNameAliased(Table table)
+	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table)
 	{
-		String alias = this.provideAliasLabel(table.alias());
-		return this.provideTableName(table) + (alias != null ? " " + alias : "");
+		this.provideOutputMember(buffer, table);
+		return buffer;
 	}
+
+	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table)
+	{
+		this.provideOutputTableName(buffer, table);
+		this.provideOutputAlias(buffer, table);
+		return buffer;
+	}
+
+	// public String provideTableNameText(Table table)
+	// {
+	// StringBuilder buffer = new StringBuilder(48);
+	// this.provideOutputMember(buffer, table);
+	// return buffer.toString();
+	// }
+	//
+	// public String provideTableNameTextAliased(Table table)
+	// {
+	// String alias = this.provideAliasLabel(table.alias());
+	// return this.provideTableNameText(table) + (alias != null ? " " + alias :
+	// "");
+	// }
 }

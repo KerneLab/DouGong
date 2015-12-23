@@ -30,19 +30,7 @@ public class OracleColumn extends AbstractColumn
 			buffer.append(alias);
 			buffer.append('.');
 		}
-		buffer.append(name());
+		this.view().provider().provideOutputNameText(buffer, name());
 		return buffer;
-	}
-
-	public StringBuilder toStringAliased(StringBuilder buffer)
-	{
-		toString(buffer);
-		return this.view().provider().provideOutputAlias(buffer, this);
-	}
-
-	public StringBuilder toStringOrdered(StringBuilder buffer)
-	{
-		toString(buffer);
-		return this.view().provider().provideOutputOrder(buffer, this);
 	}
 }

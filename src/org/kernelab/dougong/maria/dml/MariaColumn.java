@@ -30,34 +30,7 @@ public class MariaColumn extends AbstractColumn
 			buffer.append(alias);
 			buffer.append('.');
 		}
-		buffer.append(name());
-		return buffer;
-	}
-
-	public StringBuilder toStringAliased(StringBuilder buffer)
-	{
-		toString(buffer);
-		String alias = this.view().provider().provideAliasLabel(this.alias());
-		if (alias != null)
-		{
-			buffer.append(' ');
-			buffer.append(alias);
-		}
-		return buffer;
-	}
-
-	public StringBuilder toStringOrdered(StringBuilder buffer)
-	{
-		toString(buffer);
-		buffer.append(' ');
-		if (this.ascending())
-		{
-			buffer.append("ASC");
-		}
-		else
-		{
-			buffer.append("DESC");
-		}
+		this.view().provider().provideOutputNameText(buffer, name());
 		return buffer;
 	}
 }

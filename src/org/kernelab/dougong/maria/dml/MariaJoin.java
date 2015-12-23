@@ -28,7 +28,7 @@ public class MariaJoin extends AbstractJoin
 			{
 				buffer.append(',');
 			}
-			buffer.append(c.name());
+			c.toString(buffer);
 		}
 		buffer.append(')');
 		return buffer;

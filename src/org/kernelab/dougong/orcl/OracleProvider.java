@@ -1,9 +1,8 @@
 package org.kernelab.dougong.orcl;
 
-import org.kernelab.basis.Tools;
+import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
-import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Function;
@@ -24,14 +23,11 @@ import org.kernelab.dougong.semi.AbstractProvider;
 
 public class OracleProvider extends AbstractProvider
 {
+	public static final char	TEXT_BOUNDARY_CHAR	= '"';
+
 	public static void main(String[] args)
 	{
 		// SQL q = new SQL(new OracleProvider());
-	}
-
-	public String provideAliasLabel(String alias)
-	{
-		return Tools.notNullOrWhite(alias) ? "\"" + alias + "\"" : null;
 	}
 
 	public Column provideColumn(View view, String name)
@@ -51,15 +47,9 @@ public class OracleProvider extends AbstractProvider
 
 	public String provideFunctionText(Function function)
 	{
-		StringBuilder buffer = new StringBuilder();
+		StringBuilder buffer = new StringBuilder(48);
 
-		if (Tools.notNullOrEmpty(function.schema()))
-		{
-			buffer.append(function.schema());
-			buffer.append('.');
-		}
-
-		buffer.append(function.name());
+		this.provideOutputMember(buffer, function);
 
 		Expression[] args = function.args();
 
@@ -108,6 +98,18 @@ public class OracleProvider extends AbstractProvider
 		return new OracleMembershipCondition();
 	}
 
+	public String provideNameText(String name)
+	{
+		if (name != null)
+		{
+			return TEXT_BOUNDARY_CHAR + name + TEXT_BOUNDARY_CHAR;
+		}
+		else
+		{
+			return SQL.NULL;
+		}
+	}
+
 	public OracleNullCondition provideNullCondition()
 	{
 		return new OracleNullCondition();
@@ -126,18 +128,6 @@ public class OracleProvider extends AbstractProvider
 	public OracleStringItem provideStringItem(String item)
 	{
 		return (OracleStringItem) new OracleStringItem(this).setString(item);
-	}
-
-	public String provideTableName(Table table)
-	{
-		StringBuilder buffer = new StringBuilder(40);
-		if (Tools.notNullOrEmpty(table.schema()))
-		{
-			buffer.append(table.schema());
-			buffer.append('.');
-		}
-		buffer.append(table.name());
-		return buffer.toString();
 	}
 
 	public OracleUpdate provideUpdate()

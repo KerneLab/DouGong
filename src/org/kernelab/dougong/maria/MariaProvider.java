@@ -1,9 +1,8 @@
 package org.kernelab.dougong.maria;
 
-import org.kernelab.basis.Tools;
+import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
-import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Function;
@@ -24,10 +23,7 @@ import org.kernelab.dougong.semi.AbstractProvider;
 
 public class MariaProvider extends AbstractProvider
 {
-	public String provideAliasLabel(String alias)
-	{
-		return Tools.notNullOrWhite(alias) ? "`" + alias + "`" : null;
-	}
+	public static final char	TEXT_BOUNDARY_CHAR	= '`';
 
 	public Column provideColumn(View view, String name)
 	{
@@ -46,15 +42,9 @@ public class MariaProvider extends AbstractProvider
 
 	public String provideFunctionText(Function function)
 	{
-		StringBuilder buffer = new StringBuilder();
+		StringBuilder buffer = new StringBuilder(48);
 
-		if (Tools.notNullOrEmpty(function.schema()))
-		{
-			buffer.append(function.schema());
-			buffer.append('.');
-		}
-
-		buffer.append(function.name());
+		this.provideOutputMember(buffer, function);
 
 		buffer.append('(');
 
@@ -101,6 +91,18 @@ public class MariaProvider extends AbstractProvider
 		return new MariaMembershipCondition();
 	}
 
+	public String provideNameText(String name)
+	{
+		if (name != null)
+		{
+			return TEXT_BOUNDARY_CHAR + name + TEXT_BOUNDARY_CHAR;
+		}
+		else
+		{
+			return SQL.NULL;
+		}
+	}
+
 	public MariaNullCondition provideNullCondition()
 	{
 		return new MariaNullCondition();
@@ -119,18 +121,6 @@ public class MariaProvider extends AbstractProvider
 	public MariaStringItem provideStringItem(String item)
 	{
 		return (MariaStringItem) new MariaStringItem(this).setString(item);
-	}
-
-	public String provideTableName(Table table)
-	{
-		StringBuilder buffer = new StringBuilder(40);
-		if (Tools.notNullOrEmpty(table.schema()))
-		{
-			buffer.append(table.schema());
-			buffer.append('.');
-		}
-		buffer.append(table.name());
-		return buffer.toString();
 	}
 
 	public MariaUpdate provideUpdate()
