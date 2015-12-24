@@ -1,5 +1,6 @@
 package org.kernelab.dougong.maria.dml.cond;
 
+import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractMembershipCondition;
 
@@ -13,7 +14,15 @@ public class MariaMembershipCondition extends AbstractMembershipCondition
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		this.item.toString(buffer);
+		if (this.expr instanceof Items)
+		{
+			buffer.append('(');
+		}
+		this.expr.toString(buffer);
+		if (this.expr instanceof Items)
+		{
+			buffer.append(')');
+		}
 		if (this.not)
 		{
 			buffer.append(" NOT");

@@ -1,23 +1,23 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import org.kernelab.dougong.core.Item;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 
 public abstract class AbstractMembershipCondition extends AbstractNegatableCondition implements MembershipCondition
 {
-	protected Item	item;
+	protected Expression	expr;
 
-	protected Scope	scope;
+	protected Scope			scope;
 
-	public AbstractMembershipCondition in(Item item, Scope scope)
+	public AbstractMembershipCondition in(Expression expr, Scope scope)
 	{
-		return this.set(item, scope);
+		return this.set(expr, scope);
 	}
 
-	public AbstractMembershipCondition set(Item item, Scope scope)
+	public AbstractMembershipCondition set(Expression expr, Scope scope)
 	{
-		this.item = item;
+		this.expr = expr;
 		this.scope = scope;
 		return this;
 	}
