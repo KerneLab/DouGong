@@ -10,7 +10,7 @@ import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
 import org.kernelab.dougong.orcl.dml.OracleJoin;
-import org.kernelab.dougong.orcl.dml.OracleListItem;
+import org.kernelab.dougong.orcl.dml.OracleItems;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
@@ -45,10 +45,45 @@ public class OracleProvider extends AbstractProvider
 		return new OracleDelete().provider(this);
 	}
 
-	public String provideFunctionText(Function function)
+	public OracleItems provideItems()
 	{
-		StringBuilder buffer = new StringBuilder(48);
+		return new OracleItems(this);
+	}
 
+	public Join provideJoin()
+	{
+		return new OracleJoin();
+	}
+
+	public OracleLikeCondition provideLikeCondition()
+	{
+		return new OracleLikeCondition();
+	}
+
+	public OracleMembershipCondition provideMembershipCondition()
+	{
+		return new OracleMembershipCondition();
+	}
+
+	public String provideNameText(String name)
+	{
+		if (name != null)
+		{
+			return TEXT_BOUNDARY_CHAR + name + TEXT_BOUNDARY_CHAR;
+		}
+		else
+		{
+			return SQL.NULL;
+		}
+	}
+
+	public OracleNullCondition provideNullCondition()
+	{
+		return new OracleNullCondition();
+	}
+
+	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
+	{
 		this.provideOutputMember(buffer, function);
 
 		Expression[] args = function.args();
@@ -75,44 +110,7 @@ public class OracleProvider extends AbstractProvider
 			buffer.append(')');
 		}
 
-		return buffer.toString();
-	}
-
-	public Join provideJoin()
-	{
-		return new OracleJoin();
-	}
-
-	public OracleLikeCondition provideLikeCondition()
-	{
-		return new OracleLikeCondition();
-	}
-
-	public OracleListItem provideListItem()
-	{
-		return new OracleListItem(this);
-	}
-
-	public OracleMembershipCondition provideMembershipCondition()
-	{
-		return new OracleMembershipCondition();
-	}
-
-	public String provideNameText(String name)
-	{
-		if (name != null)
-		{
-			return TEXT_BOUNDARY_CHAR + name + TEXT_BOUNDARY_CHAR;
-		}
-		else
-		{
-			return SQL.NULL;
-		}
-	}
-
-	public OracleNullCondition provideNullCondition()
-	{
-		return new OracleNullCondition();
+		return buffer;
 	}
 
 	public OracleRangeCondition provideRangeCondition()

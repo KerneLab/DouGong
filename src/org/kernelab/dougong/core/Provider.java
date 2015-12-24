@@ -3,7 +3,7 @@ package org.kernelab.dougong.core;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.dml.Join;
-import org.kernelab.dougong.core.dml.ListItem;
+import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Sortable;
@@ -34,20 +34,11 @@ public interface Provider
 
 	public <T extends Function> T provideFunction(Class<T> cls);
 
-	/**
-	 * Provide function text including the function name and parameters' list.
-	 * The schema name should also be considered if given.
-	 * 
-	 * @param function
-	 * @return
-	 */
-	public String provideFunctionText(Function function);
+	public Items provideItems();
 
 	public Join provideJoin();
 
 	public LikeCondition provideLikeCondition();
-
-	public ListItem provideListItem();
 
 	public MembershipCondition provideMembershipCondition();
 
@@ -73,6 +64,17 @@ public interface Provider
 	 * @return The given buffer.
 	 */
 	public StringBuilder provideOutputAlias(StringBuilder buffer, Alias alias);
+
+	/**
+	 * Output function text including the function name and parameters' list to
+	 * the buffer.<br />
+	 * The schema name should also be considered if given.
+	 * 
+	 * @param buffer
+	 * @param function
+	 * @return The given buffer.
+	 */
+	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function);
 
 	/**
 	 * Output the member text with the schema name, if given, to the buffer.

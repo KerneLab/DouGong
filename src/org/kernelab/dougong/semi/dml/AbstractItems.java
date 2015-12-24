@@ -1,15 +1,16 @@
 package org.kernelab.dougong.semi.dml;
 
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Utils;
-import org.kernelab.dougong.core.dml.ListItem;
+import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 
-public abstract class AbstractListItem implements ListItem
+public abstract class AbstractItems implements Items
 {
-	private Object[]	items;
+	private Expression[]	list;
 
-	public AbstractListItem()
+	public AbstractItems()
 	{
 	}
 
@@ -18,7 +19,7 @@ public abstract class AbstractListItem implements ListItem
 		return null;
 	}
 
-	public AbstractListItem alias(String alias)
+	public AbstractItems alias(String alias)
 	{
 		return this;
 	}
@@ -28,9 +29,14 @@ public abstract class AbstractListItem implements ListItem
 		return this.provideMembershipCondition().in(this, scope);
 	}
 
-	public AbstractListItem list(Object... items)
+	protected Expression[] list()
 	{
-		this.items = items;
+		return list;
+	}
+
+	public AbstractItems list(Expression... list)
+	{
+		this.list = list;
 		return this;
 	}
 
@@ -43,15 +49,21 @@ public abstract class AbstractListItem implements ListItem
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		if (items != null)
+		if (list() != null)
 		{
-			for (Object item : items)
+			boolean first = true;
+
+			for (Expression expr : list())
 			{
-				if (buffer.length() > 0)
+				if (first)
+				{
+					first = false;
+				}
+				else
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, item);
+				Utils.text(buffer, expr);
 			}
 		}
 
@@ -60,15 +72,21 @@ public abstract class AbstractListItem implements ListItem
 
 	public StringBuilder toStringAliased(StringBuilder buffer)
 	{
-		if (items != null)
+		if (list() != null)
 		{
-			for (Object item : items)
+			boolean first = true;
+
+			for (Expression expr : list())
 			{
-				if (buffer.length() > 0)
+				if (first)
+				{
+					first = false;
+				}
+				else
 				{
 					buffer.append(',');
 				}
-				Utils.textAliased(buffer, item);
+				Utils.textAliased(buffer, expr);
 			}
 		}
 

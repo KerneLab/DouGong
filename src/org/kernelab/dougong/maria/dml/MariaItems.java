@@ -2,13 +2,13 @@ package org.kernelab.dougong.maria.dml;
 
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
-import org.kernelab.dougong.semi.dml.AbstractListItem;
+import org.kernelab.dougong.semi.dml.AbstractItems;
 
-public class MariaListItem extends AbstractListItem
+public class MariaItems extends AbstractItems
 {
 	private Provider	provider;
 
-	public MariaListItem(Provider provider)
+	public MariaItems(Provider provider)
 	{
 		this.provider = provider;
 	}

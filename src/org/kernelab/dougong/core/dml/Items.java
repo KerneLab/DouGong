@@ -1,14 +1,15 @@
 package org.kernelab.dougong.core.dml;
 
-import org.kernelab.dougong.core.Item;
+import org.kernelab.dougong.core.Alias;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 
-public interface ListItem extends Item, Scope
+public interface Items extends Expression, Scope, Alias
 {
 	public MembershipCondition in(Scope scope);
 
-	public ListItem list(Object... items);
+	public Items list(Expression... items);
 
 	public MembershipCondition notIn(Scope scope);
 }

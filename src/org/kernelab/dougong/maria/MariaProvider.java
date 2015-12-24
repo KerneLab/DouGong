@@ -10,7 +10,7 @@ import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.maria.dml.MariaColumn;
 import org.kernelab.dougong.maria.dml.MariaDelete;
 import org.kernelab.dougong.maria.dml.MariaJoin;
-import org.kernelab.dougong.maria.dml.MariaListItem;
+import org.kernelab.dougong.maria.dml.MariaItems;
 import org.kernelab.dougong.maria.dml.MariaSelect;
 import org.kernelab.dougong.maria.dml.MariaStringItem;
 import org.kernelab.dougong.maria.dml.MariaUpdate;
@@ -40,10 +40,45 @@ public class MariaProvider extends AbstractProvider
 		return new MariaDelete().provider(this);
 	}
 
-	public String provideFunctionText(Function function)
+	public MariaItems provideItems()
 	{
-		StringBuilder buffer = new StringBuilder(48);
+		return new MariaItems(this);
+	}
 
+	public Join provideJoin()
+	{
+		return new MariaJoin();
+	}
+
+	public MariaLikeCondition provideLikeCondition()
+	{
+		return new MariaLikeCondition();
+	}
+
+	public MariaMembershipCondition provideMembershipCondition()
+	{
+		return new MariaMembershipCondition();
+	}
+
+	public String provideNameText(String name)
+	{
+		if (name != null)
+		{
+			return TEXT_BOUNDARY_CHAR + name + TEXT_BOUNDARY_CHAR;
+		}
+		else
+		{
+			return SQL.NULL;
+		}
+	}
+
+	public MariaNullCondition provideNullCondition()
+	{
+		return new MariaNullCondition();
+	}
+
+	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
+	{
 		this.provideOutputMember(buffer, function);
 
 		buffer.append('(');
@@ -68,44 +103,7 @@ public class MariaProvider extends AbstractProvider
 
 		buffer.append(')');
 
-		return buffer.toString();
-	}
-
-	public Join provideJoin()
-	{
-		return new MariaJoin();
-	}
-
-	public MariaLikeCondition provideLikeCondition()
-	{
-		return new MariaLikeCondition();
-	}
-
-	public MariaListItem provideListItem()
-	{
-		return new MariaListItem(this);
-	}
-
-	public MariaMembershipCondition provideMembershipCondition()
-	{
-		return new MariaMembershipCondition();
-	}
-
-	public String provideNameText(String name)
-	{
-		if (name != null)
-		{
-			return TEXT_BOUNDARY_CHAR + name + TEXT_BOUNDARY_CHAR;
-		}
-		else
-		{
-			return SQL.NULL;
-		}
-	}
-
-	public MariaNullCondition provideNullCondition()
-	{
-		return new MariaNullCondition();
+		return buffer;
 	}
 
 	public MariaRangeCondition provideRangeCondition()

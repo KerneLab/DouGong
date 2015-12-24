@@ -21,7 +21,7 @@ public interface Sortable extends Item
 	public Sortable ascend(boolean ascend);
 
 	/**
-	 * true if and only if this item is in ascending order otherwise descend.
+	 * true if and only if this expr is in ascending order otherwise descend.
 	 * 
 	 * @return
 	 */

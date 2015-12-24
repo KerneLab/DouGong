@@ -5,7 +5,7 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Function;
-import org.kernelab.dougong.core.dml.ListItem;
+import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
@@ -27,25 +27,25 @@ public class SQL
 		return provider().providePrimitive().from(view);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends Function> T function(Class<T> cls, Expression... args)
+	{
+		return (T) provider().provideFunction(cls).call(args);
+	}
+
 	public StringItem item(String string)
 	{
 		return provider().provideStringItem(string);
 	}
 
-	public ListItem list(Object... items)
+	public Items list(Expression... exprs)
 	{
-		return provider().provideListItem().list(items);
+		return provider().provideItems().list(exprs);
 	}
 
 	protected Provider provider()
 	{
 		return provider;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T extends Function> T function(Class<T> cls, Expression... args)
-	{
-		return (T) provider().provideFunction(cls).call(args);
 	}
 
 	public <T extends Subquery> T subquery(Class<T> cls, Select select)
