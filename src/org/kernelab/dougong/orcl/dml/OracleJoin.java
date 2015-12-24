@@ -28,7 +28,7 @@ public class OracleJoin extends AbstractJoin
 			{
 				buffer.append(',');
 			}
-			c.toString(buffer);
+			c.view().provider().provideOutputNameText(buffer, c.name());
 		}
 		buffer.append(')');
 		return buffer;
