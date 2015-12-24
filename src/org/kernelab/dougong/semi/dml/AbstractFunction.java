@@ -150,21 +150,16 @@ public class AbstractFunction extends AbstractSingleItem implements Function
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		buffer.append(provider().provideFunctionText(this));
-		return buffer;
+		return provider().provideOutputFunction(buffer, this);
 	}
 
 	public StringBuilder toStringAliased(StringBuilder buffer)
 	{
-		this.toString(buffer);
-		this.provider().provideOutputAlias(buffer, this);
-		return buffer;
+		return this.provider().provideOutputAlias(this.toString(buffer), this);
 	}
 
 	public StringBuilder toStringOrdered(StringBuilder buffer)
 	{
-		this.toString(buffer);
-		this.provider().provideOutputOrder(buffer, this);
-		return buffer;
+		return this.provider().provideOutputOrder(this.toString(buffer), this);
 	}
 }
