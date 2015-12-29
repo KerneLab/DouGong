@@ -13,7 +13,7 @@ public class MariaNullCondition extends AbstractNullCondition
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		this.item.toString(buffer);
+		this.expr.toString(buffer);
 		buffer.append(" IS");
 		if (this.not)
 		{

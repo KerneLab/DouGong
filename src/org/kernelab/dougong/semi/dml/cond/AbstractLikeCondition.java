@@ -1,22 +1,22 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import org.kernelab.dougong.core.Item;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 
 public abstract class AbstractLikeCondition extends AbstractNegatableCondition implements LikeCondition
 {
-	protected Item		item;
+	protected Expression	expr;
 
-	protected String	pattern;
+	protected String		pattern;
 
-	public AbstractLikeCondition like(Item item, String pattern)
+	public AbstractLikeCondition like(Expression expr, String pattern)
 	{
-		return this.set(item, pattern);
+		return this.set(expr, pattern);
 	}
 
-	public AbstractLikeCondition set(Item item, String pattern)
+	public AbstractLikeCondition set(Expression expr, String pattern)
 	{
-		this.item = item;
+		this.expr = expr;
 		this.pattern = pattern;
 		return this;
 	}

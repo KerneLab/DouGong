@@ -1,15 +1,15 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import org.kernelab.dougong.core.Item;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 
 public abstract class AbstractNullCondition extends AbstractNegatableCondition implements NullCondition
 {
-	protected Item	item;
+	protected Expression	expr;
 
-	public AbstractNullCondition isNull(Item item)
+	public AbstractNullCondition isNull(Expression expr)
 	{
-		this.item = item;
+		this.expr = expr;
 		return this;
 	}
 }

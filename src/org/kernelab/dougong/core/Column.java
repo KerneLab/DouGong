@@ -1,9 +1,9 @@
 package org.kernelab.dougong.core;
 
 import org.kernelab.dougong.core.dml.Sortable;
-import org.kernelab.dougong.core.dml.SingleItem;
+import org.kernelab.dougong.core.dml.Item;
 
-public interface Column extends Named, SingleItem, Sortable
+public interface Column extends Named, Item, Sortable
 {
 	public Column as(String alias);
 

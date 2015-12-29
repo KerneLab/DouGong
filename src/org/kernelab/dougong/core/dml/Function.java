@@ -5,7 +5,7 @@ import org.kernelab.dougong.core.Member;
 import org.kernelab.dougong.core.Named;
 import org.kernelab.dougong.core.Providable;
 
-public interface Function extends Named, SingleItem, Sortable, Member, Providable
+public interface Function extends Named, Item, Sortable, Member, Providable
 {
 	public Expression[] args();
 

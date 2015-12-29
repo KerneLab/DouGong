@@ -1,19 +1,19 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import org.kernelab.dougong.core.Item;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
 
 public abstract class AbstractRangeCondition extends AbstractNegatableCondition implements RangeCondition
 {
-	protected Item	item;
+	protected Expression	expr;
 
-	protected Item	from;
+	protected Expression	from;
 
-	protected Item	to;
+	protected Expression	to;
 
-	public AbstractRangeCondition between(Item item, Item from, Item to)
+	public AbstractRangeCondition between(Expression item, Expression from, Expression to)
 	{
-		this.item = item;
+		this.expr = item;
 		this.from = from;
 		this.to = to;
 		return this;

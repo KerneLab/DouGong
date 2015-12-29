@@ -1,56 +1,76 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import org.kernelab.dougong.core.dml.SingleItem;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 
 public abstract class AbstractComparisonCondition extends AbstractComposableCondition implements ComparisonCondition
 {
-	protected SingleItem	leftItem;
+	protected Expression	leftExpr;
 
-	protected SingleItem	rightItem;
+	protected Expression	rightExpr;
 
 	protected String		compType;
 
-	public AbstractComparisonCondition eq(SingleItem a, SingleItem b)
+	protected String		groupQual;
+
+	public AbstractComparisonCondition all()
+	{
+		this.groupQual = ALL;
+		return this;
+	}
+
+	public AbstractComparisonCondition any()
+	{
+		this.groupQual = ANY;
+		return this;
+	}
+
+	public AbstractComparisonCondition eq(Expression a, Expression b)
 	{
 		this.compType = EQUALS;
 		return this.set(a, b);
 	}
 
-	public AbstractComparisonCondition ge(SingleItem a, SingleItem b)
+	public AbstractComparisonCondition ge(Expression a, Expression b)
 	{
 		this.compType = GREATER_EQUALS;
 		return this.set(a, b);
 	}
 
-	public AbstractComparisonCondition gt(SingleItem a, SingleItem b)
+	public AbstractComparisonCondition gt(Expression a, Expression b)
 	{
 		this.compType = GREATER_THAN;
 		return this.set(a, b);
 	}
 
-	public AbstractComparisonCondition le(SingleItem a, SingleItem b)
+	public AbstractComparisonCondition le(Expression a, Expression b)
 	{
 		this.compType = LESS_EQUALS;
 		return this.set(a, b);
 	}
 
-	public AbstractComparisonCondition lt(SingleItem a, SingleItem b)
+	public AbstractComparisonCondition lt(Expression a, Expression b)
 	{
 		this.compType = LESS_THAN;
 		return this.set(a, b);
 	}
 
-	public AbstractComparisonCondition ne(SingleItem a, SingleItem b)
+	public AbstractComparisonCondition ne(Expression a, Expression b)
 	{
 		this.compType = NOT_EQUALS;
 		return this.set(a, b);
 	}
 
-	public AbstractComparisonCondition set(SingleItem x, SingleItem y)
+	public AbstractComparisonCondition set(Expression x, Expression y)
 	{
-		this.leftItem = x;
-		this.rightItem = y;
+		this.leftExpr = x;
+		this.rightExpr = y;
+		return this;
+	}
+
+	public AbstractComparisonCondition some()
+	{
+		this.groupQual = SOME;
 		return this;
 	}
 }

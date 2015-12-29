@@ -3,7 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.StringItem;
 
-public abstract class AbstractStringItem extends AbstractSingleItem implements StringItem
+public abstract class AbstractStringItem extends AbstractItem implements StringItem
 {
 	protected String	item;
 

@@ -1,8 +1,8 @@
 package org.kernelab.dougong.core.dml.cond;
 
-import org.kernelab.dougong.core.dml.SingleItem;
+import org.kernelab.dougong.core.Expression;
 
-public interface ComparisonCondition extends ComposableCondition
+public interface ComparisonCondition extends ComposableCondition, GroupCondition
 {
 	public static final String	EQUALS			= "=";
 
@@ -16,15 +16,21 @@ public interface ComparisonCondition extends ComposableCondition
 
 	public static final String	LESS_THAN		= "<";
 
-	public ComparisonCondition eq(SingleItem a, SingleItem b);
+	public ComparisonCondition all();
 
-	public ComparisonCondition ge(SingleItem a, SingleItem b);
+	public ComparisonCondition any();
 
-	public ComparisonCondition gt(SingleItem a, SingleItem b);
+	public ComparisonCondition eq(Expression a, Expression b);
 
-	public ComparisonCondition le(SingleItem a, SingleItem b);
+	public ComparisonCondition ge(Expression a, Expression b);
 
-	public ComparisonCondition lt(SingleItem a, SingleItem b);
+	public ComparisonCondition gt(Expression a, Expression b);
 
-	public ComparisonCondition ne(SingleItem a, SingleItem b);
+	public ComparisonCondition le(Expression a, Expression b);
+
+	public ComparisonCondition lt(Expression a, Expression b);
+
+	public ComparisonCondition ne(Expression a, Expression b);
+
+	public ComparisonCondition some();
 }

@@ -1,7 +1,5 @@
 package org.kernelab.dougong.core.dml;
 
-import org.kernelab.dougong.core.Item;
-
 public interface Sortable extends Item
 {
 	/**

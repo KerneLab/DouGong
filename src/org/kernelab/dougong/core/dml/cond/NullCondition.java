@@ -1,8 +1,8 @@
 package org.kernelab.dougong.core.dml.cond;
 
-import org.kernelab.dougong.core.Item;
+import org.kernelab.dougong.core.Expression;
 
 public interface NullCondition extends ComposableCondition, NegatableCondition
 {
-	public NullCondition isNull(Item item);
+	public NullCondition isNull(Expression expr);
 }

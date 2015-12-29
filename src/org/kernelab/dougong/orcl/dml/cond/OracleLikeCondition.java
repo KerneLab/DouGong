@@ -13,7 +13,7 @@ public class OracleLikeCondition extends AbstractLikeCondition
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		this.item.toString(buffer);
+		this.expr.toString(buffer);
 		if (this.not)
 		{
 			buffer.append(" NOT");

@@ -10,7 +10,7 @@ import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
 
-public class AbstractFunction extends AbstractSingleItem implements Function
+public class AbstractFunction extends AbstractItem implements Function
 {
 	private Provider		provider;
 

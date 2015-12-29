@@ -7,9 +7,15 @@ public class MariaComparisonCondition extends AbstractComparisonCondition
 {
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		this.leftItem.toString(buffer);
+		this.leftExpr.toString(buffer);
 		buffer.append(this.compType);
-		this.rightItem.toString(buffer);
+		if (this.groupQual != null)
+		{
+			buffer.append(' ');
+			buffer.append(this.groupQual);
+			buffer.append(' ');
+		}
+		this.rightExpr.toString(buffer);
 		return buffer;
 	}
 

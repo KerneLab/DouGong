@@ -8,7 +8,7 @@ import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
 
-public abstract class AbstractColumn extends AbstractSingleItem implements Column
+public abstract class AbstractColumn extends AbstractItem implements Column
 {
 	private View	view;
 

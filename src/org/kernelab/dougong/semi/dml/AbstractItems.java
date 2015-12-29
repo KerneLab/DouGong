@@ -4,6 +4,7 @@ import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.dml.Items;
+import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 
 public abstract class AbstractItems implements Items
@@ -24,6 +25,16 @@ public abstract class AbstractItems implements Items
 		return this;
 	}
 
+	public ComparisonCondition eq(Expression expr)
+	{
+		return this.provideComparisonCondition().eq(this, expr);
+	}
+
+	public ComparisonCondition ne(Expression expr)
+	{
+		return this.provideComparisonCondition().ne(this, expr);
+	}
+
 	public MembershipCondition in(Scope scope)
 	{
 		return this.provideMembershipCondition().in(this, scope);
@@ -34,9 +45,9 @@ public abstract class AbstractItems implements Items
 		return list;
 	}
 
-	public AbstractItems list(Expression... list)
+	public AbstractItems list(Expression... expr)
 	{
-		this.list = list;
+		this.list = expr;
 		return this;
 	}
 
@@ -46,6 +57,8 @@ public abstract class AbstractItems implements Items
 	}
 
 	protected abstract MembershipCondition provideMembershipCondition();
+
+	protected abstract ComparisonCondition provideComparisonCondition();
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
