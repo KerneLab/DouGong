@@ -47,7 +47,7 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleItems provideItems()
 	{
-		return new OracleItems(this);
+		return (OracleItems) new OracleItems().provider(this);
 	}
 
 	public Join provideJoin()

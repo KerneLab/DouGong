@@ -9,7 +9,7 @@ import org.kernelab.dougong.core.dml.test.NullTestable;
 import org.kernelab.dougong.core.dml.test.RangeTestable;
 
 /**
- * Item is an interface which stand for a single expr that can be selected,
+ * Item is an interface which stand for a single item that can be selected,
  * tested and aliased.
  *
  */
@@ -25,4 +25,6 @@ public interface Item extends Expression, Alias, ComparisonTestable, LikeTestabl
 	 * @return
 	 */
 	public Item as(String alias);
+
+	
 }

@@ -8,7 +8,7 @@ import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.View;
 
-public interface Select extends DML, Text, Alias, Scope, Providable, Filterable
+public interface Select extends DML, Text, Alias, Item, Scope, Providable, Filterable
 {
 	public Select select(Expression... exprs);
 

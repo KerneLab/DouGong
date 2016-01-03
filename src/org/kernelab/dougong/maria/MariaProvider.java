@@ -42,7 +42,7 @@ public class MariaProvider extends AbstractProvider
 
 	public MariaItems provideItems()
 	{
-		return new MariaItems(this);
+		return (MariaItems) new MariaItems().provider(this);
 	}
 
 	public Join provideJoin()
