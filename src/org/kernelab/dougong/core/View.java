@@ -15,4 +15,14 @@ public interface View extends Text, Alias, Providable
 	 * @return
 	 */
 	public Map<String, Column> columns();
+
+	/**
+	 * Get the text of this object as a view which could be selected from. Alias
+	 * name should be followed if given. Typically, subquery should be
+	 * surrounded with brackets.
+	 * 
+	 * @param buffer
+	 * @return The given buffer.
+	 */
+	public StringBuilder toStringViewed(StringBuilder buffer);
 }

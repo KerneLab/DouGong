@@ -24,11 +24,6 @@ public interface Column extends Named, Item, Sortable
 	public StringBuilder toString(StringBuilder buffer);
 
 	/**
-	 * Get the string of this Column including the column alias.
-	 */
-	public StringBuilder toStringAliased(StringBuilder buffer);
-
-	/**
 	 * Specify whether this column is using by a join or not. The Default value
 	 * is false.
 	 * 

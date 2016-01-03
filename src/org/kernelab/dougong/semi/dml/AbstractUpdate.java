@@ -45,7 +45,7 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	protected void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(' ');
-		from().toStringAliased(buffer);
+		from().toStringViewed(buffer);
 	}
 
 	protected void textOfHead(StringBuilder buffer)

@@ -17,11 +17,4 @@ public interface Alias extends Cloneable
 	 * @return This object itself.
 	 */
 	public Alias alias(String alias);
-
-	/**
-	 * Get the text with alias name.
-	 * 
-	 * @return
-	 */
-	public StringBuilder toStringAliased(StringBuilder buffer);
 }

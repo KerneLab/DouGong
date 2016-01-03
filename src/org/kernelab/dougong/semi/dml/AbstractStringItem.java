@@ -69,7 +69,7 @@ public abstract class AbstractStringItem extends AbstractItem implements StringI
 		return buffer.append(this.toString());
 	}
 
-	public StringBuilder toStringAliased(StringBuilder buffer)
+	public StringBuilder toStringExpressed(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}

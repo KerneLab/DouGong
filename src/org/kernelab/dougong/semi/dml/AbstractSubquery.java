@@ -161,20 +161,24 @@ public class AbstractSubquery extends AbstractView implements Subquery
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		this.select().toString(buffer);
-		return buffer;
+		return this.select().toString(buffer);
 	}
 
-	public StringBuilder toStringAliased(StringBuilder buffer)
+	public StringBuilder toStringExpressed(StringBuilder buffer)
 	{
-		buffer.append('(');
-		this.toString(buffer);
-		buffer.append(')');
-		return this.provider().provideOutputAlias(buffer, this);
+		return this.select().toStringExpressed(buffer);
 	}
 
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		return this.select().toStringScoped(buffer);
+	}
+
+	public StringBuilder toStringViewed(StringBuilder buffer)
+	{
+		buffer.append('(');
+		this.toString(buffer);
+		buffer.append(')');
+		return this.provider().provideOutputAlias(buffer, this);
 	}
 }

@@ -7,7 +7,7 @@ import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 
-public abstract class AbstractItems implements Items
+public abstract class AbstractItems extends AbstractProvidable implements Items
 {
 	private Expression[]	list;
 
@@ -30,11 +30,6 @@ public abstract class AbstractItems implements Items
 		return this.provideComparisonCondition().eq(this, expr);
 	}
 
-	public ComparisonCondition ne(Expression expr)
-	{
-		return this.provideComparisonCondition().ne(this, expr);
-	}
-
 	public MembershipCondition in(Scope scope)
 	{
 		return this.provideMembershipCondition().in(this, scope);
@@ -51,14 +46,19 @@ public abstract class AbstractItems implements Items
 		return this;
 	}
 
+	public ComparisonCondition ne(Expression expr)
+	{
+		return this.provideComparisonCondition().ne(this, expr);
+	}
+
 	public MembershipCondition notIn(Scope scope)
 	{
 		return (MembershipCondition) this.provideMembershipCondition().in(this, scope).not();
 	}
 
-	protected abstract MembershipCondition provideMembershipCondition();
-
 	protected abstract ComparisonCondition provideComparisonCondition();
+
+	protected abstract MembershipCondition provideMembershipCondition();
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
@@ -83,7 +83,7 @@ public abstract class AbstractItems implements Items
 		return buffer;
 	}
 
-	public StringBuilder toStringAliased(StringBuilder buffer)
+	public StringBuilder toStringExpressed(StringBuilder buffer)
 	{
 		if (list() != null)
 		{
@@ -99,7 +99,7 @@ public abstract class AbstractItems implements Items
 				{
 					buffer.append(',');
 				}
-				Utils.textAliased(buffer, expr);
+				Utils.outputAlias(this.provider(), buffer, expr);
 			}
 		}
 

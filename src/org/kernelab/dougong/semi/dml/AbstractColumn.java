@@ -121,9 +121,9 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 
 	protected abstract AbstractColumn replicate();
 
-	public StringBuilder toStringAliased(StringBuilder buffer)
+	public StringBuilder toStringExpressed(StringBuilder buffer)
 	{
-		return this.view().provider().provideOutputAlias(toString(buffer), this);
+		return toString(buffer);
 	}
 
 	public StringBuilder toStringOrdered(StringBuilder buffer)

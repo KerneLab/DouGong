@@ -8,6 +8,7 @@ import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
@@ -15,6 +16,11 @@ import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
+import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
+import org.kernelab.dougong.core.dml.cond.LikeCondition;
+import org.kernelab.dougong.core.dml.cond.MembershipCondition;
+import org.kernelab.dougong.core.dml.cond.NullCondition;
+import org.kernelab.dougong.core.dml.cond.RangeCondition;
 
 public abstract class AbstractSelect extends AbstractFilterable implements Select
 {
@@ -63,6 +69,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
+	public RangeCondition between(Expression from, Expression to)
+	{
+		return this.provideRangeCondition().between(this, from, to);
+	}
+
 	protected boolean distinct()
 	{
 		return distinct;
@@ -72,6 +83,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		this.distinct = distinct;
 		return this;
+	}
+
+	public ComparisonCondition eq(Expression expr)
+	{
+		return this.provideComparisonCondition().eq(this, expr);
 	}
 
 	/**
@@ -117,6 +133,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public ComparisonCondition ge(Expression expr)
+	{
+		return this.provideComparisonCondition().eq(this, expr);
+	}
+
 	protected View getLastFrom()
 	{
 		return froms().isEmpty() ? null : froms().get(froms().size() - 1);
@@ -138,6 +159,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public ComparisonCondition gt(Expression expr)
+	{
+		return this.provideComparisonCondition().gt(this, expr);
+	}
+
 	protected Condition having()
 	{
 		return having;
@@ -149,10 +175,25 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public MembershipCondition in(Scope scope)
+	{
+		return this.provideMembershipCondition().in(this, scope);
+	}
+
 	public AbstractSelect intersect(Select select)
 	{
 		setopr().add(new AbstractSetopr().setopr(Setopr.INTERSECT, select));
 		return this;
+	}
+
+	public NullCondition isNotNull()
+	{
+		return (NullCondition) this.provideNullCondition().isNull(this).not();
+	}
+
+	public NullCondition isNull()
+	{
+		return this.provideNullCondition().isNull(this);
 	}
 
 	public AbstractSelect join(View view, Column... using)
@@ -174,6 +215,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return joins;
 	}
 
+	public ComparisonCondition le(Expression expr)
+	{
+		return this.provideComparisonCondition().le(this, expr);
+	}
+
 	public AbstractSelect leftJoin(View view, Column... using)
 	{
 		joins().add(provider().provideJoin() //
@@ -188,10 +234,40 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public LikeCondition like(String pattern)
+	{
+		return this.provideLikeCondition().like(this, pattern);
+	}
+
+	public ComparisonCondition lt(Expression expr)
+	{
+		return this.provideComparisonCondition().lt(this, expr);
+	}
+
 	public AbstractSelect minus(Select select)
 	{
 		setopr().add(new AbstractSetopr().setopr(Setopr.MINUS, select));
 		return this;
+	}
+
+	public ComparisonCondition ne(Expression expr)
+	{
+		return this.provideComparisonCondition().ne(this, expr);
+	}
+
+	public RangeCondition notBetween(Expression from, Expression to)
+	{
+		return (RangeCondition) this.provideRangeCondition().between(this, from, to).not();
+	}
+
+	public MembershipCondition notIn(Scope scope)
+	{
+		return (MembershipCondition) this.provideMembershipCondition().in(this, scope).not();
+	}
+
+	public LikeCondition notLike(String pattern)
+	{
+		return (LikeCondition) this.provideLikeCondition().like(this, pattern).not();
 	}
 
 	protected Expression[] orderBy()
@@ -205,11 +281,36 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	protected ComparisonCondition provideComparisonCondition()
+	{
+		return this.provider().provideComparisonCondition();
+	}
+
+	protected LikeCondition provideLikeCondition()
+	{
+		return this.provider().provideLikeCondition();
+	}
+
+	protected MembershipCondition provideMembershipCondition()
+	{
+		return this.provider().provideMembershipCondition();
+	}
+
+	protected NullCondition provideNullCondition()
+	{
+		return this.provider().provideNullCondition();
+	}
+
 	@Override
 	public AbstractSelect provider(Provider provider)
 	{
 		super.provider(provider);
 		return this;
+	}
+
+	protected RangeCondition provideRangeCondition()
+	{
+		return this.provider().provideRangeCondition();
 	}
 
 	public AbstractSelect rightJoin(View view, Column... using)
@@ -273,7 +374,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				{
 					buffer.append(',');
 				}
-				fr.toStringAliased(buffer);
+				fr.toStringViewed(buffer);
 			}
 		}
 	}
@@ -338,7 +439,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				{
 					buffer.append(',');
 				}
-				Utils.textAliased(buffer, item);
+				item.toStringExpressed(buffer);
+				Utils.outputAlias(this.provider(), buffer, item);
 			}
 		}
 	}
@@ -407,26 +509,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return buffer;
 	}
 
-	public StringBuilder toStringAliased(StringBuilder buffer)
-	{
-		String alias = this.alias();
-
-		if (alias != null)
-		{
-			buffer.append('(');
-		}
-
-		this.toString(buffer);
-
-		if (alias != null)
-		{
-			buffer.append(") ");
-			buffer.append(alias);
-		}
-
-		return buffer;
-	}
-
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
@@ -437,6 +519,14 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		this.textOfGroup(buffer);
 		this.textOfHaving(buffer);
 		this.textOfAbstractSetopr(buffer);
+		return buffer;
+	}
+
+	public StringBuilder toStringExpressed(StringBuilder buffer)
+	{
+		buffer.append('(');
+		this.toStringScoped(buffer);
+		buffer.append(')');
 		return buffer;
 	}
 

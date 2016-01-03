@@ -39,7 +39,7 @@ public class MariaJoin extends AbstractJoin
 	{
 		buffer.append(JOINS[type()]);
 		buffer.append(" JOIN ");
-		super.view().toStringAliased(buffer);
+		super.view().toStringViewed(buffer);
 		return buffer;
 	}
 }

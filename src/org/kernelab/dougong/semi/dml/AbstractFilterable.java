@@ -24,7 +24,7 @@ public abstract class AbstractFilterable extends AbstractProvidable implements F
 	protected void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(" FROM ");
-		from().toStringAliased(buffer);
+		from().toStringViewed(buffer);
 	}
 
 	protected void textOfWhere(StringBuilder buffer)

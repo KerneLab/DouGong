@@ -141,6 +141,23 @@ public class Utils
 		Tools.debug(Utils.class.getSimpleName());
 	}
 
+	/**
+	 * Output the alias name of the object, if given, to the buffer.
+	 * 
+	 * @param provider
+	 * @param buffer
+	 * @param object
+	 * @return The given buffer.
+	 */
+	public static StringBuilder outputAlias(Provider provider, StringBuilder buffer, Object object)
+	{
+		if (object instanceof Alias)
+		{
+			provider.provideOutputAlias(buffer, ((Alias) object));
+		}
+		return buffer;
+	}
+
 	public static void text(StringBuilder buf, Object obj)
 	{
 		if (obj instanceof Text)
@@ -154,18 +171,6 @@ public class Utils
 		else
 		{
 			buf.append(obj.toString());
-		}
-	}
-
-	public static void textAliased(StringBuilder buf, Object obj)
-	{
-		if (obj instanceof Alias)
-		{
-			((Alias) obj).toStringAliased(buf);
-		}
-		else
-		{
-			text(buf, obj);
 		}
 	}
 }

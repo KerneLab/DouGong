@@ -22,6 +22,12 @@ public class AbstractFunction extends AbstractItem implements Function
 
 	private String			schema	= null;
 
+	@Override
+	public AbstractFunction alias(String alias)
+	{
+		return (AbstractFunction) super.alias(alias);
+	}
+
 	public Expression[] args()
 	{
 		return arguments;
@@ -32,12 +38,6 @@ public class AbstractFunction extends AbstractItem implements Function
 	{
 		return this.replicate() //
 				.alias(alias);
-	}
-
-	@Override
-	public AbstractFunction alias(String alias)
-	{
-		return (AbstractFunction) super.alias(alias);
 	}
 
 	public AbstractFunction ascend()
@@ -153,9 +153,9 @@ public class AbstractFunction extends AbstractItem implements Function
 		return provider().provideOutputFunction(buffer, this);
 	}
 
-	public StringBuilder toStringAliased(StringBuilder buffer)
+	public StringBuilder toStringExpressed(StringBuilder buffer)
 	{
-		return this.provider().provideOutputAlias(this.toString(buffer), this);
+		return toString(buffer);
 	}
 
 	public StringBuilder toStringOrdered(StringBuilder buffer)
