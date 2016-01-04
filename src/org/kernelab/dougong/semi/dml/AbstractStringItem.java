@@ -9,18 +9,6 @@ public abstract class AbstractStringItem extends AbstractItem implements StringI
 
 	private boolean		order;
 
-	@Override
-	public String alias()
-	{
-		return null;
-	}
-
-	@Override
-	public AbstractStringItem alias(String alias)
-	{
-		return this;
-	}
-
 	public AbstractStringItem ascend()
 	{
 		return ascend(true);
