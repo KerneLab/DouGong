@@ -15,16 +15,6 @@ public abstract class AbstractItems extends AbstractProvidable implements Items
 	{
 	}
 
-	public String alias()
-	{
-		return null;
-	}
-
-	public AbstractItems alias(String alias)
-	{
-		return this;
-	}
-
 	public ComparisonCondition eq(Expression expr)
 	{
 		return this.provideComparisonCondition().eq(this, expr);
@@ -99,6 +89,7 @@ public abstract class AbstractItems extends AbstractProvidable implements Items
 				{
 					buffer.append(',');
 				}
+				Utils.text(buffer, expr);
 				Utils.outputAlias(this.provider(), buffer, expr);
 			}
 		}
