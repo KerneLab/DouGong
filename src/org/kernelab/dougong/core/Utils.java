@@ -158,6 +158,18 @@ public class Utils
 		return buffer;
 	}
 
+	public static void outputExpression(StringBuilder buf, Object obj)
+	{
+		if (obj instanceof Expression)
+		{
+			((Expression) obj).toStringExpressed(buf);
+		}
+		else if (obj == null)
+		{
+			buf.append(SQL.NULL);
+		}
+	}
+
 	public static void text(StringBuilder buf, Object obj)
 	{
 		if (obj instanceof Text)
