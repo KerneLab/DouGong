@@ -1,6 +1,7 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
@@ -124,6 +125,11 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 	public StringBuilder toStringExpressed(StringBuilder buffer)
 	{
 		return toString(buffer);
+	}
+
+	public StringBuilder toStringSelected(StringBuilder buffer)
+	{
+		return Utils.outputAlias(this.view().provider(), this.toStringExpressed(buffer), this);
 	}
 
 	public StringBuilder toStringOrdered(StringBuilder buffer)

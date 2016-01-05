@@ -398,7 +398,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, expr);
+				Utils.outputExpr(buffer, expr);
 			}
 		}
 	}
@@ -483,7 +483,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				}
 				else
 				{
-					Utils.text(buffer, expr);
+					Utils.outputExpr(buffer, expr);
 				}
 			}
 		}
@@ -509,6 +509,14 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return buffer;
 	}
 
+	public StringBuilder toStringExpressed(StringBuilder buffer)
+	{
+		buffer.append('(');
+		this.toStringScoped(buffer);
+		buffer.append(')');
+		return buffer;
+	}
+
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
@@ -522,12 +530,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return buffer;
 	}
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
-		buffer.append('(');
-		this.toStringScoped(buffer);
-		buffer.append(')');
-		return buffer;
+		return Utils.outputAlias(this.provider(), this.toStringExpressed(buffer), this);
 	}
 
 	public AbstractSelect union(Select select)

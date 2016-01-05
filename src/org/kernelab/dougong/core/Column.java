@@ -24,6 +24,14 @@ public interface Column extends Named, Item, Sortable
 	public StringBuilder toString(StringBuilder buffer);
 
 	/**
+	 * Get the string of this Column including the table alias if specified and
+	 * including the column alias. The table alias would disappear when the
+	 * table alias is not specified. It might also disappear when this column is
+	 * using by a join in some SQL language.
+	 */
+	public StringBuilder toStringSelected(StringBuilder buffer);
+
+	/**
 	 * Specify whether this column is using by a join or not. The Default value
 	 * is false.
 	 * 

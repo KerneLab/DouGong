@@ -25,6 +25,4 @@ public interface Item extends Expression, Alias, ComparisonTestable, LikeTestabl
 	 * @return
 	 */
 	public Item as(String alias);
-
-	
 }

@@ -1,9 +1,11 @@
 package org.kernelab.dougong.core;
 
+import org.kernelab.dougong.core.dml.AllColumns;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Function;
-import org.kernelab.dougong.core.dml.Join;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
+import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Sortable;
@@ -25,6 +27,13 @@ public interface Provider
 	 * @return The label string or null if the name was an illegal alias name.
 	 */
 	public String provideAliasLabel(String name);
+
+	/**
+	 * Provide an AllColumns object which stands for all columns of the View.
+	 * 
+	 * @return
+	 */
+	public AllColumns provideAllColumns(View view);
 
 	public Column provideColumn(View view, String name);
 
@@ -54,6 +63,13 @@ public interface Provider
 	public String provideNameText(String name);
 
 	public NullCondition provideNullCondition();
+
+	/**
+	 * Provide a null Item.
+	 * 
+	 * @return
+	 */
+	public Item provideNullItem();
 
 	/**
 	 * Output the alias name, if given, to the buffer including the white
@@ -115,7 +131,7 @@ public interface Provider
 
 	public Select provideSelect();
 
-	public StringItem provideStringItem(String item);
+	public StringItem provideStringItem(String expr);
 
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select);
 

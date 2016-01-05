@@ -162,4 +162,9 @@ public class AbstractFunction extends AbstractItem implements Function
 	{
 		return this.provider().provideOutputOrder(this.toString(buffer), this);
 	}
+
+	public StringBuilder toStringSelected(StringBuilder buffer)
+	{
+		return Utils.outputAlias(this.provider(), toString(buffer), this);
+	}
 }

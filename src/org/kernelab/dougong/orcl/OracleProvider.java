@@ -1,16 +1,15 @@
 package org.kernelab.dougong.orcl;
 
 import org.kernelab.dougong.SQL;
-import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Function;
-import org.kernelab.dougong.core.dml.Join;
+import org.kernelab.dougong.orcl.dml.OracleAllColumns;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
-import org.kernelab.dougong.orcl.dml.OracleJoin;
 import org.kernelab.dougong.orcl.dml.OracleItems;
+import org.kernelab.dougong.orcl.dml.OracleJoin;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
@@ -30,7 +29,12 @@ public class OracleProvider extends AbstractProvider
 		// SQL q = new SQL(new OracleProvider());
 	}
 
-	public Column provideColumn(View view, String name)
+	public OracleAllColumns provideAllColumns(View view)
+	{
+		return new OracleAllColumns(view);
+	}
+
+	public OracleColumn provideColumn(View view, String name)
 	{
 		return new OracleColumn(view, name);
 	}
@@ -50,7 +54,7 @@ public class OracleProvider extends AbstractProvider
 		return (OracleItems) new OracleItems().provider(this);
 	}
 
-	public Join provideJoin()
+	public OracleJoin provideJoin()
 	{
 		return new OracleJoin();
 	}
@@ -104,7 +108,7 @@ public class OracleProvider extends AbstractProvider
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, expr);
+				Utils.outputExpr(buffer, expr);
 			}
 
 			buffer.append(')');

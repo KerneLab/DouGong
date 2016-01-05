@@ -66,7 +66,7 @@ public abstract class AbstractItems extends AbstractProvidable implements Items
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, expr);
+				Utils.outputExpr(buffer, expr);
 			}
 		}
 
@@ -74,6 +74,16 @@ public abstract class AbstractItems extends AbstractProvidable implements Items
 	}
 
 	public StringBuilder toStringExpressed(StringBuilder buffer)
+	{
+		return toString(buffer);
+	}
+
+	public StringBuilder toStringScoped(StringBuilder buffer)
+	{
+		return toString(buffer);
+	}
+
+	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		if (list() != null)
 		{
@@ -89,16 +99,11 @@ public abstract class AbstractItems extends AbstractProvidable implements Items
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, expr);
+				Utils.outputExpr(buffer, expr);
 				Utils.outputAlias(this.provider(), buffer, expr);
 			}
 		}
 
 		return buffer;
-	}
-
-	public StringBuilder toStringScoped(StringBuilder buffer)
-	{
-		return toString(buffer);
 	}
 }

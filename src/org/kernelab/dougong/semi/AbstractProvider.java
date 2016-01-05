@@ -1,11 +1,13 @@
 package org.kernelab.dougong.semi;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Alias;
 import org.kernelab.dougong.core.Member;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.Function;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -36,6 +38,11 @@ public abstract class AbstractProvider implements Provider
 		}
 	}
 
+	public Item provideNullItem()
+	{
+		return this.provideStringItem(SQL.NULL);
+	}
+
 	public StringBuilder provideOutputAlias(StringBuilder buffer, Alias alias)
 	{
 		if (buffer != null && alias != null)
@@ -46,6 +53,20 @@ public abstract class AbstractProvider implements Provider
 				buffer.append(' ');
 				buffer.append(label);
 			}
+		}
+		return buffer;
+	}
+
+	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)
+	{
+		if (buffer != null)
+		{
+			if (Tools.notNullOrEmpty(member.schema()))
+			{
+				this.provideOutputNameText(buffer, member.schema());
+				buffer.append(OBJECT_SEPARATOR_CHAR);
+			}
+			this.provideOutputNameText(buffer, member.name());
 		}
 		return buffer;
 	}
@@ -77,17 +98,16 @@ public abstract class AbstractProvider implements Provider
 		return buffer;
 	}
 
-	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)
+	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table)
 	{
-		if (buffer != null)
-		{
-			if (Tools.notNullOrEmpty(member.schema()))
-			{
-				this.provideOutputNameText(buffer, member.schema());
-				buffer.append(OBJECT_SEPARATOR_CHAR);
-			}
-			this.provideOutputNameText(buffer, member.name());
-		}
+		this.provideOutputMember(buffer, table);
+		return buffer;
+	}
+
+	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table)
+	{
+		this.provideOutputTableName(buffer, table);
+		this.provideOutputAlias(buffer, table);
 		return buffer;
 	}
 
@@ -136,19 +156,6 @@ public abstract class AbstractProvider implements Provider
 		{
 			return null;
 		}
-	}
-
-	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table)
-	{
-		this.provideOutputMember(buffer, table);
-		return buffer;
-	}
-
-	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table)
-	{
-		this.provideOutputTableName(buffer, table);
-		this.provideOutputAlias(buffer, table);
-		return buffer;
 	}
 
 	// public String provideTableNameText(Table table)

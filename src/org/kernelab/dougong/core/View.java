@@ -2,12 +2,16 @@ package org.kernelab.dougong.core;
 
 import java.util.Map;
 
+import org.kernelab.dougong.core.dml.AllColumns;
+
 /**
  * The interface which could be selected from or joined.
  */
 public interface View extends Text, Alias, Providable
 {
 	public View alias(String alias);
+
+	public AllColumns all();
 
 	/**
 	 * Return the <name, Column> map.

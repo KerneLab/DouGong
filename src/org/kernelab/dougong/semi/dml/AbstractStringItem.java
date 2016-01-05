@@ -1,10 +1,14 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.SQL;
+import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.dml.StringItem;
 
 public abstract class AbstractStringItem extends AbstractItem implements StringItem
 {
+	private Provider	provider;
+
 	protected String	item;
 
 	private boolean		order;
@@ -35,6 +39,17 @@ public abstract class AbstractStringItem extends AbstractItem implements StringI
 		return item;
 	}
 
+	protected Provider provider()
+	{
+		return provider;
+	}
+
+	public AbstractStringItem provider(Provider provider)
+	{
+		this.provider = provider;
+		return this;
+	}
+
 	protected AbstractStringItem replicate()
 	{
 		return this;
@@ -60,5 +75,10 @@ public abstract class AbstractStringItem extends AbstractItem implements StringI
 	public StringBuilder toStringExpressed(StringBuilder buffer)
 	{
 		return toString(buffer);
+	}
+
+	public StringBuilder toStringSelected(StringBuilder buffer)
+	{
+		return Utils.outputAlias(this.provider(), toString(buffer), this);
 	}
 }

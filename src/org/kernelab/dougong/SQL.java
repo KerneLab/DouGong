@@ -4,7 +4,9 @@ import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.dml.AllColumns;
 import org.kernelab.dougong.core.dml.Function;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
@@ -20,6 +22,11 @@ public class SQL
 	public SQL(Provider provider)
 	{
 		this.provider = provider;
+	}
+
+	public AllColumns all()
+	{
+		return provider().provideAllColumns(null);
 	}
 
 	public Primitive from(View view)
@@ -41,6 +48,11 @@ public class SQL
 	public Items list(Expression... exprs)
 	{
 		return provider().provideItems().list(exprs);
+	}
+
+	public Item Null()
+	{
+		return provider().provideNullItem();
 	}
 
 	protected Provider provider()

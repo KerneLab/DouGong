@@ -10,41 +10,40 @@ import org.kernelab.dougong.semi.dml.AbstractStringItem;
 
 public class OracleStringItem extends AbstractStringItem
 {
-	private Provider	provider;
-
 	public OracleStringItem(Provider provider)
 	{
-		this.provider = provider;
+		super();
+		super.provider(provider);
 	}
 
 	@Override
 	protected ComparisonCondition provideComparisonCondition()
 	{
-		return provider.provideComparisonCondition();
+		return provider().provideComparisonCondition();
 	}
 
 	@Override
 	protected LikeCondition provideLikeCondition()
 	{
-		return provider.provideLikeCondition();
+		return provider().provideLikeCondition();
 	}
 
 	@Override
 	protected MembershipCondition provideMembershipCondition()
 	{
-		return provider.provideMembershipCondition();
+		return provider().provideMembershipCondition();
 	}
 
 	@Override
 	protected NullCondition provideNullCondition()
 	{
-		return provider.provideNullCondition();
+		return provider().provideNullCondition();
 	}
 
 	@Override
 	protected RangeCondition provideRangeCondition()
 	{
-		return provider.provideRangeCondition();
+		return provider().provideRangeCondition();
 	}
 
 	public StringBuilder toStringOrdered(StringBuilder buffer)

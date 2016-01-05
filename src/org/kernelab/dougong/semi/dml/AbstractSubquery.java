@@ -2,6 +2,8 @@ package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
+import org.kernelab.dougong.core.Utils;
+import org.kernelab.dougong.core.dml.AllColumns;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
@@ -24,6 +26,11 @@ public class AbstractSubquery extends AbstractView implements Subquery
 	{
 		super.alias(alias);
 		return this;
+	}
+
+	public AllColumns all()
+	{
+		return this.provider().provideAllColumns(this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -172,6 +179,11 @@ public class AbstractSubquery extends AbstractView implements Subquery
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		return this.select().toStringScoped(buffer);
+	}
+
+	public StringBuilder toStringSelected(StringBuilder buffer)
+	{
+		return Utils.outputAlias(this.provider(), this.select().toStringExpressed(buffer), this);
 	}
 
 	public StringBuilder toStringViewed(StringBuilder buffer)

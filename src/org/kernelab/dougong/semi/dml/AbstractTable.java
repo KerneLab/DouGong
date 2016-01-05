@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.Utils;
+import org.kernelab.dougong.core.dml.AllColumns;
 
 public abstract class AbstractTable extends AbstractView implements Table
 {
@@ -20,6 +21,11 @@ public abstract class AbstractTable extends AbstractView implements Table
 	{
 		super.alias(alias);
 		return this;
+	}
+
+	public AllColumns all()
+	{
+		return this.provider().provideAllColumns(this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -89,7 +95,7 @@ public abstract class AbstractTable extends AbstractView implements Table
 	{
 		return this.provider().provideOutputTableName(buffer, this);
 	}
-
+	
 	public StringBuilder toStringViewed(StringBuilder buffer)
 	{
 		return this.provider().provideOutputTableNameAliased(buffer, this);

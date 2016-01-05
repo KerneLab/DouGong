@@ -23,7 +23,7 @@ public class OracleLogicalCondition extends AbstractLogicalCondition
 			{
 				buffer.append('(');
 			}
-			Utils.text(buffer, o);
+			Utils.outputExpr(buffer, o);
 			if (o instanceof LogicalCondition)
 			{
 				buffer.append(')');

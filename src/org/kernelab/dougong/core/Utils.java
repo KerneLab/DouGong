@@ -158,21 +158,13 @@ public class Utils
 		return buffer;
 	}
 
-	public static void outputExpression(StringBuilder buf, Object obj)
+	public static StringBuilder outputExpr(StringBuilder buf, Object obj)
 	{
 		if (obj instanceof Expression)
 		{
 			((Expression) obj).toStringExpressed(buf);
 		}
-		else if (obj == null)
-		{
-			buf.append(SQL.NULL);
-		}
-	}
-
-	public static void text(StringBuilder buf, Object obj)
-	{
-		if (obj instanceof Text)
+		else if (obj instanceof Text)
 		{
 			((Text) obj).toString(buf);
 		}
@@ -184,5 +176,6 @@ public class Utils
 		{
 			buf.append(obj.toString());
 		}
+		return buf;
 	}
 }

@@ -70,9 +70,9 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 			{
 				buffer.append(',');
 			}
-			Utils.text(buffer, set.getKey());
+			Utils.outputExpr(buffer, set.getKey());
 			buffer.append('=');
-			Utils.text(buffer, set.getValue());
+			Utils.outputExpr(buffer, set.getValue());
 		}
 	}
 

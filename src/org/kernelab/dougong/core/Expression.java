@@ -11,4 +11,13 @@ public interface Expression extends Text
 	 * @return The given buffer.
 	 */
 	public StringBuilder toStringExpressed(StringBuilder buffer);
+
+	/**
+	 * Get the text of this object as an selected item which should followed by
+	 * alias name.
+	 * 
+	 * @param buffer
+	 * @return The given buffer.
+	 */
+	public StringBuilder toStringSelected(StringBuilder buffer);
 }

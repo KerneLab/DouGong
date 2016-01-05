@@ -1,16 +1,15 @@
 package org.kernelab.dougong.maria;
 
 import org.kernelab.dougong.SQL;
-import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Function;
-import org.kernelab.dougong.core.dml.Join;
+import org.kernelab.dougong.maria.dml.MariaAllColumns;
 import org.kernelab.dougong.maria.dml.MariaColumn;
 import org.kernelab.dougong.maria.dml.MariaDelete;
-import org.kernelab.dougong.maria.dml.MariaJoin;
 import org.kernelab.dougong.maria.dml.MariaItems;
+import org.kernelab.dougong.maria.dml.MariaJoin;
 import org.kernelab.dougong.maria.dml.MariaSelect;
 import org.kernelab.dougong.maria.dml.MariaStringItem;
 import org.kernelab.dougong.maria.dml.MariaUpdate;
@@ -25,7 +24,12 @@ public class MariaProvider extends AbstractProvider
 {
 	public static final char	TEXT_BOUNDARY_CHAR	= '`';
 
-	public Column provideColumn(View view, String name)
+	public MariaAllColumns provideAllColumns(View view)
+	{
+		return new MariaAllColumns(view);
+	}
+
+	public MariaColumn provideColumn(View view, String name)
 	{
 		return new MariaColumn(view, name);
 	}
@@ -45,7 +49,7 @@ public class MariaProvider extends AbstractProvider
 		return (MariaItems) new MariaItems().provider(this);
 	}
 
-	public Join provideJoin()
+	public MariaJoin provideJoin()
 	{
 		return new MariaJoin();
 	}
@@ -97,7 +101,7 @@ public class MariaProvider extends AbstractProvider
 				{
 					buffer.append(',');
 				}
-				Utils.text(buffer, expr);
+				Utils.outputExpr(buffer, expr);
 			}
 		}
 
