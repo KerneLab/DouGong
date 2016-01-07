@@ -426,9 +426,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		boolean first = true;
 
-		for (Expression item : select())
+		for (Expression expr : select())
 		{
-			if (item != null)
+			if (expr != null)
 			{
 				if (first)
 				{
@@ -439,8 +439,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				{
 					buffer.append(',');
 				}
-				item.toStringExpressed(buffer);
-				Utils.outputAlias(this.provider(), buffer, item);
+				expr.toStringSelected(buffer);
 			}
 		}
 	}
