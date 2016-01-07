@@ -29,6 +29,18 @@ public class SQL
 		return provider().provideAllColumns(null);
 	}
 
+	/**
+	 * Make a StringItem exactly according to the given expression string.
+	 * 
+	 * @param expr
+	 *            The expression string.
+	 * @return
+	 */
+	public StringItem expr(String expr)
+	{
+		return provider().provideStringItem(expr);
+	}
+
 	public Primitive from(View view)
 	{
 		return provider().providePrimitive().from(view);
@@ -40,9 +52,27 @@ public class SQL
 		return (T) provider().provideFunction(cls).call(args);
 	}
 
-	public StringItem item(String string)
+	/**
+	 * Make a StringItem <b>?</b> which represents a single item holder.
+	 * 
+	 * @return
+	 */
+	public StringItem item()
 	{
-		return provider().provideStringItem(string);
+		return expr("?");
+	}
+
+	/**
+	 * Make a StringItem <b>?key?</b> which represents a single item holder
+	 * according to the given key.
+	 * 
+	 * @param key
+	 *            The item name.
+	 * @return
+	 */
+	public StringItem item(String key)
+	{
+		return expr("?" + key + "?");
 	}
 
 	public Items list(Expression... exprs)

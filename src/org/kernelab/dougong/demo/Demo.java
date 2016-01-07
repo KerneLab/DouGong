@@ -14,7 +14,7 @@ public class Demo
 
 		Select s = SQL.from(t = SQL.table(USER_INFO.class).as("t")) //
 				.select(t.NAME.as("Title")) //
-				.where(t.ID.eq(SQL.item("?")));
+				.where(t.ID.eq(SQL.expr("?")));
 
 		System.out.println(s);
 	}
