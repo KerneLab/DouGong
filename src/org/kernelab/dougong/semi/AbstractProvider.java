@@ -9,7 +9,6 @@ import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
-import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 
@@ -76,24 +75,6 @@ public abstract class AbstractProvider implements Provider
 		if (buffer != null)
 		{
 			buffer.append(this.provideNameText(name));
-		}
-		return buffer;
-	}
-
-	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort)
-	{
-		if (buffer != null && sort != null)
-		{
-			buffer.append(' ');
-
-			if (sort.ascending())
-			{
-				buffer.append("ASC");
-			}
-			else
-			{
-				buffer.append("DESC");
-			}
 		}
 		return buffer;
 	}

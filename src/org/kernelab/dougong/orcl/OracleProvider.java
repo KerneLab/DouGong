@@ -5,6 +5,7 @@ import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Function;
+import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.orcl.dml.OracleAllColumns;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
@@ -114,6 +115,24 @@ public class OracleProvider extends AbstractProvider
 			buffer.append(')');
 		}
 
+		return buffer;
+	}
+
+	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort)
+	{
+		if (buffer != null && sort != null)
+		{
+			buffer.append(' ');
+
+			if (sort.ascending())
+			{
+				buffer.append("ASC");
+			}
+			else
+			{
+				buffer.append("DESC");
+			}
+		}
 		return buffer;
 	}
 
