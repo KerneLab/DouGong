@@ -77,6 +77,12 @@ public abstract class AbstractStringItem extends AbstractItem implements StringI
 		return toString(buffer);
 	}
 
+	public StringBuilder toStringOrdered(StringBuilder buffer)
+	{
+		this.provider().provideOutputOrder(toString(buffer), this);
+		return buffer;
+	}
+
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return Utils.outputAlias(this.provider(), toString(buffer), this);

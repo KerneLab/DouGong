@@ -45,19 +45,4 @@ public class OracleStringItem extends AbstractStringItem
 	{
 		return provider().provideRangeCondition();
 	}
-
-	public StringBuilder toStringOrdered(StringBuilder buffer)
-	{
-		toString(buffer);
-		buffer.append(' ');
-		if (this.ascending())
-		{
-			buffer.append("ASC");
-		}
-		else
-		{
-			buffer.append("DESC");
-		}
-		return buffer;
-	}
 }
