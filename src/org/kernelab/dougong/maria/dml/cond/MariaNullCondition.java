@@ -1,5 +1,6 @@
 package org.kernelab.dougong.maria.dml.cond;
 
+import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractNullCondition;
 
@@ -13,7 +14,15 @@ public class MariaNullCondition extends AbstractNullCondition
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		this.expr.toString(buffer);
+		if (this.expr instanceof Items)
+		{
+			buffer.append('(');
+		}
+		this.expr.toStringExpressed(buffer);
+		if (this.expr instanceof Items)
+		{
+			buffer.append(')');
+		}
 		buffer.append(" IS");
 		if (this.not)
 		{

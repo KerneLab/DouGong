@@ -18,7 +18,7 @@ public class MariaMembershipCondition extends AbstractMembershipCondition
 		{
 			buffer.append('(');
 		}
-		this.expr.toString(buffer);
+		this.expr.toStringExpressed(buffer);
 		if (this.expr instanceof Items)
 		{
 			buffer.append(')');

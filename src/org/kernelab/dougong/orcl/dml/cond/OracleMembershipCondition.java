@@ -18,7 +18,7 @@ public class OracleMembershipCondition extends AbstractMembershipCondition
 		{
 			buffer.append('(');
 		}
-		this.expr.toString(buffer);
+		this.expr.toStringExpressed(buffer);
 		if (this.expr instanceof Items)
 		{
 			buffer.append(')');
