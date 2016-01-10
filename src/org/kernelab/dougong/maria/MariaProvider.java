@@ -2,10 +2,15 @@ package org.kernelab.dougong.maria;
 
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Expression;
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.dml.Sortable;
+import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
+import org.kernelab.dougong.core.dml.opr.DivideOperator;
+import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
+import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.maria.dml.MariaAllColumns;
 import org.kernelab.dougong.maria.dml.MariaColumn;
 import org.kernelab.dougong.maria.dml.MariaDelete;
@@ -19,6 +24,8 @@ import org.kernelab.dougong.maria.dml.cond.MariaLikeCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaMembershipCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaNullCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaRangeCondition;
+import org.kernelab.dougong.maria.dml.opr.MariaArithmeticOperator;
+import org.kernelab.dougong.maria.dml.opr.MariaJointOperator;
 import org.kernelab.dougong.semi.AbstractProvider;
 
 public class MariaProvider extends AbstractProvider
@@ -45,6 +52,11 @@ public class MariaProvider extends AbstractProvider
 		return new MariaDelete().provider(this);
 	}
 
+	public DivideOperator provideDivideOperator()
+	{
+		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
+	}
+
 	public MariaItems provideItems()
 	{
 		return (MariaItems) new MariaItems().provider(this);
@@ -55,6 +67,11 @@ public class MariaProvider extends AbstractProvider
 		return new MariaJoin();
 	}
 
+	public MariaJointOperator provideJointOperator()
+	{
+		return this.provideProvider(new MariaJointOperator());
+	}
+
 	public MariaLikeCondition provideLikeCondition()
 	{
 		return new MariaLikeCondition();
@@ -63,6 +80,16 @@ public class MariaProvider extends AbstractProvider
 	public MariaMembershipCondition provideMembershipCondition()
 	{
 		return new MariaMembershipCondition();
+	}
+
+	public MinusOperator provideMinusOperator()
+	{
+		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.MINUS));
+	}
+
+	public MultiplyOperator provideMultiplyOperator()
+	{
+		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.MULTIPLY));
 	}
 
 	public String provideNameText(String name)
@@ -127,6 +154,11 @@ public class MariaProvider extends AbstractProvider
 			}
 		}
 		return buffer;
+	}
+
+	public PlusOperator providePlusOperator()
+	{
+		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
 	public MariaRangeCondition provideRangeCondition()

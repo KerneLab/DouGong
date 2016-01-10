@@ -1,13 +1,10 @@
 package org.kernelab.dougong.core;
 
-import org.kernelab.dougong.core.dml.test.ComparisonTestable;
-import org.kernelab.dougong.core.dml.test.LikeTestable;
-import org.kernelab.dougong.core.dml.test.MembershipTestable;
-import org.kernelab.dougong.core.dml.test.NullTestable;
-import org.kernelab.dougong.core.dml.test.RangeTestable;
+import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
+import org.kernelab.dougong.core.dml.opr.JointOperable;
+import org.kernelab.dougong.core.dml.test.Testable;
 
-public interface Expression extends Text, ComparisonTestable, LikeTestable, MembershipTestable, NullTestable,
-		RangeTestable
+public interface Expression extends Text, Testable, ArithmeticOperable, JointOperable
 {
 	/**
 	 * Get the text of this object as an expression which could be computed and

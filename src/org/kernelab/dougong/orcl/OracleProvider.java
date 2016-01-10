@@ -2,10 +2,15 @@ package org.kernelab.dougong.orcl;
 
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Expression;
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.dml.Sortable;
+import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
+import org.kernelab.dougong.core.dml.opr.DivideOperator;
+import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
+import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.orcl.dml.OracleAllColumns;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
@@ -19,6 +24,8 @@ import org.kernelab.dougong.orcl.dml.cond.OracleLikeCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleMembershipCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleNullCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleRangeCondition;
+import org.kernelab.dougong.orcl.dml.opr.OracleArithmeticOperator;
+import org.kernelab.dougong.orcl.dml.opr.OracleJointOperator;
 import org.kernelab.dougong.semi.AbstractProvider;
 
 public class OracleProvider extends AbstractProvider
@@ -47,17 +54,27 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleDelete provideDelete()
 	{
-		return new OracleDelete().provider(this);
+		return this.provideProvider(new OracleDelete());
+	}
+
+	public DivideOperator provideDivideOperator()
+	{
+		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
 	public OracleItems provideItems()
 	{
-		return (OracleItems) new OracleItems().provider(this);
+		return this.provideProvider(new OracleItems());
 	}
 
 	public OracleJoin provideJoin()
 	{
 		return new OracleJoin();
+	}
+
+	public OracleJointOperator provideJointOperator()
+	{
+		return this.provideProvider(new OracleJointOperator());
 	}
 
 	public OracleLikeCondition provideLikeCondition()
@@ -68,6 +85,16 @@ public class OracleProvider extends AbstractProvider
 	public OracleMembershipCondition provideMembershipCondition()
 	{
 		return new OracleMembershipCondition();
+	}
+
+	public MinusOperator provideMinusOperator()
+	{
+		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MINUS));
+	}
+
+	public MultiplyOperator provideMultiplyOperator()
+	{
+		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MULTIPLY));
 	}
 
 	public String provideNameText(String name)
@@ -136,6 +163,11 @@ public class OracleProvider extends AbstractProvider
 		return buffer;
 	}
 
+	public PlusOperator providePlusOperator()
+	{
+		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.PLUS));
+	}
+
 	public OracleRangeCondition provideRangeCondition()
 	{
 		return new OracleRangeCondition();
@@ -143,7 +175,7 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleSelect provideSelect()
 	{
-		return new OracleSelect().provider(this);
+		return this.provideProvider(new OracleSelect());
 	}
 
 	public OracleStringItem provideStringItem(String item)
@@ -153,6 +185,6 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleUpdate provideUpdate()
 	{
-		return new OracleUpdate().provider(this);
+		return this.provideProvider(new OracleUpdate());
 	}
 }

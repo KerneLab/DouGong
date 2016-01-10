@@ -9,8 +9,9 @@ import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.dml.opr.Result;
 
-public abstract class AbstractAllColumns extends AbstractReplicable implements AllColumns
+public abstract class AbstractAllColumns implements AllColumns
 {
 	private View	view;
 
@@ -20,6 +21,11 @@ public abstract class AbstractAllColumns extends AbstractReplicable implements A
 	}
 
 	public RangeCondition between(Expression from, Expression to)
+	{
+		return null;
+	}
+
+	public Result divide(Expression operand)
 	{
 		return null;
 	}
@@ -54,6 +60,11 @@ public abstract class AbstractAllColumns extends AbstractReplicable implements A
 		return null;
 	}
 
+	public Result joint(Expression... operands)
+	{
+		return null;
+	}
+
 	public ComparisonCondition le(Expression expr)
 	{
 		return null;
@@ -65,6 +76,16 @@ public abstract class AbstractAllColumns extends AbstractReplicable implements A
 	}
 
 	public ComparisonCondition lt(Expression expr)
+	{
+		return null;
+	}
+
+	public Result minus(Expression operand)
+	{
+		return null;
+	}
+
+	public Result multiply(Expression operand)
 	{
 		return null;
 	}
@@ -85,6 +106,11 @@ public abstract class AbstractAllColumns extends AbstractReplicable implements A
 	}
 
 	public LikeCondition notLike(String pattern)
+	{
+		return null;
+	}
+
+	public Result plus(Expression operand)
 	{
 		return null;
 	}

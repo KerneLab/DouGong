@@ -2,13 +2,8 @@ package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.dml.Function;
-import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
-import org.kernelab.dougong.core.dml.cond.LikeCondition;
-import org.kernelab.dougong.core.dml.cond.MembershipCondition;
-import org.kernelab.dougong.core.dml.cond.NullCondition;
-import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractFunction extends AbstractItem implements Function
 {
@@ -84,30 +79,6 @@ public class AbstractFunction extends AbstractItem implements Function
 		return this;
 	}
 
-	@Override
-	protected ComparisonCondition provideComparisonCondition()
-	{
-		return provider().provideComparisonCondition();
-	}
-
-	@Override
-	protected LikeCondition provideLikeCondition()
-	{
-		return provider().provideLikeCondition();
-	}
-
-	@Override
-	protected MembershipCondition provideMembershipCondition()
-	{
-		return provider().provideMembershipCondition();
-	}
-
-	@Override
-	protected NullCondition provideNullCondition()
-	{
-		return provider().provideNullCondition();
-	}
-
 	public Provider provider()
 	{
 		return provider;
@@ -118,12 +89,6 @@ public class AbstractFunction extends AbstractItem implements Function
 		this.provider = provider;
 		this.initFunction();
 		return this;
-	}
-
-	@Override
-	protected RangeCondition provideRangeCondition()
-	{
-		return provider().provideRangeCondition();
 	}
 
 	@Override

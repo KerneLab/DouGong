@@ -3,8 +3,18 @@ package org.kernelab.dougong.semi.dml;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.dml.Items;
+import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
+import org.kernelab.dougong.core.dml.cond.LikeCondition;
+import org.kernelab.dougong.core.dml.cond.MembershipCondition;
+import org.kernelab.dougong.core.dml.cond.NullCondition;
+import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.dml.opr.DivideOperator;
+import org.kernelab.dougong.core.dml.opr.JointOperator;
+import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
+import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractItems extends AbstractExpression implements Items, Providable
 {
@@ -26,7 +36,61 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 		this.list = expr;
 		return this;
 	}
-	
+
+	@Override
+	protected ComparisonCondition provideComparisonCondition()
+	{
+		return provider().provideComparisonCondition();
+	}
+
+	@Override
+	protected DivideOperator provideDivideOperator()
+	{
+		return provider().provideDivideOperator();
+	}
+
+	@Override
+	protected JointOperator provideJointOperator()
+	{
+		return provider().provideJointOperator();
+	}
+
+	@Override
+	protected LikeCondition provideLikeCondition()
+	{
+		return provider().provideLikeCondition();
+	}
+
+	@Override
+	protected MembershipCondition provideMembershipCondition()
+	{
+		return provider().provideMembershipCondition();
+	}
+
+	@Override
+	protected MinusOperator provideMinusOperator()
+	{
+		return provider().provideMinusOperator();
+	}
+
+	@Override
+	protected MultiplyOperator provideMultiplyOperator()
+	{
+		return provider().provideMultiplyOperator();
+	}
+
+	@Override
+	protected NullCondition provideNullCondition()
+	{
+		return provider().provideNullCondition();
+	}
+
+	@Override
+	protected PlusOperator providePlusOperator()
+	{
+		return provider().providePlusOperator();
+	}
+
 	public Provider provider()
 	{
 		return provider;
@@ -36,6 +100,12 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 	{
 		this.provider = provider;
 		return this;
+	}
+
+	@Override
+	protected RangeCondition provideRangeCondition()
+	{
+		return provider().provideRangeCondition();
 	}
 
 	protected abstract AbstractItems replicate();

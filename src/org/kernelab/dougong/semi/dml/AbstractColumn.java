@@ -1,13 +1,9 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Utils;
+import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
-import org.kernelab.dougong.core.dml.cond.LikeCondition;
-import org.kernelab.dougong.core.dml.cond.MembershipCondition;
-import org.kernelab.dougong.core.dml.cond.NullCondition;
-import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractColumn extends AbstractItem implements Column
 {
@@ -90,34 +86,9 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 		return this;
 	}
 
-	@Override
-	protected ComparisonCondition provideComparisonCondition()
+	protected Provider provider()
 	{
-		return view().provider().provideComparisonCondition();
-	}
-
-	@Override
-	protected LikeCondition provideLikeCondition()
-	{
-		return view().provider().provideLikeCondition();
-	}
-
-	@Override
-	protected MembershipCondition provideMembershipCondition()
-	{
-		return view().provider().provideMembershipCondition();
-	}
-
-	@Override
-	protected NullCondition provideNullCondition()
-	{
-		return view().provider().provideNullCondition();
-	}
-
-	@Override
-	protected RangeCondition provideRangeCondition()
-	{
-		return view().provider().provideRangeCondition();
+		return view().provider();
 	}
 
 	protected abstract AbstractColumn replicate();
@@ -127,14 +98,14 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 		return toString(buffer);
 	}
 
-	public StringBuilder toStringSelected(StringBuilder buffer)
-	{
-		return Utils.outputAlias(this.view().provider(), this.toStringExpressed(buffer), this);
-	}
-
 	public StringBuilder toStringOrdered(StringBuilder buffer)
 	{
 		return this.view().provider().provideOutputOrder(toString(buffer), this);
+	}
+
+	public StringBuilder toStringSelected(StringBuilder buffer)
+	{
+		return Utils.outputAlias(this.view().provider(), this.toStringExpressed(buffer), this);
 	}
 
 	public AbstractColumn usingByJoin(boolean using)

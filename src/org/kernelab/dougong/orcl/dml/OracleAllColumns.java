@@ -10,12 +10,6 @@ public class OracleAllColumns extends AbstractAllColumns
 		super(view);
 	}
 
-	@Override
-	protected OracleAllColumns replicate()
-	{
-		return new OracleAllColumns(view());
-	}
-
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		if (this.view() != null)

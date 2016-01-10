@@ -10,12 +10,6 @@ public class MariaAllColumns extends AbstractAllColumns
 		super(view);
 	}
 
-	@Override
-	protected MariaAllColumns replicate()
-	{
-		return new MariaAllColumns(view());
-	}
-
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		if (this.view() != null)

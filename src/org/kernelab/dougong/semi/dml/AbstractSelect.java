@@ -9,7 +9,6 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Join;
@@ -21,6 +20,13 @@ import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.dml.opr.DivideOperator;
+import org.kernelab.dougong.core.dml.opr.JointOperator;
+import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
+import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractSelect extends AbstractFilterable implements Select
 {
@@ -83,6 +89,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		this.distinct = distinct;
 		return this;
+	}
+
+	public Result divide(Expression operand)
+	{
+		return this.provideDivideOperator().operate(this, operand);
 	}
 
 	public ComparisonCondition eq(Expression expr)
@@ -215,6 +226,20 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return joins;
 	}
 
+	public Result joint(Expression... operands)
+	{
+		Expression[] exprs = new Expression[1 + (operands == null ? 0 : operands.length)];
+
+		exprs[0] = this;
+
+		if (operands != null)
+		{
+			System.arraycopy(operands, 0, exprs, 1, operands.length);
+		}
+
+		return this.provideJointOperator().operate(exprs);
+	}
+
 	public ComparisonCondition le(Expression expr)
 	{
 		return this.provideComparisonCondition().le(this, expr);
@@ -244,10 +269,20 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideComparisonCondition().lt(this, expr);
 	}
 
+	public Result minus(Expression operand)
+	{
+		return this.provideMinusOperator().operate(this, operand);
+	}
+
 	public AbstractSelect minus(Select select)
 	{
 		setopr().add(new AbstractSetopr().setopr(Setopr.MINUS, select));
 		return this;
+	}
+
+	public Result multiply(Expression operand)
+	{
+		return this.provideMultiplyOperator().operate(this, operand);
 	}
 
 	public ComparisonCondition ne(Expression expr)
@@ -281,9 +316,24 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public Result plus(Expression operand)
+	{
+		return this.providePlusOperator().operate(this, operand);
+	}
+
 	protected ComparisonCondition provideComparisonCondition()
 	{
 		return this.provider().provideComparisonCondition();
+	}
+
+	protected DivideOperator provideDivideOperator()
+	{
+		return this.provider().provideDivideOperator();
+	}
+
+	protected JointOperator provideJointOperator()
+	{
+		return this.provider().provideJointOperator();
 	}
 
 	protected LikeCondition provideLikeCondition()
@@ -296,9 +346,24 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provider().provideMembershipCondition();
 	}
 
+	protected MinusOperator provideMinusOperator()
+	{
+		return this.provider().provideMinusOperator();
+	}
+
+	protected MultiplyOperator provideMultiplyOperator()
+	{
+		return this.provider().provideMultiplyOperator();
+	}
+
 	protected NullCondition provideNullCondition()
 	{
 		return this.provider().provideNullCondition();
+	}
+
+	protected PlusOperator providePlusOperator()
+	{
+		return this.provider().providePlusOperator();
 	}
 
 	@Override

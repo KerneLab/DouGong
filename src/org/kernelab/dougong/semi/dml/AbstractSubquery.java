@@ -2,7 +2,6 @@ package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.dml.AllColumns;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -11,6 +10,13 @@ import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.dml.opr.DivideOperator;
+import org.kernelab.dougong.core.dml.opr.JointOperator;
+import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
+import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractSubquery extends AbstractView implements Subquery
 {
@@ -65,6 +71,11 @@ public class AbstractSubquery extends AbstractView implements Subquery
 		return sq;
 	}
 
+	public Result divide(Expression operand)
+	{
+		return this.provideDivideOperator().operate(this, operand);
+	}
+
 	public ComparisonCondition eq(Expression expr)
 	{
 		return this.provideComparisonCondition().eq(this, expr);
@@ -95,6 +106,20 @@ public class AbstractSubquery extends AbstractView implements Subquery
 		return this.provideNullCondition().isNull(this);
 	}
 
+	public Result joint(Expression... operands)
+	{
+		Expression[] exprs = new Expression[1 + (operands == null ? 0 : operands.length)];
+
+		exprs[0] = this;
+
+		if (operands != null)
+		{
+			System.arraycopy(operands, 0, exprs, 1, operands.length);
+		}
+
+		return this.provideJointOperator().operate(exprs);
+	}
+
 	public ComparisonCondition le(Expression expr)
 	{
 		return this.provideComparisonCondition().le(this, expr);
@@ -108,6 +133,16 @@ public class AbstractSubquery extends AbstractView implements Subquery
 	public ComparisonCondition lt(Expression expr)
 	{
 		return this.provideComparisonCondition().lt(this, expr);
+	}
+
+	public Result minus(Expression operand)
+	{
+		return this.provideMinusOperator().operate(this, operand);
+	}
+
+	public Result multiply(Expression operand)
+	{
+		return this.provideMultiplyOperator().operate(this, operand);
 	}
 
 	public ComparisonCondition ne(Expression expr)
@@ -130,9 +165,24 @@ public class AbstractSubquery extends AbstractView implements Subquery
 		return (LikeCondition) this.provideLikeCondition().like(this, pattern).not();
 	}
 
+	public Result plus(Expression operand)
+	{
+		return this.providePlusOperator().operate(this, operand);
+	}
+
 	protected ComparisonCondition provideComparisonCondition()
 	{
 		return this.provider().provideComparisonCondition();
+	}
+
+	protected DivideOperator provideDivideOperator()
+	{
+		return this.provider().provideDivideOperator();
+	}
+
+	protected JointOperator provideJointOperator()
+	{
+		return this.provider().provideJointOperator();
 	}
 
 	protected LikeCondition provideLikeCondition()
@@ -145,9 +195,24 @@ public class AbstractSubquery extends AbstractView implements Subquery
 		return this.provider().provideMembershipCondition();
 	}
 
+	protected MinusOperator provideMinusOperator()
+	{
+		return this.provider().provideMinusOperator();
+	}
+
+	protected MultiplyOperator provideMultiplyOperator()
+	{
+		return this.provider().provideMultiplyOperator();
+	}
+
 	protected NullCondition provideNullCondition()
 	{
 		return this.provider().provideNullCondition();
+	}
+
+	protected PlusOperator providePlusOperator()
+	{
+		return this.provider().providePlusOperator();
 	}
 
 	protected RangeCondition provideRangeCondition()

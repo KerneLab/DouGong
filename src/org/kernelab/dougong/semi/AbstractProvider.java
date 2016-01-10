@@ -4,6 +4,7 @@ import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Alias;
 import org.kernelab.dougong.core.Member;
+import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.Function;
@@ -21,14 +22,11 @@ public abstract class AbstractProvider implements Provider
 		return Tools.notNullOrEmpty(alias) ? provideNameText(alias) : null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T extends Function> T provideFunction(Class<T> cls)
 	{
 		try
 		{
-			Function function = cls.newInstance();
-			function.provider(this);
-			return (T) function;
+			return this.provideProvider(cls.newInstance());
 		}
 		catch (Exception e)
 		{
@@ -94,7 +92,26 @@ public abstract class AbstractProvider implements Provider
 
 	public AbstractPrimitive providePrimitive()
 	{
-		return (AbstractPrimitive) new AbstractPrimitive().provider(this);
+		return this.provideProvider(new AbstractPrimitive());
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T extends Providable> T provideProvider(Providable providable)
+	{
+		if (providable != null)
+		{
+			providable.provider(this);
+		}
+		return (T) providable;
+	}
+
+	protected <T extends Object> T provideProvider(T object)
+	{
+		if (object instanceof Providable)
+		{
+			((Providable) object).provider(this);
+		}
+		return object;
 	}
 
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select)
@@ -103,8 +120,7 @@ public abstract class AbstractProvider implements Provider
 		{
 			T s = cls.newInstance();
 			s.select(select);
-			s.provider(this);
-			return s;
+			return this.provideProvider(s);
 		}
 		catch (Exception e)
 		{
@@ -120,8 +136,7 @@ public abstract class AbstractProvider implements Provider
 			T table = null;
 			try
 			{
-				table = cls.newInstance();
-				table.provider(this);
+				return this.provideProvider(cls.newInstance());
 			}
 			catch (InstantiationException e)
 			{

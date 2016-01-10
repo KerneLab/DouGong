@@ -17,6 +17,11 @@ import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.dml.opr.DivideOperator;
+import org.kernelab.dougong.core.dml.opr.JointOperator;
+import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
+import org.kernelab.dougong.core.dml.opr.PlusOperator;
 
 public interface Provider
 {
@@ -41,15 +46,23 @@ public interface Provider
 
 	public Delete provideDelete();
 
+	public DivideOperator provideDivideOperator();
+
 	public <T extends Function> T provideFunction(Class<T> cls);
 
 	public Items provideItems();
 
 	public Join provideJoin();
 
+	public JointOperator provideJointOperator();
+
 	public LikeCondition provideLikeCondition();
 
 	public MembershipCondition provideMembershipCondition();
+
+	public MinusOperator provideMinusOperator();
+
+	public MultiplyOperator provideMultiplyOperator();
 
 	/**
 	 * Get the name text.<br />
@@ -124,6 +137,8 @@ public interface Provider
 	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table);
 
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table);
+
+	public PlusOperator providePlusOperator();
 
 	public Primitive providePrimitive();
 
