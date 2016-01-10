@@ -1,7 +1,7 @@
 package org.kernelab.dougong.maria.dml.cond;
 
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
+import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.dml.cond.AbstractLogicalCondition;
 
 public class MariaLogicalCondition extends AbstractLogicalCondition

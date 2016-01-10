@@ -1,9 +1,16 @@
-package org.kernelab.dougong.core;
+package org.kernelab.dougong.core.util;
 
 import java.lang.reflect.Field;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
+import org.kernelab.dougong.core.Alias;
+import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.Member;
+import org.kernelab.dougong.core.Named;
+import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.Text;
+import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
 
@@ -162,7 +169,16 @@ public class Utils
 	{
 		if (obj instanceof Expression)
 		{
+			boolean isResult = obj instanceof Result;
+			if (isResult)
+			{
+				buf.append('(');
+			}
 			((Expression) obj).toStringExpressed(buf);
+			if (isResult)
+			{
+				buf.append(')');
+			}
 		}
 		else if (obj instanceof Text)
 		{

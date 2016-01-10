@@ -1,11 +1,12 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.SQL;
+import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.dml.StringItem;
+import org.kernelab.dougong.core.util.Utils;
 
-public abstract class AbstractStringItem extends AbstractItem implements StringItem
+public abstract class AbstractStringItem extends AbstractItem implements Providable, StringItem
 {
 	private Provider	provider;
 
@@ -39,7 +40,7 @@ public abstract class AbstractStringItem extends AbstractItem implements StringI
 		return item;
 	}
 
-	protected Provider provider()
+	public Provider provider()
 	{
 		return provider;
 	}

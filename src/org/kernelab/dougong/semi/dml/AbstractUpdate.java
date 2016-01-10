@@ -7,10 +7,10 @@ import org.kernelab.basis.Relation;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
-import org.kernelab.dougong.core.Utils;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Update;
+import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractUpdate extends AbstractFilterable implements Update
 {
