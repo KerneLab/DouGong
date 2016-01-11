@@ -1,24 +1,14 @@
 package org.kernelab.dougong.core;
 
-import java.util.Map;
-
-import org.kernelab.dougong.core.dml.AllColumns;
+import org.kernelab.dougong.core.dml.Deletable;
+import org.kernelab.dougong.core.dml.Updatable;
 
 /**
  * The interface which could be selected from or joined.
  */
-public interface View extends Text, Alias, Providable
+public interface View extends Text, Alias, Entity, Updatable, Deletable, Providable
 {
 	public View alias(String alias);
-
-	public AllColumns all();
-
-	/**
-	 * Return the <name, Column> map.
-	 * 
-	 * @return
-	 */
-	public Map<String, Column> columns();
 
 	/**
 	 * Get the text of this object as a view which could be selected from. Alias
