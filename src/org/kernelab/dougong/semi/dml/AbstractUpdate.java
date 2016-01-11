@@ -45,7 +45,7 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	protected void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(' ');
-		from().toStringViewed(buffer);
+		from().toStringUpdatable(buffer);
 	}
 
 	protected void textOfHead(StringBuilder buffer)
@@ -55,8 +55,6 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 
 	protected void textOfSets(StringBuilder buffer)
 	{
-		buffer.append(" SET");
-
 		boolean first = true;
 
 		for (Relation<Column, Expression> set : this.sets())
@@ -64,7 +62,7 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 			if (first)
 			{
 				first = false;
-				buffer.append(' ');
+				buffer.append(" SET ");
 			}
 			else
 			{

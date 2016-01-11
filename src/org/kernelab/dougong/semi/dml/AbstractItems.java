@@ -26,7 +26,7 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 	{
 	}
 
-	protected Expression[] list()
+	public Expression[] list()
 	{
 		return list;
 	}
@@ -133,7 +133,7 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 		return buffer;
 	}
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}

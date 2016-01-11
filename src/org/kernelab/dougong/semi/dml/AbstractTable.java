@@ -95,7 +95,22 @@ public abstract class AbstractTable extends AbstractView implements Table
 	{
 		return this.provider().provideOutputTableName(buffer, this);
 	}
-	
+
+	public StringBuilder toStringDeletable(StringBuilder buffer)
+	{
+		return this.toString(buffer);
+	}
+
+	public StringBuilder toStringInsertable(StringBuilder buffer)
+	{
+		return this.toString(buffer);
+	}
+
+	public StringBuilder toStringUpdatable(StringBuilder buffer)
+	{
+		return this.toString(buffer);
+	}
+
 	public StringBuilder toStringViewed(StringBuilder buffer)
 	{
 		return this.provider().provideOutputTableNameAliased(buffer, this);

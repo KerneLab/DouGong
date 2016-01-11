@@ -1,6 +1,8 @@
 package org.kernelab.dougong.core;
 
-public interface Table extends Named, View, Member
+import org.kernelab.dougong.core.dml.Insertable;
+
+public interface Table extends Named, View, Member, Insertable
 {
 	public Table alias(String alias);
 

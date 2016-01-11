@@ -236,9 +236,19 @@ public class AbstractSubquery extends AbstractView implements Subquery
 		return this.select().toString(buffer);
 	}
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringDeletable(StringBuilder buffer)
 	{
-		return this.select().toStringExpressed(buffer);
+		return this.select().toStringDeletable(buffer);
+	}
+
+	public StringBuilder toStringExpress(StringBuilder buffer)
+	{
+		return this.select().toStringExpress(buffer);
+	}
+
+	public StringBuilder toStringInsertable(StringBuilder buffer)
+	{
+		return this.select().toStringInsertable(buffer);
 	}
 
 	public StringBuilder toStringScoped(StringBuilder buffer)
@@ -248,7 +258,17 @@ public class AbstractSubquery extends AbstractView implements Subquery
 
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
-		return Utils.outputAlias(this.provider(), this.select().toStringExpressed(buffer), this);
+		return Utils.outputAlias(this.provider(), this.select().toStringExpress(buffer), this);
+	}
+
+	public StringBuilder toStringSource(StringBuilder buffer)
+	{
+		return this.select().toStringSource(buffer);
+	}
+
+	public StringBuilder toStringUpdatable(StringBuilder buffer)
+	{
+		return this.select().toStringUpdatable(buffer);
 	}
 
 	public StringBuilder toStringViewed(StringBuilder buffer)

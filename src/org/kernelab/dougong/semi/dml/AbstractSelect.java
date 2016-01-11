@@ -12,9 +12,9 @@ import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Join;
-import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
+import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -573,10 +573,28 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return buffer;
 	}
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringDeletable(StringBuilder buffer)
+	{
+		return toStringUpdatable(buffer);
+	}
+
+	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		buffer.append('(');
 		this.toStringScoped(buffer);
+		buffer.append(')');
+		return buffer;
+	}
+
+	public StringBuilder toStringInsertable(StringBuilder buffer)
+	{
+		buffer.append('(');
+		this.textOfHead(buffer);
+		this.textOfItems(buffer);
+		this.textOfFrom(buffer);
+		this.textOfWhere(buffer);
+		this.textOfGroup(buffer);
+		this.textOfHaving(buffer);
 		buffer.append(')');
 		return buffer;
 	}
@@ -596,7 +614,24 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
-		return Utils.outputAlias(this.provider(), this.toStringExpressed(buffer), this);
+		return Utils.outputAlias(this.provider(), this.toStringExpress(buffer), this);
+	}
+
+	public StringBuilder toStringSource(StringBuilder buffer)
+	{
+		return this.toString(buffer);
+	}
+
+	public StringBuilder toStringUpdatable(StringBuilder buffer)
+	{
+		buffer.append('(');
+		this.textOfHead(buffer);
+		this.textOfItems(buffer);
+		this.textOfFrom(buffer);
+		this.textOfWhere(buffer);
+		this.textOfOrder(buffer);
+		buffer.append(')');
+		return buffer;
 	}
 
 	public AbstractSelect union(Select select)

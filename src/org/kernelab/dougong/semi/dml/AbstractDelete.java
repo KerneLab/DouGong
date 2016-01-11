@@ -20,7 +20,14 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 		super.provider(provider);
 		return this;
 	}
-	
+
+	@Override
+	protected void textOfFrom(StringBuilder buffer)
+	{
+		buffer.append(" FROM ");
+		from().toStringDeletable(buffer);
+	}
+
 	protected void textOfHead(StringBuilder buffer)
 	{
 		buffer.append("DELETE");

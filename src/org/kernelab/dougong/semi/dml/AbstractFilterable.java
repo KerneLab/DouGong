@@ -15,9 +15,9 @@ public abstract class AbstractFilterable extends AbstractProvidable implements F
 		return from;
 	}
 
-	public AbstractFilterable from(View view)
+	public AbstractFilterable from(View from)
 	{
-		this.from = view;
+		this.from = from;
 		return this;
 	}
 

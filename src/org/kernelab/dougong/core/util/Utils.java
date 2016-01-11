@@ -174,7 +174,7 @@ public class Utils
 			{
 				buf.append('(');
 			}
-			((Expression) obj).toStringExpressed(buf);
+			((Expression) obj).toStringExpress(buf);
 			if (isResult)
 			{
 				buf.append(')');

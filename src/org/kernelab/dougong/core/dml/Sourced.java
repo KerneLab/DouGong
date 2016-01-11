@@ -5,17 +5,12 @@ import org.kernelab.dougong.core.View;
 public interface Sourced
 {
 	/**
-	 * Get the view to be filtered.
-	 * 
-	 * @return
+	 * Get the object to be filtered.
 	 */
 	public View from();
 
 	/**
-	 * Set the view to be filtered.
-	 * 
-	 * @param view
-	 * @return
+	 * Set the object to be filtered.
 	 */
-	public Sourced from(View view);
+	public Sourced from(View s);
 }

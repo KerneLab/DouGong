@@ -99,7 +99,7 @@ public abstract class AbstractJoin implements Join
 		if (columns != null)
 		{
 			Column column = null;
-
+			
 			for (Column col : columns)
 			{
 				if (col != null)
