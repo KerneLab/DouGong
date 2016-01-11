@@ -18,7 +18,7 @@ public class OracleNullCondition extends AbstractNullCondition
 		{
 			buffer.append('(');
 		}
-		this.expr.toStringExpressed(buffer);
+		this.expr.toStringExpress(buffer);
 		if (this.expr instanceof Items)
 		{
 			buffer.append(')');

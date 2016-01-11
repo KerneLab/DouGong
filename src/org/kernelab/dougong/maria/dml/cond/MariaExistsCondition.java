@@ -14,6 +14,6 @@ public class MariaExistsCondition extends AbstractExistsCondition
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		buffer.append("EXISTS ");
-		return this.select.toStringExpressed(buffer);
+		return this.select.toStringExpress(buffer);
 	}
 }

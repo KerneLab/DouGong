@@ -93,7 +93,7 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 
 	protected abstract AbstractColumn replicate();
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}
@@ -105,7 +105,7 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
-		return Utils.outputAlias(this.view().provider(), this.toStringExpressed(buffer), this);
+		return Utils.outputAlias(this.view().provider(), this.toStringExpress(buffer), this);
 	}
 
 	public AbstractColumn usingByJoin(boolean using)

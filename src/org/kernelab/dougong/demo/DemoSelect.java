@@ -27,7 +27,6 @@ public class DemoSelect
 						s.STAF_SALARY.multiply(SQL.expr("0.1")).as("tax") //
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
-				.orderBy(s.STAF_ID) //
-		;
+				.orderBy(s.STAF_ID);
 	}
 }

@@ -14,7 +14,7 @@ public interface Expression extends Text, Testable, ArithmeticOperable, JointOpe
 	 * @param buffer
 	 * @return The given buffer.
 	 */
-	public StringBuilder toStringExpressed(StringBuilder buffer);
+	public StringBuilder toStringExpress(StringBuilder buffer);
 
 	/**
 	 * Get the text of this object as a selected item which should followed by

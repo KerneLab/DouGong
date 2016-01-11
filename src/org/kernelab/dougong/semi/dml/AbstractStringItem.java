@@ -73,7 +73,7 @@ public abstract class AbstractStringItem extends AbstractItem implements Provida
 		return buffer.append(this.toString());
 	}
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}

@@ -9,13 +9,13 @@ public abstract class AbstractResult extends AbstractItem implements Result
 	@Override
 	protected abstract AbstractResult replicate();
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}
 
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
-		return Utils.outputAlias(this.provider(), this.toStringExpressed(buffer), this);
+		return Utils.outputAlias(this.provider(), this.toStringExpress(buffer), this);
 	}
 }

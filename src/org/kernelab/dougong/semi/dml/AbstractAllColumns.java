@@ -115,7 +115,7 @@ public abstract class AbstractAllColumns implements AllColumns
 		return null;
 	}
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}

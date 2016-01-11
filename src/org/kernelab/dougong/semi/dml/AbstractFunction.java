@@ -1,8 +1,8 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
-import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractFunction extends AbstractItem implements Function
@@ -118,7 +118,7 @@ public class AbstractFunction extends AbstractItem implements Function
 		return provider().provideOutputFunction(buffer, this);
 	}
 
-	public StringBuilder toStringExpressed(StringBuilder buffer)
+	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}

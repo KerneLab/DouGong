@@ -2,7 +2,6 @@ package org.kernelab.dougong.core;
 
 import org.kernelab.dougong.core.dml.AllColumns;
 import org.kernelab.dougong.core.dml.Delete;
-import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
@@ -151,23 +150,6 @@ public interface Provider
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select);
 
 	public <T extends Table> T provideTable(Class<T> cls);
-
-	// /**
-	// * Provide table name text may be including schema name but excluding the
-	// * alias name.
-	// *
-	// * @param table
-	// * @return
-	// */
-	// public String provideTableNameText(Table table);
-	//
-	// /**
-	// * Provide table name text including alias name.
-	// *
-	// * @param table
-	// * @return
-	// */
-	// public String provideTableNameTextAliased(Table table);
 
 	public Update provideUpdate();
 }

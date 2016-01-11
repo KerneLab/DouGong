@@ -12,7 +12,7 @@ public class OracleComparisonCondition extends AbstractComparisonCondition
 		{
 			buffer.append('(');
 		}
-		this.leftExpr.toStringExpressed(buffer);
+		this.leftExpr.toStringExpress(buffer);
 		if (this.leftExpr instanceof Items)
 		{
 			buffer.append(')');
@@ -28,7 +28,7 @@ public class OracleComparisonCondition extends AbstractComparisonCondition
 		{
 			buffer.append('(');
 		}
-		this.rightExpr.toStringExpressed(buffer);
+		this.rightExpr.toStringExpress(buffer);
 		if (this.rightExpr instanceof Items)
 		{
 			buffer.append(')');

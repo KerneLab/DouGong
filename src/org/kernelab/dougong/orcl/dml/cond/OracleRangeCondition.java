@@ -18,7 +18,7 @@ public class OracleRangeCondition extends AbstractRangeCondition
 		{
 			buffer.append('(');
 		}
-		this.expr.toStringExpressed(buffer);
+		this.expr.toStringExpress(buffer);
 		if (this.expr instanceof Items)
 		{
 			buffer.append(')');
@@ -32,7 +32,7 @@ public class OracleRangeCondition extends AbstractRangeCondition
 		{
 			buffer.append('(');
 		}
-		this.from.toStringExpressed(buffer);
+		this.from.toStringExpress(buffer);
 		if (this.from instanceof Items)
 		{
 			buffer.append(')');
@@ -42,7 +42,7 @@ public class OracleRangeCondition extends AbstractRangeCondition
 		{
 			buffer.append('(');
 		}
-		this.to.toStringExpressed(buffer);
+		this.to.toStringExpress(buffer);
 		if (this.to instanceof Items)
 		{
 			buffer.append(')');

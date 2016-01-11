@@ -2,8 +2,8 @@ package org.kernelab.dougong.orcl;
 
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.Function;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
