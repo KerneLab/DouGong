@@ -29,7 +29,7 @@ public abstract class AbstractFilterable extends AbstractProvidable implements F
 
 	protected void textOfWhere(StringBuilder buffer)
 	{
-		if (where() != null)
+		if (where() != null && !where.isEmpty())
 		{
 			buffer.append(" WHERE ");
 			where().toString(buffer);

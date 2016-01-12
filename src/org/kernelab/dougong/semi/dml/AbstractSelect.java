@@ -470,7 +470,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	protected void textOfHaving(StringBuilder buffer)
 	{
-		if (having() != null)
+		if (having() != null && !having().isEmpty())
 		{
 			buffer.append(" HAVING ");
 			having().toString(buffer);
