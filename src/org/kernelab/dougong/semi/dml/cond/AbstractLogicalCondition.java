@@ -10,9 +10,9 @@ public abstract class AbstractLogicalCondition implements LogicalCondition
 {
 	protected List<Object>	conds	= new LinkedList<Object>();
 
-	public AbstractLogicalCondition and(Condition cond)
+	public AbstractLogicalCondition and(boolean when, Condition cond)
 	{
-		if (cond != null)
+		if (when && cond != null)
 		{
 			if (!conds.isEmpty())
 			{
@@ -23,9 +23,19 @@ public abstract class AbstractLogicalCondition implements LogicalCondition
 		return this;
 	}
 
-	public AbstractLogicalCondition not(Condition cond)
+	public AbstractLogicalCondition and(Condition cond)
 	{
-		if (cond != null)
+		return and(true, cond);
+	}
+
+	public boolean isEmpty()
+	{
+		return conds.isEmpty();
+	}
+
+	public AbstractLogicalCondition not(boolean when, Condition cond)
+	{
+		if (when && cond != null)
 		{
 			conds.add(NOT);
 			conds.add(cond);
@@ -33,9 +43,14 @@ public abstract class AbstractLogicalCondition implements LogicalCondition
 		return this;
 	}
 
-	public AbstractLogicalCondition or(Condition cond)
+	public AbstractLogicalCondition not(Condition cond)
 	{
-		if (cond != null)
+		return not(true, cond);
+	}
+
+	public AbstractLogicalCondition or(boolean when, Condition cond)
+	{
+		if (when && cond != null)
 		{
 			if (!conds.isEmpty())
 			{
@@ -46,9 +61,14 @@ public abstract class AbstractLogicalCondition implements LogicalCondition
 		return this;
 	}
 
+	public AbstractLogicalCondition or(Condition cond)
+	{
+		return or(true, cond);
+	}
+
 	public AbstractLogicalCondition set(Condition cond)
 	{
 		conds.clear();
-		return this.and(cond);
+		return this.and(true, cond);
 	}
 }

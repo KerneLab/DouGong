@@ -2,7 +2,7 @@ package org.kernelab.dougong.core.dml.cond;
 
 import org.kernelab.dougong.core.dml.Condition;
 
-public interface LogicalCondition extends Condition
+public interface LogicalCondition extends ComposableCondition
 {
 	public static final String	AND	= "AND";
 
@@ -11,12 +11,13 @@ public interface LogicalCondition extends Condition
 	public static final String	OR	= "OR";
 
 	/**
-	 * Add a new condition to this LogicalCondition with AND relation.
+	 * Reset the LogicalCondition and set the initial condition with NOT logic.
 	 * 
+	 * @param when
 	 * @param cond
 	 * @return
 	 */
-	public LogicalCondition and(Condition cond);
+	public LogicalCondition not(boolean when, Condition cond);
 
 	/**
 	 * Reset the LogicalCondition and set the initial condition with NOT logic.
@@ -25,14 +26,6 @@ public interface LogicalCondition extends Condition
 	 * @return
 	 */
 	public LogicalCondition not(Condition cond);
-
-	/**
-	 * Add a new condition to this LogicalCondition with OR relation.
-	 * 
-	 * @param cond
-	 * @return
-	 */
-	public LogicalCondition or(Condition cond);
 
 	/**
 	 * Reset the LogicalCondition and set the initial condition.

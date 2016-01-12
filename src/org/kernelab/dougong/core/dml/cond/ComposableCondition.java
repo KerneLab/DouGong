@@ -4,7 +4,11 @@ import org.kernelab.dougong.core.dml.Condition;
 
 public interface ComposableCondition extends Condition
 {
-	public LogicalCondition and(Condition cond);
+	public ComposableCondition and(boolean when, Condition cond);
 
-	public LogicalCondition or(Condition cond);
+	public ComposableCondition and(Condition cond);
+
+	public ComposableCondition or(boolean when, Condition cond);
+
+	public ComposableCondition or(Condition cond);
 }

@@ -6,14 +6,43 @@ import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 
 public abstract class AbstractComposableCondition implements ComposableCondition
 {
-	public LogicalCondition and(Condition cond)
+	public boolean isEmpty()
 	{
-		return this.provideLogicalCondition().set(this).and(cond);
+		return false;
 	}
 
-	public LogicalCondition or(Condition cond)
+	public ComposableCondition and(boolean when, Condition cond)
 	{
-		return this.provideLogicalCondition().set(this).or(cond);
+		if (when)
+		{
+			return this.provideLogicalCondition().set(this).and(true, cond);
+		}
+		else
+		{
+			return this;
+		}
+	}
+
+	public ComposableCondition and(Condition cond)
+	{
+		return and(true, cond);
+	}
+
+	public ComposableCondition or(boolean when, Condition cond)
+	{
+		if (when)
+		{
+			return this.provideLogicalCondition().set(this).or(true, cond);
+		}
+		else
+		{
+			return this;
+		}
+	}
+
+	public ComposableCondition or(Condition cond)
+	{
+		return or(true, cond);
 	}
 
 	protected abstract LogicalCondition provideLogicalCondition();
