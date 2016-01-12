@@ -21,6 +21,7 @@ import org.kernelab.dougong.maria.dml.MariaStringItem;
 import org.kernelab.dougong.maria.dml.MariaUpdate;
 import org.kernelab.dougong.maria.dml.cond.MariaComparisonCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaLikeCondition;
+import org.kernelab.dougong.maria.dml.cond.MariaLogicalCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaMembershipCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaNullCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaRangeCondition;
@@ -75,6 +76,11 @@ public class MariaProvider extends AbstractProvider
 	public MariaLikeCondition provideLikeCondition()
 	{
 		return new MariaLikeCondition();
+	}
+
+	public MariaLogicalCondition provideLogicalCondition()
+	{
+		return new MariaLogicalCondition();
 	}
 
 	public MariaMembershipCondition provideMembershipCondition()

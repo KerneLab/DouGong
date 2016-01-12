@@ -21,6 +21,7 @@ import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
 import org.kernelab.dougong.orcl.dml.cond.OracleComparisonCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleLikeCondition;
+import org.kernelab.dougong.orcl.dml.cond.OracleLogicalCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleMembershipCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleNullCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleRangeCondition;
@@ -80,6 +81,11 @@ public class OracleProvider extends AbstractProvider
 	public OracleLikeCondition provideLikeCondition()
 	{
 		return new OracleLikeCondition();
+	}
+
+	public OracleLogicalCondition provideLogicalCondition()
+	{
+		return new OracleLogicalCondition();
 	}
 
 	public OracleMembershipCondition provideMembershipCondition()

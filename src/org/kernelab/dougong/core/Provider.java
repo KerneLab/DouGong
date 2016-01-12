@@ -13,6 +13,7 @@ import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
+import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
@@ -56,6 +57,8 @@ public interface Provider
 	public JointOperator provideJointOperator();
 
 	public LikeCondition provideLikeCondition();
+	
+	public LogicalCondition provideLogicalCondition();
 
 	public MembershipCondition provideMembershipCondition();
 
