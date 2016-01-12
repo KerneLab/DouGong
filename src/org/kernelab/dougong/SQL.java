@@ -6,12 +6,14 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllColumns;
+import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 
 public class SQL
 {
@@ -103,5 +105,48 @@ public class SQL
 	public <T extends Table> T table(Class<T> cls, String alias)
 	{
 		return provider().provideTable(cls).as(alias);
+	}
+
+	/**
+	 * To get an initial condition through various cases.<br />
+	 * The odd parameter should be boolean to indicate its following Condition
+	 * parameter should be the result Condition or not.<br />
+	 * If no condition was taken then the last parameter would be taken if it is
+	 * a Condition object and the total number of parameters is odd. Otherwise
+	 * an empty Condition would be returned.
+	 * 
+	 * @param conds
+	 * @return
+	 */
+	public ComposableCondition when(Object... conds)
+	{
+		if (conds != null)
+		{
+			int i = 0, l = conds.length - 1;
+
+			for (; i < l; i += 2)
+			{
+				if (conds[i] instanceof Boolean && conds[i + 1] instanceof Condition)
+				{
+					if ((Boolean) conds[i])
+					{
+						return provider().provideLogicalCondition().and((Condition) conds[i + 1]);
+					}
+				}
+			}
+
+			if (conds.length > 0 && i < conds.length && conds[l] instanceof Condition)
+			{
+				return provider().provideLogicalCondition().and((Condition) conds[l]);
+			}
+			else
+			{
+				return provider().provideLogicalCondition();
+			}
+		}
+		else
+		{
+			return null;
+		}
 	}
 }
