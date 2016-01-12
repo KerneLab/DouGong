@@ -4,4 +4,5 @@ import org.kernelab.dougong.core.Relation;
 
 public interface Condition extends Relation
 {
+	public boolean isEmpty();
 }
