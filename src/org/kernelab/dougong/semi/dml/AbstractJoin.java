@@ -1,6 +1,7 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Join;
@@ -99,12 +100,19 @@ public abstract class AbstractJoin implements Join
 		if (columns != null)
 		{
 			Column column = null;
-			
+
+			Entity entity = null;
+
+			if (view() instanceof Entity)
+			{
+				entity = (Entity) view();
+			}
+
 			for (Column col : columns)
 			{
-				if (col != null)
+				if (col != null && entity != null)
 				{
-					column = view().columns().get(col.name());
+					column = entity.columns().get(col.name());
 
 					if (column != null)
 					{
@@ -117,13 +125,15 @@ public abstract class AbstractJoin implements Join
 			{
 				former().using(columns);
 			}
-			else if (leading() != null)
+			else if (leading() != null && leading() instanceof Entity)
 			{
+				entity = (Entity) leading();
+
 				for (Column col : columns)
 				{
 					if (col != null)
 					{
-						column = leading().columns().get(col.name());
+						column = entity.columns().get(col.name());
 
 						if (column != null)
 						{

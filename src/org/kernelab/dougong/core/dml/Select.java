@@ -8,8 +8,8 @@ import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.View;
 
-public interface Select extends DML, Text, Alias, Item, Scope, Insertable, Updatable, Deletable, Source, Providable,
-		Filterable
+public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable, Updatable, Deletable, Source,
+		Providable, Filterable
 {
 	public Select select(Expression... exprs);
 
@@ -64,6 +64,21 @@ public interface Select extends DML, Text, Alias, Item, Scope, Insertable, Updat
 	// //////////////////////////////////////////////////////
 
 	public Select orderBy(Expression... exprs);
+
+	// //////////////////////////////////////////////////////
+
+	/**
+	 * Specify the limit condition including skip and rows parameter.
+	 * 
+	 * @param skip
+	 *            The skip rows number. Could be {@code null} if no row need to
+	 *            be skipped which is identical to {@code 0}.
+	 * @param rows
+	 *            The max number of rows would be returned. This parameter must
+	 *            NOT be {@code null}.
+	 * @return Select object.
+	 */
+	public Select limit(Expression skip, Expression rows);
 
 	// //////////////////////////////////////////////////////
 

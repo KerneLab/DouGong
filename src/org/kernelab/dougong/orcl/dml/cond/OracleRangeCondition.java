@@ -37,7 +37,7 @@ public class OracleRangeCondition extends AbstractRangeCondition
 		{
 			buffer.append(')');
 		}
-		buffer.append(" TO ");
+		buffer.append(" AND ");
 		if (this.to instanceof Items)
 		{
 			buffer.append('(');
