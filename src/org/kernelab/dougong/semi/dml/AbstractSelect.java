@@ -10,6 +10,7 @@ import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.dml.AllColumns;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Select;
@@ -57,6 +58,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		this.alias = alias;
 		return this;
+	}
+
+	public AllColumns all()
+	{
+		return this.provider().provideAllColumns(this);
 	}
 
 	public AbstractSelect as(String alias)
@@ -632,6 +638,14 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		this.textOfOrder(buffer);
 		buffer.append(')');
 		return buffer;
+	}
+
+	public StringBuilder toStringViewed(StringBuilder buffer)
+	{
+		buffer.append('(');
+		this.toString(buffer);
+		buffer.append(')');
+		return this.provider().provideOutputAlias(buffer, this);
 	}
 
 	public AbstractSelect union(Select select)
