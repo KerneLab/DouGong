@@ -21,4 +21,6 @@ public interface Join extends Relation
 	public Join on(Condition condition);
 
 	public Join using(Column... columns);
+
+	public View view();
 }
