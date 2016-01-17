@@ -4,14 +4,14 @@ public interface Alias extends Cloneable
 {
 	/**
 	 * Get the alias name.<br />
-	 * Could be null if not specified.
+	 * Could be null which means none alias specified.
 	 * 
 	 * @return
 	 */
 	public String alias();
 
 	/**
-	 * Set the alias name.
+	 * Specify the alias name.
 	 * 
 	 * @param alias
 	 * @return This object itself.

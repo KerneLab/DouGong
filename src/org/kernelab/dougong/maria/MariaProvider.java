@@ -11,7 +11,7 @@ import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.maria.dml.MariaAllColumns;
+import org.kernelab.dougong.maria.dml.MariaAllItems;
 import org.kernelab.dougong.maria.dml.MariaColumn;
 import org.kernelab.dougong.maria.dml.MariaDelete;
 import org.kernelab.dougong.maria.dml.MariaItems;
@@ -33,9 +33,9 @@ public class MariaProvider extends AbstractProvider
 {
 	public static final char	TEXT_BOUNDARY_CHAR	= '`';
 
-	public MariaAllColumns provideAllColumns(View view)
+	public MariaAllItems provideAllItems(View view)
 	{
-		return new MariaAllColumns(view);
+		return new MariaAllItems(view);
 	}
 
 	public MariaColumn provideColumn(View view, String name)

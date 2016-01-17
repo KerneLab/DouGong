@@ -3,7 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.AllColumns;
+import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -11,11 +11,11 @@ import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
 import org.kernelab.dougong.core.dml.opr.Result;
 
-public abstract class AbstractAllColumns implements AllColumns
+public abstract class AbstractAllItems implements AllItems
 {
 	private View	view;
 
-	public AbstractAllColumns(View view)
+	public AbstractAllItems(View view)
 	{
 		this.view = view;
 	}

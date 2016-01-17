@@ -2,7 +2,7 @@ package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
-import org.kernelab.dougong.core.dml.AllColumns;
+import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractTable extends AbstractView implements Table
@@ -23,9 +23,9 @@ public abstract class AbstractTable extends AbstractView implements Table
 		return this;
 	}
 
-	public AllColumns all()
+	public AllItems all()
 	{
-		return this.provider().provideAllColumns(this);
+		return this.provider().provideAllItems(this);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,6 +1,6 @@
 package org.kernelab.dougong.core;
 
-import org.kernelab.dougong.core.dml.AllColumns;
+import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
@@ -26,19 +26,18 @@ import org.kernelab.dougong.core.dml.opr.PlusOperator;
 public interface Provider
 {
 	/**
-	 * Provide label string of a alias name.
+	 * Provide label string of an alias name. The label string should including
+	 * the boundary characters.
 	 * 
-	 * @param name
 	 * @return The label string or null if the name was an illegal alias name.
 	 */
 	public String provideAliasLabel(String name);
 
 	/**
-	 * Provide an AllColumns object which stands for all columns of the View.
-	 * 
-	 * @return
+	 * Provide an AllItems object which stands for all items of the View. The
+	 * view could be null which means all items from all source views.
 	 */
-	public AllColumns provideAllColumns(View view);
+	public AllItems provideAllItems(View view);
 
 	public Column provideColumn(View view, String name);
 
@@ -57,7 +56,7 @@ public interface Provider
 	public JointOperator provideJointOperator();
 
 	public LikeCondition provideLikeCondition();
-	
+
 	public LogicalCondition provideLogicalCondition();
 
 	public MembershipCondition provideMembershipCondition();
@@ -70,7 +69,6 @@ public interface Provider
 	 * Get the name text.<br />
 	 * Usually the text might be surrounding with boundary characters.
 	 * 
-	 * @param buffer
 	 * @param name
 	 *            The name String without boundary characters.
 	 * @return The text or SQL.NULL if the name is null.
@@ -106,6 +104,18 @@ public interface Provider
 	 * @return The given buffer.
 	 */
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function);
+
+	/**
+	 * Output label string of an expression WITHOUT boundary characters.<br />
+	 * First, its alias name should be considered if specified.<br />
+	 * If it is a Column then the leading table alias must NOT appear.<br />
+	 * Otherwise, the whole expression itself would be the label string.
+	 * 
+	 * @param buffer
+	 * @param expr
+	 * @return The given buffer.
+	 */
+	public StringBuilder provideOutputLabel(StringBuilder buffer, Expression expr);
 
 	/**
 	 * Output the member text with the schema name, if given, to the buffer.

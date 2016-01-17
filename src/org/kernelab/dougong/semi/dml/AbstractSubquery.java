@@ -2,7 +2,7 @@ package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
-import org.kernelab.dougong.core.dml.AllColumns;
+import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
@@ -34,9 +34,9 @@ public class AbstractSubquery extends AbstractView implements Subquery
 		return this;
 	}
 
-	public AllColumns all()
+	public AllItems all()
 	{
-		return this.provider().provideAllColumns(this);
+		return this.provider().provideAllItems(this);
 	}
 
 	@SuppressWarnings("unchecked")

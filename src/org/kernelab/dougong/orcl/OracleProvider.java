@@ -11,7 +11,7 @@ import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.orcl.dml.OracleAllColumns;
+import org.kernelab.dougong.orcl.dml.OracleAllItems;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
 import org.kernelab.dougong.orcl.dml.OracleItems;
@@ -38,9 +38,9 @@ public class OracleProvider extends AbstractProvider
 		// SQL q = new SQL(new OracleProvider());
 	}
 
-	public OracleAllColumns provideAllColumns(View view)
+	public OracleAllItems provideAllItems(View view)
 	{
-		return new OracleAllColumns(view);
+		return new OracleAllItems(view);
 	}
 
 	public OracleColumn provideColumn(View view, String name)

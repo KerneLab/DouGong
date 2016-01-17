@@ -1,11 +1,11 @@
 package org.kernelab.dougong.orcl.dml;
 
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.semi.dml.AbstractAllColumns;
+import org.kernelab.dougong.semi.dml.AbstractAllItems;
 
-public class OracleAllColumns extends AbstractAllColumns
+public class OracleAllItems extends AbstractAllItems
 {
-	public OracleAllColumns(View view)
+	public OracleAllItems(View view)
 	{
 		super(view);
 	}

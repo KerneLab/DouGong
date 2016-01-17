@@ -1,11 +1,11 @@
 package org.kernelab.dougong.maria.dml;
 
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.semi.dml.AbstractAllColumns;
+import org.kernelab.dougong.semi.dml.AbstractAllItems;
 
-public class MariaAllColumns extends AbstractAllColumns
+public class MariaAllItems extends AbstractAllItems
 {
-	public MariaAllColumns(View view)
+	public MariaAllItems(View view)
 	{
 		super(view);
 	}

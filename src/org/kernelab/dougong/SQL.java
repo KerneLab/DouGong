@@ -5,7 +5,7 @@ import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.AllColumns;
+import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
@@ -26,9 +26,9 @@ public class SQL
 		this.provider = provider;
 	}
 
-	public AllColumns all()
+	public AllItems all()
 	{
-		return provider().provideAllColumns(null);
+		return provider().provideAllItems(null);
 	}
 
 	/**
