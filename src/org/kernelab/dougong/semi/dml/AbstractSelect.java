@@ -1,8 +1,10 @@
 package org.kernelab.dougong.semi.dml;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
@@ -10,8 +12,10 @@ import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.AllColumns;
+import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
@@ -35,7 +39,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private boolean					distinct	= false;
 
-	private Expression[]			items		= null;
+	private Expression[]			select		= null;
 
 	private List<View>				froms		= new ArrayList<View>();
 
@@ -49,6 +53,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private Expression[]			orderBy		= null;
 
+	private Map<String, Item>		items		= null;
+
 	public String alias()
 	{
 		return alias;
@@ -60,9 +66,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
-	public AllColumns all()
+	public AllItems all()
 	{
-		return this.provider().provideAllColumns(this);
+		return this.provider().provideAllItems(this);
 	}
 
 	public AbstractSelect as(String alias)
@@ -127,7 +133,10 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	@Override
 	public AbstractSelect from(View view)
 	{
-		froms().add(view);
+		if (view != null)
+		{
+			froms().add(view);
+		}
 		return this;
 	}
 
@@ -211,6 +220,64 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public NullCondition isNull()
 	{
 		return this.provideNullCondition().isNull(this);
+	}
+
+	public Map<String, Item> items()
+	{
+		if (items == null)
+		{
+			items = new LinkedHashMap<String, Item>();
+
+			if (select() != null)
+			{
+				StringBuilder buffer = new StringBuilder();
+
+				for (Expression expr : select())
+				{
+					if (expr instanceof AllItems)
+					{
+						// AllItems
+						AllItems all = (AllItems) expr;
+
+						if (all.view() == null)
+						{
+							for (View from : froms())
+							{
+								items.putAll(from.items());
+							}
+							for (Join join : joins())
+							{
+								items.putAll(join.view().items());
+							}
+						}
+						else
+						{
+							items.putAll(all.view().items());
+						}
+					}
+					else if (expr instanceof Items)
+					{
+						// Items list
+						if (((Items) expr).list() != null)
+						{
+							for (Expression exp : ((Items) expr).list())
+							{
+								String label = provider().provideOutputLabel(Tools.clearStringBuilder(buffer), exp)
+										.toString();
+								items.put(label, provider().provideStringItem(label));
+							}
+						}
+					}
+					else
+					{
+						// Single expression
+						String label = provider().provideOutputLabel(Tools.clearStringBuilder(buffer), expr).toString();
+						items.put(label, provider().provideStringItem(label));
+					}
+				}
+			}
+		}
+		return items;
 	}
 
 	public AbstractSelect join(View view, Column... using)
@@ -400,12 +467,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	protected Expression[] select()
 	{
-		return items;
+		return select;
 	}
 
 	public AbstractSelect select(Expression... exprs)
 	{
-		this.items = exprs;
+		this.select = exprs;
 		return this;
 	}
 
@@ -434,19 +501,16 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 		for (View fr : froms())
 		{
-			if (fr != null)
+			if (first)
 			{
-				if (first)
-				{
-					buffer.append(' ');
-					first = false;
-				}
-				else
-				{
-					buffer.append(',');
-				}
-				fr.toStringViewed(buffer);
+				buffer.append(' ');
+				first = false;
 			}
+			else
+			{
+				buffer.append(',');
+			}
+			fr.toStringViewed(buffer);
 		}
 	}
 
@@ -519,11 +583,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		for (Join join : joins())
 		{
-			if (join != null)
-			{
-				buffer.append(' ');
-				join.toString(buffer);
-			}
+			buffer.append(' ');
+			join.toString(buffer);
 		}
 	}
 

@@ -9,13 +9,14 @@ import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractView extends AbstractProvidable implements View
 {
 	private String				alias	= null;
 
-	private Map<String, Column>	columns	= new LinkedHashMap<String, Column>();
+	private Map<String, Item>	items	= new LinkedHashMap<String, Item>();
 
 	public AbstractView()
 	{
@@ -31,11 +32,6 @@ public abstract class AbstractView extends AbstractProvidable implements View
 	{
 		this.alias = Tools.notNullOrWhite(alias) ? alias : null;
 		return this;
-	}
-
-	public Map<String, Column> columns()
-	{
-		return columns;
 	}
 
 	protected void initColumns()
@@ -56,7 +52,7 @@ public abstract class AbstractView extends AbstractProvidable implements View
 				{
 					col = provider().provideColumn(this, Utils.getNameFromField(field));
 					field.set(this, col);
-					columns().put(col.name(), col);
+					items().put(col.name(), col);
 				}
 			}
 			catch (Exception e)
@@ -64,6 +60,11 @@ public abstract class AbstractView extends AbstractProvidable implements View
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public Map<String, Item> items()
+	{
+		return items;
 	}
 
 	@Override

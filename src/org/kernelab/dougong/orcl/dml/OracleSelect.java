@@ -1,5 +1,9 @@
 package org.kernelab.dougong.orcl.dml;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.Item;
@@ -19,7 +23,7 @@ public class OracleSelect extends AbstractSelect
 	{
 		String rn = "+DouGong-Limit*Orcl/RowNum|";
 		String col = '"' + rn + '"';
-		Item item = provider().provideStringItem("ROWNUM");
+		Item rownum = provider().provideStringItem("ROWNUM");
 
 		if (skip == null)
 		{
@@ -28,14 +32,23 @@ public class OracleSelect extends AbstractSelect
 
 		Select inner = this.as("t");
 
+		Set<String> items = inner.items().keySet();
+
+		List<Expression> list = new LinkedList<Expression>();
+
+		for (String item : items)
+		{
+			list.add(provider().provideStringItem(provider().provideAliasLabel(item)));
+		}
+
 		return provider().provideSelect() //
 				.from(provider().provideSelect() //
 						.from(inner) //
 						.select(inner.all(), //
-								item.as(rn)) //
-						.where(item.le(skip.plus(rows))) //
+								rownum.as(rn)) //
+						.where(rownum.le(skip.plus(rows))) //
 				) //
-				.select(provider().provideAllColumns(null)) //
+				.select(list.toArray(new Expression[list.size()])) //
 				.where(provider().provideStringItem(col).gt(skip));
 	}
 }

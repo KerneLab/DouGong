@@ -4,6 +4,7 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Join;
 
 public abstract class AbstractJoin implements Join
@@ -99,24 +100,17 @@ public abstract class AbstractJoin implements Join
 
 		if (columns != null)
 		{
-			Column column = null;
-
-			Entity entity = null;
-
-			if (view() instanceof Entity)
-			{
-				entity = (Entity) view();
-			}
+			Item item = null;
 
 			for (Column col : columns)
 			{
-				if (col != null && entity != null)
+				if (col != null)
 				{
-					column = entity.columns().get(col.name());
+					item = view().items().get(col.name());
 
-					if (column != null)
+					if (item != null)
 					{
-						column.usingByJoin(true);
+						((Column) item).usingByJoin(true);
 					}
 				}
 			}
@@ -127,17 +121,15 @@ public abstract class AbstractJoin implements Join
 			}
 			else if (leading() != null && leading() instanceof Entity)
 			{
-				entity = (Entity) leading();
-
 				for (Column col : columns)
 				{
 					if (col != null)
 					{
-						column = entity.columns().get(col.name());
+						item = leading().items().get(col.name());
 
-						if (column != null)
+						if (item instanceof Column)
 						{
-							column.usingByJoin(true);
+							((Column) item).usingByJoin(true);
 						}
 					}
 				}
@@ -147,7 +139,7 @@ public abstract class AbstractJoin implements Join
 		return this;
 	}
 
-	protected View view()
+	public View view()
 	{
 		return view;
 	}

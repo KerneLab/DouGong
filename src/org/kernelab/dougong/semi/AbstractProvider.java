@@ -3,6 +3,8 @@ package org.kernelab.dougong.semi;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Alias;
+import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Member;
 import org.kernelab.dougong.core.Providable;
@@ -51,6 +53,27 @@ public abstract class AbstractProvider implements Provider
 				buffer.append(label);
 			}
 		}
+		return buffer;
+	}
+
+	public StringBuilder provideOutputLabel(StringBuilder buffer, Expression expr)
+	{
+		if (expr instanceof Alias && ((Alias) expr).alias() != null)
+		{
+			buffer.append(((Alias) expr).alias());
+		}
+		else
+		{
+			if (expr instanceof Column)
+			{
+				buffer.append(((Column) expr).name());
+			}
+			else
+			{
+				expr.toStringExpress(buffer);
+			}
+		}
+
 		return buffer;
 	}
 
@@ -153,18 +176,4 @@ public abstract class AbstractProvider implements Provider
 			return null;
 		}
 	}
-
-	// public String provideTableNameText(Table table)
-	// {
-	// StringBuilder buffer = new StringBuilder(48);
-	// this.provideOutputMember(buffer, table);
-	// return buffer.toString();
-	// }
-	//
-	// public String provideTableNameTextAliased(Table table)
-	// {
-	// String alias = this.provideAliasLabel(table.alias());
-	// return this.provideTableNameText(table) + (alias != null ? " " + alias :
-	// "");
-	// }
 }
