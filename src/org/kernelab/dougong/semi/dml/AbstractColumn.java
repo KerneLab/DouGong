@@ -93,6 +93,12 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 
 	protected abstract AbstractColumn replicate();
 
+	@Override
+	public String toString()
+	{
+		return toString(new StringBuilder()).toString();
+	}
+
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);

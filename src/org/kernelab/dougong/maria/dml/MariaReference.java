@@ -1,19 +1,20 @@
 package org.kernelab.dougong.maria.dml;
 
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.semi.dml.AbstractColumn;
+import org.kernelab.dougong.semi.dml.AbstractReference;
 
-public class MariaColumn extends AbstractColumn
+public class MariaReference extends AbstractReference
 {
-	public MariaColumn(View view, String name)
+	public MariaReference(View view, Expression refer)
 	{
-		super(view, name);
+		super(view, refer);
 	}
 
 	@Override
-	protected MariaColumn replicate()
+	protected MariaReference replicate()
 	{
-		return new MariaColumn(view(), name());
+		return new MariaReference(view(), refer());
 	}
 
 	public StringBuilder toString(StringBuilder buffer)

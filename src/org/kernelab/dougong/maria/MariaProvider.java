@@ -16,6 +16,7 @@ import org.kernelab.dougong.maria.dml.MariaColumn;
 import org.kernelab.dougong.maria.dml.MariaDelete;
 import org.kernelab.dougong.maria.dml.MariaItems;
 import org.kernelab.dougong.maria.dml.MariaJoin;
+import org.kernelab.dougong.maria.dml.MariaReference;
 import org.kernelab.dougong.maria.dml.MariaSelect;
 import org.kernelab.dougong.maria.dml.MariaStringItem;
 import org.kernelab.dougong.maria.dml.MariaUpdate;
@@ -170,6 +171,11 @@ public class MariaProvider extends AbstractProvider
 	public MariaRangeCondition provideRangeCondition()
 	{
 		return new MariaRangeCondition();
+	}
+
+	public MariaReference provideReference(View view, Expression expr)
+	{
+		return new MariaReference(view, expr);
 	}
 
 	public MariaSelect provideSelect()

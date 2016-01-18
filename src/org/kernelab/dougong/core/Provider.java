@@ -6,6 +6,7 @@ import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Primitive;
+import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.StringItem;
@@ -106,18 +107,6 @@ public interface Provider
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function);
 
 	/**
-	 * Output label string of an expression WITHOUT boundary characters.<br />
-	 * First, its alias name should be considered if specified.<br />
-	 * If it is a Column then the leading table alias must NOT appear.<br />
-	 * Otherwise, the whole expression itself would be the label string.
-	 * 
-	 * @param buffer
-	 * @param expr
-	 * @return The given buffer.
-	 */
-	public StringBuilder provideOutputLabel(StringBuilder buffer, Expression expr);
-
-	/**
 	 * Output the member text with the schema name, if given, to the buffer.
 	 * 
 	 * @param buffer
@@ -155,6 +144,23 @@ public interface Provider
 	public Primitive providePrimitive();
 
 	public RangeCondition provideRangeCondition();
+
+	/**
+	 * Provide a Reference which refers to the given expression within the given
+	 * view.
+	 */
+	public Reference provideReference(View view, Expression expr);
+
+	/**
+	 * Get the reference string of an expression which is usually used by outer
+	 * query.<br />
+	 * First, its alias name should be considered if specified.<br />
+	 * If it is a Column then the leading table alias must NOT appear.<br />
+	 * Otherwise, the whole expression itself would be the refer string.<br />
+	 * Different from label, the reference string must NOT be surrounded with
+	 * boundary characters.
+	 */
+	public String provideReferString(Expression expr);
 
 	public Select provideSelect();
 

@@ -16,6 +16,7 @@ import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
 import org.kernelab.dougong.orcl.dml.OracleItems;
 import org.kernelab.dougong.orcl.dml.OracleJoin;
+import org.kernelab.dougong.orcl.dml.OracleReference;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
@@ -177,6 +178,11 @@ public class OracleProvider extends AbstractProvider
 	public OracleRangeCondition provideRangeCondition()
 	{
 		return new OracleRangeCondition();
+	}
+
+	public OracleReference provideReference(View view, Expression expr)
+	{
+		return new OracleReference(view, expr);
 	}
 
 	public OracleSelect provideSelect()

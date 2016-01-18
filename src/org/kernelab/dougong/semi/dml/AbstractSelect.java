@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
@@ -17,6 +18,7 @@ import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
+import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
 import org.kernelab.dougong.core.dml.Sortable;
@@ -230,8 +232,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 			if (select() != null)
 			{
-				StringBuilder buffer = new StringBuilder();
-
 				for (Expression expr : select())
 				{
 					if (expr instanceof AllItems)
@@ -243,16 +243,25 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 						{
 							for (View from : froms())
 							{
-								items.putAll(from.items());
+								for (Entry<String, Item> entry : from.items().entrySet())
+								{
+									items.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+								}
 							}
 							for (Join join : joins())
 							{
-								items.putAll(join.view().items());
+								for (Entry<String, Item> entry : join.view().items().entrySet())
+								{
+									items.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+								}
 							}
 						}
 						else
 						{
-							items.putAll(all.view().items());
+							for (Entry<String, Item> entry : all.view().items().entrySet())
+							{
+								items.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+							}
 						}
 					}
 					else if (expr instanceof Items)
@@ -260,19 +269,20 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 						// Items list
 						if (((Items) expr).list() != null)
 						{
+							Reference ref = null;
+
 							for (Expression exp : ((Items) expr).list())
 							{
-								String label = provider().provideOutputLabel(Tools.clearStringBuilder(buffer), exp)
-										.toString();
-								items.put(label, provider().provideStringItem(label));
+								ref = provider().provideReference(this, exp);
+								items.put(ref.name(), ref);
 							}
 						}
 					}
 					else
 					{
 						// Single expression
-						String label = provider().provideOutputLabel(Tools.clearStringBuilder(buffer), expr).toString();
-						items.put(label, provider().provideStringItem(label));
+						Reference ref = provider().provideReference(this, expr);
+						items.put(ref.name(), ref);
 					}
 				}
 			}

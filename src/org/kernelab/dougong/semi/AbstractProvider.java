@@ -56,27 +56,6 @@ public abstract class AbstractProvider implements Provider
 		return buffer;
 	}
 
-	public StringBuilder provideOutputLabel(StringBuilder buffer, Expression expr)
-	{
-		if (expr instanceof Alias && ((Alias) expr).alias() != null)
-		{
-			buffer.append(((Alias) expr).alias());
-		}
-		else
-		{
-			if (expr instanceof Column)
-			{
-				buffer.append(((Column) expr).name());
-			}
-			else
-			{
-				expr.toStringExpress(buffer);
-			}
-		}
-
-		return buffer;
-	}
-
 	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)
 	{
 		if (buffer != null)
@@ -135,6 +114,30 @@ public abstract class AbstractProvider implements Provider
 			((Providable) object).provider(this);
 		}
 		return object;
+	}
+
+	public String provideReferString(Expression expr)
+	{
+		String refer = null;
+
+		if (expr instanceof Alias)
+		{
+			refer = ((Alias) expr).alias();
+		}
+
+		if (refer == null)
+		{
+			if (expr instanceof Column)
+			{
+				refer = ((Column) expr).name();
+			}
+			else
+			{
+				refer = expr.toStringExpress(new StringBuilder()).toString();
+			}
+		}
+
+		return refer;
 	}
 
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select)

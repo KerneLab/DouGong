@@ -1,19 +1,20 @@
 package org.kernelab.dougong.orcl.dml;
 
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.semi.dml.AbstractColumn;
+import org.kernelab.dougong.semi.dml.AbstractReference;
 
-public class OracleColumn extends AbstractColumn
+public class OracleReference extends AbstractReference
 {
-	public OracleColumn(View view, String name)
+	public OracleReference(View view, Expression refer)
 	{
-		super(view, name);
+		super(view, refer);
 	}
 
 	@Override
-	protected OracleColumn replicate()
+	protected OracleReference replicate()
 	{
-		return new OracleColumn(view(), name());
+		return new OracleReference(view(), refer());
 	}
 
 	public StringBuilder toString(StringBuilder buffer)

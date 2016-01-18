@@ -2,7 +2,6 @@ package org.kernelab.dougong.orcl.dml;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
@@ -32,22 +31,20 @@ public class OracleSelect extends AbstractSelect
 
 		Select inner = this.as("t");
 
-		Set<String> items = inner.items().keySet();
+		Select semi = provider().provideSelect() //
+				.from(inner) //
+				.select(inner.all(), //
+						rownum.as(rn)) //
+				.where(rownum.le(skip.plus(rows))) //
+		;
 
 		List<Expression> list = new LinkedList<Expression>();
 
-		for (String item : items)
-		{
-			list.add(provider().provideStringItem(provider().provideAliasLabel(item)));
-		}
+		list.addAll(semi.items().values());
+		list.remove(list.size() - 1);
 
 		return provider().provideSelect() //
-				.from(provider().provideSelect() //
-						.from(inner) //
-						.select(inner.all(), //
-								rownum.as(rn)) //
-						.where(rownum.le(skip.plus(rows))) //
-				) //
+				.from(semi) //
 				.select(list.toArray(new Expression[list.size()])) //
 				.where(provider().provideStringItem(col).gt(skip));
 	}
