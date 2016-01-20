@@ -224,6 +224,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideNullCondition().isNull(this);
 	}
 
+	public Item item(String refer)
+	{
+		return items().get(refer);
+	}
+
 	public Map<String, Item> items()
 	{
 		if (items == null)

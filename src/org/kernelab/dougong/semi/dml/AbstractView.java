@@ -62,6 +62,11 @@ public abstract class AbstractView extends AbstractProvidable implements View
 		}
 	}
 
+	public Item item(String refer)
+	{
+		return items().get(refer);
+	}
+
 	public Map<String, Item> items()
 	{
 		return items;

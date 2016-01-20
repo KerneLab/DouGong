@@ -15,17 +15,26 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	public View alias(String alias);
 
 	/**
-	 * Get an AllItems object from this View which stand for all columns in
-	 * this View.
+	 * Get an AllItems object from this View which stand for all columns in this
+	 * View.
 	 * 
 	 * @return AllItems object from this View.
 	 */
 	public AllItems all();
 
 	/**
+	 * Get the Item associated with the given name in this View.
+	 * 
+	 * @param refer
+	 *            The reference name of the Item.
+	 * @return The item.
+	 */
+	public Item item(String refer);
+
+	/**
 	 * Return a <name, Item> map to describe the items could be selected from
-	 * this View. The key of map must be the label of the item which means alias
-	 * name if given, otherwise its name.
+	 * this View. The key of map must be the reference name of the item which
+	 * might be alias name or its own name.
 	 * 
 	 * @return The items map.
 	 */
