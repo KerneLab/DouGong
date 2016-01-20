@@ -152,15 +152,15 @@ public interface Provider
 	public Reference provideReference(View view, Expression expr);
 
 	/**
-	 * Get the reference string of an expression which is usually used by outer
+	 * Get the reference name of an expression which is usually used by outer
 	 * query.<br />
 	 * First, its alias name should be considered if specified.<br />
 	 * If it is a Column then the leading table alias must NOT appear.<br />
 	 * Otherwise, the whole expression itself would be the refer string.<br />
-	 * Different from label, the reference string must NOT be surrounded with
+	 * Different from label, the reference name must NOT be surrounded with
 	 * boundary characters.
 	 */
-	public String provideReferString(Expression expr);
+	public String provideReferName(Expression expr);
 
 	public Select provideSelect();
 

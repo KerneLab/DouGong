@@ -25,7 +25,7 @@ public abstract class AbstractReference extends AbstractColumn implements Refere
 	{
 		if (super.name() == null)
 		{
-			super.name(view().provider().provideReferString(this.refer()));
+			super.name(view().provider().provideReferName(this.refer()));
 		}
 		return super.name();
 	}

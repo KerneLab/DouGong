@@ -116,7 +116,7 @@ public abstract class AbstractProvider implements Provider
 		return object;
 	}
 
-	public String provideReferString(Expression expr)
+	public String provideReferName(Expression expr)
 	{
 		String refer = null;
 
