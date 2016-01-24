@@ -57,6 +57,10 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private Map<String, Item>		items		= null;
 
+	private Expression				skip		= null;
+
+	private Expression				rows		= null;
+
 	public String alias()
 	{
 		return alias;
@@ -352,6 +356,13 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideLikeCondition().like(this, pattern);
 	}
 
+	public AbstractSelect limit(Expression skip, Expression rows)
+	{
+		this.skip = skip;
+		this.rows = rows;
+		return this;
+	}
+
 	public ComparisonCondition lt(Expression expr)
 	{
 		return this.provideComparisonCondition().lt(this, expr);
@@ -407,6 +418,18 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public Result plus(Expression operand)
 	{
 		return this.providePlusOperator().operate(this, operand);
+	}
+
+	/**
+	 * Prepare a Select object for converting to text. Generally, this Select
+	 * would be returned directly. If the Select need to be wrapped, then a new
+	 * Select object should be returned.
+	 * 
+	 * @return The Select object which would be used to convert to text.
+	 */
+	protected AbstractSelect prepare()
+	{
+		return this;
 	}
 
 	protected ComparisonCondition provideComparisonCondition()
@@ -480,6 +503,15 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	/**
+	 * The expression which indicates the rows should be returned at most.<br />
+	 * Returns {@code null} which means not be specified.
+	 */
+	protected Expression rows()
+	{
+		return rows;
+	}
+
 	protected Expression[] select()
 	{
 		return select;
@@ -494,6 +526,15 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	protected List<AbstractSetopr> setopr()
 	{
 		return setopr;
+	}
+
+	/**
+	 * The expression which indicates the rows should be skipped in the result.<br />
+	 * Returns {@code null} which means not be specified.
+	 */
+	protected Expression skip()
+	{
+		return skip;
 	}
 
 	protected void textOfAbstractSetopr(StringBuilder buffer)
@@ -643,15 +684,16 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		this.textOfHead(buffer);
-		this.textOfItems(buffer);
-		this.textOfFrom(buffer);
-		this.textOfJoin(buffer);
-		this.textOfWhere(buffer);
-		this.textOfGroup(buffer);
-		this.textOfHaving(buffer);
-		this.textOfAbstractSetopr(buffer);
-		this.textOfOrder(buffer);
+		AbstractSelect select = prepare();
+		select.textOfHead(buffer);
+		select.textOfItems(buffer);
+		select.textOfFrom(buffer);
+		select.textOfJoin(buffer);
+		select.textOfWhere(buffer);
+		select.textOfGroup(buffer);
+		select.textOfHaving(buffer);
+		select.textOfAbstractSetopr(buffer);
+		select.textOfOrder(buffer);
 		return buffer;
 	}
 
@@ -670,27 +712,29 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public StringBuilder toStringInsertable(StringBuilder buffer)
 	{
+		AbstractSelect select = prepare();
 		buffer.append('(');
-		this.textOfHead(buffer);
-		this.textOfItems(buffer);
-		this.textOfFrom(buffer);
-		this.textOfWhere(buffer);
-		this.textOfGroup(buffer);
-		this.textOfHaving(buffer);
+		select.textOfHead(buffer);
+		select.textOfItems(buffer);
+		select.textOfFrom(buffer);
+		select.textOfWhere(buffer);
+		select.textOfGroup(buffer);
+		select.textOfHaving(buffer);
 		buffer.append(')');
 		return buffer;
 	}
 
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
-		this.textOfHead(buffer);
-		this.textOfItems(buffer);
-		this.textOfFrom(buffer);
-		this.textOfJoin(buffer);
-		this.textOfWhere(buffer);
-		this.textOfGroup(buffer);
-		this.textOfHaving(buffer);
-		this.textOfAbstractSetopr(buffer);
+		AbstractSelect select = prepare();
+		select.textOfHead(buffer);
+		select.textOfItems(buffer);
+		select.textOfFrom(buffer);
+		select.textOfJoin(buffer);
+		select.textOfWhere(buffer);
+		select.textOfGroup(buffer);
+		select.textOfHaving(buffer);
+		select.textOfAbstractSetopr(buffer);
 		return buffer;
 	}
 
@@ -706,12 +750,13 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public StringBuilder toStringUpdatable(StringBuilder buffer)
 	{
+		AbstractSelect select = prepare();
 		buffer.append('(');
-		this.textOfHead(buffer);
-		this.textOfItems(buffer);
-		this.textOfFrom(buffer);
-		this.textOfWhere(buffer);
-		this.textOfOrder(buffer);
+		select.textOfHead(buffer);
+		select.textOfItems(buffer);
+		select.textOfFrom(buffer);
+		select.textOfWhere(buffer);
+		select.textOfOrder(buffer);
 		buffer.append(')');
 		return buffer;
 	}

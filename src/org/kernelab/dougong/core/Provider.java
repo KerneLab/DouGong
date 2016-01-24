@@ -164,6 +164,9 @@ public interface Provider
 
 	public Select provideSelect();
 
+	/**
+	 * Provide a StringItem exactly according to the given expression.
+	 */
 	public StringItem provideStringItem(String expr);
 
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select);
