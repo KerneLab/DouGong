@@ -14,6 +14,8 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
+import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
+import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
 
 public class SQL
 {
@@ -29,6 +31,16 @@ public class SQL
 	public AllItems all()
 	{
 		return provider().provideAllItems(null);
+	}
+
+	public CaseDecideExpression cas()
+	{
+		return provider().provideCaseExpression();
+	}
+
+	public CaseSwitchExpression cas(Expression value)
+	{
+		return provider().provideCaseExpression(value);
 	}
 
 	/**
@@ -87,26 +99,6 @@ public class SQL
 		return provider().provideNullItem();
 	}
 
-	protected Provider provider()
-	{
-		return provider;
-	}
-
-	public <T extends Subquery> T subquery(Class<T> cls, Select select)
-	{
-		return provider().provideSubquery(cls, select);
-	}
-
-	public <T extends Table> T table(Class<T> cls)
-	{
-		return table(cls, null);
-	}
-
-	public <T extends Table> T table(Class<T> cls, String alias)
-	{
-		return provider().provideTable(cls).as(alias);
-	}
-
 	/**
 	 * To get an initial condition through various cases.<br />
 	 * The odd parameter should be boolean to indicate its following Condition
@@ -118,7 +110,7 @@ public class SQL
 	 * @param conds
 	 * @return
 	 */
-	public ComposableCondition when(Object... conds)
+	public ComposableCondition on(Object... conds)
 	{
 		if (conds != null)
 		{
@@ -148,5 +140,25 @@ public class SQL
 		{
 			return null;
 		}
+	}
+
+	protected Provider provider()
+	{
+		return provider;
+	}
+
+	public <T extends Subquery> T subquery(Class<T> cls, Select select)
+	{
+		return provider().provideSubquery(cls, select);
+	}
+
+	public <T extends Table> T table(Class<T> cls)
+	{
+		return table(cls, null);
+	}
+
+	public <T extends Table> T table(Class<T> cls, String alias)
+	{
+		return provider().provideTable(cls).as(alias);
 	}
 }

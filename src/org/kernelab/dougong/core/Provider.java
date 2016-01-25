@@ -18,6 +18,8 @@ import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
+import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
 import org.kernelab.dougong.core.dml.opr.JointOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
@@ -39,6 +41,10 @@ public interface Provider
 	 * view could be null which means all items from all source views.
 	 */
 	public AllItems provideAllItems(View view);
+
+	public CaseDecideExpression provideCaseExpression();
+
+	public CaseSwitchExpression provideCaseExpression(Expression value);
 
 	public Column provideColumn(View view, String name);
 

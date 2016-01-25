@@ -27,6 +27,8 @@ import org.kernelab.dougong.orcl.dml.cond.OracleMembershipCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleNullCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleRangeCondition;
 import org.kernelab.dougong.orcl.dml.opr.OracleArithmeticOperator;
+import org.kernelab.dougong.orcl.dml.opr.OracleCaseDecideExpression;
+import org.kernelab.dougong.orcl.dml.opr.OracleCaseSwitchExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleJointOperator;
 import org.kernelab.dougong.semi.AbstractProvider;
 
@@ -42,6 +44,16 @@ public class OracleProvider extends AbstractProvider
 	public OracleAllItems provideAllItems(View view)
 	{
 		return new OracleAllItems(view);
+	}
+
+	public OracleCaseDecideExpression provideCaseExpression()
+	{
+		return new OracleCaseDecideExpression(this);
+	}
+
+	public OracleCaseSwitchExpression provideCaseExpression(Expression value)
+	{
+		return (OracleCaseSwitchExpression) new OracleCaseSwitchExpression(this).caseValue(value);
 	}
 
 	public OracleColumn provideColumn(View view, String name)

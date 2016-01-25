@@ -27,6 +27,8 @@ import org.kernelab.dougong.maria.dml.cond.MariaMembershipCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaNullCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaRangeCondition;
 import org.kernelab.dougong.maria.dml.opr.MariaArithmeticOperator;
+import org.kernelab.dougong.maria.dml.opr.MariaCaseDecideExpression;
+import org.kernelab.dougong.maria.dml.opr.MariaCaseSwitchExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaJointOperator;
 import org.kernelab.dougong.semi.AbstractProvider;
 
@@ -37,6 +39,16 @@ public class MariaProvider extends AbstractProvider
 	public MariaAllItems provideAllItems(View view)
 	{
 		return new MariaAllItems(view);
+	}
+
+	public MariaCaseDecideExpression provideCaseExpression()
+	{
+		return new MariaCaseDecideExpression(this);
+	}
+
+	public MariaCaseSwitchExpression provideCaseExpression(Expression value)
+	{
+		return (MariaCaseSwitchExpression) new MariaCaseSwitchExpression(this).caseValue(value);
 	}
 
 	public MariaColumn provideColumn(View view, String name)
