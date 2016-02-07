@@ -11,6 +11,9 @@ import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class OracleSelect extends AbstractSelect
 {
+	protected static final String	ROWNUM_ALIAS	= "+Dou" + ((char) 31) + "Gong-Limit*Orcl/Row" + ((char) 30)
+															+ "Num|";
+
 	@Override
 	protected OracleSelect prepare()
 	{
@@ -18,15 +21,15 @@ public class OracleSelect extends AbstractSelect
 
 		if (rows != null)
 		{
-			String rn = "+DouGong-Limit*Orcl/RowNum|";
+			String rn = ROWNUM_ALIAS;
 			String col = '"' + rn + '"';
 			Item rownum = provider().provideStringItem("ROWNUM");
 
 			Expression skip = this.skip();
 
-			if (skip == null)
+			if (skip != null)
 			{
-				skip = provider().provideStringItem("0");
+				rows = rows.plus(skip);
 			}
 
 			Select inner = this.as("t");
@@ -34,20 +37,27 @@ public class OracleSelect extends AbstractSelect
 
 			Select semi = provider().provideSelect() //
 					.from(inner) //
-					.select(inner.all(), //
-							rownum.as(rn)) //
-					.where(rownum.le(skip.plus(rows))) //
-			;
+					.where(rownum.le(rows));
 
-			List<Expression> list = new LinkedList<Expression>();
+			if (skip == null)
+			{
+				return (OracleSelect) semi.select(inner.all());
+			}
+			else
+			{
+				semi.select(inner.all(), //
+						rownum.as(rn));
 
-			list.addAll(semi.items().values());
-			list.remove(list.size() - 1);
+				List<Expression> list = new LinkedList<Expression>();
 
-			return (OracleSelect) provider().provideSelect() //
-					.from(semi) //
-					.select(list.toArray(new Expression[list.size()])) //
-					.where(provider().provideStringItem(col).gt(skip));
+				list.addAll(semi.items().values());
+				list.remove(list.size() - 1);
+
+				return (OracleSelect) provider().provideSelect() //
+						.from(semi) //
+						.select(list.toArray(new Expression[list.size()])) //
+						.where(provider().provideStringItem(col).gt(skip));
+			}
 		}
 		else
 		{
