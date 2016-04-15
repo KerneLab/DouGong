@@ -1,7 +1,11 @@
 package org.kernelab.dougong.core.util;
 
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.kernelab.basis.JSON;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Alias;
@@ -11,11 +15,42 @@ import org.kernelab.dougong.core.Named;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.meta.MappingMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
 
 public class Utils
 {
+	public static Map<String, Field> getMappingFields(Class<?> cls, Map<String, Field> result)
+	{
+		if (cls != null)
+		{
+			if (result == null)
+			{
+				result = new LinkedHashMap<String, Field>();
+			}
+
+			result = getMappingFields(cls.getSuperclass(), result);
+
+			String name = null;
+
+			for (Field field : cls.getDeclaredFields())
+			{
+				name = field.getName();
+
+				if (field.isAnnotationPresent(MappingMeta.class))
+				{
+					result.put(name, field);
+				}
+				else if (result.containsKey(name))
+				{
+					result.remove(name);
+				}
+			}
+		}
+		return result;
+	}
+
 	public static String getNameFromClass(Class<?> cls)
 	{
 		if (cls != null)
@@ -146,6 +181,87 @@ public class Utils
 	public static void main(String[] args)
 	{
 		Tools.debug(Utils.class.getSimpleName());
+	}
+
+	public static <T> JSON mapObjectToJSON(T obj, JSON json)
+	{
+		if (obj != null)
+		{
+			if (json == null)
+			{
+				json = new JSON();
+			}
+
+			String target = null;
+
+			for (Field field : getMappingFields(obj.getClass(), null).values())
+			{
+				target = field.getAnnotation(MappingMeta.class).target();
+
+				if ("\0".equals(target))
+				{
+					target = field.getName();
+				}
+
+				if (Tools.notNullOrEmpty(target))
+				{
+					try
+					{
+						json.attr(target, Tools.access(obj, field));
+					}
+					catch (Exception e)
+					{
+					}
+				}
+			}
+		}
+		return json;
+	}
+
+	public static <T> T mapResultSetToObject(ResultSet rs, T obj)
+	{
+		if (rs != null && obj != null)
+		{
+			String[] sources = null;
+
+			out: for (Field field : getMappingFields(obj.getClass(), null).values())
+			{
+				sources = field.getAnnotation(MappingMeta.class).source();
+
+				if (sources.length == 0)
+				{
+					try
+					{
+						Tools.access(obj, field, rs.getObject(field.getName()));
+					}
+					catch (Exception e)
+					{
+					}
+				}
+				else
+				{
+					for (String source : sources)
+					{
+						if (Tools.notNullOrEmpty(source))
+						{
+							try
+							{
+								Tools.access(obj, field, rs.getObject(source));
+								continue out;
+							}
+							catch (Exception e)
+							{
+							}
+						}
+						else
+						{
+							continue out;
+						}
+					}
+				}
+			}
+		}
+		return obj;
 	}
 
 	/**
