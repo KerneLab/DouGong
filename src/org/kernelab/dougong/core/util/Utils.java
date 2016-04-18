@@ -1,9 +1,11 @@
 package org.kernelab.dougong.core.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.kernelab.basis.JSON;
 import org.kernelab.basis.Tools;
@@ -36,15 +38,18 @@ public class Utils
 
 			for (Field field : cls.getDeclaredFields())
 			{
-				name = field.getName();
+				if (!Modifier.isStatic(field.getModifiers()))
+				{
+					name = field.getName();
 
-				if (field.isAnnotationPresent(MappingMeta.class))
-				{
-					result.put(name, field);
-				}
-				else if (result.containsKey(name))
-				{
-					result.remove(name);
+					if (field.isAnnotationPresent(MappingMeta.class))
+					{
+						result.put(name, field);
+					}
+					else if (result.containsKey(name))
+					{
+						result.remove(name);
+					}
 				}
 			}
 		}
@@ -183,7 +188,7 @@ public class Utils
 		Tools.debug(Utils.class.getSimpleName());
 	}
 
-	public static <T> JSON mapObjectToJSON(T obj, JSON json)
+	public static <T> JSON mapObjectToJSON(T obj, JSON json, Map<String, Field> map)
 	{
 		if (obj != null)
 		{
@@ -192,25 +197,47 @@ public class Utils
 				json = new JSON();
 			}
 
-			String target = null;
-
-			for (Field field : getMappingFields(obj.getClass(), null).values())
+			if (map != null && !map.isEmpty())
 			{
-				target = field.getAnnotation(MappingMeta.class).target();
-
-				if ("\0".equals(target))
-				{
-					target = field.getName();
-				}
-
-				if (Tools.notNullOrEmpty(target))
+				for (Entry<String, Field> entry : map.entrySet())
 				{
 					try
 					{
-						json.attr(target, Tools.access(obj, field));
+						json.attr(entry.getKey(), Tools.access(obj, entry.getValue()));
 					}
 					catch (Exception e)
 					{
+					}
+				}
+			}
+			else
+			{
+				boolean cache = map != null;
+
+				String target = null;
+
+				for (Field field : getMappingFields(obj.getClass(), null).values())
+				{
+					target = field.getAnnotation(MappingMeta.class).target();
+
+					if ("\0".equals(target))
+					{
+						target = field.getName();
+					}
+
+					if (Tools.notNullOrEmpty(target))
+					{
+						try
+						{
+							json.attr(target, Tools.access(obj, field));
+							if (cache)
+							{
+								map.put(target, field);
+							}
+						}
+						catch (Exception e)
+						{
+						}
 					}
 				}
 			}
@@ -218,44 +245,70 @@ public class Utils
 		return json;
 	}
 
-	public static <T> T mapResultSetToObject(ResultSet rs, T obj)
+	public static <T> T mapResultSetToObject(ResultSet rs, T obj, Map<Field, String> map)
 	{
 		if (rs != null && obj != null)
 		{
-			String[] sources = null;
-
-			out: for (Field field : getMappingFields(obj.getClass(), null).values())
+			if (map != null && !map.isEmpty())
 			{
-				sources = field.getAnnotation(MappingMeta.class).source();
-
-				if (sources.length == 0)
+				for (Entry<Field, String> entry : map.entrySet())
 				{
 					try
 					{
-						Tools.access(obj, field, rs.getObject(field.getName()));
+						Tools.access(obj, entry.getKey(), rs.getObject(entry.getValue()));
 					}
 					catch (Exception e)
 					{
 					}
 				}
-				else
+			}
+			else
+			{
+				boolean cache = map != null;
+
+				String[] sources = null;
+
+				out: for (Field field : getMappingFields(obj.getClass(), null).values())
 				{
-					for (String source : sources)
+					sources = field.getAnnotation(MappingMeta.class).source();
+
+					if (sources.length == 0)
 					{
-						if (Tools.notNullOrEmpty(source))
+						try
 						{
-							try
+							Tools.access(obj, field, rs.getObject(field.getName()));
+							if (cache)
 							{
-								Tools.access(obj, field, rs.getObject(source));
-								continue out;
-							}
-							catch (Exception e)
-							{
+								map.put(field, field.getName());
 							}
 						}
-						else
+						catch (Exception e)
 						{
-							continue out;
+						}
+					}
+					else
+					{
+						for (String source : sources)
+						{
+							if (Tools.notNullOrEmpty(source))
+							{
+								try
+								{
+									Tools.access(obj, field, rs.getObject(source));
+									if (cache)
+									{
+										map.put(field, source);
+									}
+									continue out;
+								}
+								catch (Exception e)
+								{
+								}
+							}
+							else
+							{
+								continue out;
+							}
 						}
 					}
 				}
