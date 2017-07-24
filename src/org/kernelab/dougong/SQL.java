@@ -66,29 +66,6 @@ public class SQL
 		return (T) provider().provideFunction(cls).call(args);
 	}
 
-	/**
-	 * Make a StringItem <b>?</b> which represents a single item holder.
-	 * 
-	 * @return
-	 */
-	public StringItem item()
-	{
-		return expr("?");
-	}
-
-	/**
-	 * Make a StringItem <b>?key?</b> which represents a single item holder
-	 * according to the given key.
-	 * 
-	 * @param key
-	 *            The item name.
-	 * @return
-	 */
-	public StringItem item(String key)
-	{
-		return expr("?" + key + "?");
-	}
-
 	public Items list(Expression... exprs)
 	{
 		return provider().provideItems().list(exprs);
@@ -140,6 +117,29 @@ public class SQL
 		{
 			return null;
 		}
+	}
+
+	/**
+	 * Make a StringItem <b>?</b> which represents a single item holder.
+	 * 
+	 * @return
+	 */
+	public StringItem param()
+	{
+		return expr("?");
+	}
+
+	/**
+	 * Make a StringItem <b>?key?</b> which represents a single item holder
+	 * according to the given key.
+	 * 
+	 * @param key
+	 *            The item name.
+	 * @return
+	 */
+	public StringItem param(String key)
+	{
+		return expr("?" + key + "?");
 	}
 
 	public Provider provider()
