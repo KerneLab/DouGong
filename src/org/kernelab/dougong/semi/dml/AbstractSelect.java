@@ -537,7 +537,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return skip;
 	}
 
-	protected void textOfAbstractSetopr(StringBuilder buffer)
+	public void textOfAbstractSetopr(StringBuilder buffer)
 	{
 		for (AbstractSetopr opr : setopr())
 		{
@@ -549,7 +549,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	}
 
 	@Override
-	protected void textOfFrom(StringBuilder buffer)
+	public void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(" FROM");
 
@@ -570,7 +570,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
-	protected void textOfGroup(StringBuilder buffer)
+	public void textOfGroup(StringBuilder buffer)
 	{
 		if (groupBy() != null && groupBy().length > 0)
 		{
@@ -594,7 +594,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
-	protected void textOfHaving(StringBuilder buffer)
+	public void textOfHaving(StringBuilder buffer)
 	{
 		if (having() != null && !having().isEmpty())
 		{
@@ -603,7 +603,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
-	protected void textOfHead(StringBuilder buffer)
+	public void textOfHead(StringBuilder buffer)
 	{
 		buffer.append("SELECT");
 
@@ -613,7 +613,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
-	protected void textOfItems(StringBuilder buffer)
+	public void textOfItems(StringBuilder buffer)
 	{
 		boolean first = true;
 
@@ -635,7 +635,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
-	protected void textOfJoin(StringBuilder buffer)
+	public void textOfJoin(StringBuilder buffer)
 	{
 		for (Join join : joins())
 		{
@@ -644,7 +644,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
-	protected void textOfOrder(StringBuilder buffer)
+	public void textOfOrder(StringBuilder buffer)
 	{
 		if (orderBy() != null && orderBy().length > 0)
 		{

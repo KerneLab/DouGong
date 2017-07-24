@@ -16,6 +16,7 @@ import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
 import org.kernelab.dougong.orcl.dml.OracleItems;
 import org.kernelab.dougong.orcl.dml.OracleJoin;
+import org.kernelab.dougong.orcl.dml.OraclePriorExpression;
 import org.kernelab.dougong.orcl.dml.OracleReference;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
@@ -34,11 +35,16 @@ import org.kernelab.dougong.semi.AbstractProvider;
 
 public class OracleProvider extends AbstractProvider
 {
-	public static final char	TEXT_BOUNDARY_CHAR	= '"';
+	public static final char TEXT_BOUNDARY_CHAR = '"';
 
 	public static void main(String[] args)
 	{
 		// SQL q = new SQL(new OracleProvider());
+	}
+
+	public OraclePriorExpression prior(Expression expr)
+	{
+		return providePriorExpression(expr);
 	}
 
 	public OracleAllItems provideAllItems(View view)
@@ -185,6 +191,11 @@ public class OracleProvider extends AbstractProvider
 	public PlusOperator providePlusOperator()
 	{
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.PLUS));
+	}
+
+	public OraclePriorExpression providePriorExpression(Expression expr)
+	{
+		return new OraclePriorExpression(this, expr);
 	}
 
 	public OracleRangeCondition provideRangeCondition()

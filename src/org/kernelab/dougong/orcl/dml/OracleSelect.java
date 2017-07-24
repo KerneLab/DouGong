@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
@@ -12,7 +13,22 @@ import org.kernelab.dougong.semi.dml.AbstractSelect;
 public class OracleSelect extends AbstractSelect
 {
 	protected static final String	ROWNUM_ALIAS	= "+Dou" + ((char) 31) + "Gong-Limit*Orcl/Row" + ((char) 30)
-															+ "Num|";
+			+ "Num|";
+
+	private Condition				startWith;
+
+	private Condition				connectBy;
+
+	public Condition connectBy()
+	{
+		return connectBy;
+	}
+
+	public OracleSelect connectBy(Condition connectBy)
+	{
+		this.connectBy = connectBy;
+		return this;
+	}
 
 	@Override
 	protected OracleSelect prepare()
@@ -70,5 +86,66 @@ public class OracleSelect extends AbstractSelect
 	{
 		super.provider(provider);
 		return this;
+	}
+
+	public Condition startWith()
+	{
+		return startWith;
+	}
+
+	public OracleSelect startWith(Condition startWith)
+	{
+		this.startWith = startWith;
+		return this;
+	}
+
+	public void textOfConnectBy(StringBuilder buffer)
+	{
+		if (connectBy() != null)
+		{
+			if (startWith() != null)
+			{
+				buffer.append(" START WITH ");
+
+				startWith().toString(buffer);
+			}
+
+			buffer.append(" CONNECT BY ");
+
+			connectBy().toString(buffer);
+		}
+	}
+
+	@Override
+	public StringBuilder toString(StringBuilder buffer)
+	{
+		OracleSelect select = prepare();
+		select.textOfHead(buffer);
+		select.textOfItems(buffer);
+		select.textOfFrom(buffer);
+		select.textOfJoin(buffer);
+		select.textOfWhere(buffer);
+		select.textOfConnectBy(buffer);
+		select.textOfGroup(buffer);
+		select.textOfHaving(buffer);
+		select.textOfAbstractSetopr(buffer);
+		select.textOfOrder(buffer);
+		return buffer;
+	}
+
+	@Override
+	public StringBuilder toStringScoped(StringBuilder buffer)
+	{
+		OracleSelect select = prepare();
+		select.textOfHead(buffer);
+		select.textOfItems(buffer);
+		select.textOfFrom(buffer);
+		select.textOfJoin(buffer);
+		select.textOfWhere(buffer);
+		select.textOfConnectBy(buffer);
+		select.textOfGroup(buffer);
+		select.textOfHaving(buffer);
+		select.textOfAbstractSetopr(buffer);
+		return buffer;
 	}
 }

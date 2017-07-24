@@ -22,7 +22,7 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 	}
 
 	@Override
-	protected void textOfFrom(StringBuilder buffer)
+	public void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(" FROM ");
 		from().toStringDeletable(buffer);

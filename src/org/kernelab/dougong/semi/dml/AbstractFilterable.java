@@ -21,13 +21,13 @@ public abstract class AbstractFilterable extends AbstractProvidable implements F
 		return this;
 	}
 
-	protected void textOfFrom(StringBuilder buffer)
+	public void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(" FROM ");
 		from().toStringViewed(buffer);
 	}
 
-	protected void textOfWhere(StringBuilder buffer)
+	public void textOfWhere(StringBuilder buffer)
 	{
 		if (where() != null && !where.isEmpty())
 		{

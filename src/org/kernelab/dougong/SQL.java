@@ -142,7 +142,7 @@ public class SQL
 		}
 	}
 
-	protected Provider provider()
+	public Provider provider()
 	{
 		return provider;
 	}

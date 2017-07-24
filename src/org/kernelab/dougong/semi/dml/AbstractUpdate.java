@@ -14,7 +14,7 @@ import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractUpdate extends AbstractFilterable implements Update
 {
-	private List<Relation<Column, Expression>>	sets	= new LinkedList<Relation<Column, Expression>>();
+	private List<Relation<Column, Expression>> sets = new LinkedList<Relation<Column, Expression>>();
 
 	@Override
 	public AbstractUpdate from(View view)
@@ -42,7 +42,7 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	}
 
 	@Override
-	protected void textOfFrom(StringBuilder buffer)
+	public void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(' ');
 		from().toStringUpdatable(buffer);
