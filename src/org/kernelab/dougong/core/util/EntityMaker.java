@@ -95,7 +95,7 @@ public class EntityMaker
 
 	public File file()
 	{
-		return new File(Tools.getFolderPath(Tools.getFullPath(base())) //
+		return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
 				+ pkg().replace('.', File.separatorChar) //
 				+ File.separatorChar + name() + ".java");
 	}
@@ -166,7 +166,7 @@ public class EntityMaker
 
 		String column = null;
 
-		for (int i = 1; i < columns; i++)
+		for (int i = 1; i <= columns; i++)
 		{
 			column = meta().getColumnLabel(i);
 			if (first)
