@@ -14,6 +14,7 @@ import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.orcl.dml.OracleAllItems;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
+import org.kernelab.dougong.orcl.dml.OracleInsert;
 import org.kernelab.dougong.orcl.dml.OracleItems;
 import org.kernelab.dougong.orcl.dml.OracleJoin;
 import org.kernelab.dougong.orcl.dml.OraclePriorExpression;
@@ -80,6 +81,11 @@ public class OracleProvider extends AbstractProvider
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
+	}
+
+	public OracleInsert provideInsert()
+	{
+		return this.provideProvider(new OracleInsert());
 	}
 
 	public OracleItems provideItems()

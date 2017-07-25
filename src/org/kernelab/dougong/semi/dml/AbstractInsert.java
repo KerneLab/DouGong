@@ -24,7 +24,7 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 		return this;
 	}
 
-	protected void textOfColumns(StringBuilder buffer)
+	public void textOfColumns(StringBuilder buffer)
 	{
 		if (columns != null)
 		{
@@ -49,26 +49,27 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 		}
 	}
 
-	protected void textOfHead(StringBuilder buffer)
+	public void textOfHead(StringBuilder buffer)
 	{
 		buffer.append("INSERT INTO");
 	}
 
-	protected void textOfSource(StringBuilder buffer)
+	public void textOfSource(StringBuilder buffer)
 	{
 		if (source != null)
 		{
+			buffer.append(' ');
 			source.toStringSource(buffer);
 		}
 	}
 
-	protected void textOfTarget(StringBuilder buffer)
+	public void textOfTarget(StringBuilder buffer)
 	{
 		buffer.append(' ');
 		target.toStringInsertable(buffer);
 	}
 
-	protected void textOfValues(StringBuilder buffer)
+	public void textOfValues(StringBuilder buffer)
 	{
 		if (values != null)
 		{

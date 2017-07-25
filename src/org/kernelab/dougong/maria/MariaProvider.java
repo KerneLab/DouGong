@@ -14,6 +14,7 @@ import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.maria.dml.MariaAllItems;
 import org.kernelab.dougong.maria.dml.MariaColumn;
 import org.kernelab.dougong.maria.dml.MariaDelete;
+import org.kernelab.dougong.maria.dml.MariaInsert;
 import org.kernelab.dougong.maria.dml.MariaItems;
 import org.kernelab.dougong.maria.dml.MariaJoin;
 import org.kernelab.dougong.maria.dml.MariaReference;
@@ -34,7 +35,7 @@ import org.kernelab.dougong.semi.AbstractProvider;
 
 public class MariaProvider extends AbstractProvider
 {
-	public static final char	TEXT_BOUNDARY_CHAR	= '`';
+	public static final char TEXT_BOUNDARY_CHAR = '`';
 
 	public MariaAllItems provideAllItems(View view)
 	{
@@ -69,6 +70,11 @@ public class MariaProvider extends AbstractProvider
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
+	}
+
+	public MariaInsert provideInsert()
+	{
+		return new MariaInsert().provider(this);
 	}
 
 	public MariaItems provideItems()

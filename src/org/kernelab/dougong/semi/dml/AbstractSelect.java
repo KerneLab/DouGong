@@ -15,6 +15,8 @@ import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
@@ -101,6 +103,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	protected boolean distinct()
 	{
 		return distinct;
+	}
+
+	public <T extends Insertable> Insert insert(T target, Column... columns)
+	{
+		return this.provider().provideInsert().into(target, columns).values(this);
 	}
 
 	public AbstractSelect distinct(boolean distinct)
@@ -529,7 +536,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	}
 
 	/**
-	 * The expression which indicates the rows should be skipped in the result.<br />
+	 * The expression which indicates the rows should be skipped in the result.
+	 * <br />
 	 * Returns {@code null} which means not be specified.
 	 */
 	protected Expression skip()

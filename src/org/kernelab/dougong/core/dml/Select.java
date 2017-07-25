@@ -8,8 +8,8 @@ import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.View;
 
-public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable, Updatable, Deletable, Source,
-		Providable, Filterable
+public interface Select
+		extends DML, Text, Alias, Item, View, Scope, Insertable, Updatable, Deletable, Source, Providable, Filterable
 {
 	public Select select(Expression... exprs);
 
@@ -64,6 +64,10 @@ public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable,
 	// //////////////////////////////////////////////////////
 
 	public Select orderBy(Expression... exprs);
+
+	// //////////////////////////////////////////////////////
+
+	public <T extends Insertable> Insert insert(T target, Column... column);
 
 	// //////////////////////////////////////////////////////
 

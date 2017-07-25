@@ -1,5 +1,6 @@
 package org.kernelab.dougong;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
@@ -7,6 +8,8 @@ import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Primitive;
@@ -33,12 +36,12 @@ public class SQL
 		return provider().provideAllItems(null);
 	}
 
-	public CaseDecideExpression cas()
+	public CaseDecideExpression Case()
 	{
 		return provider().provideCaseExpression();
 	}
 
-	public CaseSwitchExpression cas(Expression value)
+	public CaseSwitchExpression Case(Expression value)
 	{
 		return provider().provideCaseExpression(value);
 	}
@@ -64,6 +67,11 @@ public class SQL
 	public <T extends Function> T function(Class<T> cls, Expression... args)
 	{
 		return (T) provider().provideFunction(cls).call(args);
+	}
+
+	public <T extends Insertable> Insert insert(T target, Column... columns)
+	{
+		return provider().provideInsert().into(target, columns);
 	}
 
 	public Items list(Expression... exprs)

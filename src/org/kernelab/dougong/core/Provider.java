@@ -2,6 +2,7 @@ package org.kernelab.dougong.core;
 
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Delete;
+import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
@@ -55,6 +56,8 @@ public interface Provider
 	public DivideOperator provideDivideOperator();
 
 	public <T extends Function> T provideFunction(Class<T> cls);
+
+	public Insert provideInsert();
 
 	public Items provideItems();
 
