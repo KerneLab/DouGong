@@ -48,12 +48,12 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 		from().toStringUpdatable(buffer);
 	}
 
-	protected void textOfHead(StringBuilder buffer)
+	public void textOfHead(StringBuilder buffer)
 	{
 		buffer.append("UPDATE");
 	}
 
-	protected void textOfSets(StringBuilder buffer)
+	public void textOfSets(StringBuilder buffer)
 	{
 		boolean first = true;
 
@@ -72,6 +72,12 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 			buffer.append('=');
 			Utils.outputExpr(buffer, set.getValue());
 		}
+	}
+
+	@Override
+	public String toString()
+	{
+		return toString(new StringBuilder()).toString();
 	}
 
 	public StringBuilder toString(StringBuilder buffer)

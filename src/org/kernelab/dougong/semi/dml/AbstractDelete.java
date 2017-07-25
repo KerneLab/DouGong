@@ -28,9 +28,15 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 		from().toStringDeletable(buffer);
 	}
 
-	protected void textOfHead(StringBuilder buffer)
+	public void textOfHead(StringBuilder buffer)
 	{
 		buffer.append("DELETE");
+	}
+
+	@Override
+	public String toString()
+	{
+		return toString(new StringBuilder()).toString();
 	}
 
 	public StringBuilder toString(StringBuilder buffer)

@@ -94,6 +94,12 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 		}
 	}
 
+	@Override
+	public String toString()
+	{
+		return toString(new StringBuilder()).toString();
+	}
+
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
