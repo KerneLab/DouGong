@@ -42,7 +42,7 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 				{
 					buffer.append(',');
 				}
-				buffer.append(column.name());
+				Utils.outputExpr(buffer, column);
 			}
 
 			buffer.append(')');
