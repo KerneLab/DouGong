@@ -21,7 +21,7 @@ public class AbstractSetopr implements Setopr
 		buffer.append(' ');
 		buffer.append(OPRS[type]);
 		buffer.append(' ');
-		select.toString(buffer);
+		select.toStringScoped(buffer);
 		return buffer;
 	}
 }
