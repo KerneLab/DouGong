@@ -155,6 +155,19 @@ public class SQL
 		return provider;
 	}
 
+	/**
+	 * Make a StringItem <b>"key"</b> which refer to a single item according to
+	 * the given key.
+	 * 
+	 * @param key
+	 *            The reference name.
+	 * @return
+	 */
+	public StringItem ref(String key)
+	{
+		return expr(provider().provideAliasLabel(key));
+	}
+
 	public <T extends Subquery> T subquery(Class<T> cls, Select select)
 	{
 		return provider().provideSubquery(cls, select);
