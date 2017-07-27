@@ -1,13 +1,15 @@
-package org.kernelab.dougong.demo;
+package org.kernelab.dougong.test;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.demo.DEPT;
+import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
 import org.kernelab.dougong.semi.dml.AbstractWindowFunction;
 
-public class DemoOracle
+public class TestOracle
 {
 	public static class SUM extends AbstractWindowFunction
 	{
