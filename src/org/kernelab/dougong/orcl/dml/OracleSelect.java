@@ -19,6 +19,8 @@ public class OracleSelect extends AbstractSelect
 
 	private Condition				connectBy;
 
+	private boolean					nocycle;
+
 	public Condition connectBy()
 	{
 		return connectBy;
@@ -27,6 +29,17 @@ public class OracleSelect extends AbstractSelect
 	public OracleSelect connectBy(Condition connectBy)
 	{
 		this.connectBy = connectBy;
+		return this;
+	}
+
+	public boolean nocycle()
+	{
+		return nocycle;
+	}
+
+	public OracleSelect nocycle(boolean nocycle)
+	{
+		this.nocycle = nocycle;
 		return this;
 	}
 
@@ -111,6 +124,11 @@ public class OracleSelect extends AbstractSelect
 			}
 
 			buffer.append(" CONNECT BY ");
+
+			if (nocycle())
+			{
+				buffer.append("NOCYCLE ");
+			}
 
 			connectBy().toString(buffer);
 		}
