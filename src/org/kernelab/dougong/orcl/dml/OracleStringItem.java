@@ -7,7 +7,6 @@ public class OracleStringItem extends AbstractStringItem
 {
 	public OracleStringItem(Provider provider)
 	{
-		super();
-		super.provider(provider);
+		super(provider);
 	}
 }

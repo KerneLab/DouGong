@@ -14,6 +14,12 @@ public abstract class AbstractStringItem extends AbstractItem implements Provida
 
 	private boolean		order;
 
+	public AbstractStringItem(Provider provider)
+	{
+		this.provider(provider);
+		this.order = true;
+	}
+
 	public AbstractStringItem ascend()
 	{
 		return ascend(true);

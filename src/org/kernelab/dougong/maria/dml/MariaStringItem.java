@@ -12,8 +12,7 @@ public class MariaStringItem extends AbstractStringItem
 {
 	public MariaStringItem(Provider provider)
 	{
-		super();
-		super.provider(provider);
+		super(provider);
 	}
 
 	@Override
