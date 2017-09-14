@@ -13,7 +13,7 @@ import org.kernelab.dougong.core.dml.opr.Result;
 
 public abstract class AbstractAllItems implements AllItems
 {
-	private View	view;
+	private View view;
 
 	public AbstractAllItems(View view)
 	{

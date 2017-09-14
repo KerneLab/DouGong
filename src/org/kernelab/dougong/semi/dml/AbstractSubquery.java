@@ -20,7 +20,7 @@ import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractSubquery extends AbstractView implements Subquery
 {
-	private Select	select;
+	private Select select;
 
 	public AbstractSubquery()
 	{

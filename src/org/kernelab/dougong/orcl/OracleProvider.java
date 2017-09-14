@@ -20,6 +20,7 @@ import org.kernelab.dougong.orcl.dml.OracleJoin;
 import org.kernelab.dougong.orcl.dml.OraclePriorExpression;
 import org.kernelab.dougong.orcl.dml.OracleReference;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
+import org.kernelab.dougong.orcl.dml.OracleSortable;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
 import org.kernelab.dougong.orcl.dml.cond.OracleComparisonCondition;
@@ -190,6 +191,22 @@ public class OracleProvider extends AbstractProvider
 			{
 				buffer.append("DESC");
 			}
+
+			if (sort instanceof OracleSortable)
+			{
+				OracleSortable os = (OracleSortable) sort;
+
+				switch (os.getNullsPosition())
+				{
+					case OracleSortable.NULLS_FIRST:
+						buffer.append(' ').append(OracleSortable.NULLS_FIRST_OPR);
+						break;
+
+					case OracleSortable.NULLS_LAST:
+						buffer.append(' ').append(OracleSortable.NULLS_LAST_OPR);
+						break;
+				}
+			}
 		}
 		return buffer;
 	}
@@ -227,5 +244,10 @@ public class OracleProvider extends AbstractProvider
 	public OracleUpdate provideUpdate()
 	{
 		return this.provideProvider(new OracleUpdate());
+	}
+
+	public OracleSortable sort(Sortable sort)
+	{
+		return (OracleSortable) sort;
 	}
 }

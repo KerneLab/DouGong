@@ -105,11 +105,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return distinct;
 	}
 
-	public <T extends Insertable> Insert insert(T target, Column... columns)
-	{
-		return this.provider().provideInsert().into(target, columns).values(this);
-	}
-
 	public AbstractSelect distinct(boolean distinct)
 	{
 		this.distinct = distinct;
@@ -217,6 +212,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public MembershipCondition in(Scope scope)
 	{
 		return this.provideMembershipCondition().in(this, scope);
+	}
+
+	public <T extends Insertable> Insert insert(T target, Column... columns)
+	{
+		return this.provider().provideInsert().into(target, columns).values(this);
 	}
 
 	public AbstractSelect intersect(Select select)

@@ -1,16 +1,10 @@
 package org.kernelab.dougong.orcl.dml;
 
-import org.kernelab.dougong.core.Provider;
-import org.kernelab.dougong.semi.dml.AbstractStringItem;
+import org.kernelab.dougong.semi.dml.AbstractFunction;
 
-public class OracleStringItem extends AbstractStringItem implements OracleSortable
+public class OracleFunction extends AbstractFunction implements OracleSortable
 {
 	private byte nulls = OracleSortable.NULLS_NORMAL;
-
-	public OracleStringItem(Provider provider)
-	{
-		super(provider);
-	}
 
 	public byte getNullsPosition()
 	{
