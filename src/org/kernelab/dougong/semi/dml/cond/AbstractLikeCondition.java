@@ -7,14 +7,14 @@ public abstract class AbstractLikeCondition extends AbstractNegatableCondition i
 {
 	protected Expression	expr;
 
-	protected String		pattern;
+	protected Expression	pattern;
 
-	public AbstractLikeCondition like(Expression expr, String pattern)
+	public AbstractLikeCondition like(Expression expr, Expression pattern)
 	{
 		return this.set(expr, pattern);
 	}
 
-	public AbstractLikeCondition set(Expression expr, String pattern)
+	public AbstractLikeCondition set(Expression expr, Expression pattern)
 	{
 		this.expr = expr;
 		this.pattern = pattern;

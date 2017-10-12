@@ -70,7 +70,7 @@ public abstract class AbstractAllItems implements AllItems
 		return null;
 	}
 
-	public LikeCondition like(String pattern)
+	public LikeCondition like(Expression pattern)
 	{
 		return null;
 	}
@@ -105,7 +105,7 @@ public abstract class AbstractAllItems implements AllItems
 		return null;
 	}
 
-	public LikeCondition notLike(String pattern)
+	public LikeCondition notLike(Expression pattern)
 	{
 		return null;
 	}

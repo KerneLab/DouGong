@@ -358,7 +358,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
-	public LikeCondition like(String pattern)
+	public LikeCondition like(Expression pattern)
 	{
 		return this.provideLikeCondition().like(this, pattern);
 	}
@@ -406,7 +406,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return (MembershipCondition) this.provideMembershipCondition().in(this, scope).not();
 	}
 
-	public LikeCondition notLike(String pattern)
+	public LikeCondition notLike(Expression pattern)
 	{
 		return (LikeCondition) this.provideLikeCondition().like(this, pattern).not();
 	}

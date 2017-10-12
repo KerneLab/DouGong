@@ -1,11 +1,24 @@
 package org.kernelab.dougong.orcl.dml.cond;
 
-import org.kernelab.dougong.core.dml.Items;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 
 public class OracleLikeCondition extends AbstractLikeCondition
 {
+	private Expression escape = null;
+
+	public Expression escape()
+	{
+		return escape;
+	}
+
+	public OracleLikeCondition escape(Expression escape)
+	{
+		this.escape = escape;
+		return this;
+	}
+
 	@Override
 	protected LogicalCondition provideLogicalCondition()
 	{
@@ -14,19 +27,18 @@ public class OracleLikeCondition extends AbstractLikeCondition
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		if (this.expr instanceof Items)
-		{
-			buffer.append('(');
-		}
 		this.expr.toStringExpress(buffer);
-		if (this.expr instanceof Items)
-		{
-			buffer.append(')');
-		}
 		if (this.not)
 		{
 			buffer.append(" NOT");
 		}
-		return buffer.append(" LIKE ").append(this.pattern);
+		buffer.append(" LIKE ");
+		this.pattern.toStringExpress(buffer);
+		if (this.escape() != null)
+		{
+			buffer.append(" ESCAPE ");
+			this.escape().toStringExpress(buffer);
+		}
+		return buffer;
 	}
 }
