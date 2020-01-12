@@ -7,19 +7,26 @@ import java.sql.SQLException;
 import org.kernelab.basis.sql.DataBase;
 import org.kernelab.basis.sql.DataBase.OracleClient;
 import org.kernelab.basis.sql.SQLKit;
+import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.util.EntityMaker;
+import org.kernelab.dougong.orcl.OracleProvider;
 
 public class TestEntityMaker
 {
 	public static void main(String[] args) throws SQLException, FileNotFoundException
 	{
 		DataBase db = null;
-		db = new OracleClient("orcl", "test", "test");
+		db = new OracleClient("orcl", "test", "TEST");
 		// db = new MariaDB("localhost", 3316, "test", "test", "test");
 
 		SQLKit kit = db.getSQLKit();
 
-		EntityMaker
-				.makeTable(kit, "STAF", "org.kernelab.dougong.test", new File("E:\\project\\dougong\\src"), "", null);
+		SQL sql = new SQL(new OracleProvider());
+
+		File base = new File("E:\\project\\dougong\\src");
+
+		EntityMaker.makeTable(kit, "COMP", "org.kernelab.dougong.test", base, "", null);
+
+		EntityMaker.makeView(kit, sql.view(TestView.class), "org.kernelab.dougong.demo", base, "", null);
 	}
 }

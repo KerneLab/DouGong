@@ -182,4 +182,9 @@ public class SQL
 	{
 		return provider().provideTable(cls).as(alias);
 	}
+
+	public <T extends View> T view(Class<T> cls, Object... args)
+	{
+		return provider().provideView(cls, args);
+	}
 }

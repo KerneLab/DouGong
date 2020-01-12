@@ -2,24 +2,29 @@ package org.kernelab.dougong.core.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.kernelab.basis.JSON;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.io.DataWriter;
+import org.kernelab.basis.io.TextDataSource;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
 import org.kernelab.dougong.semi.dml.AbstractSubquery;
 import org.kernelab.dougong.semi.dml.AbstractTable;
+import org.kernelab.dougong.semi.dml.PredeclaredView;
 
 public class EntityMaker
 {
 	public static final File make(ResultSetMetaData meta, String name, Class<?> sup, String pkg, File base,
-			String schema, String charSet) throws FileNotFoundException, SQLException
+			String schema, String charSet, File template) throws FileNotFoundException, SQLException
 	{
 		return new EntityMaker() //
 				.meta(meta) //
@@ -29,6 +34,7 @@ public class EntityMaker
 				.base(base) //
 				.schema(schema) //
 				.charSet(charSet) //
+				.template(template) //
 				.make() //
 				.file();
 	}
@@ -42,7 +48,8 @@ public class EntityMaker
 				pkg, //
 				base, //
 				schema, //
-				charSet);
+				charSet, //
+				null);
 	}
 
 	public static final File makeTable(SQLKit kit, String name, String pkg, File base, String schema, String charSet)
@@ -54,7 +61,30 @@ public class EntityMaker
 				pkg, //
 				base, //
 				schema, //
-				charSet);
+				charSet, //
+				null);
+	}
+
+	public static final File makeView(SQLKit kit, PredeclaredView view, String pkg, File base, String schema,
+			String charSet) throws FileNotFoundException, SQLException
+	{
+		String name = view.getClass().getSimpleName();
+		String clsName = view.getClass().getCanonicalName();
+		if (name == null || name.length() == 0 //
+				|| clsName == null || clsName.indexOf('$') >= 0 || clsName.indexOf('[') >= 0)
+		{
+			throw new RuntimeException("Invalid PredeclaredView class: " + clsName);
+		}
+
+		return make(kit.query(view.select().toString(), view.parameters()).getMetaData(), //
+				name, //
+				PredeclaredView.class, //
+				pkg, //
+				base, //
+				schema, //
+				charSet, //
+				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar)
+						+ ".java"));
 	}
 
 	private ResultSetMetaData	meta;
@@ -70,6 +100,12 @@ public class EntityMaker
 	private String				schema;
 
 	private String				cs;
+
+	private File				template;
+
+	private List<String>		templateImports;
+
+	private List<String>		templateBody;
 
 	public File base()
 	{
@@ -89,7 +125,7 @@ public class EntityMaker
 
 	public EntityMaker charSet(String charSet)
 	{
-		this.cs = charSet;
+		this.cs = charSet != null ? charSet : Charset.defaultCharset().name();
 		return this;
 	}
 
@@ -181,7 +217,18 @@ public class EntityMaker
 			out.write("\tpublic Column\t" + wash(column) + ";");
 		}
 
-		out.write("}");
+		if (this.templateBody != null)
+		{
+			out.write();
+			for (String line : this.templateBody)
+			{
+				out.write(line);
+			}
+		}
+		else
+		{
+			out.write("}");
+		}
 
 		return this;
 	}
@@ -190,10 +237,7 @@ public class EntityMaker
 	{
 		out.write("package " + pkg() + ";");
 		out.write();
-		out.write("import " + Column.class.getName() + ";");
-		out.write("import " + MemberMeta.class.getName() + ";");
-		out.write("import " + NameMeta.class.getName() + ";");
-		out.write("import " + sup().getName() + ";");
+		this.outputImports(out);
 		out.write();
 		out.print("@MemberMeta(");
 		if (schema() != null)
@@ -208,6 +252,64 @@ public class EntityMaker
 			}
 		}
 		out.write(")");
+		return this;
+	}
+
+	protected EntityMaker outputImports(DataWriter out)
+	{
+		out.write("import " + Column.class.getName() + ";");
+		out.write("import " + MemberMeta.class.getName() + ";");
+		out.write("import " + NameMeta.class.getName() + ";");
+		out.write("import " + sup().getName() + ";");
+		if (this.templateImports != null)
+		{
+			for (String line : this.templateImports)
+			{
+				out.write(line);
+			}
+		}
+		return this;
+	}
+
+	protected EntityMaker parseTemplate()
+	{
+		if (this.template() != null)
+		{
+			templateImports = new LinkedList<String>();
+
+			templateBody = new LinkedList<String>();
+
+			boolean beginBody = false;
+			int idx = -1;
+
+			for (String line : new TextDataSource(this.template(), Charset.forName(this.charSet()), "\n"))
+			{
+				line = line.replaceFirst("(.*)\r$", "$1");
+
+				if (!beginBody)
+				{
+					if (line.trim().matches("^import\\s+.+$"))
+					{
+						templateImports.add(line);
+					}
+
+					if ((idx = line.indexOf('{')) >= 0)
+					{
+						beginBody = true;
+						String body = line.substring(idx + 1);
+						if (body.length() > 0)
+						{
+							templateBody.add(body);
+						}
+					}
+				}
+				else
+				{
+					templateBody.add(line);
+				}
+			}
+		}
+
 		return this;
 	}
 
@@ -254,6 +356,18 @@ public class EntityMaker
 		{
 			e.printStackTrace();
 		}
+		return this;
+	}
+
+	public File template()
+	{
+		return template;
+	}
+
+	public EntityMaker template(File template)
+	{
+		this.template = template;
+		this.parseTemplate();
 		return this;
 	}
 

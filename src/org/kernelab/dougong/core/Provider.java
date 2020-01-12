@@ -1,5 +1,6 @@
 package org.kernelab.dougong.core;
 
+import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Insert;
@@ -173,6 +174,8 @@ public interface Provider
 
 	public Select provideSelect();
 
+	public SQL provideSQL();
+
 	/**
 	 * Provide a StringItem exactly according to the given expression.
 	 */
@@ -183,4 +186,6 @@ public interface Provider
 	public <T extends Table> T provideTable(Class<T> cls);
 
 	public Update provideUpdate();
+
+	public <T extends View> T provideView(Class<T> cls, Object... args);
 }
