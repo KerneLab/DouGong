@@ -6,8 +6,12 @@ import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.kernelab.basis.JSON;
 import org.kernelab.basis.Tools;
@@ -23,6 +27,8 @@ import org.kernelab.dougong.semi.dml.PredeclaredView;
 
 public class EntityMaker
 {
+	public static final Pattern IMPORT_PATTERN = Pattern.compile("^import\\s+(\\S+)\\s*;$");
+
 	public static final File make(ResultSetMetaData meta, String name, Class<?> sup, String pkg, File base,
 			String schema, String charSet, File template) throws FileNotFoundException, SQLException
 	{
@@ -87,6 +93,10 @@ public class EntityMaker
 						+ ".java"));
 	}
 
+	public static void main(String[] args)
+	{
+	}
+
 	private ResultSetMetaData	meta;
 
 	private String				name;
@@ -101,9 +111,9 @@ public class EntityMaker
 
 	private String				cs;
 
-	private File				template;
+	private Set<String>			imports	= new LinkedHashSet<String>();
 
-	private List<String>		templateImports;
+	private File				template;
 
 	private List<String>		templateBody;
 
@@ -257,17 +267,16 @@ public class EntityMaker
 
 	protected EntityMaker outputImports(DataWriter out)
 	{
-		out.write("import " + Column.class.getName() + ";");
-		out.write("import " + MemberMeta.class.getName() + ";");
-		out.write("import " + NameMeta.class.getName() + ";");
-		out.write("import " + sup().getName() + ";");
-		if (this.templateImports != null)
+		imports.add(Column.class.getName());
+		imports.add(MemberMeta.class.getName());
+		imports.add(NameMeta.class.getName());
+		imports.add(sup().getName());
+
+		for (String line : this.imports)
 		{
-			for (String line : this.templateImports)
-			{
-				out.write(line);
-			}
+			out.write("import " + line + ";");
 		}
+
 		return this;
 	}
 
@@ -275,12 +284,12 @@ public class EntityMaker
 	{
 		if (this.template() != null)
 		{
-			templateImports = new LinkedList<String>();
-
 			templateBody = new LinkedList<String>();
 
 			boolean beginBody = false;
 			int idx = -1;
+
+			Matcher importMatcher = IMPORT_PATTERN.matcher("");
 
 			for (String line : new TextDataSource(this.template(), Charset.forName(this.charSet()), "\n"))
 			{
@@ -288,12 +297,11 @@ public class EntityMaker
 
 				if (!beginBody)
 				{
-					if (line.trim().matches("^import\\s+.+$"))
+					if (importMatcher.reset(line.trim()).matches())
 					{
-						templateImports.add(line);
+						imports.add(importMatcher.group(1));
 					}
-
-					if ((idx = line.indexOf('{')) >= 0)
+					else if ((idx = line.indexOf('{')) >= 0)
 					{
 						beginBody = true;
 						String body = line.substring(idx + 1);
