@@ -27,6 +27,6 @@ public class TestEntityMaker
 
 		EntityMaker.makeTable(kit, "COMP", "org.kernelab.dougong.test", base, "", null);
 
-		EntityMaker.makeView(kit, sql.view(TestView.class), "org.kernelab.dougong.demo", base, "", null);
+		EntityMaker.makeView(kit, sql.subquery(TestView.class), "org.kernelab.dougong.demo", base, "", null);
 	}
 }

@@ -168,6 +168,11 @@ public class SQL
 		return expr(provider().provideAliasLabel(key));
 	}
 
+	public <T extends Subquery> T subquery(Class<T> cls, Object... args)
+	{
+		return provider().provideSubquery(cls, args);
+	}
+
 	public <T extends Subquery> T subquery(Class<T> cls, Select select)
 	{
 		return provider().provideSubquery(cls, select);
@@ -181,10 +186,5 @@ public class SQL
 	public <T extends Table> T table(Class<T> cls, String alias)
 	{
 		return provider().provideTable(cls).as(alias);
-	}
-
-	public <T extends View> T view(Class<T> cls, Object... args)
-	{
-		return provider().provideView(cls, args);
 	}
 }

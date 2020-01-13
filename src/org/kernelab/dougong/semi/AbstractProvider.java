@@ -152,6 +152,27 @@ public abstract class AbstractProvider implements Provider
 		return this.sql;
 	}
 
+	public <T extends Subquery> T provideSubquery(Class<T> cls, Object... args)
+	{
+		Class<?>[] paramTypes = new Class<?>[args.length];
+
+		try
+		{
+			for (int i = 0; i < args.length; i++)
+			{
+				paramTypes[i] = args[i].getClass();
+			}
+
+			View v = cls.getConstructor(paramTypes).newInstance(args);
+
+			return this.provideProvider(v);
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException("Could not initialize view object", e);
+		}
+	}
+
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select)
 	{
 		try
@@ -189,27 +210,6 @@ public abstract class AbstractProvider implements Provider
 		else
 		{
 			return null;
-		}
-	}
-
-	public <T extends View> T provideView(Class<T> cls, Object... args)
-	{
-		Class<?>[] paramTypes = new Class<?>[args.length];
-
-		try
-		{
-			for (int i = 0; i < args.length; i++)
-			{
-				paramTypes[i] = args[i].getClass();
-			}
-
-			View v = cls.getConstructor(paramTypes).newInstance(args);
-
-			return this.provideProvider(v);
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException("Could not initialize view object", e);
 		}
 	}
 }
