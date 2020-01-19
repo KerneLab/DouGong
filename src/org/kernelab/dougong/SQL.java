@@ -168,9 +168,9 @@ public class SQL
 		return expr(provider().provideAliasLabel(key));
 	}
 
-	public <T extends Subquery> T subquery(Class<T> cls, Object... args)
+	public <T extends Subquery> T subquery(Class<T> cls)
 	{
-		return provider().provideSubquery(cls, args);
+		return provider().provideSubquery(cls);
 	}
 
 	public <T extends Subquery> T subquery(Class<T> cls, Select select)

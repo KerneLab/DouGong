@@ -181,7 +181,7 @@ public interface Provider
 	 */
 	public StringItem provideStringItem(String expr);
 
-	public <T extends Subquery> T provideSubquery(Class<T> cls, Object... args);
+	public <T extends Subquery> T provideSubquery(Class<T> cls);
 
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select);
 

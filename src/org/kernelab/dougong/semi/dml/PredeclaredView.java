@@ -6,6 +6,11 @@ import org.kernelab.dougong.core.dml.Select;
 
 public abstract class PredeclaredView extends AbstractSubquery
 {
+	public PredeclaredView()
+	{
+		super();
+	}
+
 	public abstract JSON parameters();
 
 	@Override

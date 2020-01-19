@@ -10,7 +10,6 @@ import org.kernelab.dougong.core.Member;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
-import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -152,24 +151,16 @@ public abstract class AbstractProvider implements Provider
 		return this.sql;
 	}
 
-	public <T extends Subquery> T provideSubquery(Class<T> cls, Object... args)
+	public <T extends Subquery> T provideSubquery(Class<T> cls)
 	{
-		Class<?>[] paramTypes = new Class<?>[args.length];
-
 		try
 		{
-			for (int i = 0; i < args.length; i++)
-			{
-				paramTypes[i] = args[i].getClass();
-			}
-
-			View v = cls.getConstructor(paramTypes).newInstance(args);
-
-			return this.provideProvider(v);
+			return this.provideProvider(cls.newInstance());
 		}
 		catch (Exception e)
 		{
-			throw new RuntimeException("Could not initialize view object", e);
+			e.printStackTrace();
+			return null;
 		}
 	}
 
