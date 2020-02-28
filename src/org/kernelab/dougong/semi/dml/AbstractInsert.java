@@ -17,16 +17,21 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 
 	protected Expression[]	values;
 
-	public AbstractInsert into(Insertable target, Column... columns)
+	public Insert columns(Column... columns)
+	{
+		this.columns = columns;
+		return this;
+	}
+
+	public AbstractInsert into(Insertable target)
 	{
 		this.target = target;
-		this.columns = columns;
 		return this;
 	}
 
 	public void textOfColumns(StringBuilder buffer)
 	{
-		if (columns != null)
+		if (columns != null && columns.length > 0)
 		{
 			buffer.append(" (");
 

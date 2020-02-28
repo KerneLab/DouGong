@@ -216,7 +216,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public <T extends Insertable> Insert insert(T target, Column... columns)
 	{
-		return this.provider().provideInsert().into(target, columns).values(this);
+		return this.provider().provideInsert().into(target).columns(columns).values(this);
 	}
 
 	public AbstractSelect intersect(Select select)

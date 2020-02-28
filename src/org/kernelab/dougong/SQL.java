@@ -71,7 +71,7 @@ public class SQL
 
 	public <T extends Insertable> Insert insert(T target, Column... columns)
 	{
-		return provider().provideInsert().into(target, columns);
+		return provider().provideInsert().into(target).columns(columns);
 	}
 
 	public Items list(Expression... exprs)

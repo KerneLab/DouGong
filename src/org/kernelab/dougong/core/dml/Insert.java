@@ -5,7 +5,9 @@ import org.kernelab.dougong.core.Expression;
 
 public interface Insert extends DML
 {
-	public Insert into(Insertable target, Column... columns);
+	public Insert columns(Column... columns);
+
+	public Insert into(Insertable target);
 
 	public Insert values(Expression... values);
 

@@ -5,12 +5,12 @@ import org.kernelab.dougong.core.View;
 public interface Sourced
 {
 	/**
-	 * Get the object to be filtered.
+	 * Get the object to be manipulated.
 	 */
 	public View from();
 
 	/**
-	 * Set the object to be filtered.
+	 * Set the object to be manipulated.
 	 */
 	public Sourced from(View s);
 }

@@ -3,13 +3,20 @@ package org.kernelab.dougong.semi.dml;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.dml.Delete;
+import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractView extends AbstractProvidable implements View
@@ -34,11 +41,30 @@ public abstract class AbstractView extends AbstractProvidable implements View
 		return this;
 	}
 
-	protected void initColumns()
+	public Delete delete()
 	{
-		int mod = 0;
+		return this.provider().provideDelete().from(this);
+	}
 
-		Column col = null;
+	protected Column getColumnByField(Field field)
+	{
+		String name = Utils.getNameFromField(field);
+
+		Column column = Tools.as(items().get(name), Column.class);
+
+		if (column == null)
+		{
+			column = provider().provideColumn(this, name);
+		}
+
+		return column;
+	}
+
+	protected List<Field> getColumnFields()
+	{
+		List<Field> fields = new LinkedList<Field>();
+
+		int mod = 0;
 
 		for (Field field : this.getClass().getFields())
 		{
@@ -47,10 +73,33 @@ public abstract class AbstractView extends AbstractProvidable implements View
 			try
 			{
 				if (Tools.isSubClass(field.getType(), Column.class) //
-						&& Modifier.isPublic(mod) && !Modifier.isStatic(mod) && !Modifier.isFinal(mod) //
-						&& field.get(this) == null)
+						&& Modifier.isPublic(mod) //
+						&& !Modifier.isStatic(mod) //
+						&& !Modifier.isFinal(mod))
 				{
-					col = provider().provideColumn(this, Utils.getNameFromField(field));
+					fields.add(field);
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		return fields;
+	}
+
+	protected void initColumns()
+	{
+		Column col = null;
+
+		for (Field field : this.getColumnFields())
+		{
+			try
+			{
+				if (field.get(this) == null)
+				{
+					col = this.getColumnByField(field);
 					field.set(this, col);
 					items().put(col.name(), col);
 				}
@@ -60,6 +109,11 @@ public abstract class AbstractView extends AbstractProvidable implements View
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public Insert insert()
+	{
+		return this.provider().provideInsert().into((Insertable) this);
 	}
 
 	public Item item(String refer)
@@ -78,5 +132,15 @@ public abstract class AbstractView extends AbstractProvidable implements View
 		super.provider(provider);
 		this.initColumns();
 		return this;
+	}
+
+	public Select select()
+	{
+		return this.provider().provideSelect().from(this);
+	}
+
+	public Update update()
+	{
+		return this.provider().provideUpdate().from(this);
 	}
 }
