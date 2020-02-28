@@ -1,8 +1,17 @@
 package org.kernelab.dougong.semi.dml;
 
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.kernelab.dougong.SQL;
+import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.AllItems;
+import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractTable extends AbstractView implements Table
@@ -39,10 +48,49 @@ public abstract class AbstractTable extends AbstractView implements Table
 		return (T) table;
 	}
 
+	protected Map<Column, Expression> getInsertMeta()
+	{
+		Map<Column, Expression> meta = new LinkedHashMap<Column, Expression>();
+
+		SQL sql = this.provider().provideSQL();
+
+		for (Field field : this.getColumnFields())
+		{
+			Expression value = Utils.getInsertValueExpressionOfField(sql, field);
+
+			if (value != null)
+			{
+				meta.put(this.getColumnByField(field), value);
+			}
+		}
+
+		return meta;
+	}
+
 	protected void initTable()
 	{
 		this.schema(Utils.getSchemaFromMember(this));
 		this.name(Utils.getNameFromNamed(this));
+	}
+
+	public Insert insertByMetaMap()
+	{
+		Map<Column, Expression> meta = this.getInsertMeta();
+
+		Column[] columns = new Column[meta.size()];
+
+		Expression[] values = new Expression[meta.size()];
+
+		int i = 0;
+
+		for (Entry<Column, Expression> entry : meta.entrySet())
+		{
+			columns[i] = entry.getKey();
+			values[i] = entry.getValue();
+			i++;
+		}
+
+		return this.provider().provideInsert().into(this).columns(columns).values(values);
 	}
 
 	public String name()

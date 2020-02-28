@@ -20,9 +20,42 @@ import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.meta.MappingMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
+import org.kernelab.dougong.core.meta.InsertMeta;
 
 public class Utils
 {
+	public static Expression getInsertValueExpressionOfField(SQL sql, Field field)
+	{
+		if (field != null)
+		{
+			InsertMeta meta = field.getAnnotation(InsertMeta.class);
+
+			if (meta != null)
+			{
+				if (Tools.notNullOrWhite(meta.value()))
+				{
+					return sql.expr(meta.value());
+				}
+				else if (Tools.notNullOrWhite(meta.param()))
+				{
+					return sql.param(meta.param());
+				}
+				else
+				{
+					return sql.param(getNameFromField(field));
+				}
+			}
+			else
+			{
+				return null;
+			}
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	public static Map<String, Field> getMappingFields(Class<?> cls, Map<String, Field> result)
 	{
 		if (cls != null)

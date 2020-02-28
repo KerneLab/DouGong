@@ -17,6 +17,8 @@ public class TestInsert
 	public static void main(String[] args)
 	{
 		Tools.debug(makeInsert().toString(new StringBuilder()));
+		Tools.debug(makeInsert1().toString(new StringBuilder()));
+		Tools.debug(makeInsertByMetaMap().toString(new StringBuilder()));
 		Tools.debug(makeSelect().toString(new StringBuilder()));
 	}
 
@@ -27,6 +29,20 @@ public class TestInsert
 		return SQL.insert(s = SQL.table(STAF.class, "s"), s.COMP_ID, s.DEPT_ID) //
 				.values(SQL.param("comp"), SQL.param("dept")) //
 		;
+	}
+
+	public static Insert makeInsert1()
+	{
+		STAF s = SQL.table(STAF.class, "s");
+
+		return s.insert().columns(s.COMP_ID, s.DEPT_ID) //
+				.values(SQL.param("comp"), SQL.param("dept")) //
+		;
+	}
+
+	public static Insert makeInsertByMetaMap()
+	{
+		return SQL.table(STAF.class, "s").insertByMetaMap();
 	}
 
 	public static Insert makeSelect()
