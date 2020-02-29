@@ -1,6 +1,6 @@
 package org.kernelab.dougong.core;
 
-public interface Providable
+public interface Providable extends Castable
 {
 	/**
 	 * Get the SQL Provider.

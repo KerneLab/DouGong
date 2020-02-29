@@ -9,17 +9,20 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface InsertMeta
+public @interface DataMeta
 {
 	/**
-	 * The value parameter name if specified.<br />
-	 * This param has lower priority than value.
+	 * The alias of data.<br/>
+	 * Which would be used to generate insert values' parameter if value is not
+	 * specified.<br/>
+	 * This alias would also be used as the alias of select items.
 	 */
-	public String param() default "";
+	public String alias() default "";
 
 	/**
-	 * The value expression if specified.<br/>
-	 * This param has higher priority than param.
+	 * The value expression.<br/>
+	 * Which would be used to generate insert values' expression if alias is not
+	 * specified.<br/>
 	 */
 	public String value() default "";
 }

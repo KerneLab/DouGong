@@ -1,5 +1,7 @@
 package org.kernelab.dougong.core;
 
+import java.lang.reflect.Field;
+
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Delete;
@@ -48,7 +50,7 @@ public interface Provider
 
 	public CaseSwitchExpression provideCaseExpression(Expression value);
 
-	public Column provideColumn(View view, String name);
+	public Column provideColumn(View view, String name, Field field);
 
 	public ComparisonCondition provideComparisonCondition();
 

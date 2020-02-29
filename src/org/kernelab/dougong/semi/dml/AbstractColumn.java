@@ -1,5 +1,7 @@
 package org.kernelab.dougong.semi.dml;
 
+import java.lang.reflect.Field;
+
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
@@ -13,14 +15,17 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 
 	private String	alias;
 
+	private Field	field;
+
 	private boolean	order;
 
 	private boolean	using;
 
-	public AbstractColumn(View view, String name)
+	public AbstractColumn(View view, String name, Field field)
 	{
 		this.view = view;
 		this.name = name;
+		this.field = field;
 		this.alias = null;
 		this.order = true;
 		this.using = false;
@@ -68,6 +73,11 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 	public AbstractColumn descend()
 	{
 		return ascend(false);
+	}
+
+	public Field field()
+	{
+		return field;
 	}
 
 	public boolean isUsingByJoin()

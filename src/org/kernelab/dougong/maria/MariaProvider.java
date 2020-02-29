@@ -1,5 +1,7 @@
 package org.kernelab.dougong.maria;
 
+import java.lang.reflect.Field;
+
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
@@ -52,9 +54,9 @@ public class MariaProvider extends AbstractProvider
 		return (MariaCaseSwitchExpression) new MariaCaseSwitchExpression(this).caseValue(value);
 	}
 
-	public MariaColumn provideColumn(View view, String name)
+	public MariaColumn provideColumn(View view, String name, Field field)
 	{
-		return new MariaColumn(view, name);
+		return new MariaColumn(view, name, field);
 	}
 
 	public MariaComparisonCondition provideComparisonCondition()

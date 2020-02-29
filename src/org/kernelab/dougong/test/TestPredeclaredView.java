@@ -14,7 +14,7 @@ public class TestPredeclaredView
 		SQL sql = new SQL(new OracleProvider());
 		Subquery view = sql.subquery(TestView.class);
 
-		Select sel = sql.from(view.as(null)).select(sql.all());
+		Select sel = sql.from(view.as((String) null)).select(sql.all());
 
 		Tools.debug(sel.toString());
 

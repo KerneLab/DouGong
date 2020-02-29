@@ -56,7 +56,7 @@ public abstract class AbstractTable extends AbstractView implements Table
 
 		for (Field field : this.getColumnFields())
 		{
-			Expression value = Utils.getInsertValueExpressionOfField(sql, field);
+			Expression value = Utils.getDataExpressionFromField(sql, field);
 
 			if (value != null)
 			{

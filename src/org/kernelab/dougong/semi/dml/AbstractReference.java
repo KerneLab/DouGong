@@ -6,11 +6,11 @@ import org.kernelab.dougong.core.dml.Reference;
 
 public abstract class AbstractReference extends AbstractColumn implements Reference
 {
-	private Expression	refer;
+	private Expression refer;
 
 	public AbstractReference(View view, Expression refer)
 	{
-		super(view, null);
+		super(view, null, null);
 		this.refer(refer);
 	}
 

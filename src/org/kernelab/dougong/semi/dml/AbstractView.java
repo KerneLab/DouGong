@@ -54,7 +54,7 @@ public abstract class AbstractView extends AbstractProvidable implements View
 
 		if (column == null)
 		{
-			column = provider().provideColumn(this, name);
+			column = provider().provideColumn(this, name, field);
 		}
 
 		return column;

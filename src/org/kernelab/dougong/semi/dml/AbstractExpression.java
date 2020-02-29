@@ -13,8 +13,9 @@ import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.semi.AbstractCastable;
 
-public abstract class AbstractExpression implements Expression
+public abstract class AbstractExpression extends AbstractCastable implements Expression
 {
 	public RangeCondition between(Expression from, Expression to)
 	{

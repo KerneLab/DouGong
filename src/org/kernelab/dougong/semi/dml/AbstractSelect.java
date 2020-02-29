@@ -121,6 +121,21 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideComparisonCondition().eq(this, expr);
 	}
 
+	public AbstractSelect fillAliasByMeta()
+	{
+		for (Expression item : this.select())
+		{
+			Column column = Tools.as(item, Column.class);
+
+			if (column != null && column.alias() == null)
+			{
+				column.alias(Utils.getDataAliasFromField(column.field()));
+			}
+		}
+
+		return this;
+	}
+
 	/**
 	 * Get the first view specified by from.
 	 * 

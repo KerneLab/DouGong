@@ -17,28 +17,56 @@ import org.kernelab.dougong.core.Named;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.MappingMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
-import org.kernelab.dougong.core.meta.InsertMeta;
 
 public class Utils
 {
-	public static Expression getInsertValueExpressionOfField(SQL sql, Field field)
+	public static String getDataAliasFromField(Field field)
 	{
 		if (field != null)
 		{
-			InsertMeta meta = field.getAnnotation(InsertMeta.class);
+			DataMeta meta = field.getAnnotation(DataMeta.class);
 
 			if (meta != null)
 			{
-				if (Tools.notNullOrWhite(meta.value()))
+				if (Tools.notNullOrEmpty(meta.alias()))
+				{
+					return meta.alias();
+				}
+				else
+				{
+					return null;
+				}
+			}
+			else
+			{
+				return null;
+			}
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public static Expression getDataExpressionFromField(SQL sql, Field field)
+	{
+		if (field != null)
+		{
+			DataMeta meta = field.getAnnotation(DataMeta.class);
+
+			if (meta != null)
+			{
+				if (Tools.notNullOrEmpty(meta.value()))
 				{
 					return sql.expr(meta.value());
 				}
-				else if (Tools.notNullOrWhite(meta.param()))
+				else if (Tools.notNullOrEmpty(meta.alias()))
 				{
-					return sql.param(meta.param());
+					return sql.param(meta.alias());
 				}
 				else
 				{

@@ -1,5 +1,7 @@
 package org.kernelab.dougong.orcl;
 
+import java.lang.reflect.Field;
+
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
@@ -64,9 +66,9 @@ public class OracleProvider extends AbstractProvider
 		return (OracleCaseSwitchExpression) new OracleCaseSwitchExpression(this).caseValue(value);
 	}
 
-	public OracleColumn provideColumn(View view, String name)
+	public OracleColumn provideColumn(View view, String name, Field field)
 	{
-		return new OracleColumn(view, name);
+		return new OracleColumn(view, name, field);
 	}
 
 	public OracleComparisonCondition provideComparisonCondition()

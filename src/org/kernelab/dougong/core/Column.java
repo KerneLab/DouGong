@@ -1,11 +1,20 @@
 package org.kernelab.dougong.core;
 
-import org.kernelab.dougong.core.dml.Sortable;
+import java.lang.reflect.Field;
+
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Sortable;
 
 public interface Column extends Named, Item, Sortable
 {
 	public Column as(String alias);
+
+	/**
+	 * Get the field of class which represents the table containing this column.
+	 * 
+	 * @return
+	 */
+	public Field field();
 
 	/**
 	 * Determine whether this column is using by a join. The Default value is

@@ -20,7 +20,7 @@ import org.kernelab.basis.io.TextDataSource;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Table;
-import org.kernelab.dougong.core.meta.InsertMeta;
+import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
 import org.kernelab.dougong.semi.dml.AbstractSubquery;
@@ -236,7 +236,7 @@ public class EntityMaker
 			out.write("\t@NameMeta(name = \"" + name + "\")");
 			if (this.isTable())
 			{
-				out.write("\t@InsertMeta(param = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
+				out.write("\t@DataMeta(alias = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
 			}
 			out.write("\tpublic Column\t" + wash(column) + ";");
 		}
@@ -286,7 +286,7 @@ public class EntityMaker
 		imports.add(NameMeta.class.getName());
 		if (this.isTable())
 		{
-			imports.add(InsertMeta.class.getName());
+			imports.add(DataMeta.class.getName());
 		}
 		imports.add(sup().getName());
 

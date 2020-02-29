@@ -7,6 +7,7 @@ import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
+import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class TestSelect
 {
@@ -16,7 +17,7 @@ public class TestSelect
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelectLimit().toString(new StringBuilder()));
+		Tools.debug(makeSelectAliasByMeta().toString(new StringBuilder()));
 	}
 
 	public static Select makeSelectCase()
@@ -32,6 +33,23 @@ public class TestSelect
 								// .els(SQL.expr("'Z'")) //
 								.as("c") //
 				) //
+				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.orderBy(d.COMP_ID) //
+		;
+	}
+
+	public static Select makeSelectAliasByMeta()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "s")) //
+				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.COMP_ID, //
+						s.STAF_ID, //
+						s.STAF_NAME.as("name") //
+				) //
+				.as(AbstractSelect.class).fillAliasByMeta() //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
@@ -67,7 +85,7 @@ public class TestSelect
 		return SQL.from(sub) //
 				.select(sub.item("id"), //
 						sub.item("name") //
-		) //
+				) //
 		;
 	}
 
