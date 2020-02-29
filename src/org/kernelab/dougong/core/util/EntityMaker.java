@@ -19,6 +19,8 @@ import org.kernelab.basis.io.DataWriter;
 import org.kernelab.basis.io.TextDataSource;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Table;
+import org.kernelab.dougong.core.meta.InsertMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
 import org.kernelab.dougong.semi.dml.AbstractSubquery;
@@ -28,6 +30,10 @@ import org.kernelab.dougong.semi.dml.PredeclaredView;
 public class EntityMaker
 {
 	public static final Pattern IMPORT_PATTERN = Pattern.compile("^import\\s+(\\S+)\\s*;$");
+
+	public static void main(String[] args)
+	{
+	}
 
 	public static final File make(ResultSetMetaData meta, String name, Class<?> sup, String pkg, File base,
 			String schema, String charSet, File template) throws FileNotFoundException, SQLException
@@ -82,7 +88,9 @@ public class EntityMaker
 			throw new RuntimeException("Invalid PredeclaredView class: " + clsName);
 		}
 
-		return make(kit.query(view.select().toString(), view.parameters()).getMetaData(), //
+		String sql = view.select().toString();
+
+		return make(kit.query(sql, view.parameters()).getMetaData(), //
 				name, //
 				PredeclaredView.class, //
 				pkg, //
@@ -91,10 +99,6 @@ public class EntityMaker
 				charSet, //
 				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar)
 						+ ".java"));
-	}
-
-	public static void main(String[] args)
-	{
 	}
 
 	private ResultSetMetaData	meta;
@@ -144,6 +148,11 @@ public class EntityMaker
 		return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
 				+ pkg().replace('.', File.separatorChar) //
 				+ File.separatorChar + name() + ".java");
+	}
+
+	protected boolean isTable()
+	{
+		return Table.class.isAssignableFrom(sup());
 	}
 
 	public EntityMaker make() throws FileNotFoundException, SQLException
@@ -210,11 +219,10 @@ public class EntityMaker
 
 		boolean first = true;
 
-		String column = null;
+		String column = null, name = null;
 
 		for (int i = 1; i <= columns; i++)
 		{
-			column = meta().getColumnLabel(i);
 			if (first)
 			{
 				first = false;
@@ -223,7 +231,13 @@ public class EntityMaker
 			{
 				out.write();
 			}
-			out.write("\t@NameMeta(name = \"" + JSON.EscapeString(column) + "\")");
+			column = meta().getColumnLabel(i);
+			name = JSON.EscapeString(column);
+			out.write("\t@NameMeta(name = \"" + name + "\")");
+			if (this.isTable())
+			{
+				out.write("\t@InsertMeta(param = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
+			}
 			out.write("\tpublic Column\t" + wash(column) + ";");
 		}
 
@@ -270,6 +284,10 @@ public class EntityMaker
 		imports.add(Column.class.getName());
 		imports.add(MemberMeta.class.getName());
 		imports.add(NameMeta.class.getName());
+		if (this.isTable())
+		{
+			imports.add(InsertMeta.class.getName());
+		}
 		imports.add(sup().getName());
 
 		for (String line : this.imports)

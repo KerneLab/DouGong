@@ -25,7 +25,7 @@ public class TestEntityMaker
 
 		File base = new File("E:\\project\\dougong\\src");
 
-		EntityMaker.makeTable(kit, "COMP", "org.kernelab.dougong.test", base, "", null);
+		EntityMaker.makeTable(kit, "STAF", "org.kernelab.dougong.demo", base, null, null);
 
 		EntityMaker.makeView(kit, sql.subquery(TestView.class), "org.kernelab.dougong.demo", base, "", null);
 	}
