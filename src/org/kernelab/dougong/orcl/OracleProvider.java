@@ -3,9 +3,12 @@ package org.kernelab.dougong.orcl;
 import java.lang.reflect.Field;
 
 import org.kernelab.dougong.SQL;
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
@@ -13,6 +16,8 @@ import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.orcl.ddl.OracleForeignKey;
+import org.kernelab.dougong.orcl.ddl.OraclePrimaryKey;
 import org.kernelab.dougong.orcl.dml.OracleAllItems;
 import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
@@ -84,6 +89,11 @@ public class OracleProvider extends AbstractProvider
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
+	}
+
+	public ForeignKey provideForeignKey(PrimaryKey reference, View view, Column... columns)
+	{
+		return new OracleForeignKey(reference, view, columns);
 	}
 
 	public OracleInsert provideInsert()
@@ -216,6 +226,11 @@ public class OracleProvider extends AbstractProvider
 	public PlusOperator providePlusOperator()
 	{
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.PLUS));
+	}
+
+	public PrimaryKey providePrimaryKey(View view, Column... columns)
+	{
+		return new OraclePrimaryKey(view, columns);
 	}
 
 	public OraclePriorExpression providePriorExpression(Expression expr)

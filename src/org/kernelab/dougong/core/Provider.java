@@ -3,6 +3,8 @@ package org.kernelab.dougong.core;
 import java.lang.reflect.Field;
 
 import org.kernelab.dougong.SQL;
+import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Insert;
@@ -57,6 +59,8 @@ public interface Provider
 	public Delete provideDelete();
 
 	public DivideOperator provideDivideOperator();
+
+	public ForeignKey provideForeignKey(PrimaryKey reference, View view, Column... columns);
 
 	public <T extends Function> T provideFunction(Class<T> cls);
 
@@ -152,6 +156,8 @@ public interface Provider
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table);
 
 	public PlusOperator providePlusOperator();
+
+	public PrimaryKey providePrimaryKey(View view, Column... columns);
 
 	public Primitive providePrimitive();
 

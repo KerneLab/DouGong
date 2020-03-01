@@ -10,6 +10,9 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
+import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.util.Utils;
@@ -46,6 +49,20 @@ public abstract class AbstractTable extends AbstractView implements Table
 			table.alias(alias);
 		}
 		return (T) table;
+	}
+
+	protected ForeignKey foreignKey(View ref, Column... columns)
+	{
+		PrimaryKey pk = ref.primaryKey();
+
+		if (pk == null)
+		{
+			return null;
+		}
+		else
+		{
+			return this.provider().provideForeignKey(pk, this, columns);
+		}
 	}
 
 	protected Map<Column, Expression> getInsertMeta()

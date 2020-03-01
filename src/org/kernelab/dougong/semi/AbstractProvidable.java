@@ -1,8 +1,7 @@
-package org.kernelab.dougong.semi.dml;
+package org.kernelab.dougong.semi;
 
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
-import org.kernelab.dougong.semi.AbstractCastable;
 
 public class AbstractProvidable extends AbstractCastable implements Providable
 {

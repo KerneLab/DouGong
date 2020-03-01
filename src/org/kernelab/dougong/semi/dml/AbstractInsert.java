@@ -6,6 +6,7 @@ import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Source;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.semi.AbstractProvidable;
 
 public class AbstractInsert extends AbstractProvidable implements Insert
 {

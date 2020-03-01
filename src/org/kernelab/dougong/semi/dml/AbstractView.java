@@ -6,18 +6,22 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
+import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.semi.AbstractProvidable;
 
 public abstract class AbstractView extends AbstractProvidable implements View
 {
@@ -124,6 +128,29 @@ public abstract class AbstractView extends AbstractProvidable implements View
 	public Map<String, Item> items()
 	{
 		return items;
+	}
+
+	public PrimaryKey primaryKey()
+	{
+		TreeMap<Integer, Column> keys = new TreeMap<Integer, Column>();
+
+		for (Field field : this.getColumnFields())
+		{
+			PrimaryKeyMeta meta = field.getAnnotation(PrimaryKeyMeta.class);
+			if (meta != null)
+			{
+				keys.put(meta.position(), this.getColumnByField(field));
+			}
+		}
+
+		if (keys.isEmpty())
+		{
+			return null;
+		}
+		else
+		{
+			return provider().providePrimaryKey(this, keys.values().toArray(new Column[keys.size()]));
+		}
 	}
 
 	@Override

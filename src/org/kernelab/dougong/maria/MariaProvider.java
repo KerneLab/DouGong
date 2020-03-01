@@ -3,9 +3,12 @@ package org.kernelab.dougong.maria;
 import java.lang.reflect.Field;
 
 import org.kernelab.dougong.SQL;
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
@@ -13,6 +16,8 @@ import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.maria.ddl.MariaForeignKey;
+import org.kernelab.dougong.maria.ddl.MariaPrimaryKey;
 import org.kernelab.dougong.maria.dml.MariaAllItems;
 import org.kernelab.dougong.maria.dml.MariaColumn;
 import org.kernelab.dougong.maria.dml.MariaDelete;
@@ -72,6 +77,11 @@ public class MariaProvider extends AbstractProvider
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
+	}
+
+	public ForeignKey provideForeignKey(PrimaryKey reference, View view, Column... columns)
+	{
+		return new MariaForeignKey(reference, view, columns);
 	}
 
 	public MariaInsert provideInsert()
@@ -186,6 +196,11 @@ public class MariaProvider extends AbstractProvider
 	public PlusOperator providePlusOperator()
 	{
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.PLUS));
+	}
+
+	public PrimaryKey providePrimaryKey(View view, Column... columns)
+	{
+		return new MariaPrimaryKey(view, columns);
 	}
 
 	public MariaRangeCondition provideRangeCondition()

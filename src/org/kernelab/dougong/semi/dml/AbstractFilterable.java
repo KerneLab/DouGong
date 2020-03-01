@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Filterable;
+import org.kernelab.dougong.semi.AbstractProvidable;
 
 public abstract class AbstractFilterable extends AbstractProvidable implements Filterable
 {

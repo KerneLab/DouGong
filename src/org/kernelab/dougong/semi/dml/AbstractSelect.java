@@ -13,6 +13,7 @@ import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Insert;
@@ -452,6 +453,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	protected AbstractSelect prepare()
 	{
 		return this;
+	}
+
+	public PrimaryKey primaryKey()
+	{
+		return null;
 	}
 
 	protected ComparisonCondition provideComparisonCondition()

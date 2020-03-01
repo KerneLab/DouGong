@@ -2,6 +2,7 @@ package org.kernelab.dougong.core;
 
 import java.util.Map;
 
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Deletable;
 import org.kernelab.dougong.core.dml.Item;
@@ -39,6 +40,13 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	 * @return The items map.
 	 */
 	public Map<String, Item> items();
+
+	/**
+	 * Return the PrimaryKey of this view.
+	 * 
+	 * @return The PrimaryKey or null if not defined.
+	 */
+	public PrimaryKey primaryKey();
 
 	/**
 	 * Get the text of this object as a view which could be selected from. Alias
