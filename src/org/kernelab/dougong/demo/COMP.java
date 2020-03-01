@@ -12,7 +12,7 @@ public class COMP extends AbstractTable
 {
 	@NameMeta(name = "COMP_ID")
 	@DataMeta(alias = "compId")
-	@PrimaryKeyMeta
+	@PrimaryKeyMeta(position = 1)
 	public Column	COMP_ID;
 
 	@NameMeta(name = "COM_NAME")

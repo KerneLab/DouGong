@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Primitive;
@@ -33,6 +34,11 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 		return this.provider().provideSelect().from(this.from()).where(this.where()).fullJoin(view, cond);
 	}
 
+	public Select fullJoin(View view, ForeignKey rels)
+	{
+		return fullJoin(view, rels.joinCondition());
+	}
+
 	public Select join(View view, Column... using)
 	{
 		return this.provider().provideSelect().from(this.from()).where(this.where()).join(view, using);
@@ -41,6 +47,11 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 	public Select join(View view, Condition cond)
 	{
 		return this.provider().provideSelect().from(this.from()).where(this.where()).join(view, cond);
+	}
+
+	public Select join(View view, ForeignKey rels)
+	{
+		return join(view, rels.joinCondition());
 	}
 
 	public Select leftJoin(View view, Column... using)
@@ -53,6 +64,11 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 		return this.provider().provideSelect().from(this.from()).where(this.where()).leftJoin(view, cond);
 	}
 
+	public Select leftJoin(View view, ForeignKey rels)
+	{
+		return leftJoin(view, rels.joinCondition());
+	}
+
 	public Select rightJoin(View view, Column... using)
 	{
 		return this.provider().provideSelect().from(this.from()).where(this.where()).rightJoin(view, using);
@@ -61,6 +77,11 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 	public Select rightJoin(View view, Condition cond)
 	{
 		return this.provider().provideSelect().from(this.from()).where(this.where()).rightJoin(view, cond);
+	}
+
+	public Select rightJoin(View view, ForeignKey rels)
+	{
+		return rightJoin(view, rels.joinCondition());
 	}
 
 	public Select select(Expression... exprs)

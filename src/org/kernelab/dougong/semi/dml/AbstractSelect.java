@@ -13,6 +13,7 @@ import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
@@ -183,6 +184,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public AbstractSelect fullJoin(View view, ForeignKey rels)
+	{
+		return fullJoin(view, rels.joinCondition());
+	}
+
 	public ComparisonCondition ge(Expression expr)
 	{
 		return this.provideComparisonCondition().eq(this, expr);
@@ -336,6 +342,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public AbstractSelect join(View view, ForeignKey rels)
+	{
+		return join(view, rels.joinCondition());
+	}
+
 	protected List<Join> joins()
 	{
 		return joins;
@@ -372,6 +383,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		joins().add(provider().provideJoin() //
 				.join(getLastFrom(), getLastJoin(), AbstractJoin.LEFT_JOIN, view, view.alias()).on(on));
 		return this;
+	}
+
+	public AbstractSelect leftJoin(View view, ForeignKey rels)
+	{
+		return leftJoin(view, rels.joinCondition());
 	}
 
 	public LikeCondition like(Expression pattern)
@@ -529,6 +545,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		joins().add(provider().provideJoin() //
 				.join(getLastFrom(), getLastJoin(), AbstractJoin.RIGHT_JOIN, view, view.alias()).on(on));
 		return this;
+	}
+
+	public AbstractSelect rightJoin(View view, ForeignKey rels)
+	{
+		return rightJoin(view, rels.joinCondition());
 	}
 
 	/**

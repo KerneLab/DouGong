@@ -13,17 +13,17 @@ public class STAF extends AbstractTable
 {
 	@NameMeta(name = "COMP_ID")
 	@DataMeta(alias = "compId")
-	@PrimaryKeyMeta
+	@PrimaryKeyMeta(position = 1)
 	public Column	COMP_ID;
 
 	@NameMeta(name = "DEPT_ID")
 	@DataMeta(alias = "deptId")
-	@PrimaryKeyMeta
+	@PrimaryKeyMeta(position = 2)
 	public Column	DEPT_ID;
 
 	@NameMeta(name = "STAF_ID")
 	@DataMeta(alias = "stafId")
-	@PrimaryKeyMeta
+	@PrimaryKeyMeta(position = 3)
 	public Column	STAF_ID;
 
 	@NameMeta(name = "STAF_NAME")
@@ -33,12 +33,12 @@ public class STAF extends AbstractTable
 	@DataMeta(value = "NVL(?stafSalary?,0.0)")
 	public Column	STAF_SALARY;
 
-	public ForeignKey foreignKeyOfCOMP(COMP ref)
+	public ForeignKey foreignKeyCOMP(COMP ref)
 	{
 		return this.foreignKey(ref, this.COMP_ID);
 	}
 
-	public ForeignKey foreignKeyOfCOMP(DEPT ref)
+	public ForeignKey foreignKeyDEPT(DEPT ref)
 	{
 		return this.foreignKey(ref, this.COMP_ID, this.DEPT_ID);
 	}

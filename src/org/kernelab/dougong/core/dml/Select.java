@@ -7,6 +7,7 @@ import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.ForeignKey;
 
 public interface Select
 		extends DML, Text, Alias, Item, View, Scope, Insertable, Updatable, Deletable, Source, Providable, Filterable
@@ -38,6 +39,14 @@ public interface Select
 	public Select rightJoin(View view, Column... using);
 
 	public Select fullJoin(View view, Column... using);
+
+	public Select join(View view, ForeignKey rels);
+
+	public Select leftJoin(View view, ForeignKey rels);
+
+	public Select rightJoin(View view, ForeignKey rels);
+
+	public Select fullJoin(View view, ForeignKey rels);
 
 	// //////////////////////////////////////////////////////
 
