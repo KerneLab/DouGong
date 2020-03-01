@@ -67,7 +67,8 @@ public class EntityMaker
 	public static final File makeTable(SQLKit kit, String name, String pkg, File base, String schema, String charSet)
 			throws FileNotFoundException, SQLException
 	{
-		return make(kit.query("SELECT * FROM " + name + " WHERE 0=1").getMetaData(), //
+		String tab = (Tools.notNullOrEmpty(schema) ? schema + "." : "") + name;
+		return make(kit.query("SELECT * FROM " + tab + " WHERE 0=1").getMetaData(), //
 				name, //
 				AbstractTable.class, //
 				pkg, //

@@ -17,7 +17,7 @@ import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.util.Utils;
 
-public abstract class AbstractTable extends AbstractView implements Table
+public abstract class AbstractTable extends AbstractEntity implements Table
 {
 	private String	schema	= null;
 

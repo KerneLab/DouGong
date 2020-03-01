@@ -18,7 +18,7 @@ import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.util.Utils;
 
-public class AbstractSubquery extends AbstractView implements Subquery
+public class AbstractSubquery extends AbstractEntity implements Subquery
 {
 	private Select select;
 

@@ -1,5 +1,6 @@
 package org.kernelab.dougong.core.dml;
 
+import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
@@ -9,7 +10,7 @@ import org.kernelab.dougong.core.dml.test.MembershipTestable;
 import org.kernelab.dougong.core.dml.test.NullTestable;
 import org.kernelab.dougong.core.dml.test.RangeTestable;
 
-public interface Subquery extends View, Scope, Insertable, Source, Expression, ComparisonTestable, LikeTestable,
+public interface Subquery extends View, Entity, Scope, Insertable, Source, Expression, ComparisonTestable, LikeTestable,
 		MembershipTestable, NullTestable, RangeTestable
 {
 	public Subquery alias(String alias);

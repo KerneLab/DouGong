@@ -6,17 +6,18 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.maria.MariaProvider;
+import org.kernelab.dougong.orcl.OracleProvider;
 
 public class TestJoin
 {
-	public static SQL	SQL	= new SQL(new MariaProvider());
+	// public static SQL SQL = new SQL(new MariaProvider());
 
-	// public static SQL SQL = new SQL(new OracleProvider());
+	public static SQL SQL = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelectWithJoinOnCondition().toString(new StringBuilder()));
+		// Tools.debug(makeSelectWithJoinOnCondition().toString(new
+		// StringBuilder()));
 		Tools.debug(makeSelectWithJoinUsingColumns().toString(new StringBuilder()));
 	}
 
@@ -40,10 +41,10 @@ public class TestJoin
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
-				.join(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
-				.select(c.COMP_ID, d.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
+		return SQL.from(c = SQL.table(COMP.class, "c")) //
+				.join(d = SQL.table(DEPT.class, "d"), d.COMP_ID) //
+				.join(s = SQL.table(STAF.class, "s"), s.COMP_ID, s.DEPT_ID) //
+				.select(c.COMP_ID, s.DEPT_ID, d.DEPT_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 		;
 	}
