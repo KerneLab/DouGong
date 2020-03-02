@@ -60,7 +60,7 @@ public interface Provider
 
 	public DivideOperator provideDivideOperator();
 
-	public ForeignKey provideForeignKey(PrimaryKey reference, View view, Column... columns);
+	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns);
 
 	public <T extends Function> T provideFunction(Class<T> cls);
 
@@ -157,7 +157,7 @@ public interface Provider
 
 	public PlusOperator providePlusOperator();
 
-	public PrimaryKey providePrimaryKey(View view, Column... columns);
+	public PrimaryKey providePrimaryKey(Entity entity, Column... columns);
 
 	public Primitive providePrimitive();
 

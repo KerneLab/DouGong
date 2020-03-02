@@ -1,19 +1,19 @@
 package org.kernelab.dougong.semi.ddl;
 
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.Key;
 import org.kernelab.dougong.semi.AbstractProvidable;
 
 public class AbstractKey extends AbstractProvidable implements Key
 {
+	private Entity		entity;
+
 	private Column[]	columns;
 
-	private View		view;
-
-	public AbstractKey(View view, Column... columns)
+	public AbstractKey(Entity entity, Column... columns)
 	{
-		this.view = view;
+		this.entity = entity;
 		this.columns = columns;
 	}
 
@@ -22,8 +22,8 @@ public class AbstractKey extends AbstractProvidable implements Key
 		return columns;
 	}
 
-	public View view()
+	public Entity entity()
 	{
-		return view;
+		return entity;
 	}
 }

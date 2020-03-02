@@ -1,7 +1,7 @@
 package org.kernelab.dougong.semi.ddl;
 
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
@@ -10,9 +10,9 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 {
 	private PrimaryKey reference;
 
-	public AbstractForeignKey(PrimaryKey reference, View view, Column... columns)
+	public AbstractForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
-		super(view, columns);
+		super(entity, columns);
 		this.reference = reference;
 	}
 

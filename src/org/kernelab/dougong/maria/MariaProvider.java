@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.View;
@@ -78,9 +79,9 @@ public class MariaProvider extends AbstractProvider
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
-	public ForeignKey provideForeignKey(PrimaryKey reference, View view, Column... columns)
+	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
-		return new MariaForeignKey(reference, view, columns);
+		return new MariaForeignKey(reference, entity, columns);
 	}
 
 	public MariaInsert provideInsert()
@@ -197,9 +198,9 @@ public class MariaProvider extends AbstractProvider
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
-	public PrimaryKey providePrimaryKey(View view, Column... columns)
+	public PrimaryKey providePrimaryKey(Entity entity, Column... columns)
 	{
-		return new MariaPrimaryKey(view, columns);
+		return new MariaPrimaryKey(entity, columns);
 	}
 
 	public MariaRangeCondition provideRangeCondition()

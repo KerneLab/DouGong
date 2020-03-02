@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.View;
@@ -90,9 +91,9 @@ public class OracleProvider extends AbstractProvider
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
-	public ForeignKey provideForeignKey(PrimaryKey reference, View view, Column... columns)
+	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
-		return new OracleForeignKey(reference, view, columns);
+		return new OracleForeignKey(reference, entity, columns);
 	}
 
 	public OracleInsert provideInsert()
@@ -227,9 +228,9 @@ public class OracleProvider extends AbstractProvider
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
-	public PrimaryKey providePrimaryKey(View view, Column... columns)
+	public PrimaryKey providePrimaryKey(Entity entity, Column... columns)
 	{
-		return new OraclePrimaryKey(view, columns);
+		return new OraclePrimaryKey(entity, columns);
 	}
 
 	public OraclePriorExpression providePriorExpression(Expression expr)
