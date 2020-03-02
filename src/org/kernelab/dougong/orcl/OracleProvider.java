@@ -16,6 +16,7 @@ import org.kernelab.dougong.core.dml.opr.DivideOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.orcl.ddl.OracleForeignKey;
 import org.kernelab.dougong.orcl.ddl.OraclePrimaryKey;
@@ -40,6 +41,7 @@ import org.kernelab.dougong.orcl.dml.opr.OracleArithmeticOperator;
 import org.kernelab.dougong.orcl.dml.opr.OracleCaseDecideExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleCaseSwitchExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleJointOperator;
+import org.kernelab.dougong.orcl.util.OracleKeysFetcher;
 import org.kernelab.dougong.semi.AbstractProvider;
 
 public class OracleProvider extends AbstractProvider
@@ -114,6 +116,11 @@ public class OracleProvider extends AbstractProvider
 	public OracleJointOperator provideJointOperator()
 	{
 		return this.provideProvider(new OracleJointOperator());
+	}
+
+	public KeysFetcher provideKeysFetcher()
+	{
+		return new OracleKeysFetcher();
 	}
 
 	public OracleLikeCondition provideLikeCondition()

@@ -1,11 +1,12 @@
 package org.kernelab.dougong.demo;
 
-import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.ddl.ForeignKey;
-import org.kernelab.dougong.core.meta.DataMeta;
+import org.kernelab.dougong.core.meta.ForeignKeyMeta;
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
-import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
+import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.semi.AbstractTable;
 
 @MemberMeta()
@@ -27,19 +28,16 @@ public class STAF extends AbstractTable
 	public Column	STAF_ID;
 
 	@NameMeta(name = "STAF_NAME")
+	@DataMeta(alias = "stafName")
 	public Column	STAF_NAME;
 
 	@NameMeta(name = "STAF_SALARY")
-	@DataMeta(value = "NVL(?stafSalary?,0.0)")
+	@DataMeta(alias = "stafSalary")
 	public Column	STAF_SALARY;
 
-	public ForeignKey foreignKeyCOMP(COMP ref)
+	@ForeignKeyMeta
+	public ForeignKey FRN_STAF(DEPT ref)
 	{
-		return this.foreignKey(ref, this.COMP_ID);
-	}
-
-	public ForeignKey foreignKeyDEPT(DEPT ref)
-	{
-		return this.foreignKey(ref, this.COMP_ID, this.DEPT_ID);
+		return foreignKey(ref, COMP_ID, DEPT_ID);
 	}
 }

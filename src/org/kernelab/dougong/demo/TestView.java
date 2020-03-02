@@ -10,20 +10,25 @@ import org.kernelab.dougong.semi.dml.PredeclaredView;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
+import org.kernelab.dougong.core.meta.DataMeta;
 
 @MemberMeta(follow = true)
 public class TestView extends PredeclaredView
 {
 	@NameMeta(name = "comp_id_1")
+	@DataMeta(alias = "compId1")
 	public Column	comp_id_1;
 
 	@NameMeta(name = "COMP_ID")
+	@DataMeta(alias = "compId")
 	public Column	COMP_ID;
 
 	@NameMeta(name = "DEPT_NAME")
+	@DataMeta(alias = "deptName")
 	public Column	DEPT_NAME;
 
 	@NameMeta(name = "STAF_NAME")
+	@DataMeta(alias = "stafName")
 	public Column	STAF_NAME;
 
 	@Override

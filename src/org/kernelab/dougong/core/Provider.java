@@ -31,6 +31,7 @@ import org.kernelab.dougong.core.dml.opr.JointOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.util.KeysFetcher;
 
 public interface Provider
 {
@@ -71,6 +72,8 @@ public interface Provider
 	public Join provideJoin();
 
 	public JointOperator provideJointOperator();
+
+	public KeysFetcher provideKeysFetcher();
 
 	public LikeCondition provideLikeCondition();
 

@@ -16,6 +16,7 @@ import org.kernelab.dougong.core.dml.opr.DivideOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.maria.ddl.MariaForeignKey;
 import org.kernelab.dougong.maria.ddl.MariaPrimaryKey;
@@ -102,6 +103,12 @@ public class MariaProvider extends AbstractProvider
 	public MariaJointOperator provideJointOperator()
 	{
 		return this.provideProvider(new MariaJointOperator());
+	}
+
+	public KeysFetcher provideKeysFetcher()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public MariaLikeCondition provideLikeCondition()

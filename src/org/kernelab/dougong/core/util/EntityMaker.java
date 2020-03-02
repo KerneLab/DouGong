@@ -6,23 +6,31 @@ import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.kernelab.basis.JSON;
+import org.kernelab.basis.Pair;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.io.DataWriter;
 import org.kernelab.basis.io.TextDataSource;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Table;
+import org.kernelab.dougong.core.Entity;
+import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.meta.DataMeta;
+import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
+import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.semi.AbstractTable;
 import org.kernelab.dougong.semi.dml.AbstractSubquery;
 import org.kernelab.dougong.semi.dml.PredeclaredView;
@@ -35,10 +43,13 @@ public class EntityMaker
 	{
 	}
 
-	public static final File make(ResultSetMetaData meta, String name, Class<?> sup, String pkg, File base,
-			String schema, String charSet, File template) throws FileNotFoundException, SQLException
+	public static final File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
+			String pkg, File base, String schema, String charSet, File template)
+			throws FileNotFoundException, SQLException
 	{
 		return new EntityMaker() //
+				.provider(provider) //
+				.kit(kit) //
 				.meta(meta) //
 				.name(name) //
 				.sup(sup) //
@@ -51,10 +62,12 @@ public class EntityMaker
 				.file();
 	}
 
-	public static final File makeSubquery(ResultSet rs, String name, String pkg, File base, String schema,
-			String charSet) throws FileNotFoundException, SQLException
+	public static final File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg,
+			File base, String schema, String charSet) throws FileNotFoundException, SQLException
 	{
-		return make(rs.getMetaData(), //
+		return make(provider, //
+				kit, //
+				rs.getMetaData(), //
 				name, //
 				AbstractSubquery.class, //
 				pkg, //
@@ -64,11 +77,13 @@ public class EntityMaker
 				null);
 	}
 
-	public static final File makeTable(SQLKit kit, String name, String pkg, File base, String schema, String charSet)
-			throws FileNotFoundException, SQLException
+	public static final File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String schema,
+			String charSet) throws FileNotFoundException, SQLException
 	{
 		String tab = (Tools.notNullOrEmpty(schema) ? schema + "." : "") + name;
-		return make(kit.query("SELECT * FROM " + tab + " WHERE 0=1").getMetaData(), //
+		return make(provider, //
+				kit, //
+				kit.query("SELECT * FROM " + tab + " WHERE 0=1").getMetaData(), //
 				name, //
 				AbstractTable.class, //
 				pkg, //
@@ -78,8 +93,8 @@ public class EntityMaker
 				null);
 	}
 
-	public static final File makeView(SQLKit kit, PredeclaredView view, String pkg, File base, String schema,
-			String charSet) throws FileNotFoundException, SQLException
+	public static final File makeView(Provider provider, SQLKit kit, PredeclaredView view, String pkg, File base,
+			String schema, String charSet) throws FileNotFoundException, SQLException
 	{
 		String name = view.getClass().getSimpleName();
 		String clsName = view.getClass().getCanonicalName();
@@ -91,7 +106,9 @@ public class EntityMaker
 
 		String sql = view.select().toString();
 
-		return make(kit.query(sql, view.parameters()).getMetaData(), //
+		return make(provider, //
+				kit, //
+				kit.query(sql, view.parameters()).getMetaData(), //
 				name, //
 				PredeclaredView.class, //
 				pkg, //
@@ -102,25 +119,33 @@ public class EntityMaker
 						+ ".java"));
 	}
 
-	private ResultSetMetaData	meta;
+	private Provider								provider;
 
-	private String				name;
+	private SQLKit									kit;
 
-	private Class<?>			sup;
+	private ResultSetMetaData						meta;
 
-	private String				pkg;
+	private String									name;
 
-	private File				base;
+	private Class<?>								sup;
 
-	private String				schema;
+	private String									pkg;
 
-	private String				cs;
+	private File									base;
 
-	private Set<String>			imports	= new LinkedHashSet<String>();
+	private String									schema;
 
-	private File				template;
+	private String									cs;
 
-	private List<String>		templateBody;
+	private Set<String>								imports	= new LinkedHashSet<String>();
+
+	private File									template;
+
+	private List<String>							templateBody;
+
+	private Map<String, Integer>					primaryKey;
+
+	private Map<Pair<String, String>, List<String>>	foreignKeys;
 
 	public File base()
 	{
@@ -144,6 +169,61 @@ public class EntityMaker
 		return this;
 	}
 
+	protected EntityMaker fetchForeignKeys(KeysFetcher keysFetcher)
+	{
+		if (keysFetcher != null && this.isEntity())
+		{
+			try
+			{
+				this.foreignKeys = keysFetcher.foreignKeys(kit(), name(), schema());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		if (this.foreignKeys == null)
+		{
+			this.foreignKeys = new HashMap<Pair<String, String>, List<String>>();
+		}
+
+		if (!this.foreignKeys.isEmpty())
+		{
+			this.imports.add(ForeignKey.class.getName());
+			this.imports.add(ForeignKeyMeta.class.getName());
+		}
+
+		return this;
+	}
+
+	protected EntityMaker fetchPrimaryKey(KeysFetcher keysFetcher)
+	{
+		if (keysFetcher != null && this.isEntity())
+		{
+			try
+			{
+				this.primaryKey = keysFetcher.primaryKey(kit(), name(), schema());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		if (this.primaryKey == null)
+		{
+			this.primaryKey = new HashMap<String, Integer>();
+		}
+
+		if (!this.primaryKey.isEmpty())
+		{
+			this.imports.add(PrimaryKeyMeta.class.getName());
+		}
+
+		return this;
+	}
+
 	public File file()
 	{
 		return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
@@ -151,9 +231,30 @@ public class EntityMaker
 				+ File.separatorChar + name() + ".java");
 	}
 
-	protected boolean isTable()
+	protected Map<Pair<String, String>, List<String>> getForeignKeys()
 	{
-		return Table.class.isAssignableFrom(sup());
+		return foreignKeys;
+	}
+
+	protected Map<String, Integer> getPrimaryKey()
+	{
+		return primaryKey;
+	}
+
+	protected boolean isEntity()
+	{
+		return Entity.class.isAssignableFrom(sup());
+	}
+
+	public SQLKit kit()
+	{
+		return kit;
+	}
+
+	public EntityMaker kit(SQLKit kit)
+	{
+		this.kit = kit;
+		return this;
 	}
 
 	public EntityMaker make() throws FileNotFoundException, SQLException
@@ -168,6 +269,10 @@ public class EntityMaker
 		}
 
 		DataWriter out = new DataWriter().setCharsetName(charSet()).setDataFile(file());
+
+		KeysFetcher keysFetcher = provider().provideKeysFetcher();
+		this.fetchPrimaryKey(keysFetcher);
+		this.fetchForeignKeys(keysFetcher);
 
 		this.outputHead(out).outputBody(out);
 
@@ -213,6 +318,8 @@ public class EntityMaker
 
 	protected EntityMaker outputBody(DataWriter out) throws SQLException
 	{
+		Map<String, Integer> pk = this.getPrimaryKey();
+
 		out.write("public class " + name() + " extends " + sup().getSimpleName());
 		out.write("{");
 
@@ -235,11 +342,21 @@ public class EntityMaker
 			column = meta().getColumnLabel(i);
 			name = JSON.EscapeString(column);
 			out.write("\t@NameMeta(name = \"" + name + "\")");
-			if (this.isTable())
+			if (this.isEntity())
 			{
 				out.write("\t@DataMeta(alias = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
+				if (pk.get(column) != null)
+				{
+					out.write("\t@PrimaryKeyMeta(ordinal = " + pk.get(column) + ")");
+				}
 			}
 			out.write("\tpublic Column\t" + wash(column) + ";");
+		}
+
+		for (Entry<Pair<String, String>, List<String>> entry : this.getForeignKeys().entrySet())
+		{
+			out.write();
+			outputForeignKey(out, entry.getKey().key, entry.getKey().value, entry.getValue());
 		}
 
 		if (this.templateBody != null)
@@ -256,6 +373,22 @@ public class EntityMaker
 		}
 
 		return this;
+	}
+
+	protected void outputForeignKey(DataWriter out, String table, String name, List<String> columns)
+	{
+		StringBuilder buf = new StringBuilder();
+		for (String column : columns)
+		{
+			buf.append(", ");
+			buf.append(wash(column));
+		}
+
+		out.write("\t@ForeignKeyMeta");
+		out.write("\tpublic ForeignKey " + wash(name) + "(" + table + " ref" + ")");
+		out.write("\t{");
+		out.write("\t\treturn foreignKey(ref" + buf.toString() + ");");
+		out.write("\t}");
 	}
 
 	protected EntityMaker outputHead(DataWriter out)
@@ -285,7 +418,7 @@ public class EntityMaker
 		imports.add(Column.class.getName());
 		imports.add(MemberMeta.class.getName());
 		imports.add(NameMeta.class.getName());
-		if (this.isTable())
+		if (this.isEntity())
 		{
 			imports.add(DataMeta.class.getName());
 		}
@@ -348,6 +481,17 @@ public class EntityMaker
 	public EntityMaker pkg(String pkg)
 	{
 		this.pkg = pkg;
+		return this;
+	}
+
+	public Provider provider()
+	{
+		return provider;
+	}
+
+	public EntityMaker provider(Provider provider)
+	{
+		this.provider = provider;
 		return this;
 	}
 
