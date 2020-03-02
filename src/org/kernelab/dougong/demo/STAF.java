@@ -13,17 +13,17 @@ public class STAF extends AbstractTable
 {
 	@NameMeta(name = "COMP_ID")
 	@DataMeta(alias = "compId")
-	@PrimaryKeyMeta(position = 1)
+	@PrimaryKeyMeta(ordinal = 1)
 	public Column	COMP_ID;
 
 	@NameMeta(name = "DEPT_ID")
 	@DataMeta(alias = "deptId")
-	@PrimaryKeyMeta(position = 2)
+	@PrimaryKeyMeta(ordinal = 2)
 	public Column	DEPT_ID;
 
 	@NameMeta(name = "STAF_ID")
 	@DataMeta(alias = "stafId")
-	@PrimaryKeyMeta(position = 3)
+	@PrimaryKeyMeta(ordinal = 3)
 	public Column	STAF_ID;
 
 	@NameMeta(name = "STAF_NAME")

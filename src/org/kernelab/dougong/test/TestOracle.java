@@ -7,7 +7,7 @@ import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
-import org.kernelab.dougong.semi.dml.AbstractWindowFunction;
+import org.kernelab.dougong.semi.AbstractWindowFunction;
 
 public class TestOracle
 {

@@ -6,10 +6,10 @@ import org.kernelab.dougong.semi.AbstractTable;
 
 public class DEPT extends AbstractTable
 {
-	@PrimaryKeyMeta(position = 1)
+	@PrimaryKeyMeta(ordinal = 1)
 	public Column	COMP_ID;
 
-	@PrimaryKeyMeta(position = 2)
+	@PrimaryKeyMeta(ordinal = 2)
 	public Column	DEPT_ID;
 
 	public Column	DEPT_NAME;

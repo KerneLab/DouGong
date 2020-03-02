@@ -1,10 +1,9 @@
-package org.kernelab.dougong.semi.dml;
+package org.kernelab.dougong.semi;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.WindowFunction;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.semi.AbstractFunction;
 
 public class AbstractWindowFunction extends AbstractFunction implements WindowFunction
 {

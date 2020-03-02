@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Documented
 public @interface PrimaryKeyMeta
 {
-	public int position();
+	public int ordinal();
 }

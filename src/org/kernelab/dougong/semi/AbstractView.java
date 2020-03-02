@@ -138,7 +138,7 @@ public abstract class AbstractView extends AbstractProvidable implements View
 			PrimaryKeyMeta meta = field.getAnnotation(PrimaryKeyMeta.class);
 			if (meta != null)
 			{
-				keys.put(meta.position(), this.getColumnByField(field));
+				keys.put(meta.ordinal(), this.getColumnByField(field));
 			}
 		}
 
