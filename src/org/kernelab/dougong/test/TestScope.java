@@ -27,7 +27,7 @@ public class TestScope
 		Items list = SQL.list(SQL.expr("1").as("h"), SQL.expr("2"));
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						d.DEPT_ID, //
 						d.DEPT_NAME, //

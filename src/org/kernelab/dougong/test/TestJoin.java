@@ -28,8 +28,8 @@ public class TestJoin
 		STAF s = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(c = SQL.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(c = SQL.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(c.COMP_ID, d.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 		;
@@ -42,8 +42,8 @@ public class TestJoin
 		STAF s = null;
 
 		return SQL.from(c = SQL.table(COMP.class, "c")) //
-				.join(d = SQL.table(DEPT.class, "d"), d.COMP_ID) //
-				.join(s = SQL.table(STAF.class, "s"), s.COMP_ID, s.DEPT_ID) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), d.COMP_ID) //
+				.innerJoin(s = SQL.table(STAF.class, "s"), s.COMP_ID, s.DEPT_ID) //
 				.select(c.COMP_ID, s.DEPT_ID, d.DEPT_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 		;

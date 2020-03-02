@@ -21,7 +21,7 @@ public class TestCondition
 		STAF s = SQL.table(STAF.class, "s");
 		DEPT d = SQL.table(DEPT.class, "d");
 
-		return SQL.from(s).join(d, s.DEPT_ID) //
+		return SQL.from(s).innerJoin(d, s.DEPT_ID) //
 				.where(s.STAF_SALARY.isNotNull().and(d.DEPT_ID.isNotNull().and(s.STAF_NAME.isNotNull()))) //
 				.select(d.DEPT_ID, s.STAF_ID, s.STAF_NAME);
 	}

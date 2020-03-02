@@ -24,7 +24,7 @@ public interface Select
 
 	// //////////////////////////////////////////////////////
 
-	public Select join(View view, Condition cond);
+	public Select innerJoin(View view, Condition cond);
 
 	public Select leftJoin(View view, Condition cond);
 
@@ -32,7 +32,7 @@ public interface Select
 
 	public Select fullJoin(View view, Condition cond);
 
-	public Select join(View view, Column... using);
+	public Select innerJoin(View view, Column... using);
 
 	public Select leftJoin(View view, Column... using);
 
@@ -40,7 +40,7 @@ public interface Select
 
 	public Select fullJoin(View view, Column... using);
 
-	public Select join(View view, ForeignKey rels);
+	public Select innerJoin(View view, ForeignKey rels);
 
 	public Select leftJoin(View view, ForeignKey rels);
 

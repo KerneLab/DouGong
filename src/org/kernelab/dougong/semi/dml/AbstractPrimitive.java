@@ -39,19 +39,19 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 		return fullJoin(view, rels.joinCondition());
 	}
 
-	public Select join(View view, Column... using)
+	public Select innerJoin(View view, Column... using)
 	{
-		return this.provider().provideSelect().from(this.from()).where(this.where()).join(view, using);
+		return this.provider().provideSelect().from(this.from()).where(this.where()).innerJoin(view, using);
 	}
 
-	public Select join(View view, Condition cond)
+	public Select innerJoin(View view, Condition cond)
 	{
-		return this.provider().provideSelect().from(this.from()).where(this.where()).join(view, cond);
+		return this.provider().provideSelect().from(this.from()).where(this.where()).innerJoin(view, cond);
 	}
 
-	public Select join(View view, ForeignKey rels)
+	public Select innerJoin(View view, ForeignKey rels)
 	{
-		return join(view, rels.joinCondition());
+		return innerJoin(view, rels.joinCondition());
 	}
 
 	public Select leftJoin(View view, Column... using)

@@ -23,8 +23,8 @@ public class TestForeignKey
 		DEPT d = SQL.table(DEPT.class, "d");
 		COMP c = SQL.table(COMP.class, "c");
 
-		return SQL.from(d).join(s, s.foreignKeyDEPT(d)) //
-				.join(c, s.foreignKeyCOMP(c)) //
+		return SQL.from(d).innerJoin(s, s.foreignKeyDEPT(d)) //
+				.innerJoin(c, s.foreignKeyCOMP(c)) //
 				.where(s.STAF_SALARY.isNotNull().and(d.DEPT_ID.isNotNull().and(s.STAF_NAME.isNotNull()))) //
 				.select(d.DEPT_ID, s.STAF_ID, s.STAF_NAME);
 	}

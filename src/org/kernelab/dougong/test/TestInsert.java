@@ -52,8 +52,8 @@ public class TestInsert
 		STAF s = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
-				.join(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
+				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
 				.select(d.COMP_ID) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID.descend()) //

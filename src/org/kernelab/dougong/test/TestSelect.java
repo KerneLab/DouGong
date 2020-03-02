@@ -26,7 +26,7 @@ public class TestSelect
 		STAF s = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						SQL.Case() //
 								.when(d.COMP_ID.gt(SQL.expr("1")), SQL.expr("'A'")) //
@@ -44,7 +44,7 @@ public class TestSelect
 		STAF s = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						s.STAF_ID, //
 						s.STAF_NAME.as("name") //
@@ -61,7 +61,7 @@ public class TestSelect
 		STAF s = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						s.all(), //
 						SQL.param("key").multiply(d.COMP_ID.plus(SQL.expr("2"))).as("k"), //
@@ -95,7 +95,7 @@ public class TestSelect
 		STAF s = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(SQL.all() //
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
@@ -109,7 +109,7 @@ public class TestSelect
 		STAF s = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID.as("c"), //
 						SQL.Case(d.COMP_ID).when(SQL.expr("1"), SQL.expr("'s'")).as("d"), //
 						s.all() //
@@ -126,7 +126,7 @@ public class TestSelect
 		STAF s = null;
 
 		Select sel = SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						s.STAF_NAME.as("name") //
 				) //
@@ -147,7 +147,7 @@ public class TestSelect
 		COMP c = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						SQL.from(c = SQL.table(COMP.class, "c")) //
 								.select(SQL.expr("1")) //
@@ -166,7 +166,7 @@ public class TestSelect
 		COMP c = null;
 
 		Select sel = SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						SQL.from(c = SQL.table(COMP.class, "c")) //
 								.select(SQL.expr("1")) //

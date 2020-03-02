@@ -48,24 +48,24 @@ public interface Primitive extends Filterable
 	public Select fullJoin(View view, ForeignKey rels);
 
 	/**
-	 * Create a Select which joining the given view with the using columns using
-	 * from and where information according to this object.
+	 * Create a Select which inner-joining the given view with the using columns
+	 * using from and where information according to this object.
 	 * 
 	 * @param view
 	 * @param using
 	 * @return
 	 */
-	public Select join(View view, Column... using);
+	public Select innerJoin(View view, Column... using);
 
 	/**
-	 * Create a Select which joining the given view with the condition using
-	 * from and where information according to this object.
+	 * Create a Select which inner-joining the given view with the condition
+	 * using from and where information according to this object.
 	 * 
 	 * @param view
 	 * @param cond
 	 * @return
 	 */
-	public Select join(View view, Condition cond);
+	public Select innerJoin(View view, Condition cond);
 
 	/**
 	 * Create a Select which inner-joining the given view with the foreign key
@@ -75,7 +75,7 @@ public interface Primitive extends Filterable
 	 * @param rels
 	 * @return
 	 */
-	public Select join(View view, ForeignKey rels);
+	public Select innerJoin(View view, ForeignKey rels);
 
 	/**
 	 * Create a Select which left-joining the given view with the using columns

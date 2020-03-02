@@ -25,7 +25,7 @@ public class TestLike
 		STAF s = null;
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.join(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						SQL.Case() //
 								.when(d.COMP_ID.gt(SQL.expr("1")), SQL.expr("'A'")) //

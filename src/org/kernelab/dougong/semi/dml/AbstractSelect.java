@@ -328,23 +328,23 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return items;
 	}
 
-	public AbstractSelect join(View view, Column... using)
+	public AbstractSelect innerJoin(View view, Column... using)
 	{
 		joins().add(provider().provideJoin() //
 				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).using(using));
 		return this;
 	}
 
-	public AbstractSelect join(View view, Condition on)
+	public AbstractSelect innerJoin(View view, Condition on)
 	{
 		joins().add(provider().provideJoin() //
 				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).on(on));
 		return this;
 	}
 
-	public AbstractSelect join(View view, ForeignKey rels)
+	public AbstractSelect innerJoin(View view, ForeignKey rels)
 	{
-		return join(view, rels.joinCondition());
+		return innerJoin(view, rels.joinCondition());
 	}
 
 	protected List<Join> joins()

@@ -20,7 +20,7 @@ public class DemoSelect
 		STAF s = null;
 
 		return SQL.from(d = SQL.table(DEPT.class, "d")) //
-				.join(s = SQL.table(STAF.class, "s"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.innerJoin(s = SQL.table(STAF.class, "s"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID.as("comp"), //
 						s.DEPT_ID.as("dept"), //
 						s.STAF_ID.as("staf"), //
