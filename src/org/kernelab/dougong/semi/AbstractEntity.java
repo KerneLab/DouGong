@@ -1,4 +1,4 @@
-package org.kernelab.dougong.semi.dml;
+package org.kernelab.dougong.semi;
 
 import org.kernelab.dougong.core.Entity;
 

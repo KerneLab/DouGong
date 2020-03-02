@@ -3,7 +3,7 @@ package org.kernelab.dougong.test;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
-import org.kernelab.dougong.semi.dml.AbstractTable;
+import org.kernelab.dougong.semi.AbstractTable;
 
 @MemberMeta()
 public class TEST_TABLE extends AbstractTable

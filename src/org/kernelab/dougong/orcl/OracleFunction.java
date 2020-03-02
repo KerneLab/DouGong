@@ -1,6 +1,7 @@
-package org.kernelab.dougong.orcl.dml;
+package org.kernelab.dougong.orcl;
 
-import org.kernelab.dougong.semi.dml.AbstractFunction;
+import org.kernelab.dougong.orcl.dml.OracleSortable;
+import org.kernelab.dougong.semi.AbstractFunction;
 
 public class OracleFunction extends AbstractFunction implements OracleSortable
 {

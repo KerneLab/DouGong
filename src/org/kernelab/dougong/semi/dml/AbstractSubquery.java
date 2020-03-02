@@ -17,6 +17,7 @@ import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.semi.AbstractEntity;
 
 public class AbstractSubquery extends AbstractEntity implements Subquery
 {

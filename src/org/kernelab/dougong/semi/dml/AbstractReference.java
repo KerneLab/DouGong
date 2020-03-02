@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Reference;
+import org.kernelab.dougong.semi.AbstractColumn;
 
 public abstract class AbstractReference extends AbstractColumn implements Reference
 {

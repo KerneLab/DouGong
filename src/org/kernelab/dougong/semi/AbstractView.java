@@ -1,4 +1,4 @@
-package org.kernelab.dougong.semi.dml;
+package org.kernelab.dougong.semi;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -21,7 +21,6 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.semi.AbstractProvidable;
 
 public abstract class AbstractView extends AbstractProvidable implements View
 {

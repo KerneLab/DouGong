@@ -19,7 +19,6 @@ import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.maria.ddl.MariaForeignKey;
 import org.kernelab.dougong.maria.ddl.MariaPrimaryKey;
 import org.kernelab.dougong.maria.dml.MariaAllItems;
-import org.kernelab.dougong.maria.dml.MariaColumn;
 import org.kernelab.dougong.maria.dml.MariaDelete;
 import org.kernelab.dougong.maria.dml.MariaInsert;
 import org.kernelab.dougong.maria.dml.MariaItems;

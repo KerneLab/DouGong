@@ -12,7 +12,7 @@ import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
-import org.kernelab.dougong.semi.dml.AbstractTable;
+import org.kernelab.dougong.semi.AbstractTable;
 
 @MemberMeta(schema = "fdsafd")
 public class TestTable extends AbstractTable

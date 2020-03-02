@@ -19,7 +19,6 @@ import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.orcl.ddl.OracleForeignKey;
 import org.kernelab.dougong.orcl.ddl.OraclePrimaryKey;
 import org.kernelab.dougong.orcl.dml.OracleAllItems;
-import org.kernelab.dougong.orcl.dml.OracleColumn;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
 import org.kernelab.dougong.orcl.dml.OracleInsert;
 import org.kernelab.dougong.orcl.dml.OracleItems;

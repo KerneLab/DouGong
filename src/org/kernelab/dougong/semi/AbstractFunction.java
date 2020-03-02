@@ -1,9 +1,10 @@
-package org.kernelab.dougong.semi.dml;
+package org.kernelab.dougong.semi;
 
 import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.semi.dml.AbstractItem;
 
 public class AbstractFunction extends AbstractItem implements Function
 {

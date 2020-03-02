@@ -23,8 +23,8 @@ import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
+import org.kernelab.dougong.semi.AbstractTable;
 import org.kernelab.dougong.semi.dml.AbstractSubquery;
-import org.kernelab.dougong.semi.dml.AbstractTable;
 import org.kernelab.dougong.semi.dml.PredeclaredView;
 
 public class EntityMaker

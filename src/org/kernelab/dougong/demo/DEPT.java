@@ -2,7 +2,7 @@ package org.kernelab.dougong.demo;
 
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
-import org.kernelab.dougong.semi.dml.AbstractTable;
+import org.kernelab.dougong.semi.AbstractTable;
 
 public class DEPT extends AbstractTable
 {

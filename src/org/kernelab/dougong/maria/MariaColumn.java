@@ -1,9 +1,9 @@
-package org.kernelab.dougong.maria.dml;
+package org.kernelab.dougong.maria;
 
 import java.lang.reflect.Field;
 
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.semi.dml.AbstractColumn;
+import org.kernelab.dougong.semi.AbstractColumn;
 
 public class MariaColumn extends AbstractColumn
 {
