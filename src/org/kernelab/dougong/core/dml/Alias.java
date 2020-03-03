@@ -1,4 +1,4 @@
-package org.kernelab.dougong.core;
+package org.kernelab.dougong.core.dml;
 
 public interface Alias extends Cloneable
 {

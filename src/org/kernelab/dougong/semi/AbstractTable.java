@@ -7,10 +7,10 @@ import java.util.Map.Entry;
 
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.AllItems;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.util.Utils;
 

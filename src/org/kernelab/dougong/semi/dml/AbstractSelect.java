@@ -1,15 +1,16 @@
 package org.kernelab.dougong.semi.dml;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
@@ -17,6 +18,7 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
@@ -59,7 +61,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private Expression[]			orderBy		= null;
 
-	private Map<String, Item>		items		= null;
+	private List<Item>				items		= new LinkedList<Item>();
+
+	private Map<String, Item>		itemsMap	= null;
 
 	private Expression				skip		= null;
 
@@ -125,7 +129,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public AbstractSelect fillAliasByMeta()
 	{
-		for (Expression item : this.select())
+		for (Item item : this.items())
 		{
 			Column column = Tools.as(item, Column.class);
 
@@ -236,6 +240,25 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideMembershipCondition().in(this, scope);
 	}
 
+	public AbstractSelect innerJoin(View view, Column... using)
+	{
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).using(using));
+		return this;
+	}
+
+	public AbstractSelect innerJoin(View view, Condition on)
+	{
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).on(on));
+		return this;
+	}
+
+	public AbstractSelect innerJoin(View view, ForeignKey rels)
+	{
+		return innerJoin(view, rels.joinCondition());
+	}
+
 	public <T extends Insertable> Insert insert(T target, Column... columns)
 	{
 		return this.provider().provideInsert().into(target).columns(columns).values(this);
@@ -259,14 +282,20 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public Item item(String refer)
 	{
-		return items().get(refer);
+		return itemsMap().get(refer);
 	}
 
-	public Map<String, Item> items()
+	public List<Item> items()
 	{
-		if (items == null)
+		return items;
+	}
+
+	public Map<String, Item> itemsMap()
+	{
+		// TODO
+		if (itemsMap == null)
 		{
-			items = new LinkedHashMap<String, Item>();
+			itemsMap = new LinkedHashMap<String, Item>();
 
 			if (select() != null)
 			{
@@ -281,24 +310,24 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 						{
 							for (View from : froms())
 							{
-								for (Entry<String, Item> entry : from.items().entrySet())
+								for (Entry<String, Item> entry : from.itemsMap().entrySet())
 								{
-									items.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+									itemsMap.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
 								}
 							}
 							for (Join join : joins())
 							{
-								for (Entry<String, Item> entry : join.view().items().entrySet())
+								for (Entry<String, Item> entry : join.view().itemsMap().entrySet())
 								{
-									items.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+									itemsMap.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
 								}
 							}
 						}
 						else
 						{
-							for (Entry<String, Item> entry : all.view().items().entrySet())
+							for (Entry<String, Item> entry : all.view().itemsMap().entrySet())
 							{
-								items.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+								itemsMap.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
 							}
 						}
 					}
@@ -312,7 +341,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 							for (Expression exp : ((Items) expr).list())
 							{
 								ref = provider().provideReference(this, exp);
-								items.put(ref.name(), ref);
+								itemsMap.put(ref.name(), ref);
 							}
 						}
 					}
@@ -320,31 +349,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 					{
 						// Single expression
 						Reference ref = provider().provideReference(this, expr);
-						items.put(ref.name(), ref);
+						itemsMap.put(ref.name(), ref);
 					}
 				}
 			}
 		}
-		return items;
-	}
-
-	public AbstractSelect innerJoin(View view, Column... using)
-	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).using(using));
-		return this;
-	}
-
-	public AbstractSelect innerJoin(View view, Condition on)
-	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).on(on));
-		return this;
-	}
-
-	public AbstractSelect innerJoin(View view, ForeignKey rels)
-	{
-		return innerJoin(view, rels.joinCondition());
+		return itemsMap;
 	}
 
 	protected List<Join> joins()
@@ -364,6 +374,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 
 		return this.provideJointOperator().operate(exprs);
+	}
+
+	public String label()
+	{
+		return alias() != null ? alias() : Tools.substr(toStringExpress(new StringBuilder()), 0, 30);
 	}
 
 	public ComparisonCondition le(Expression expr)
@@ -533,6 +548,28 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provider().provideRangeCondition();
 	}
 
+	public List<Item> resolveItems()
+	{
+		return Tools.listOfArray(new ArrayList<Item>(), this);
+	}
+
+	protected List<Item> resolveItemsFromViews()
+	{
+		List<Item> items = new LinkedList<Item>();
+
+		for (View view : froms())
+		{
+			items.addAll(view.items());
+		}
+
+		for (Join join : joins())
+		{
+			items.addAll(join.view().items());
+		}
+
+		return items;
+	}
+
 	public AbstractSelect rightJoin(View view, Column... using)
 	{
 		joins().add(provider().provideJoin() //
@@ -569,6 +606,54 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public AbstractSelect select(Expression... exprs)
 	{
 		this.select = exprs;
+
+		items().clear();
+
+		if (exprs != null)
+		{
+			List<Item> items = new LinkedList<Item>();
+
+			for (Expression expr : exprs)
+			{
+				if (expr instanceof AllItems)
+				{
+					AllItems all = (AllItems) expr;
+					items.addAll(all.view() != null ? all.resolveItems() : this.resolveItemsFromViews());
+				}
+				else
+				{
+					items.addAll(expr.resolveItems());
+				}
+			}
+
+			Set<String> using = new HashSet<String>();
+
+			Column col = null;
+			for (Item item : items)
+			{
+				if ((col = Tools.as(item, Column.class)) != null)
+				{
+					if (col.isUsingByJoin())
+					{
+						if (!using.contains(col.name()))
+						{
+							items().add(col);
+							using.add(col.name());
+
+						}
+					}
+					else
+					{
+						items().add(col);
+					}
+				}
+				else
+				{
+					items().add(item);
+				}
+			}
+		}
+
 		return this;
 	}
 
@@ -667,9 +752,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		boolean first = true;
 
-		for (Expression expr : select())
+		for (Item item : items())
 		{
-			if (expr != null)
+			if (item != null)
 			{
 				if (first)
 				{
@@ -680,7 +765,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				{
 					buffer.append(',');
 				}
-				expr.toStringSelected(buffer);
+				item.toStringSelected(buffer);
 			}
 		}
 	}

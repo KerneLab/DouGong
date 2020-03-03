@@ -1,7 +1,9 @@
 package org.kernelab.dougong.core;
 
+import java.util.List;
 import java.util.Map;
 
+import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Deletable;
 import org.kernelab.dougong.core.dml.Item;
@@ -32,13 +34,21 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	public Item item(String refer);
 
 	/**
+	 * Get the real items on this view which including the items represented by
+	 * {@code *}.
+	 * 
+	 * @return
+	 */
+	public List<Item> items();
+
+	/**
 	 * Return a <name, Item> map to describe the items could be selected from
 	 * this View. The key of map must be the reference name of the item which
 	 * might be alias name or its own name.
 	 * 
 	 * @return The items map.
 	 */
-	public Map<String, Item> items();
+	public Map<String, Item> itemsMap();
 
 	/**
 	 * Get the text of this object as a view which could be selected from. Alias

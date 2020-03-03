@@ -1,6 +1,6 @@
 package org.kernelab.dougong.maria.dml.opr;
 
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.semi.dml.opr.AbstractVarinaryResult;
 
 public class MariaJointResult extends AbstractVarinaryResult

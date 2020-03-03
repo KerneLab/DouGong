@@ -1,7 +1,7 @@
 package org.kernelab.dougong.semi;
 
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.WindowFunction;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.util.Utils;
 

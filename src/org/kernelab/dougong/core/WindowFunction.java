@@ -1,5 +1,7 @@
 package org.kernelab.dougong.core;
 
+import org.kernelab.dougong.core.dml.Expression;
+
 public interface WindowFunction extends Function
 {
 	public Expression[] orderBy();

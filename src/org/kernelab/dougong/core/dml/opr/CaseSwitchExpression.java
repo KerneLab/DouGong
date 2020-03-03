@@ -3,7 +3,7 @@ package org.kernelab.dougong.core.dml.opr;
 import java.util.List;
 
 import org.kernelab.basis.Relation;
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 
 public interface CaseSwitchExpression extends CaseExpression
 {

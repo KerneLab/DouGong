@@ -1,13 +1,13 @@
 package org.kernelab.dougong;
 
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
@@ -33,7 +33,7 @@ public class SQL
 
 	public AllItems all()
 	{
-		return provider().provideAllItems(null);
+		return provider().provideTotalItems();
 	}
 
 	public CaseDecideExpression Case()

@@ -21,7 +21,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	{
 		String name = Utils.getNameFromField(field);
 
-		Column column = Tools.as(items().get(name), Column.class);
+		Column column = Tools.as(itemsMap().get(name), Column.class);
 
 		if (column == null)
 		{
@@ -72,7 +72,8 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 				{
 					col = this.getColumnByField(field);
 					field.set(this, col);
-					items().put(col.name(), col);
+					items().add(col);
+					itemsMap().put(col.name(), col);
 				}
 			}
 			catch (Exception e)

@@ -17,7 +17,7 @@ public class TestSelect
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelectAliasByMeta().toString(new StringBuilder()));
+		Tools.debug(makeSelectAllAliasByMeta().toString(new StringBuilder()));
 	}
 
 	public static Select makeSelectCase()
@@ -33,6 +33,20 @@ public class TestSelect
 								// .els(SQL.expr("'Z'")) //
 								.as("c") //
 				) //
+				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.orderBy(d.COMP_ID) //
+		;
+	}
+
+	public static Select makeSelectAllAliasByMeta()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "s")) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(SQL.all()) //
+				.as(AbstractSelect.class).fillAliasByMeta() //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
@@ -85,7 +99,7 @@ public class TestSelect
 		return SQL.from(sub) //
 				.select(sub.item("id"), //
 						sub.item("name") //
-				) //
+		) //
 		;
 	}
 
@@ -177,7 +191,7 @@ public class TestSelect
 				.orderBy(d.COMP_ID) //
 		;
 
-		Tools.debug(sel.items());
+		Tools.debug(sel.itemsMap());
 
 		return sel;
 	}

@@ -1,8 +1,8 @@
 package org.kernelab.dougong.semi;
 
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.dml.AbstractItem;
 

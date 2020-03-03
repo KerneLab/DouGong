@@ -1,8 +1,6 @@
 package org.kernelab.dougong.core.dml;
 
-import org.kernelab.dougong.core.Alias;
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Text;

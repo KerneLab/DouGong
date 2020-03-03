@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.kernelab.basis.Relation;
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
 import org.kernelab.dougong.core.util.Utils;
 

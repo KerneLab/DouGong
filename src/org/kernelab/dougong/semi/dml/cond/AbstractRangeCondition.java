@@ -1,6 +1,6 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
 
 public abstract class AbstractRangeCondition extends AbstractNegatableCondition implements RangeCondition

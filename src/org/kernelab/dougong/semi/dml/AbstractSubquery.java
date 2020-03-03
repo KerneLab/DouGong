@@ -1,8 +1,13 @@
 package org.kernelab.dougong.semi.dml;
 
-import org.kernelab.dougong.core.Expression;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.dml.AllItems;
+import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
@@ -230,6 +235,11 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	{
 		this.select = select;
 		return this;
+	}
+
+	public List<Item> resolveItems()
+	{
+		return Tools.listOfArray(new ArrayList<Item>(1), this.select());
 	}
 
 	public StringBuilder toString(StringBuilder buffer)

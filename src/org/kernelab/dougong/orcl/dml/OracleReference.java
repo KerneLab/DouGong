@@ -1,7 +1,7 @@
 package org.kernelab.dougong.orcl.dml;
 
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.semi.dml.AbstractReference;
 
 public class OracleReference extends AbstractReference

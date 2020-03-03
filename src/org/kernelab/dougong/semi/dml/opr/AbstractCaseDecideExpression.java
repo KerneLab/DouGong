@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.kernelab.basis.Relation;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
 import org.kernelab.dougong.core.util.Utils;
 

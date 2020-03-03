@@ -1,6 +1,8 @@
 package org.kernelab.dougong.semi;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.kernelab.basis.Tools;
@@ -14,9 +16,11 @@ import org.kernelab.dougong.core.dml.Update;
 
 public abstract class AbstractView extends AbstractProvidable implements View
 {
-	private String				alias	= null;
+	private String				alias		= null;
 
-	private Map<String, Item>	items	= new LinkedHashMap<String, Item>();
+	private List<Item>			items		= new LinkedList<Item>();
+
+	private Map<String, Item>	itemsMap	= new LinkedHashMap<String, Item>();
 
 	public AbstractView()
 	{
@@ -46,12 +50,17 @@ public abstract class AbstractView extends AbstractProvidable implements View
 
 	public Item item(String refer)
 	{
-		return items().get(refer);
+		return itemsMap().get(refer);
 	}
 
-	public Map<String, Item> items()
+	public List<Item> items()
 	{
 		return items;
+	}
+
+	public Map<String, Item> itemsMap()
+	{
+		return itemsMap;
 	}
 
 	public Select select()

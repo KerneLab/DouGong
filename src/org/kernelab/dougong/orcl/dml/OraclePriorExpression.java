@@ -1,6 +1,9 @@
 package org.kernelab.dougong.orcl.dml;
 
-import org.kernelab.dougong.core.Expression;
+import java.util.List;
+
+import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.orcl.OracleProvider;
 
@@ -31,6 +34,11 @@ public class OraclePriorExpression extends OracleExpression
 	protected OraclePriorExpression replicate()
 	{
 		return new OraclePriorExpression(this.provider(), this.expression());
+	}
+
+	public List<Item> resolveItems()
+	{ // Prior should not be the select item.
+		return null;
 	}
 
 	public StringBuilder toString(StringBuilder buffer)

@@ -1,6 +1,6 @@
 package org.kernelab.dougong.core.dml.opr;
 
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 
 public interface CaseExpression extends Item

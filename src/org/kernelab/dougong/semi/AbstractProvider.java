@@ -2,18 +2,20 @@ package org.kernelab.dougong.semi;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
-import org.kernelab.dougong.core.Alias;
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Member;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
+import org.kernelab.dougong.core.dml.Alias;
+import org.kernelab.dougong.core.dml.AllItems;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
+import org.kernelab.dougong.semi.dml.AbstractTotalItems;
 
 public abstract class AbstractProvider implements Provider
 {
@@ -24,6 +26,11 @@ public abstract class AbstractProvider implements Provider
 	public String provideAliasLabel(String alias)
 	{
 		return Tools.notNullOrEmpty(alias) ? provideNameText(alias) : null;
+	}
+
+	public AllItems provideTotalItems()
+	{
+		return new AbstractTotalItems();
 	}
 
 	public <T extends Function> T provideFunction(Class<T> cls)

@@ -3,9 +3,9 @@ package org.kernelab.dougong.orcl.dml;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
@@ -79,7 +79,7 @@ public class OracleSelect extends AbstractSelect
 
 				List<Expression> list = new LinkedList<Expression>();
 
-				list.addAll(semi.items().values());
+				list.addAll(semi.itemsMap().values());
 				list.remove(list.size() - 1);
 
 				return (OracleSelect) provider().provideSelect() //

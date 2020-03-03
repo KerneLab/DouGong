@@ -14,20 +14,8 @@ import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
 import org.kernelab.dougong.core.dml.opr.Result;
 
-public abstract class AbstractAllItems implements AllItems
+public class AbstractTotalItems implements AllItems
 {
-	private View view;
-
-	public AbstractAllItems(View view)
-	{
-		this.view = view;
-	}
-
-	public List<Item> resolveItems()
-	{
-		return view.items();
-	}
-
 	public RangeCondition between(Expression from, Expression to)
 	{
 		return null;
@@ -123,6 +111,16 @@ public abstract class AbstractAllItems implements AllItems
 		return null;
 	}
 
+	public List<Item> resolveItems()
+	{
+		return null;
+	}
+
+	public StringBuilder toString(StringBuilder buffer)
+	{
+		return buffer.append(ALL_COLUMNS);
+	}
+
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
@@ -135,6 +133,6 @@ public abstract class AbstractAllItems implements AllItems
 
 	public View view()
 	{
-		return view;
+		return null;
 	}
 }

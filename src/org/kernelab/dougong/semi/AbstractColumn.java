@@ -86,6 +86,12 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 		return using;
 	}
 
+	@Override
+	public String label()
+	{
+		return alias() != null ? alias() : name();
+	}
+
 	public String name()
 	{
 		return name;

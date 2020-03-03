@@ -1,11 +1,11 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;

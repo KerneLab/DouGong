@@ -1,6 +1,6 @@
 package org.kernelab.dougong.orcl.dml;
 
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;

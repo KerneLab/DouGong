@@ -1,7 +1,11 @@
 package org.kernelab.dougong.semi.dml;
 
-import org.kernelab.dougong.core.Expression;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Scope;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -79,6 +83,11 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 	public LikeCondition like(Expression pattern)
 	{
 		return this.provideLikeCondition().like(this, pattern);
+	}
+
+	protected <T> List<T> listOf(T... es)
+	{
+		return Tools.listOfArray(new ArrayList<T>(es.length), es);
 	}
 
 	public ComparisonCondition lt(Expression expr)

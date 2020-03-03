@@ -1,7 +1,6 @@
 package org.kernelab.dougong.core.dml;
 
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.View;
 
 public interface Update extends DML, Filterable

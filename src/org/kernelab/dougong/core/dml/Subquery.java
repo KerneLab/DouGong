@@ -1,7 +1,6 @@
 package org.kernelab.dougong.core.dml;
 
 import org.kernelab.dougong.core.Entity;
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.test.ComparisonTestable;

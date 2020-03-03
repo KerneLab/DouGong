@@ -5,8 +5,10 @@ import java.lang.reflect.Field;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
+import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Delete;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
@@ -42,6 +44,11 @@ public interface Provider
 	 * @return The label string or null if the name was an illegal alias name.
 	 */
 	public String provideAliasLabel(String name);
+
+	/**
+	 * Provide an AllItems object which stands for total items of all Views.
+	 */
+	public AllItems provideTotalItems();
 
 	/**
 	 * Provide an AllItems object which stands for all items of the View. The

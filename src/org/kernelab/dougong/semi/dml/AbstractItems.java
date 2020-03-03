@@ -1,8 +1,12 @@
 package org.kernelab.dougong.semi.dml;
 
-import org.kernelab.dougong.core.Expression;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
@@ -109,6 +113,18 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 	}
 
 	protected abstract AbstractItems replicate();
+
+	public List<Item> resolveItems()
+	{
+		List<Item> list = new LinkedList<Item>();
+
+		for (Expression expr : list())
+		{
+			list.addAll(expr.resolveItems());
+		}
+
+		return list;
+	}
 
 	public StringBuilder toString(StringBuilder buffer)
 	{

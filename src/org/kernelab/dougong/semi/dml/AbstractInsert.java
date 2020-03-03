@@ -1,7 +1,7 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Column;
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Source;

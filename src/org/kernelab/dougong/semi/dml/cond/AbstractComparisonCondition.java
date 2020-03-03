@@ -1,6 +1,6 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 
 public abstract class AbstractComparisonCondition extends AbstractComposableCondition implements ComparisonCondition

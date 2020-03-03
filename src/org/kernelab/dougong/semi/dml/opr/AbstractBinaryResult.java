@@ -1,8 +1,8 @@
 package org.kernelab.dougong.semi.dml.opr;
 
-import org.kernelab.dougong.core.Expression;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractBinaryResult extends AbstractResult implements Providable

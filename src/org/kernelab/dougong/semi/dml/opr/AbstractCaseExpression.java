@@ -1,13 +1,13 @@
 package org.kernelab.dougong.semi.dml.opr;
 
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.opr.CaseExpression;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.dml.AbstractItem;
 
 public abstract class AbstractCaseExpression extends AbstractItem implements CaseExpression
 {
-	private Expression	els;
+	private Expression els;
 
 	@Override
 	public AbstractCaseExpression alias(String alias)

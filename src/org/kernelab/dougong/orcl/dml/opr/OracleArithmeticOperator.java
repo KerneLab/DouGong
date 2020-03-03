@@ -1,6 +1,6 @@
 package org.kernelab.dougong.orcl.dml.opr;
 
-import org.kernelab.dougong.core.Expression;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.semi.dml.opr.AbstractArithmeticOperator;
 
