@@ -12,6 +12,7 @@ import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Label;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
@@ -127,6 +128,11 @@ public abstract class AbstractProvider implements Provider
 
 	public String provideReferName(Expression expr)
 	{
+		if (expr instanceof Label)
+		{
+			return ((Label) expr).label();
+		}
+
 		String refer = null;
 
 		if (expr instanceof Alias)

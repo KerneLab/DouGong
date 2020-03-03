@@ -19,11 +19,14 @@ public class OracleReference extends AbstractReference
 
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		String alias = this.view().provider().provideAliasLabel(view().alias());
-		if (alias != null && !isUsingByJoin())
+		if (!isUsingByJoin())
 		{
-			buffer.append(alias);
-			buffer.append('.');
+			String alias = this.view().provider().provideAliasLabel(view().alias());
+			if (alias != null)
+			{
+				buffer.append(alias);
+				buffer.append('.');
+			}
 		}
 		this.view().provider().provideOutputNameText(buffer, name());
 		return buffer;

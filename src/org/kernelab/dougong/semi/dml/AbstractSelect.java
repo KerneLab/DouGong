@@ -559,12 +559,19 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 		for (View view : froms())
 		{
-			items.addAll(view.items());
+			for (Item item : view.items())
+			{
+				items.add(provider().provideReference(view, item));
+			}
 		}
 
 		for (Join join : joins())
 		{
-			items.addAll(join.view().items());
+			View view = join.view();
+			for (Item item : view.items())
+			{
+				items.add(provider().provideReference(view, item));
+			}
 		}
 
 		return items;

@@ -17,39 +17,7 @@ public class TestSelect
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelectAllAliasByMeta().toString(new StringBuilder()));
-	}
-
-	public static Select makeSelectCase()
-	{
-		DEPT d = null;
-		STAF s = null;
-
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(d.COMP_ID, //
-						SQL.Case() //
-								.when(d.COMP_ID.gt(SQL.expr("1")), SQL.expr("'A'")) //
-								// .els(SQL.expr("'Z'")) //
-								.as("c") //
-				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
-				.orderBy(d.COMP_ID) //
-		;
-	}
-
-	public static Select makeSelectAllAliasByMeta()
-	{
-		DEPT d = null;
-		STAF s = null;
-
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(SQL.all()) //
-				.as(AbstractSelect.class).fillAliasByMeta() //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
-				.orderBy(d.COMP_ID) //
-		;
+		Tools.debug(makeSelectNested().toString(new StringBuilder()));
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -63,6 +31,20 @@ public class TestSelect
 						s.STAF_ID, //
 						s.STAF_NAME.as("name") //
 				) //
+				.as(AbstractSelect.class).fillAliasByMeta() //
+				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.orderBy(d.COMP_ID) //
+		;
+	}
+
+	public static Select makeSelectAllAliasByMeta()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "s")) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(SQL.all()) //
 				.as(AbstractSelect.class).fillAliasByMeta() //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
@@ -87,22 +69,6 @@ public class TestSelect
 		;
 	}
 
-	public static Select makeSelectSubquery()
-	{
-		STAF s = null;
-
-		Select sub = SQL.from(s = SQL.table(STAF.class, "s")) //
-				.select(s.STAF_ID.as("id"), //
-						s.STAF_NAME.as("name") //
-				).as("sub");
-
-		return SQL.from(sub) //
-				.select(sub.item("id"), //
-						sub.item("name") //
-		) //
-		;
-	}
-
 	public static Select makeSelectAllColumns1()
 	{
 		DEPT d = null;
@@ -111,6 +77,24 @@ public class TestSelect
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(SQL.all() //
+				) //
+				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.orderBy(d.COMP_ID) //
+		;
+	}
+
+	public static Select makeSelectCase()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "s")) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.COMP_ID, //
+						SQL.Case() //
+								.when(d.COMP_ID.gt(SQL.expr("1")), SQL.expr("'A'")) //
+								// .els(SQL.expr("'Z'")) //
+								.as("c") //
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
@@ -131,6 +115,27 @@ public class TestSelect
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 				.limit(SQL.expr("0"), SQL.expr("1")) //
+		;
+	}
+
+	public static Select makeSelectNested()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		Select sel = SQL.from(s = SQL.table(STAF.class, "s")) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.FRN_STAF(d)) //
+				.select(d.all(), //
+						s.STAF_NAME.as("name") //
+				) //
+				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.orderBy(d.COMP_ID) //
+				.as(AbstractSelect.class).fillAliasByMeta()
+		// .as("t") //
+		;
+
+		return SQL.from(sel) //
+				.select(SQL.all()) //
 		;
 	}
 
@@ -170,6 +175,22 @@ public class TestSelect
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
+		;
+	}
+
+	public static Select makeSelectSubquery()
+	{
+		STAF s = null;
+
+		Select sub = SQL.from(s = SQL.table(STAF.class, "s")) //
+				.select(s.STAF_ID.as("id"), //
+						s.STAF_NAME.as("name") //
+				).as("sub");
+
+		return SQL.from(sub) //
+				.select(sub.item("id"), //
+						sub.item("name") //
+		) //
 		;
 	}
 
