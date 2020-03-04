@@ -3,6 +3,7 @@ package org.kernelab.dougong.core.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,6 +83,34 @@ public class Utils
 		{
 			return null;
 		}
+	}
+
+	public static String getDataLabelFromField(Field field)
+	{
+		if (field != null)
+		{
+			String alias = getDataAliasFromField(field);
+			return alias != null ? alias : field.getName();
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public static Map<String, Object> getFieldNameMapByMeta(Class<?> cls)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		for (Field field : cls.getDeclaredFields())
+		{
+			if (field.getAnnotation(DataMeta.class) != null)
+			{
+				map.put(field.getName(), getDataLabelFromField(field));
+			}
+		}
+
+		return map;
 	}
 
 	public static Map<String, Field> getMappingFields(Class<?> cls, Map<String, Field> result)
