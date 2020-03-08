@@ -3,6 +3,7 @@ package org.kernelab.dougong.core.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.meta.DataMeta;
+import org.kernelab.dougong.core.meta.ManyToOneMeta;
 import org.kernelab.dougong.core.meta.MappingMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
@@ -111,6 +113,39 @@ public class Utils
 		}
 
 		return map;
+	}
+
+	/**
+	 * Get label/field map defined by DataMeta of the given class.
+	 * 
+	 * @param cls
+	 * @return
+	 */
+	public static Map<String, Field> getLabelFieldMapByMeta(Class<?> cls)
+	{
+		Map<String, Field> map = new HashMap<String, Field>();
+
+		for (Field field : cls.getDeclaredFields())
+		{
+			if (field.getAnnotation(DataMeta.class) != null)
+			{
+				map.put(getDataLabelFromField(field), field);
+			}
+		}
+
+		return map;
+	}
+
+	public static Field getManyToOneField(Class<?> manyClass)
+	{
+		for (Field field : manyClass.getDeclaredFields())
+		{
+			if (field.getAnnotation(ManyToOneMeta.class) != null)
+			{
+				return field;
+			}
+		}
+		return null;
 	}
 
 	public static Map<String, Field> getMappingFields(Class<?> cls, Map<String, Field> result)
@@ -273,9 +308,37 @@ public class Utils
 		}
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws SQLException
 	{
-		Tools.debug(Utils.class.getSimpleName());
+
+	}
+
+	public static <T> Map<String, Object> mapObjectByMeta(T object)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		Object value = null;
+
+		for (Field field : object.getClass().getDeclaredFields())
+		{
+			DataMeta meta = field.getAnnotation(DataMeta.class);
+
+			if (meta != null)
+			{
+				try
+				{
+					value = Tools.access(object, field);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					value = null;
+				}
+				map.put(getDataLabelFromField(field), value);
+			}
+		}
+
+		return map;
 	}
 
 	public static <T> JSON mapObjectToJSON(T obj, JSON json, Map<String, Field> map)

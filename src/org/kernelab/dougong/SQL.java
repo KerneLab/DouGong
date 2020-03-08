@@ -138,16 +138,16 @@ public class SQL
 	}
 
 	/**
-	 * Make a StringItem <b>?key?</b> which represents a single item holder
+	 * Make a StringItem {@code ?name?} which represents a single item holder
 	 * according to the given key.
 	 * 
 	 * @param key
-	 *            The item name.
+	 *            The parameter name.
 	 * @return
 	 */
 	public StringItem param(String key)
 	{
-		return expr("?" + key + "?");
+		return provider().provideParameter(key);
 	}
 
 	public Provider provider()
@@ -186,5 +186,10 @@ public class SQL
 	public <T extends Table> T table(Class<T> cls, String alias)
 	{
 		return provider().provideTable(cls).as(alias);
+	}
+
+	public <T extends View> T view(Class<T> cls)
+	{
+		return provider().provideView(cls);
 	}
 }

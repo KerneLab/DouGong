@@ -46,11 +46,6 @@ public interface Provider
 	public String provideAliasLabel(String name);
 
 	/**
-	 * Provide an AllItems object which stands for total items of all Views.
-	 */
-	public AllItems provideTotalItems();
-
-	/**
 	 * Provide an AllItems object which stands for all items of the View. The
 	 * view could be null which means all items from all source views.
 	 */
@@ -165,11 +160,15 @@ public interface Provider
 
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table);
 
+	public StringItem provideParameter(String name);
+
 	public PlusOperator providePlusOperator();
 
 	public PrimaryKey providePrimaryKey(Entity entity, Column... columns);
 
 	public Primitive providePrimitive();
+
+	public <T extends Providable> T provideProvider(Providable providable);
 
 	public RangeCondition provideRangeCondition();
 
@@ -205,5 +204,12 @@ public interface Provider
 
 	public <T extends Table> T provideTable(Class<T> cls);
 
+	/**
+	 * Provide an AllItems object which stands for total items of all Views.
+	 */
+	public AllItems provideTotalItems();
+
 	public Update provideUpdate();
+
+	public <T extends View> T provideView(Class<T> cls);
 }

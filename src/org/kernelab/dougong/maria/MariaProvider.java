@@ -82,7 +82,7 @@ public class MariaProvider extends AbstractProvider
 
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
-		return new MariaForeignKey(reference, entity, columns);
+		return provideProvider(new MariaForeignKey(reference, entity, columns));
 	}
 
 	public MariaInsert provideInsert()
@@ -207,7 +207,7 @@ public class MariaProvider extends AbstractProvider
 
 	public PrimaryKey providePrimaryKey(Entity entity, Column... columns)
 	{
-		return new MariaPrimaryKey(entity, columns);
+		return provideProvider(new MariaPrimaryKey(entity, columns));
 	}
 
 	public MariaRangeCondition provideRangeCondition()
@@ -217,7 +217,7 @@ public class MariaProvider extends AbstractProvider
 
 	public MariaReference provideReference(View view, Expression expr)
 	{
-		return new MariaReference(view, expr);
+		return provideProvider(new MariaReference(view, expr));
 	}
 
 	public MariaSelect provideSelect()
@@ -227,7 +227,7 @@ public class MariaProvider extends AbstractProvider
 
 	public MariaStringItem provideStringItem(String item)
 	{
-		return (MariaStringItem) new MariaStringItem(this).setString(item);
+		return (MariaStringItem) provideProvider(new MariaStringItem(this).setString(item));
 	}
 
 	public MariaUpdate provideUpdate()

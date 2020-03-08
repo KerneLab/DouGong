@@ -23,6 +23,7 @@ public @interface DataMeta
 	 * The value expression.<br/>
 	 * Which would be used to generate insert values' expression if alias is not
 	 * specified.<br/>
+	 * This item will be ignored in insert if not empty but white.
 	 */
 	public String value() default "";
 }

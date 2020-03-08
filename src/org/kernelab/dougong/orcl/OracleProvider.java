@@ -95,17 +95,17 @@ public class OracleProvider extends AbstractProvider
 
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
-		return new OracleForeignKey(reference, entity, columns);
+		return provideProvider(new OracleForeignKey(reference, entity, columns));
 	}
 
 	public OracleInsert provideInsert()
 	{
-		return this.provideProvider(new OracleInsert());
+		return provideProvider(new OracleInsert());
 	}
 
 	public OracleItems provideItems()
 	{
-		return this.provideProvider(new OracleItems());
+		return provideProvider(new OracleItems());
 	}
 
 	public OracleJoin provideJoin()
@@ -115,7 +115,7 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleJointOperator provideJointOperator()
 	{
-		return this.provideProvider(new OracleJointOperator());
+		return provideProvider(new OracleJointOperator());
 	}
 
 	public KeysFetcher provideKeysFetcher()
@@ -140,12 +140,12 @@ public class OracleProvider extends AbstractProvider
 
 	public MinusOperator provideMinusOperator()
 	{
-		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MINUS));
+		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MINUS));
 	}
 
 	public MultiplyOperator provideMultiplyOperator()
 	{
-		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MULTIPLY));
+		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MULTIPLY));
 	}
 
 	public String provideNameText(String name)
@@ -232,12 +232,12 @@ public class OracleProvider extends AbstractProvider
 
 	public PlusOperator providePlusOperator()
 	{
-		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.PLUS));
+		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
 	public PrimaryKey providePrimaryKey(Entity entity, Column... columns)
 	{
-		return new OraclePrimaryKey(entity, columns);
+		return provideProvider(new OraclePrimaryKey(entity, columns));
 	}
 
 	public OraclePriorExpression providePriorExpression(Expression expr)
@@ -252,7 +252,7 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleReference provideReference(View view, Expression expr)
 	{
-		return new OracleReference(view, expr);
+		return provideProvider(new OracleReference(view, expr));
 	}
 
 	public OracleSelect provideSelect()
@@ -262,7 +262,7 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleStringItem provideStringItem(String item)
 	{
-		return (OracleStringItem) new OracleStringItem(this).setString(item);
+		return (OracleStringItem) provideProvider(new OracleStringItem(this).setString(item));
 	}
 
 	public OracleUpdate provideUpdate()

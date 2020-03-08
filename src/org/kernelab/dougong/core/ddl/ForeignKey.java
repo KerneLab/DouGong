@@ -6,5 +6,7 @@ public interface ForeignKey extends DDL, Key
 {
 	public Condition joinCondition();
 
+	public Condition queryCondition();
+
 	public PrimaryKey reference();
 }

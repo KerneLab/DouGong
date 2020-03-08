@@ -4,26 +4,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 
-import org.kernelab.basis.sql.DataBase;
-import org.kernelab.basis.sql.DataBase.OracleClient;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.util.EntityMaker;
-import org.kernelab.dougong.orcl.OracleProvider;
+import org.kernelab.dougong.demo.Config;
 
 public class TestEntityMaker
 {
 	public static void main(String[] args) throws SQLException, FileNotFoundException
 	{
-		Provider provider = new OracleProvider();
-		DataBase db = new OracleClient("orcl", "test", "TEST");
-
-		// Provider provider = new MariaProvider();
-		// DataBase db = new MariaDB("localhost", 3316, "test", "test", "test");
-
+		Provider provider = Config.ORACLE_PROVIDER;
 		SQL sql = new SQL(provider);
-		SQLKit kit = db.getSQLKit();
+		SQLKit kit = Config.getSQLKit();
 
 		File base = new File("E:\\project\\dougong\\src");
 

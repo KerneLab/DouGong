@@ -4,6 +4,7 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
+import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 
 public abstract class AbstractForeignKey extends AbstractKey implements ForeignKey
@@ -37,6 +38,13 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 		}
 
 		return c;
+	}
+
+	public Condition queryCondition()
+	{
+		Column[] columns = new Column[this.reference().columns().length];
+		System.arraycopy(this.columns(), 0, columns, 0, columns.length);
+		return queryCondition(columns);
 	}
 
 	public PrimaryKey reference()
