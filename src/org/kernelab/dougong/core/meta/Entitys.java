@@ -2,26 +2,33 @@ package org.kernelab.dougong.core.meta;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.kernelab.basis.JSON;
+import org.kernelab.basis.Pair;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.sql.SQLKit;
+import org.kernelab.basis.sql.Sequel;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.demo.Company;
 import org.kernelab.dougong.demo.Config;
+import org.kernelab.dougong.semi.AbstractEntity;
+import org.kernelab.dougong.semi.AbstractTable;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public abstract class Entitys
@@ -73,6 +80,68 @@ public abstract class Entitys
 		}
 	}
 
+	/**
+	 * Get columns that generating values defined in Entity.
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public static Pair<Short, Column[]> getGenerateValueColumns(Entity entity)
+	{
+		GenerateValueMeta meta = null;
+
+		List<Column> columns = new LinkedList<Column>();
+
+		Column column = null;
+
+		for (Field field : entity.getClass().getDeclaredFields())
+		{
+			if (AbstractEntity.isColumnField(field))
+			{
+				meta = field.getAnnotation(GenerateValueMeta.class);
+
+				if (meta != null)
+				{
+					try
+					{
+						column = (Column) Tools.access(entity, field);
+
+						switch (meta.strategy())
+						{
+							case GenerateValueMeta.AUTO:
+								try
+								{
+									columns.add(column);
+								}
+								catch (Exception e)
+								{
+									e.printStackTrace();
+								}
+								break;
+
+							case GenerateValueMeta.IDENTITY:
+								return new Pair<Short, Column[]>(GenerateValueMeta.IDENTITY, new Column[] { column });
+						}
+					}
+					catch (Exception e1)
+					{
+						e1.printStackTrace();
+					}
+
+				}
+			}
+		}
+
+		if (columns.isEmpty())
+		{
+			return null;
+		}
+		else
+		{
+			return new Pair<Short, Column[]>(GenerateValueMeta.AUTO, columns.toArray(new Column[columns.size()]));
+		}
+	}
+
 	public static String getLabelFromColumnByMeta(Column column)
 	{
 		return Utils.getDataLabelFromField(column.field());
@@ -95,12 +164,83 @@ public abstract class Entitys
 		return mapColumnToLabelByMeta(mapValuesFromReferenceByForeignKey(reference, foreignKey));
 	}
 
+	public static <T> int insertObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		Entity entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+
+		Insert insert = entity.as(AbstractTable.class).insertByMetaMap();
+
+		Tools.debug(insert.toString(new StringBuilder()));
+
+		Pair<Short, Column[]> generateColumns = getGenerateValueColumns(entity);
+
+		Map<String, Object> params = Entitys.mapObjectByMeta(object);
+
+		Tools.debug(params);
+
+		PreparedStatement stmt = null;
+
+		if (generateColumns == null)
+		{
+			stmt = kit.prepareStatement(insert.toString(), params);
+		}
+		else if (generateColumns.key == GenerateValueMeta.IDENTITY)
+		{
+			stmt = kit.prepareStatement(insert.toString(), params, true);
+		}
+		else if (generateColumns.key == GenerateValueMeta.AUTO)
+		{
+			Column[] columns = generateColumns.value;
+			String[] generateColumnNames = new String[columns.length];
+			for (int i = 0; i < columns.length; i++)
+			{
+				generateColumnNames[i] = columns[i].name();
+			}
+			stmt = kit.prepareStatement(insert.toString(), params, generateColumnNames);
+		}
+
+		Sequel seq = kit.execute(stmt, params);
+
+		// Set generate values
+		if (generateColumns != null)
+		{
+			Column[] columns = generateColumns.value;
+			Sequel gen = seq.getGeneratedKeys();
+			Object val = null;
+			Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass());
+			for (int i = 0; i < columns.length; i++)
+			{
+				val = gen.getValueObject(i + 1);
+				try
+				{
+					Tools.access(object, fields.get(Utils.getDataLabelFromField(columns[i].field())), val);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+
+		// TODO insert one to many
+
+		return 0;
+	}
+
 	public static void main(String[] args) throws SQLException
 	{
-		Company c = Entitys.queryObjectByPrimaryKey(Config.getSQLKit(), Config.SQL, Company.class,
-				new JSON().attr("compId", "1"));
+		// Company c = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(),
+		// Config.SQL, Company.class,
+		// new JSON().attr("compId", "1"));
+		//
+		// Tools.debug(c);
 
-		Tools.debug(c);
+		Company company = new Company();
+		company.setName("Bbb");
+
+		Entitys.insertObject(Config.getSQLKit(), Config.SQL, company);
+
+		Tools.debug(company.getId());
 	}
 
 	/**
@@ -116,6 +256,34 @@ public abstract class Entitys
 		for (Entry<Column, Object> entry : data.entrySet())
 		{
 			map.put(getLabelFromColumnByMeta(entry.getKey()), entry.getValue());
+		}
+
+		return map;
+	}
+
+	public static <T> Map<String, Object> mapObjectByMeta(T object)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		Object value = null;
+
+		for (Field field : object.getClass().getDeclaredFields())
+		{
+			DataMeta meta = field.getAnnotation(DataMeta.class);
+
+			if (meta != null)
+			{
+				try
+				{
+					value = Tools.access(object, field);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					value = null;
+				}
+				map.put(Utils.getDataLabelFromField(field), value);
+			}
 		}
 
 		return map;
@@ -168,7 +336,7 @@ public abstract class Entitys
 		return map;
 	}
 
-	public static <T> T queryObjectByPrimaryKey(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
+	public static <T> T selectObjectByPrimaryKey(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
 	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, model);
 		Select select = sql.from(entity) //

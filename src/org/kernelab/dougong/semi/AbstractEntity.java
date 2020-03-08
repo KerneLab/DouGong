@@ -17,6 +17,41 @@ import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractEntity extends AbstractView implements Entity
 {
+	public static boolean isColumnField(Field field)
+	{
+		int mod = field.getModifiers();
+
+		try
+		{
+			if (Tools.isSubClass(field.getType(), Column.class) //
+					&& Modifier.isPublic(mod) //
+					&& !Modifier.isStatic(mod) //
+					&& !Modifier.isFinal(mod))
+			{
+				return true;
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	protected ForeignKey foreignKey(Entity ref, Column... columns)
+	{
+		PrimaryKey pk = ref.primaryKey();
+
+		if (pk == null)
+		{
+			return null;
+		}
+		else
+		{
+			return this.provider().provideForeignKey(pk, this, columns);
+		}
+	}
+
 	protected Column getColumnByField(Field field)
 	{
 		String name = Utils.getNameFromField(field);
@@ -35,25 +70,11 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	{
 		List<Field> fields = new LinkedList<Field>();
 
-		int mod = 0;
-
 		for (Field field : this.getClass().getFields())
 		{
-			mod = field.getModifiers();
-
-			try
+			if (isColumnField(field))
 			{
-				if (Tools.isSubClass(field.getType(), Column.class) //
-						&& Modifier.isPublic(mod) //
-						&& !Modifier.isStatic(mod) //
-						&& !Modifier.isFinal(mod))
-				{
-					fields.add(field);
-				}
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
+				fields.add(field);
 			}
 		}
 
@@ -103,20 +124,6 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		else
 		{
 			return provider().providePrimaryKey(this, keys.values().toArray(new Column[keys.size()]));
-		}
-	}
-
-	protected ForeignKey foreignKey(Entity ref, Column... columns)
-	{
-		PrimaryKey pk = ref.primaryKey();
-
-		if (pk == null)
-		{
-			return null;
-		}
-		else
-		{
-			return this.provider().provideForeignKey(pk, this, columns);
 		}
 	}
 

@@ -65,7 +65,14 @@ public class Utils
 			{
 				if (Tools.notNullOrEmpty(meta.value()))
 				{
-					return sql.expr(meta.value());
+					if (Tools.notNullOrWhite(meta.value()))
+					{
+						return sql.expr(meta.value());
+					}
+					else
+					{
+						return null;
+					}
 				}
 				else if (Tools.notNullOrEmpty(meta.alias()))
 				{
@@ -311,34 +318,6 @@ public class Utils
 	public static void main(String[] args) throws SQLException
 	{
 
-	}
-
-	public static <T> Map<String, Object> mapObjectByMeta(T object)
-	{
-		Map<String, Object> map = new HashMap<String, Object>();
-
-		Object value = null;
-
-		for (Field field : object.getClass().getDeclaredFields())
-		{
-			DataMeta meta = field.getAnnotation(DataMeta.class);
-
-			if (meta != null)
-			{
-				try
-				{
-					value = Tools.access(object, field);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-					value = null;
-				}
-				map.put(getDataLabelFromField(field), value);
-			}
-		}
-
-		return map;
 	}
 
 	public static <T> JSON mapObjectToJSON(T obj, JSON json, Map<String, Field> map)
