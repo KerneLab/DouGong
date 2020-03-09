@@ -23,6 +23,7 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.demo.Company;
@@ -64,6 +65,28 @@ public abstract class Entitys
 	public static <T> Entity getEntityFromModelClass(SQL sql, Class<T> model)
 	{
 		return sql.view(getEntityClassFromModel(model));
+	}
+
+	public static ForeignKey getForeignKeyBetweenEntitys(String name, Entity a, Entity b)
+	{
+		try
+		{
+			Method method = a.getClass().getDeclaredMethod(name, b.getClass());
+			return (ForeignKey) method.invoke(a, b);
+		}
+		catch (Exception e)
+		{
+			try
+			{
+				Method method = b.getClass().getDeclaredMethod(name, a.getClass());
+				return (ForeignKey) method.invoke(b, a);
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+				return null;
+			}
+		}
 	}
 
 	public static ForeignKey getForeignKeyFromEntity(Entity entity, String name, Entity refer)
@@ -334,6 +357,32 @@ public abstract class Entitys
 			map.put(columns[i], reference.get(refers[i]));
 		}
 		return map;
+	}
+
+	public static void select(SQL sql, Entity entity, OneToManyMeta oneToManyMeta, JoinMeta joinMeta)
+	{
+		Primitive p = sql.from(entity);
+
+		Select sel = null;
+		if (joinMeta != null)
+		{
+			Entity last = entity, curr = null;
+			for (JoinDefine join : joinMeta.joins())
+			{
+				curr = sql.view(join.entity());
+				if (sel == null)
+				{
+					sel = p.innerJoin(curr, getForeignKeyBetweenEntitys(join.foreignKey(), last, curr));
+				}
+				else
+				{
+					sel = sel.innerJoin(curr, getForeignKeyBetweenEntitys(join.foreignKey(), last, curr));
+				}
+				last = curr;
+			}
+		}
+
+		// TODO select from entity and joins
 	}
 
 	public static <T> T selectObjectByPrimaryKey(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException

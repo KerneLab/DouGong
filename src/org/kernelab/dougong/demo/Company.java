@@ -1,22 +1,47 @@
 package org.kernelab.dougong.demo;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.EntityMeta;
+import org.kernelab.dougong.core.meta.JoinDefine;
+import org.kernelab.dougong.core.meta.JoinMeta;
 import org.kernelab.dougong.core.meta.OneToManyMeta;
 
 @EntityMeta(entity = COMP.class)
 public class Company
 {
+	public static void main(String[] args)
+	{
+		for (Field field : Company.class.getDeclaredFields())
+		{
+			JoinMeta joinMeta = field.getAnnotation(JoinMeta.class);
+
+			if (joinMeta != null)
+			{
+				for (JoinDefine def : joinMeta.joins())
+				{
+					Tools.debug(def.entity() + " " + def.foreignKey());
+				}
+			}
+		}
+	}
+
 	@DataMeta(alias = "compId")
-	public String					id;
+	private String					id;
 
 	@DataMeta(alias = "compName")
-	public String					name;
+	private String					name;
 
 	@OneToManyMeta(model = Department.class, foreignKey = "FRN_DEPT")
-	public Collection<Department>	departments;
+	private Collection<Department>	departments;
+
+	@OneToManyMeta(model = Staff.class, foreignKey = "")
+	@JoinMeta(joins = { @JoinDefine(entity = DEPT.class, foreignKey = "FRN_DEPT"),
+			@JoinDefine(entity = STAF.class, foreignKey = "FRN_STAF") })
+	private Collection<Staff>		staffs;
 
 	public Collection<Department> getDepartments()
 	{
