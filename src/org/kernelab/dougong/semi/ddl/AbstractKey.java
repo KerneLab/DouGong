@@ -9,7 +9,7 @@ import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.AbstractProvidable;
 
-public class AbstractKey extends AbstractProvidable implements Key
+public abstract class AbstractKey extends AbstractProvidable implements Key
 {
 	private Entity		entity;
 

@@ -22,6 +22,7 @@ import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.Key;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
@@ -252,18 +253,23 @@ public abstract class Entitys
 
 	public static void main(String[] args) throws SQLException
 	{
-		// Company c = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(),
-		// Config.SQL, Company.class,
-		// new JSON().attr("compId", "1"));
+		Company c = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(), Config.SQL, Company.class,
+				new JSON().attr("compId", "1"));
+
+		Tools.debug(c);
+
+		// Company company = new Company();
+		// company.setName("Bbb");
 		//
-		// Tools.debug(c);
+		// Entitys.insertObject(Config.getSQLKit(), Config.SQL, company);
+		//
+		// Tools.debug(company.getId());
 
-		Company company = new Company();
-		company.setName("Bbb");
-
-		Entitys.insertObject(Config.getSQLKit(), Config.SQL, company);
-
-		Tools.debug(company.getId());
+		Entity entity = getEntityFromModelClass(Config.SQL, Company.class);
+		for (Field field : Company.class.getDeclaredFields())
+		{
+			select(Config.SQL, entity, field.getAnnotation(JoinMeta.class));
+		}
 	}
 
 	/**
@@ -359,27 +365,48 @@ public abstract class Entitys
 		return map;
 	}
 
-	public static void select(SQL sql, Entity entity, OneToManyMeta oneToManyMeta, JoinMeta joinMeta)
+	public static void select(SQL sql, Entity origin, JoinMeta joinMeta)
 	{
-		Primitive p = sql.from(entity);
-
+		Primitive prm = null;
 		Select sel = null;
+
 		if (joinMeta != null)
 		{
-			Entity last = entity, curr = null;
+			Entity first = null, last = null, curr = null;
+			int i = 0;
 			for (JoinDefine join : joinMeta.joins())
 			{
 				curr = sql.view(join.entity());
-				if (sel == null)
+				curr.alias("t" + i);
+				if (first == null)
 				{
-					sel = p.innerJoin(curr, getForeignKeyBetweenEntitys(join.foreignKey(), last, curr));
+					first = curr;
+				}
+				if (last == null)
+				{
+					prm = sql.from(curr);
+				}
+				else if (sel == null)
+				{
+					sel = prm.innerJoin(curr, getForeignKeyBetweenEntitys(join.foreignKey(), last, curr));
 				}
 				else
 				{
 					sel = sel.innerJoin(curr, getForeignKeyBetweenEntitys(join.foreignKey(), last, curr));
 				}
 				last = curr;
+				i++;
 			}
+
+			sel.select(curr.all());
+
+			ForeignKey fk = getForeignKeyBetweenEntitys(joinMeta.joins()[0].foreignKey(), origin, first);
+
+			Key key = first == fk.entity() ? fk : fk.reference();
+
+			sel.where(key.queryCondition());
+
+			Tools.debug(sel.toString());
 		}
 
 		// TODO select from entity and joins
