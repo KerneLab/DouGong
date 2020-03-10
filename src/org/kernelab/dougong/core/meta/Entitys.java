@@ -120,7 +120,7 @@ public abstract class Entitys
 
 		for (Field field : entity.getClass().getDeclaredFields())
 		{
-			if (AbstractEntity.isColumnField(field))
+			if (AbstractEntity.isColumn(field))
 			{
 				meta = field.getAnnotation(GenerateValueMeta.class);
 

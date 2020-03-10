@@ -32,7 +32,7 @@ public class Department
 
 	public String getCompId()
 	{
-		return this.getCompany().getId();
+		return this.getCompany() != null ? this.getCompany().getId() : this.compId;
 	}
 
 	public String getId()
@@ -57,6 +57,7 @@ public class Department
 
 	public void setCompId(String compId)
 	{
+		this.compId = compId;
 	}
 
 	public void setId(String id)
