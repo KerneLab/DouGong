@@ -16,12 +16,14 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.Key;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.meta.EntityMeta;
 import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.demo.COMP;
+import org.kernelab.dougong.demo.Company;
 import org.kernelab.dougong.demo.Config;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.Department;
@@ -65,7 +67,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 	public static ForeignKey findForeignKeyBetweenEntitys(String name, Entity a, Entity b)
 	{
-		if (Tools.notNullOrWhite(name))
+		if (Tools.notNullOrEmpty(name))
 		{
 			try
 			{
@@ -98,7 +100,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 		for (Field field : entity.getClass().getDeclaredFields())
 		{
-			if (Tools.isSubClass(field.getType(), Column.class))
+			if (isColumn(field))
 			{
 				try
 				{
@@ -112,6 +114,12 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 
 		return columns;
+	}
+
+	public static Column[] getColumnsArray(Entity entity)
+	{
+		Set<Column> columns = getColumns(entity);
+		return columns.toArray(new Column[columns.size()]);
 	}
 
 	public static boolean isColumn(Field field)
@@ -171,6 +179,24 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 	}
 
+	public static void main(String[] args)
+	{
+		// TODO
+		Company compObj = new Company();
+		compObj.setId("1");
+		compObj.setName("Cm.1");
+
+		Department deptObj = new Department();
+		deptObj.setCompId("1");
+		deptObj.setId("a");
+		deptObj.setName("Dep.A");
+
+		DEPT dep = Config.SQL.view(DEPT.class);
+		COMP com = Config.SQL.view(COMP.class);
+
+		Tools.debug(dep.mapValues(compObj, dep.FRN_DEPT(com)));
+	}
+
 	/**
 	 * Get a map which contains columns against corresponding values of in the
 	 * object.
@@ -200,32 +226,6 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		return map;
 	}
 
-	public static Map<Column, Object> mapValuesToColumns(Map<Column, Object> map, Column[] source, Column[] target)
-	{
-		Map<Column, Object> res = new HashMap<Column, Object>();
-		for (int i = 0; i < target.length; i++)
-		{
-			res.put(target[i], map.get(source[i]));
-		}
-		return res;
-	}
-
-	public static void main(String[] args)
-	{
-		// TODO
-		Department deptObj = new Department();
-		deptObj.setCompId("1");
-		deptObj.setId("a");
-
-		Entity dep = Config.SQL.view(DEPT.class);
-		Entity com = Config.SQL.view(COMP.class);
-
-		Map<Column, Object> map = mapObjectValuesToColumns(Config.PROVIDER, deptObj, com, "",
-				com.primaryKey().columns());
-
-		Tools.debug(map);
-	}
-
 	public static Map<Column, Object> mapObjectValuesToColumns(Provider provider, Object object, Entity entity,
 			String foreignKey, Column... columns)
 	{
@@ -252,6 +252,16 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 						key.reference().columns());
 			}
 		}
+	}
+
+	public static Map<Column, Object> mapValuesToColumns(Map<Column, Object> map, Column[] source, Column[] target)
+	{
+		Map<Column, Object> res = new HashMap<Column, Object>();
+		for (int i = 0; i < target.length; i++)
+		{
+			res.put(target[i], map.get(source[i]));
+		}
+		return res;
 	}
 
 	protected ForeignKey foreignKey(Entity ref, Column... columns)
@@ -317,6 +327,36 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 			{
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public Map<Column, Object> mapValues(Object object)
+	{
+		return mapValues(object, "");
+	}
+
+	public Map<Column, Object> mapValues(Object object, Column... columns)
+	{
+		return mapObjectValuesToColumns(provider(), object, this, "", columns);
+	}
+
+	public Map<Column, Object> mapValues(Object object, Key key)
+	{
+		return mapValues(object, key.columns());
+	}
+
+	public Map<Column, Object> mapValues(Object object, String foreignKey)
+	{
+		Class<? extends Entity> entityClass = object.getClass().getAnnotation(EntityMeta.class).entity();
+
+		if (entityClass.isInstance(this))
+		{
+			return mapObjectValuesToColumns(object, getColumnsArray(this));
+		}
+		else
+		{
+			return mapValues(object,
+					findForeignKeyBetweenEntitys(foreignKey, this, provider().provideView(entityClass)));
 		}
 	}
 
