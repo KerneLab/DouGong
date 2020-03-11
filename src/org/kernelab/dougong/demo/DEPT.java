@@ -12,12 +12,12 @@ import org.kernelab.dougong.semi.AbstractTable;
 @MemberMeta()
 public class DEPT extends AbstractTable
 {
-	@NameMeta(name = "COMP_ID")
+	@NameMeta(name = "COMP_ID2")
 	@DataMeta(alias = "compId")
 	@PrimaryKeyMeta(ordinal = 1)
 	public Column	COMP_ID;
 
-	@NameMeta(name = "DEPT_ID")
+	@NameMeta(name = "DEPT_ID2")
 	@DataMeta(alias = "deptId")
 	@PrimaryKeyMeta(ordinal = 2)
 	public Column	DEPT_ID;

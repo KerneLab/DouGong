@@ -16,7 +16,6 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.ddl.ForeignKey;
-import org.kernelab.dougong.core.ddl.Key;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.meta.EntityMeta;
 import org.kernelab.dougong.core.meta.ForeignKeyMeta;
@@ -67,7 +66,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 	public static ForeignKey findForeignKeyBetweenEntitys(String name, Entity a, Entity b)
 	{
-		if (Tools.notNullOrEmpty(name))
+		if (Tools.notNullOrWhite(name))
 		{
 			try
 			{
@@ -182,19 +181,19 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	public static void main(String[] args)
 	{
 		// TODO
-		Company compObj = new Company();
-		compObj.setId("1");
-		compObj.setName("Cm.1");
+		Company comObj = new Company();
+		comObj.setId("1");
+		comObj.setName("Cm.1");
 
-		Department deptObj = new Department();
-		deptObj.setCompId("1");
-		deptObj.setId("a");
-		deptObj.setName("Dep.A");
+		Department depObj = new Department();
+		depObj.setCompId("1");
+		depObj.setId("a");
+		depObj.setName("Dep.A");
 
 		DEPT dep = Config.SQL.view(DEPT.class);
 		COMP com = Config.SQL.view(COMP.class);
 
-		Tools.debug(dep.mapValues(compObj, dep.FRN_DEPT(com)));
+		Tools.debug(com.mapValuesToThat(comObj, "FRN_DEPT", dep));
 	}
 
 	/**
@@ -205,7 +204,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	 * @param columns
 	 * @return
 	 */
-	public static Map<Column, Object> mapObjectValuesToColumns(Object object, Column... columns)
+	public static Map<Column, Object> mapObjectValuesOfColumns(Object object, Column... columns)
 	{
 		Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass());
 
@@ -226,35 +225,8 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		return map;
 	}
 
-	public static Map<Column, Object> mapObjectValuesToColumns(Provider provider, Object object, Entity entity,
-			String foreignKey, Column... columns)
-	{
-		EntityMeta entityMeta = object.getClass().getAnnotation(EntityMeta.class);
-
-		if (entityMeta.entity().isInstance(entity))
-		{ // The given entity is related to the object
-			return mapObjectValuesToColumns(object, columns);
-		}
-		else
-		{
-			Entity mate = provider.provideView(entityMeta.entity());
-
-			ForeignKey key = findForeignKeyBetweenEntitys(foreignKey, entity, mate);
-
-			if (key.entity() == entity)
-			{
-				return mapValuesToColumns(mapObjectValuesToColumns(object, key.reference().columns()),
-						key.reference().columns(), key.columns());
-			}
-			else
-			{
-				return mapValuesToColumns(mapObjectValuesToColumns(object, key.columns()), key.columns(),
-						key.reference().columns());
-			}
-		}
-	}
-
-	public static Map<Column, Object> mapValuesToColumns(Map<Column, Object> map, Column[] source, Column[] target)
+	public static Map<Column, Object> mapSourceToTargetColumns(Map<Column, Object> map, Column[] source,
+			Column[] target)
 	{
 		Map<Column, Object> res = new HashMap<Column, Object>();
 		for (int i = 0; i < target.length; i++)
@@ -262,6 +234,32 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 			res.put(target[i], map.get(source[i]));
 		}
 		return res;
+	}
+
+	public static <T> Map<Column, Object> mapValuesToReference(T object, ForeignKey key)
+	{
+		if (object.getClass().getAnnotation(EntityMeta.class).entity().isInstance(key.reference().entity()))
+		{ // object is related to referrer entity
+			return mapObjectValuesOfColumns(object, key.reference().columns());
+		}
+		else
+		{ // object is related to reference entity
+			return mapSourceToTargetColumns(mapObjectValuesOfColumns(object, key.columns()), key.columns(),
+					key.reference().columns());
+		}
+	}
+
+	public static <T> Map<Column, Object> mapValuesToReferrer(T object, ForeignKey key)
+	{
+		if (object.getClass().getAnnotation(EntityMeta.class).entity().isInstance(key.entity()))
+		{ // object is related to referrer entity
+			return mapObjectValuesOfColumns(object, key.columns());
+		}
+		else
+		{ // object is related to reference entity
+			return mapSourceToTargetColumns(mapObjectValuesOfColumns(object, key.reference().columns()),
+					key.reference().columns(), key.columns());
+		}
 	}
 
 	protected ForeignKey foreignKey(Entity ref, Column... columns)
@@ -275,6 +273,18 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		else
 		{
 			return this.provider().provideForeignKey(pk, this, columns);
+		}
+	}
+
+	protected ForeignKey foreignKey(String name, Entity ref)
+	{
+		try
+		{
+			return (ForeignKey) this.getClass().getDeclaredMethod(name, ref.getClass()).invoke(this, ref);
+		}
+		catch (Exception e)
+		{
+			return null;
 		}
 	}
 
@@ -330,33 +340,31 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 	}
 
-	public Map<Column, Object> mapValues(Object object)
+	public <T> Map<Column, Object> mapValuesToThat(T object, String name, Entity that)
 	{
-		return mapValues(object, "");
-	}
+		ForeignKey key = findForeignKeyBetweenEntitys(name, that, this);
 
-	public Map<Column, Object> mapValues(Object object, Column... columns)
-	{
-		return mapObjectValuesToColumns(provider(), object, this, "", columns);
-	}
-
-	public Map<Column, Object> mapValues(Object object, Key key)
-	{
-		return mapValues(object, key.columns());
-	}
-
-	public Map<Column, Object> mapValues(Object object, String foreignKey)
-	{
-		Class<? extends Entity> entityClass = object.getClass().getAnnotation(EntityMeta.class).entity();
-
-		if (entityClass.isInstance(this))
+		if (key.entity() == that)
 		{
-			return mapObjectValuesToColumns(object, getColumnsArray(this));
+			return mapValuesToReferrer(object, key);
 		}
 		else
 		{
-			return mapValues(object,
-					findForeignKeyBetweenEntitys(foreignKey, this, provider().provideView(entityClass)));
+			return mapValuesToReference(object, key);
+		}
+	}
+
+	public <T> Map<Column, Object> mapValuesToThis(T object, String name, Entity that)
+	{
+		ForeignKey key = findForeignKeyBetweenEntitys(name, this, that);
+
+		if (key.entity() == this)
+		{
+			return mapValuesToReferrer(object, key);
+		}
+		else
+		{
+			return mapValuesToReference(object, key);
 		}
 	}
 

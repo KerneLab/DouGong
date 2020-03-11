@@ -11,7 +11,7 @@ import org.kernelab.dougong.semi.AbstractTable;
 @MemberMeta()
 public class COMP extends AbstractTable
 {
-	@NameMeta(name = "COMP_ID")
+	@NameMeta(name = "COMP_ID1")
 	@DataMeta(alias = "compId", value = "SEQ_DEMO.nextval")
 	@GenerateValueMeta(strategy = GenerateValueMeta.AUTO)
 	@PrimaryKeyMeta(ordinal = 1)
