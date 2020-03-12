@@ -21,75 +21,28 @@ import org.kernelab.dougong.core.meta.EntityMeta;
 import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.demo.COMP;
-import org.kernelab.dougong.demo.Company;
-import org.kernelab.dougong.demo.Config;
-import org.kernelab.dougong.demo.DEPT;
-import org.kernelab.dougong.demo.Department;
 
 public abstract class AbstractEntity extends AbstractView implements Entity
 {
-	public static ForeignKey findForeignKeyBetweenEntitys(Entity a, Entity b)
-	{
-		for (Method method : a.getClass().getDeclaredMethods())
-		{
-			if (isForeignKey(method, b))
-			{
-				try
-				{
-					return (ForeignKey) method.invoke(a, b);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-
-		for (Method method : b.getClass().getDeclaredMethods())
-		{
-			if (isForeignKey(method, a))
-			{
-				try
-				{
-					return (ForeignKey) method.invoke(b, a);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return null;
-	}
-
 	public static ForeignKey findForeignKeyBetweenEntitys(String name, Entity a, Entity b)
 	{
-		if (Tools.notNullOrWhite(name))
+		try
+		{
+			Method method = a.getClass().getDeclaredMethod(name, b.getClass());
+			return (ForeignKey) method.invoke(a, b);
+		}
+		catch (Exception e)
 		{
 			try
 			{
-				Method method = a.getClass().getDeclaredMethod(name, b.getClass());
-				return (ForeignKey) method.invoke(a, b);
+				Method method = b.getClass().getDeclaredMethod(name, a.getClass());
+				return (ForeignKey) method.invoke(b, a);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				try
-				{
-					Method method = b.getClass().getDeclaredMethod(name, a.getClass());
-					return (ForeignKey) method.invoke(b, a);
-				}
-				catch (Exception ex)
-				{
-					ex.printStackTrace();
-					return null;
-				}
+				ex.printStackTrace();
+				return null;
 			}
-		}
-		else
-		{
-			return findForeignKeyBetweenEntitys(a, b);
 		}
 	}
 
@@ -176,24 +129,6 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		{
 			return false;
 		}
-	}
-
-	public static void main(String[] args)
-	{
-		// TODO
-		Company comObj = new Company();
-		comObj.setId("1");
-		comObj.setName("Cm.1");
-
-		Department depObj = new Department();
-		depObj.setCompId("1");
-		depObj.setId("a");
-		depObj.setName("Dep.A");
-
-		DEPT dep = Config.SQL.view(DEPT.class);
-		COMP com = Config.SQL.view(COMP.class);
-
-		Tools.debug(com.mapValuesToThat(comObj, "FRN_DEPT", dep));
 	}
 
 	/**
@@ -340,32 +275,14 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 	}
 
-	public <T> Map<Column, Object> mapValuesToThat(T object, String name, Entity that)
+	public <T> Map<Column, Object> mapValuesToReference(T object, String foreignKey, Entity that)
 	{
-		ForeignKey key = findForeignKeyBetweenEntitys(name, that, this);
-
-		if (key.entity() == that)
-		{
-			return mapValuesToReferrer(object, key);
-		}
-		else
-		{
-			return mapValuesToReference(object, key);
-		}
+		return mapValuesToReference(object, findForeignKeyBetweenEntitys(foreignKey, this, that));
 	}
 
-	public <T> Map<Column, Object> mapValuesToThis(T object, String name, Entity that)
+	public <T> Map<Column, Object> mapValuesToReferrer(T object, String foreignKey, Entity that)
 	{
-		ForeignKey key = findForeignKeyBetweenEntitys(name, this, that);
-
-		if (key.entity() == this)
-		{
-			return mapValuesToReferrer(object, key);
-		}
-		else
-		{
-			return mapValuesToReference(object, key);
-		}
+		return mapValuesToReferrer(object, findForeignKeyBetweenEntitys(foreignKey, this, that));
 	}
 
 	public PrimaryKey primaryKey()
