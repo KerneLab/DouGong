@@ -56,6 +56,18 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 		return res;
 	}
 
+	public static <T> Map<Column, Object> mapValues(T object, ForeignKey key, boolean toReference)
+	{
+		if (toReference)
+		{
+			return mapValuesToReference(object, key);
+		}
+		else
+		{
+			return mapValuesToReferrer(object, key);
+		}
+	}
+
 	public static <T> Map<Column, Object> mapValuesToReference(T object, ForeignKey key)
 	{
 		if (object.getClass().getAnnotation(EntityMeta.class).entity().isInstance(key.reference().entity()))
@@ -111,6 +123,11 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 		}
 
 		return c;
+	}
+
+	public <T> Map<Column, Object> mapValuesTo(T object, Entity entity)
+	{
+		return entity() == entity ? mapValuesToReferrer(object) : mapValuesToReference(object);
 	}
 
 	public <T> Map<Column, Object> mapValuesToReference(T object)

@@ -1,7 +1,6 @@
 package org.kernelab.dougong.core.meta;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -22,9 +21,7 @@ import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.ForeignKey;
-import org.kernelab.dougong.core.ddl.Key;
 import org.kernelab.dougong.core.dml.Insert;
-import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.demo.Company;
@@ -68,7 +65,18 @@ public abstract class Entitys
 		return sql.view(getEntityClassFromModel(model));
 	}
 
-	public static ForeignKey getForeignKey(String name, Entity first, Entity second, boolean secondAsReference)
+	/**
+	 * Get a foreign key with given name. And the fist entity parameter would
+	 * refers to the second entity if secondAsReference is true. Otherwise the
+	 * first entity would be the reference.
+	 * 
+	 * @param name
+	 * @param secondAsReference
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public static ForeignKey getForeignKey(String name, boolean secondAsReference, Entity first, Entity second)
 	{
 		if (secondAsReference)
 		{
@@ -77,20 +85,6 @@ public abstract class Entitys
 		else
 		{
 			return second.foreignKey(name, first);
-		}
-	}
-
-	public static ForeignKey getForeignKeyFromEntity(Entity entity, String name, Entity refer)
-	{
-		try
-		{
-			Method method = entity.getClass().getDeclaredMethod(name, refer.getClass());
-			return (ForeignKey) method.invoke(entity, refer);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
 		}
 	}
 
@@ -161,23 +155,6 @@ public abstract class Entitys
 		return Utils.getDataLabelFromField(column.field());
 	}
 
-	/**
-	 * Get parameters by mapping values in reference according to the given
-	 * foreign key. The key of result is the label name of main entity which is
-	 * useful to query the main entity.
-	 * 
-	 * @param reference
-	 *            Column/Value map of reference entity.
-	 * @param foreignKey
-	 *            The foreign key point to the reference.
-	 * @return
-	 */
-	public static Map<String, Object> getParametersFromReferenceByForeignKey(Map<Column, Object> reference,
-			ForeignKey foreignKey)
-	{
-		return mapColumnToLabelByMeta(mapValuesFromReferenceByForeignKey(reference, foreignKey));
-	}
-
 	public static <T> int insertObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, object.getClass());
@@ -243,11 +220,10 @@ public abstract class Entitys
 
 	public static void main(String[] args) throws SQLException
 	{
-		// Company c = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(),
-		// Config.SQL, Company.class,
-		// new JSON().attr("compId", "1"));
-		//
-		// Tools.debug(c);
+		Company c = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(), Config.SQL, Company.class,
+				new JSON().attr("compId", "1"));
+
+		Tools.debug(c);
 
 		// Company company = new Company();
 		// company.setName("Bbb");
@@ -255,12 +231,6 @@ public abstract class Entitys
 		// Entitys.insertObject(Config.getSQLKit(), Config.SQL, company);
 		//
 		// Tools.debug(company.getId());
-
-		Entity entity = getEntityFromModelClass(Config.SQL, Company.class);
-		for (Field field : Company.class.getDeclaredFields())
-		{
-			select(Config.SQL, entity, field.getAnnotation(JoinMeta.class));
-		}
 	}
 
 	/**
@@ -356,14 +326,14 @@ public abstract class Entitys
 		return map;
 	}
 
-	public static void select(SQL sql, Entity origin, JoinMeta joinMeta)
+	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, OneToManyMeta oneToMany,
+			JoinMeta joinMeta)
 	{
-		Primitive prm = null;
 		Select sel = null;
+		Entity first = null, last = null, curr = null;
 
 		if (joinMeta != null)
 		{
-			Entity first = null, last = null, curr = null;
 			int i = 0;
 			for (JoinDefine join : joinMeta.joins())
 			{
@@ -375,33 +345,49 @@ public abstract class Entitys
 				}
 				if (last == null)
 				{
-					prm = sql.from(curr);
-				}
-				else if (sel == null)
-				{
-					sel = prm.innerJoin(curr, getForeignKey(join.key(), last, curr, join.referred()));
+					sel = sql.from(curr).select();
 				}
 				else
 				{
-					sel = sel.innerJoin(curr, getForeignKey(join.key(), last, curr, join.referred()));
+					sel = sel.innerJoin(curr, getForeignKey(join.key(), join.referred(), last, curr));
 				}
 				last = curr;
 				i++;
 			}
-
-			sel.select(curr.all());
-
-			ForeignKey fk = getForeignKey(joinMeta.joins()[0].key(), origin, first, joinMeta.joins()[0].referred());
-
-			Key key = first == fk.entity() ? fk : fk.reference();
-
-			sel.where(key.queryCondition());
-
-			Tools.debug(sel.toString());
-
 		}
 
-		// TODO select from entity and joins
+		Entity origin = getEntityFromModelClass(sql, object.getClass());
+
+		Entity target = getEntityFromModelClass(sql, oneToMany.model());
+
+		Map<Column, Object> params = null;
+
+		if (sel != null)
+		{ // Join with target
+			JoinDefine firstJoin = joinMeta.joins()[0];
+			ForeignKey queryKey = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
+			sel = sel.innerJoin(target.alias("t"), getForeignKey(oneToMany.key(), oneToMany.referred(), last, target)) //
+					.where(queryKey.entity() == first ? queryKey.queryCondition()
+							: queryKey.reference().queryCondition()) //
+					.select(target.all());
+			params = queryKey.mapValuesTo(object, queryKey.entity());
+		}
+		else
+		{ // Query from target
+			ForeignKey key = getForeignKey(oneToMany.key(), oneToMany.referred(), origin, target);
+			sel = sql.from(target) //
+					.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
+					.select(target.all());
+			params = key.mapValuesTo(object, key.entity());
+		}
+
+		sel = sel.as(AbstractSelect.class) //
+				.fillAliasByMeta();
+
+		// Tools.debug(sel);
+		// Tools.debug(params);
+
+		return new Pair<Select, Map<Column, Object>>(sel, params);
 	}
 
 	public static <T> T selectObjectByPrimaryKey(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
@@ -422,8 +408,6 @@ public abstract class Entitys
 
 	public static <T> void setOneToManyMembers(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
-		Map<Column, Object> entityFields = Entitys.mapObjectToEntity(object, entity);
-
 		for (Field field : object.getClass().getDeclaredFields())
 		{
 			OneToManyMeta manyMeta = field.getAnnotation(OneToManyMeta.class);
@@ -432,17 +416,12 @@ public abstract class Entitys
 			{
 				Class<?> manyModel = manyMeta.model();
 
-				Entity manyEntity = Entitys.getEntityFromModelClass(sql, manyModel);
+				Entity manyEntity = getEntityFromModelClass(sql, manyModel);
 
-				ForeignKey fk = Entitys.getForeignKeyFromEntity(manyEntity, manyMeta.foreignKey(), entity);
-
-				Map<String, Object> param = Entitys.getParametersFromReferenceByForeignKey(entityFields, fk);
-
-				Select sel = sql.from(manyEntity) //
-						.where(fk.queryCondition()) //
-						.select(manyEntity.all()) //
-						.as(AbstractSelect.class) //
-						.fillAliasByMeta();
+				Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, manyMeta,
+						field.getAnnotation(JoinMeta.class));
+				Select sel = pair.key;
+				Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				Collection<?> coll = kit.execute(sel.toString(), param) //

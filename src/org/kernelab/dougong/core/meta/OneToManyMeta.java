@@ -13,5 +13,7 @@ public @interface OneToManyMeta
 {
 	public Class<?> model();
 
-	public String foreignKey();
+	public String key();
+
+	public boolean referred();
 }

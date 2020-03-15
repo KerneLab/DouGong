@@ -17,13 +17,12 @@ public class Company
 	@DataMeta(alias = "compName")
 	private String					name;
 
-	@OneToManyMeta(model = Department.class, foreignKey = "FRN_DEPT")
+	@OneToManyMeta(model = Department.class, key = "FRN_DEPT", referred = false)
 	private Collection<Department>	departments;
 
-	@OneToManyMeta(model = Staff.class, foreignKey = "")
+	@OneToManyMeta(model = Staff.class, key = "FRN_STAF", referred = false)
 	@JoinMeta(joins = { //
-			@JoinDefine(entity = DEPT.class, key = "FRN_DEPT", referred = false),
-			@JoinDefine(entity = STAF.class, key = "FRN_STAF", referred = false) })
+			@JoinDefine(entity = DEPT.class, key = "FRN_DEPT", referred = false) })
 	private Collection<Staff>		staffs;
 
 	public Collection<Department> getDepartments()
@@ -41,6 +40,11 @@ public class Company
 		return name;
 	}
 
+	public Collection<Staff> getStaffs()
+	{
+		return staffs;
+	}
+
 	public void setDepartments(Collection<Department> departments)
 	{
 		this.departments = departments;
@@ -56,6 +60,11 @@ public class Company
 		this.name = name;
 	}
 
+	public void setStaffs(Collection<Staff> staffs)
+	{
+		this.staffs = staffs;
+	}
+
 	public String toString()
 	{
 		String str = "Company: id=" + this.getId() + ", name=" + this.getName();
@@ -66,6 +75,15 @@ public class Company
 			for (Department d : this.getDepartments())
 			{
 				str += "\n  " + d.toString();
+			}
+		}
+
+		if (this.getStaffs() != null)
+		{
+			str += "\n[Staffs]";
+			for (Staff s : this.getStaffs())
+			{
+				str += "\n  " + s.toString();
 			}
 		}
 

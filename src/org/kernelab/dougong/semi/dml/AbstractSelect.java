@@ -616,7 +616,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 		items().clear();
 
-		if (exprs != null)
+		if (exprs != null && exprs.length > 0)
 		{
 			List<Item> items = new LinkedList<Item>();
 
@@ -646,7 +646,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 						{
 							items().add(col);
 							using.add(col.name());
-
 						}
 					}
 					else

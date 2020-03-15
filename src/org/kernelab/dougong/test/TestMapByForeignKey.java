@@ -29,10 +29,10 @@ public class TestMapByForeignKey
 
 		ForeignKey key = dep.foreignKey("FRN_DEPT", com);
 
-		Tools.debug(key.mapValuesToReferrer(comObj));
-		Tools.debug(key.mapValuesToReferrer(depObj));
-		Tools.debug(key.mapValuesToReference(comObj));
-		Tools.debug(key.mapValuesToReference(depObj));
+		Tools.debug(key.mapValuesTo(comObj, dep));
+		Tools.debug(key.mapValuesTo(depObj, dep));
+		Tools.debug(key.mapValuesTo(comObj, com));
+		Tools.debug(key.mapValuesTo(depObj, com));
 
 		Event evObj = new Event();
 		evObj.setId("1");
@@ -43,8 +43,8 @@ public class TestMapByForeignKey
 		EVNT ev2 = Config.SQL.view(EVNT.class);
 		ForeignKey keyEV = ev1.foreignKey("FK_EVENT_SELF", ev2);
 
-		Tools.debug(keyEV.mapValuesToReferrer(evObj));
-		Tools.debug(keyEV.mapValuesToReference(evObj));
+		Tools.debug(keyEV.mapValuesTo(evObj, ev1));
+		Tools.debug(keyEV.mapValuesTo(evObj, ev2));
 	}
 
 }

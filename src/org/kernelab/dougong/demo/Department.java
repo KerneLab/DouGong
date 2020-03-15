@@ -22,7 +22,7 @@ public class Department
 	@DataMeta(alias = "deptName")
 	private String				name;
 
-	@OneToManyMeta(model = Staff.class, foreignKey = "FRN_STAF")
+	@OneToManyMeta(model = Staff.class, key = "FRN_STAF", referred = false)
 	private Collection<Staff>	staffs;
 
 	public Company getCompany()
