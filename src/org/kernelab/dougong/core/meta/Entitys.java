@@ -68,25 +68,15 @@ public abstract class Entitys
 		return sql.view(getEntityClassFromModel(model));
 	}
 
-	public static ForeignKey getForeignKeyBetweenEntitys(String name, Entity a, Entity b)
+	public static ForeignKey getForeignKey(String name, Entity first, Entity second, boolean secondAsReference)
 	{
-		try
+		if (secondAsReference)
 		{
-			Method method = a.getClass().getDeclaredMethod(name, b.getClass());
-			return (ForeignKey) method.invoke(a, b);
+			return first.foreignKey(name, second);
 		}
-		catch (Exception e)
+		else
 		{
-			try
-			{
-				Method method = b.getClass().getDeclaredMethod(name, a.getClass());
-				return (ForeignKey) method.invoke(b, a);
-			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-				return null;
-			}
+			return second.foreignKey(name, first);
 		}
 	}
 
@@ -253,10 +243,11 @@ public abstract class Entitys
 
 	public static void main(String[] args) throws SQLException
 	{
-		Company c = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(), Config.SQL, Company.class,
-				new JSON().attr("compId", "1"));
-
-		Tools.debug(c);
+		// Company c = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(),
+		// Config.SQL, Company.class,
+		// new JSON().attr("compId", "1"));
+		//
+		// Tools.debug(c);
 
 		// Company company = new Company();
 		// company.setName("Bbb");
@@ -388,11 +379,11 @@ public abstract class Entitys
 				}
 				else if (sel == null)
 				{
-					sel = prm.innerJoin(curr, getForeignKeyBetweenEntitys(join.foreignKey(), last, curr));
+					sel = prm.innerJoin(curr, getForeignKey(join.key(), last, curr, join.referred()));
 				}
 				else
 				{
-					sel = sel.innerJoin(curr, getForeignKeyBetweenEntitys(join.foreignKey(), last, curr));
+					sel = sel.innerJoin(curr, getForeignKey(join.key(), last, curr, join.referred()));
 				}
 				last = curr;
 				i++;
@@ -400,13 +391,14 @@ public abstract class Entitys
 
 			sel.select(curr.all());
 
-			ForeignKey fk = getForeignKeyBetweenEntitys(joinMeta.joins()[0].foreignKey(), origin, first);
+			ForeignKey fk = getForeignKey(joinMeta.joins()[0].key(), origin, first, joinMeta.joins()[0].referred());
 
 			Key key = first == fk.entity() ? fk : fk.reference();
 
 			sel.where(key.queryCondition());
 
 			Tools.debug(sel.toString());
+
 		}
 
 		// TODO select from entity and joins

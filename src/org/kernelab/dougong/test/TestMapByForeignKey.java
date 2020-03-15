@@ -1,6 +1,7 @@
 package org.kernelab.dougong.test;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.Company;
 import org.kernelab.dougong.demo.Config;
@@ -26,27 +27,24 @@ public class TestMapByForeignKey
 		DEPT dep = Config.SQL.view(DEPT.class);
 		COMP com = Config.SQL.view(COMP.class);
 
-		Tools.debug(com.mapValuesToReferrer(comObj, "FRN_DEPT", dep));
-		Tools.debug(com.mapValuesToReferrer(depObj, "FRN_DEPT", dep));
-		Tools.debug(dep.mapValuesToReferrer(comObj, "FRN_DEPT", com));
-		Tools.debug(dep.mapValuesToReferrer(depObj, "FRN_DEPT", com));
-		Tools.debug(com.mapValuesToReference(comObj, "FRN_DEPT", dep));
-		Tools.debug(com.mapValuesToReference(depObj, "FRN_DEPT", dep));
-		Tools.debug(dep.mapValuesToReference(comObj, "FRN_DEPT", com));
-		Tools.debug(dep.mapValuesToReference(depObj, "FRN_DEPT", com));
+		ForeignKey key = dep.foreignKey("FRN_DEPT", com);
 
-		Event obj = new Event();
-		obj.setId("1");
-		obj.setName("one");
-		obj.setNextId("2");
+		Tools.debug(key.mapValuesToReferrer(comObj));
+		Tools.debug(key.mapValuesToReferrer(depObj));
+		Tools.debug(key.mapValuesToReference(comObj));
+		Tools.debug(key.mapValuesToReference(depObj));
+
+		Event evObj = new Event();
+		evObj.setId("1");
+		evObj.setName("one");
+		evObj.setNextId("2");
 
 		EVNT ev1 = Config.SQL.view(EVNT.class);
 		EVNT ev2 = Config.SQL.view(EVNT.class);
+		ForeignKey keyEV = ev1.foreignKey("FK_EVENT_SELF", ev2);
 
-		Tools.debug(ev1.mapValuesToReferrer(obj, "FK_EVENT_SELF", ev2));
-		Tools.debug(ev2.mapValuesToReferrer(obj, "FK_EVENT_SELF", ev1));
-		Tools.debug(ev1.mapValuesToReference(obj, "FK_EVENT_SELF", ev2));
-		Tools.debug(ev2.mapValuesToReference(obj, "FK_EVENT_SELF", ev1));
+		Tools.debug(keyEV.mapValuesToReferrer(evObj));
+		Tools.debug(keyEV.mapValuesToReference(evObj));
 	}
 
 }

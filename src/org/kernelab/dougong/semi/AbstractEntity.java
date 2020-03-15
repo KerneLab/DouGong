@@ -3,11 +3,9 @@ package org.kernelab.dougong.semi;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -17,32 +15,22 @@ import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
-import org.kernelab.dougong.core.meta.EntityMeta;
 import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractEntity extends AbstractView implements Entity
 {
-	public static ForeignKey findForeignKeyBetweenEntitys(String name, Entity a, Entity b)
+	public static ForeignKey findForeignKey(Entity entity, String foreignKey, Entity reference)
 	{
 		try
 		{
-			Method method = a.getClass().getDeclaredMethod(name, b.getClass());
-			return (ForeignKey) method.invoke(a, b);
+			return (ForeignKey) entity.getClass().getDeclaredMethod(foreignKey, reference.getClass()).invoke(entity,
+					reference);
 		}
 		catch (Exception e)
 		{
-			try
-			{
-				Method method = b.getClass().getDeclaredMethod(name, a.getClass());
-				return (ForeignKey) method.invoke(b, a);
-			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-				return null;
-			}
+			return null;
 		}
 	}
 
@@ -131,72 +119,6 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 	}
 
-	/**
-	 * Get a map which contains columns against corresponding values of in the
-	 * object.
-	 * 
-	 * @param object
-	 * @param columns
-	 * @return
-	 */
-	public static Map<Column, Object> mapObjectValuesOfColumns(Object object, Column... columns)
-	{
-		Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass());
-
-		Map<Column, Object> map = new HashMap<Column, Object>();
-
-		for (Column column : columns)
-		{
-			try
-			{
-				map.put(column, Tools.access(object, fields.get(Utils.getDataLabelFromField(column.field()))));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-
-		return map;
-	}
-
-	public static Map<Column, Object> mapSourceToTargetColumns(Map<Column, Object> map, Column[] source,
-			Column[] target)
-	{
-		Map<Column, Object> res = new HashMap<Column, Object>();
-		for (int i = 0; i < target.length; i++)
-		{
-			res.put(target[i], map.get(source[i]));
-		}
-		return res;
-	}
-
-	public static <T> Map<Column, Object> mapValuesToReference(T object, ForeignKey key)
-	{
-		if (object.getClass().getAnnotation(EntityMeta.class).entity().isInstance(key.reference().entity()))
-		{ // object is related to referrer entity
-			return mapObjectValuesOfColumns(object, key.reference().columns());
-		}
-		else
-		{ // object is related to reference entity
-			return mapSourceToTargetColumns(mapObjectValuesOfColumns(object, key.columns()), key.columns(),
-					key.reference().columns());
-		}
-	}
-
-	public static <T> Map<Column, Object> mapValuesToReferrer(T object, ForeignKey key)
-	{
-		if (object.getClass().getAnnotation(EntityMeta.class).entity().isInstance(key.entity()))
-		{ // object is related to referrer entity
-			return mapObjectValuesOfColumns(object, key.columns());
-		}
-		else
-		{ // object is related to reference entity
-			return mapSourceToTargetColumns(mapObjectValuesOfColumns(object, key.reference().columns()),
-					key.reference().columns(), key.columns());
-		}
-	}
-
 	protected ForeignKey foreignKey(Entity ref, Column... columns)
 	{
 		PrimaryKey pk = ref.primaryKey();
@@ -211,16 +133,9 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 	}
 
-	protected ForeignKey foreignKey(String name, Entity ref)
+	public ForeignKey foreignKey(String name, Entity reference)
 	{
-		try
-		{
-			return (ForeignKey) this.getClass().getDeclaredMethod(name, ref.getClass()).invoke(this, ref);
-		}
-		catch (Exception e)
-		{
-			return null;
-		}
+		return findForeignKey(this, name, reference);
 	}
 
 	protected Column getColumnByField(Field field)
@@ -273,16 +188,6 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public <T> Map<Column, Object> mapValuesToReference(T object, String foreignKey, Entity that)
-	{
-		return mapValuesToReference(object, findForeignKeyBetweenEntitys(foreignKey, this, that));
-	}
-
-	public <T> Map<Column, Object> mapValuesToReferrer(T object, String foreignKey, Entity that)
-	{
-		return mapValuesToReferrer(object, findForeignKeyBetweenEntitys(foreignKey, this, that));
 	}
 
 	public PrimaryKey primaryKey()

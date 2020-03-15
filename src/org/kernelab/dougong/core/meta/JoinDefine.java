@@ -12,9 +12,32 @@ public @interface JoinDefine
 
 	public static final short	FULL_JOIN	= 3;
 
+	/**
+	 * The class of entity to be joined.
+	 * 
+	 * @return
+	 */
 	public Class<? extends Entity> entity();
 
-	public String foreignKey();
+	/**
+	 * The name of foreign key.
+	 * 
+	 * @return
+	 */
+	public String key();
 
+	/**
+	 * Indicate whether the entity is on the reference side.
+	 * 
+	 * @return true if the join entity is on the reference side, otherwise
+	 *         false.
+	 */
+	public boolean referred();
+
+	/**
+	 * The join type.
+	 * 
+	 * @return
+	 */
 	public short type() default INNER_JOIN;
 }

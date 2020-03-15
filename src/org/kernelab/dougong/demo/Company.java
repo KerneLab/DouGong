@@ -20,9 +20,10 @@ public class Company
 	@OneToManyMeta(model = Department.class, foreignKey = "FRN_DEPT")
 	private Collection<Department>	departments;
 
-	// @OneToManyMeta(model = Staff.class, foreignKey = "")
-	@JoinMeta(joins = { @JoinDefine(entity = DEPT.class, foreignKey = "FRN_DEPT"),
-			@JoinDefine(entity = STAF.class, foreignKey = "FRN_STAF") })
+	@OneToManyMeta(model = Staff.class, foreignKey = "")
+	@JoinMeta(joins = { //
+			@JoinDefine(entity = DEPT.class, key = "FRN_DEPT", referred = false),
+			@JoinDefine(entity = STAF.class, key = "FRN_STAF", referred = false) })
 	private Collection<Staff>		staffs;
 
 	public Collection<Department> getDepartments()

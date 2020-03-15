@@ -1,12 +1,23 @@
 package org.kernelab.dougong.core;
 
+import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 
 /**
- * The interface in whose sub classes Column members would be defined.
+ * The interface in whose sub classes Column members, primary key and foreign
+ * keys would be defined.
  */
 public interface Entity extends View
 {
+	/**
+	 * Find a foreign key of given name and refers to the reference.
+	 * 
+	 * @param name
+	 * @param reference
+	 * @return The foreign key or null if could not find one.
+	 */
+	public ForeignKey foreignKey(String name, Entity reference);
+
 	/**
 	 * Return the PrimaryKey of this view.
 	 * 
