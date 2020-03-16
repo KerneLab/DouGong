@@ -20,7 +20,6 @@ import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.meta.DataMeta;
-import org.kernelab.dougong.core.meta.ManyToOneMeta;
 import org.kernelab.dougong.core.meta.MappingMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
@@ -141,18 +140,6 @@ public class Utils
 		}
 
 		return map;
-	}
-
-	public static Field getManyToOneField(Class<?> manyClass)
-	{
-		for (Field field : manyClass.getDeclaredFields())
-		{
-			if (field.getAnnotation(ManyToOneMeta.class) != null)
-			{
-				return field;
-			}
-		}
-		return null;
 	}
 
 	public static Map<String, Field> getMappingFields(Class<?> cls, Map<String, Field> result)

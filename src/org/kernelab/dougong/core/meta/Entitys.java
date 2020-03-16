@@ -155,6 +155,32 @@ public abstract class Entitys
 		return Utils.getDataLabelFromField(column.field());
 	}
 
+	public static Field getManyToOneField(Class<?> manyClass, Class<?> oneClass)
+	{
+		for (Field field : manyClass.getDeclaredFields())
+		{
+			if (field.getAnnotation(ManyToOneMeta.class) != null //
+					&& Tools.isSubClass(oneClass, field.getType()))
+			{
+				return field;
+			}
+		}
+		return null;
+	}
+
+	public static Field getOneToOneField(Class<?> oneClass, Class<?> anotherClass)
+	{
+		for (Field field : oneClass.getDeclaredFields())
+		{
+			if (field.getAnnotation(OneToOneMeta.class) != null //
+					&& Tools.isSubClass(anotherClass, field.getType()))
+			{
+				return field;
+			}
+		}
+		return null;
+	}
+
 	public static <T> int insertObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, object.getClass());
@@ -390,6 +416,70 @@ public abstract class Entitys
 		return new Pair<Select, Map<Column, Object>>(sel, params);
 	}
 
+	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, OneToOneMeta oneToMany,
+			JoinMeta joinMeta)
+	{
+		Select sel = null;
+		Entity first = null, last = null, curr = null;
+
+		if (joinMeta != null)
+		{
+			int i = 0;
+			for (JoinDefine join : joinMeta.joins())
+			{
+				curr = sql.view(join.entity());
+				curr.alias("t" + i);
+				if (first == null)
+				{
+					first = curr;
+				}
+				if (last == null)
+				{
+					sel = sql.from(curr).select();
+				}
+				else
+				{
+					sel = sel.innerJoin(curr, getForeignKey(join.key(), join.referred(), last, curr));
+				}
+				last = curr;
+				i++;
+			}
+		}
+
+		Entity origin = getEntityFromModelClass(sql, object.getClass());
+
+		Entity target = getEntityFromModelClass(sql, oneToMany.model());
+
+		Map<Column, Object> params = null;
+
+		if (sel != null)
+		{ // Join with target
+			JoinDefine firstJoin = joinMeta.joins()[0];
+			ForeignKey queryKey = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
+			sel = sel.innerJoin(target.alias("t"), getForeignKey(oneToMany.key(), oneToMany.referred(), last, target)) //
+					.where(queryKey.entity() == first ? queryKey.queryCondition()
+							: queryKey.reference().queryCondition()) //
+					.select(target.all());
+			params = queryKey.mapValuesTo(object, queryKey.entity());
+		}
+		else
+		{ // Query from target
+			ForeignKey key = getForeignKey(oneToMany.key(), oneToMany.referred(), origin, target);
+			sel = sql.from(target) //
+					.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
+					.select(target.all());
+			params = key.mapValuesTo(object, key.entity());
+		}
+
+		sel = sel.as(AbstractSelect.class) //
+				.fillAliasByMeta();
+
+		// Tools.debug(sel);
+		// Tools.debug(params);
+
+		return new Pair<Select, Map<Column, Object>>(sel, params);
+	}
+
 	public static <T> T selectObjectByPrimaryKey(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
 	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, model);
@@ -401,58 +491,107 @@ public abstract class Entitys
 		T object = kit.execute(select.toString(), params) //
 				.getRow(model, Utils.getFieldNameMapByMeta(model));
 
-		setOneToManyMembers(kit, sql, object, entity);
+		setupObject(kit, sql, object);
 
 		return object;
 	}
 
-	public static <T> void setOneToManyMembers(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	public static <T> void setOneToManyMembers(SQLKit kit, SQL sql, T object, Field field) throws SQLException
 	{
-		for (Field field : object.getClass().getDeclaredFields())
+		OneToManyMeta manyMeta = field.getAnnotation(OneToManyMeta.class);
+
+		if (manyMeta != null)
 		{
-			OneToManyMeta manyMeta = field.getAnnotation(OneToManyMeta.class);
+			Class<?> manyModel = manyMeta.model();
 
-			if (manyMeta != null)
+			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, manyMeta,
+					field.getAnnotation(JoinMeta.class));
+			Select sel = pair.key;
+			Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			Collection<?> coll = kit.execute(sel.toString(), param) //
+					.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel));
+			try
 			{
-				Class<?> manyModel = manyMeta.model();
+				Tools.access(object, field, coll);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 
-				Entity manyEntity = getEntityFromModelClass(sql, manyModel);
+			Field manyToOne = getManyToOneField(manyModel, object.getClass());
 
-				Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, manyMeta,
-						field.getAnnotation(JoinMeta.class));
-				Select sel = pair.key;
-				Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
+			for (Object obj : coll)
+			{
+				if (manyToOne != null)
+				{
+					try
+					{
+						Tools.access(obj, manyToOne, object);
+					}
+					catch (Exception e)
+					{
+					}
+				}
+				setupObject(kit, sql, obj);
+			}
+		}
+	}
 
-				@SuppressWarnings({ "unchecked", "rawtypes" })
-				Collection<?> coll = kit.execute(sel.toString(), param) //
-						.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel));
+	public static <T> void setOneToOneMembers(SQLKit kit, SQL sql, T object, Field field) throws SQLException
+	{
+		OneToOneMeta oneMeta = field.getAnnotation(OneToOneMeta.class);
+
+		if (oneMeta != null)
+		{
+			Class<?> oneModel = oneMeta.model();
+
+			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, oneMeta,
+					field.getAnnotation(JoinMeta.class));
+			Select sel = pair.key;
+			Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
+
+			Object another = kit.execute(sel.toString(), param) //
+					.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel));
+			try
+			{
+				Tools.access(object, field, another);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+
+			Field oneToOne = getOneToOneField(oneModel, object.getClass());
+
+			if (oneToOne != null)
+			{
 				try
 				{
-					Tools.access(object, field, coll);
+					Tools.access(another, oneToOne, object);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
 				}
+			}
 
-				Field manyToOne = Utils.getManyToOneField(manyModel);
+			setupObject(kit, sql, another);
+		}
+	}
 
-				if (manyToOne != null)
-				{
-					for (Object obj : coll)
-					{
-						try
-						{
-							Tools.access(obj, manyToOne, object);
-						}
-						catch (Exception e)
-						{
-							e.printStackTrace();
-						}
-
-						setOneToManyMembers(kit, sql, obj, manyEntity);
-					}
-				}
+	public static <T> void setupObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		for (Field field : object.getClass().getDeclaredFields())
+		{
+			if (field.getAnnotation(OneToManyMeta.class) != null)
+			{
+				setOneToManyMembers(kit, sql, object, field);
+			}
+			else if (field.getAnnotation(OneToOneMeta.class) != null)
+			{
+				setOneToOneMembers(kit, sql, object, field);
 			}
 		}
 	}
