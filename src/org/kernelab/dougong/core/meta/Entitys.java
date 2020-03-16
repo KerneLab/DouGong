@@ -391,12 +391,11 @@ public abstract class Entitys
 		if (sel != null)
 		{ // Join with target
 			JoinDefine firstJoin = joinMeta.joins()[0];
-			ForeignKey queryKey = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
+			ForeignKey key = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
 			sel = sel.innerJoin(target.alias("t"), getForeignKey(oneToMany.key(), oneToMany.referred(), last, target)) //
-					.where(queryKey.entity() == first ? queryKey.queryCondition()
-							: queryKey.reference().queryCondition()) //
+					.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
 					.select(target.all());
-			params = queryKey.mapValuesTo(object, queryKey.entity());
+			params = key.mapValuesTo(object, key.entity() == first ? key.entity() : key.reference().entity());
 		}
 		else
 		{ // Query from target
@@ -404,7 +403,7 @@ public abstract class Entitys
 			sel = sql.from(target) //
 					.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
 					.select(target.all());
-			params = key.mapValuesTo(object, key.entity());
+			params = key.mapValuesTo(object, key.entity() == target ? key.entity() : key.reference().entity());
 		}
 
 		sel = sel.as(AbstractSelect.class) //
@@ -455,12 +454,11 @@ public abstract class Entitys
 		if (sel != null)
 		{ // Join with target
 			JoinDefine firstJoin = joinMeta.joins()[0];
-			ForeignKey queryKey = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
+			ForeignKey key = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
 			sel = sel.innerJoin(target.alias("t"), getForeignKey(oneToMany.key(), oneToMany.referred(), last, target)) //
-					.where(queryKey.entity() == first ? queryKey.queryCondition()
-							: queryKey.reference().queryCondition()) //
+					.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
 					.select(target.all());
-			params = queryKey.mapValuesTo(object, queryKey.entity());
+			params = key.mapValuesTo(object, key.entity() == first ? key.entity() : key.reference().entity());
 		}
 		else
 		{ // Query from target
@@ -468,7 +466,7 @@ public abstract class Entitys
 			sel = sql.from(target) //
 					.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
 					.select(target.all());
-			params = key.mapValuesTo(object, key.entity());
+			params = key.mapValuesTo(object, key.entity() == target ? key.entity() : key.reference().entity());
 		}
 
 		sel = sel.as(AbstractSelect.class) //
