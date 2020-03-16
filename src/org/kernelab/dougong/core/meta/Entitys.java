@@ -583,15 +583,18 @@ public abstract class Entitys
 
 	public static <T> void setupObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
-		for (Field field : object.getClass().getDeclaredFields())
+		if (object != null)
 		{
-			if (field.getAnnotation(OneToManyMeta.class) != null)
+			for (Field field : object.getClass().getDeclaredFields())
 			{
-				setOneToManyMembers(kit, sql, object, field);
-			}
-			else if (field.getAnnotation(OneToOneMeta.class) != null)
-			{
-				setOneToOneMembers(kit, sql, object, field);
+				if (field.getAnnotation(OneToManyMeta.class) != null)
+				{
+					setOneToManyMembers(kit, sql, object, field);
+				}
+				else if (field.getAnnotation(OneToOneMeta.class) != null)
+				{
+					setOneToOneMembers(kit, sql, object, field);
+				}
 			}
 		}
 	}
