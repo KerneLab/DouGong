@@ -52,7 +52,7 @@ public class DataProjector implements JSON.Projector<Object>
 			{
 				if (!Entitys.isManyToOne(field))
 				{
-					map.put(Utils.getDataLabelFromField(field), field.getName());
+					map.put(field.getName(), Utils.getDataLabelFromField(field));
 				}
 				if (Entitys.isOneToMany(field))
 				{
