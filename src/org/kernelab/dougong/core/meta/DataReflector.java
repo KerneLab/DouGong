@@ -2,6 +2,7 @@ package org.kernelab.dougong.core.meta;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.kernelab.basis.JSON;
@@ -36,7 +37,7 @@ public class DataReflector implements JSON.Reflector<Object>
 
 		if (map == null)
 		{
-			map = new HashMap<String, Object>();
+			map = new LinkedHashMap<String, Object>();
 
 			for (Field field : cls.getDeclaredFields())
 			{
