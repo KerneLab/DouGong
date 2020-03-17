@@ -24,10 +24,6 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.demo.Company;
-import org.kernelab.dougong.demo.Config;
-import org.kernelab.dougong.demo.Department;
-import org.kernelab.dougong.demo.Staff;
 import org.kernelab.dougong.semi.AbstractEntity;
 import org.kernelab.dougong.semi.AbstractTable;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
@@ -259,25 +255,6 @@ public abstract class Entitys
 	public static boolean isOneToOne(Field field)
 	{
 		return field.getAnnotation(OneToOneMeta.class) != null;
-	}
-
-	public static void main(String[] args)
-	{
-		try
-		{
-			Company company = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(), Config.SQL, Company.class,
-					new JSON().attr("compId", "1"));
-
-			Tools.debug(company.toString());
-
-			Map<Class<?>, Object> reflects = DataReflector.register(Company.class, Department.class, Staff.class);
-
-			Tools.debug(JSON.Reflect(reflects, company));
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 	/**
