@@ -26,6 +26,8 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.demo.Company;
 import org.kernelab.dougong.demo.Config;
+import org.kernelab.dougong.demo.Department;
+import org.kernelab.dougong.demo.Staff;
 import org.kernelab.dougong.semi.AbstractEntity;
 import org.kernelab.dougong.semi.AbstractTable;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
@@ -244,19 +246,38 @@ public abstract class Entitys
 		return 0;
 	}
 
-	public static void main(String[] args) throws SQLException
+	public static boolean isManyToOne(Field field)
 	{
-		Company c = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(), Config.SQL, Company.class,
-				new JSON().attr("compId", "1"));
+		return field.getAnnotation(ManyToOneMeta.class) != null;
+	}
 
-		Tools.debug(c);
+	public static boolean isOneToMany(Field field)
+	{
+		return field.getAnnotation(OneToManyMeta.class) != null;
+	}
 
-		// Company company = new Company();
-		// company.setName("Bbb");
-		//
-		// Entitys.insertObject(Config.getSQLKit(), Config.SQL, company);
-		//
-		// Tools.debug(company.getId());
+	public static boolean isOneToOne(Field field)
+	{
+		return field.getAnnotation(OneToOneMeta.class) != null;
+	}
+
+	public static void main(String[] args)
+	{
+		try
+		{
+			Company company = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(), Config.SQL, Company.class,
+					new JSON().attr("compId", "1"));
+
+			Tools.debug(company.toString());
+
+			Map<Class<?>, Object> reflects = DataReflector.register(Company.class, Department.class, Staff.class);
+
+			Tools.debug(JSON.Reflect(reflects, company));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**

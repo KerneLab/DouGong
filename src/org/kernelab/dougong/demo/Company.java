@@ -4,8 +4,6 @@ import java.util.Collection;
 
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.EntityMeta;
-import org.kernelab.dougong.core.meta.JoinDefine;
-import org.kernelab.dougong.core.meta.JoinMeta;
 import org.kernelab.dougong.core.meta.OneToManyMeta;
 
 @EntityMeta(entity = COMP.class)
@@ -20,10 +18,10 @@ public class Company
 	@OneToManyMeta(model = Department.class, key = "FRN_DEPT", referred = false)
 	private Collection<Department>	departments;
 
-	@OneToManyMeta(model = Staff.class, key = "FRN_STAF", referred = false)
-	@JoinMeta(joins = { //
-			@JoinDefine(entity = DEPT.class, key = "FRN_DEPT", referred = false) })
-	private Collection<Staff>		staffs;
+	// @OneToManyMeta(model = Staff.class, key = "FRN_STAF", referred = false)
+	// @JoinMeta(joins = { //
+	// @JoinDefine(entity = DEPT.class, key = "FRN_DEPT", referred = false) })
+	// private Collection<Staff> staffs;
 
 	public Collection<Department> getDepartments()
 	{
@@ -40,10 +38,10 @@ public class Company
 		return name;
 	}
 
-	public Collection<Staff> getStaffs()
-	{
-		return staffs;
-	}
+	// public Collection<Staff> getStaffs()
+	// {
+	// return staffs;
+	// }
 
 	public void setDepartments(Collection<Department> departments)
 	{
@@ -60,10 +58,10 @@ public class Company
 		this.name = name;
 	}
 
-	public void setStaffs(Collection<Staff> staffs)
-	{
-		this.staffs = staffs;
-	}
+	// public void setStaffs(Collection<Staff> staffs)
+	// {
+	// this.staffs = staffs;
+	// }
 
 	public String toString()
 	{
@@ -78,14 +76,14 @@ public class Company
 			}
 		}
 
-		if (this.getStaffs() != null)
-		{
-			str += "\n[Staffs]";
-			for (Staff s : this.getStaffs())
-			{
-				str += "\n  " + s.toString();
-			}
-		}
+		// if (this.getStaffs() != null)
+		// {
+		// str += "\n[Staffs]";
+		// for (Staff s : this.getStaffs())
+		// {
+		// str += "\n " + s.toString();
+		// }
+		// }
 
 		return str;
 	}
