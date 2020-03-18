@@ -95,6 +95,8 @@ public class DataProjector implements JSON.Projector<Object>
 	{
 		if (obj != null)
 		{
+			Set<Field> mtoFields = null;
+
 			for (Field field : oneToMany.get(obj.getClass()))
 			{
 				try
@@ -111,20 +113,23 @@ public class DataProjector implements JSON.Projector<Object>
 							}
 							else
 							{
-								for (Field f : manyToOne.get(el.getClass()))
+								if ((mtoFields = manyToOne.get(el.getClass())) != null)
 								{
-									try
+									for (Field f : mtoFields)
 									{
-										if (f.getType().isInstance(obj))
+										try
 										{
-											Tools.access(el, f, obj);
-											target = f;
-											break;
+											if (f.getType().isInstance(obj))
+											{
+												Tools.access(el, f, obj);
+												target = f;
+												break;
+											}
 										}
-									}
-									catch (Exception ex)
-									{
-										ex.printStackTrace();
+										catch (Exception ex)
+										{
+											ex.printStackTrace();
+										}
 									}
 								}
 							}
