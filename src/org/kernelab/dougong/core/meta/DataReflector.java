@@ -39,11 +39,16 @@ public class DataReflector implements JSON.Reflector<Object>
 		{
 			map = new LinkedHashMap<String, Object>();
 
+			DataMeta meta = null;
 			for (Field field : cls.getDeclaredFields())
 			{
-				if (!Entitys.isManyToOne(field))
+				meta = field.getAnnotation(DataMeta.class);
+				if (meta == null || meta.serialize())
 				{
-					map.put(Utils.getDataLabelFromField(field), field.getName());
+					if (!Entitys.isManyToOne(field))
+					{
+						map.put(Utils.getDataLabelFromField(field), field.getName());
+					}
 				}
 			}
 

@@ -26,4 +26,16 @@ public @interface DataMeta
 	 * This item will be ignored in insert if not empty but white.
 	 */
 	public String value() default "";
+
+	/**
+	 * Indicate whether this member need to be serialized, for example in JSON.
+	 * <br />
+	 * This item would be false in case its field is a "virtual" member and its
+	 * real value refers to the member in another object. So that this field is
+	 * no need to be serialized because the reference object should already be
+	 * serialized.
+	 * 
+	 * @return
+	 */
+	public boolean serialize() default true;
 }
