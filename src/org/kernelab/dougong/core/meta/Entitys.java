@@ -502,6 +502,18 @@ public abstract class Entitys
 		return map;
 	}
 
+	public static <T> void saveObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		if (object != null)
+		{
+			Entity entity = getEntityFromModelClass(sql, object.getClass());
+
+			deleteObjectCascade(kit, sql, object, entity);
+
+			insertObjectCascade(kit, sql, object, entity);
+		}
+	}
+
 	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, OneToManyMeta oneToMany,
 			JoinMeta joinMeta)
 	{
