@@ -21,6 +21,8 @@ import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
+import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.util.Utils;
@@ -30,6 +32,102 @@ import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public abstract class Entitys
 {
+	public static <T> int deleteObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (object != null)
+		{
+			if (entity == null)
+			{
+				entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+			}
+
+			PrimaryKey key = entity.primaryKey();
+
+			Delete delete = sql.from(entity).where(key.queryCondition()).delete();
+
+			Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
+
+			return kit.update(delete.toString(), params);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	public static <T> void deleteObjectCascade(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (object != null)
+		{
+			if (entity == null)
+			{
+				entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+			}
+
+			for (Field field : object.getClass().getDeclaredFields())
+			{
+				if (isOneToMany(field))
+				{
+					Collection<?> coll = null;
+					try
+					{
+						coll = Tools.access(object, field);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+					if (coll != null)
+					{
+						OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
+						Class<?> manyClass = meta.model();
+						Entity manyEntity = getEntityFromModelClass(sql, manyClass);
+
+						for (Object o : coll)
+						{
+							deleteObjectCascade(kit, sql, o, manyEntity);
+						}
+
+						ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
+						deleteObjects(kit, sql, object, key, manyEntity);
+					}
+				}
+				else if (isOneToOne(field))
+				{
+					try
+					{
+						deleteObject(kit, sql, Tools.access(object, field), null);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+
+			deleteObject(kit, sql, object, entity);
+		}
+	}
+
+	public static <T> int deleteObjects(SQLKit kit, SQL sql, T referenceObject, ForeignKey key, Entity referrer)
+			throws SQLException
+	{
+		if (referenceObject != null)
+		{
+			Delete delete = sql.from(referrer) //
+					.where(key.entity() == referrer ? key.queryCondition() : key.reference().queryCondition()) //
+					.delete();
+
+			Map<String, Object> params = mapColumnToLabelByMeta(key.mapValuesTo(referenceObject, referrer));
+
+			return kit.update(delete.toString(), params);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
 	public static Set<Column> getColumns(Entity entity)
 	{
 		Set<Column> columns = new HashSet<Column>();
@@ -179,19 +277,18 @@ public abstract class Entitys
 		return null;
 	}
 
-	public static <T> int insertObject(SQLKit kit, SQL sql, T object) throws SQLException
+	public static <T> int insertObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
-		Entity entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+		if (entity == null)
+		{
+			entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+		}
 
 		Insert insert = entity.as(AbstractTable.class).insertByMetaMap();
 
-		Tools.debug(insert.toString(new StringBuilder()));
-
-		Pair<Short, Column[]> generateColumns = getGenerateValueColumns(entity);
+		Pair<Short, Column[]> generateColumns = Entitys.getGenerateValueColumns(entity);
 
 		Map<String, Object> params = Entitys.mapObjectByMeta(object);
-
-		Tools.debug(params);
 
 		PreparedStatement stmt = null;
 
@@ -237,9 +334,64 @@ public abstract class Entitys
 			}
 		}
 
-		// TODO insert one to many
+		return seq.getUpdateCount();
+	}
 
-		return 0;
+	public static <T> void insertObjectCascade(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (entity == null)
+		{
+			entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+		}
+
+		insertObject(kit, sql, object, entity);
+
+		for (Field field : object.getClass().getDeclaredFields())
+		{
+			if (isOneToMany(field))
+			{
+				insertOneToMany(kit, sql, object, field);
+			}
+			else if (isOneToOne(field))
+			{
+				insertOneToOne(kit, sql, object, field);
+			}
+		}
+	}
+
+	public static <T> void insertOneToMany(SQLKit kit, SQL sql, T object, Field field)
+	{
+		try
+		{
+			Collection<?> col = Tools.access(object, field);
+
+			Entity entity = null;
+
+			for (Object o : col)
+			{
+				if (entity == null)
+				{
+					entity = getEntityFromModelClass(sql, o.getClass());
+				}
+				insertObjectCascade(kit, sql, o, entity);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public static <T> void insertOneToOne(SQLKit kit, SQL sql, T object, Field field)
+	{
+		try
+		{
+			insertObjectCascade(kit, sql, Tools.access(object, field), null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public static boolean isManyToOne(Field field)
