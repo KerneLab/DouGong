@@ -15,5 +15,5 @@ public @interface OneToManyMeta
 
 	public String key();
 
-	public boolean referred();
+	public boolean referred() default false;
 }
