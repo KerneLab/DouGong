@@ -13,7 +13,7 @@ public class Demo
 	{
 		try
 		{
-			Company company = Entitys.selectObjectByPrimaryKey(Config.getSQLKit(), Config.SQL, Company.class,
+			Company company = Entitys.selectObject(Config.getSQLKit(), Config.SQL, Company.class,
 					new JSON().attr("compId", "1"));
 
 			Tools.debug(company.toString());

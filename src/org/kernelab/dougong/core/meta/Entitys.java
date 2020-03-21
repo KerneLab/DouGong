@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,9 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.AbstractEntity;
 import org.kernelab.dougong.semi.AbstractTable;
@@ -661,7 +664,7 @@ public abstract class Entitys
 		return new Pair<Select, Map<Column, Object>>(sel, params);
 	}
 
-	public static <T> T selectObjectByPrimaryKey(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
+	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
 	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, model);
 		Select select = sql.from(entity) //
@@ -778,5 +781,43 @@ public abstract class Entitys
 				}
 			}
 		}
+	}
+
+	public static <T> int updateObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		Entity entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+		PrimaryKey key = entity.primaryKey();
+
+		Update update = sql.from(entity) //
+				.where(key.queryCondition()) //
+				.update();
+
+		Set<Column> keySet = Tools.setOfArray(new HashSet<Column>(), key.columns());
+		Set<Column> colSet = new LinkedHashSet<Column>();
+
+		Column column = null;
+		for (Item item : entity.items())
+		{
+			column = Tools.as(item, Column.class);
+			if (column != null && !keySet.contains(column))
+			{
+				colSet.add(column);
+			}
+		}
+
+		update = updateSetColumns(sql, update, colSet.toArray(new Column[colSet.size()]));
+
+		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
+
+		return kit.update(update.toString(), params);
+	}
+
+	public static Update updateSetColumns(SQL sql, Update update, Column... columns)
+	{
+		for (Column column : columns)
+		{
+			update = update.set(column, sql.param(Utils.getDataLabelFromField(column.field())));
+		}
+		return update;
 	}
 }
