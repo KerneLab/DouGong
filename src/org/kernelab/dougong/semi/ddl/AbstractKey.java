@@ -2,7 +2,9 @@ package org.kernelab.dougong.semi.ddl;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
@@ -69,6 +71,8 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 
 	private Column[]	columns;
 
+	private Set<Column>	columnSet	= null;
+
 	public AbstractKey(Entity entity, Column... columns)
 	{
 		this.entity = entity;
@@ -80,9 +84,33 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		return columns;
 	}
 
+	public boolean contains(Column... columns)
+	{
+		Set<Column> s = this.getColumnSet();
+
+		for (Column c : columns)
+		{
+			if (!s.contains(c))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public Entity entity()
 	{
 		return entity;
+	}
+
+	protected Set<Column> getColumnSet()
+	{
+		if (columnSet == null)
+		{
+			columnSet = Tools.setOfArray(new HashSet<Column>(), this.columns());
+		}
+		return columnSet;
 	}
 
 	protected Condition queryCondition(Column... columns)

@@ -58,6 +58,12 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 		this.reference = reference;
 	}
 
+	public boolean inPrimaryKey()
+	{
+		PrimaryKey pk = this.entity().primaryKey();
+		return pk != null && pk.contains(this.columns());
+	}
+
 	public ComposableCondition joinCondition()
 	{
 		Column[] columns = this.columns();

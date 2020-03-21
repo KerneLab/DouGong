@@ -9,6 +9,14 @@ import org.kernelab.dougong.core.dml.Condition;
 public interface ForeignKey extends DDL, Key
 {
 	/**
+	 * To judge whether the columns in this foreign key is contained in primary
+	 * key.
+	 * 
+	 * @return
+	 */
+	public boolean inPrimaryKey();
+
+	/**
 	 * Get the join condition between the referrer and reference side entity of
 	 * this foreign key.
 	 * 
