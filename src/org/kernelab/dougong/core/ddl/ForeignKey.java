@@ -9,8 +9,8 @@ import org.kernelab.dougong.core.dml.Condition;
 public interface ForeignKey extends DDL, Key
 {
 	/**
-	 * To judge whether the columns in this foreign key is contained in primary
-	 * key.
+	 * To judge whether the columns in this foreign key is contained in the
+	 * entity's primary key.
 	 * 
 	 * @return
 	 */

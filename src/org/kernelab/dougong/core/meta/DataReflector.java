@@ -39,16 +39,11 @@ public class DataReflector implements JSON.Reflector<Object>
 		{
 			map = new LinkedHashMap<String, Object>();
 
-			DataMeta meta = null;
 			for (Field field : cls.getDeclaredFields())
 			{
-				meta = field.getAnnotation(DataMeta.class);
-				if (meta == null || meta.serialize())
+				if (needSerialize(field))
 				{
-					if (!Entitys.isManyToOne(field))
-					{
-						map.put(Utils.getDataLabelFromField(field), field.getName());
-					}
+					map.put(Utils.getDataLabelFromField(field), field.getName());
 				}
 			}
 
@@ -56,6 +51,28 @@ public class DataReflector implements JSON.Reflector<Object>
 		}
 
 		return map;
+	}
+
+	protected boolean needSerialize(Field field)
+	{
+		DataMeta meta = field.getAnnotation(DataMeta.class);
+		if (meta != null && !meta.serialize())
+		{
+			return false;
+		}
+
+		OneToOneMeta oto = field.getAnnotation(OneToOneMeta.class);
+		if (oto != null && !oto.serialize())
+		{
+			return false;
+		}
+
+		if (Entitys.isManyToOne(field))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	public JSON reflect(JSON json, Object obj)

@@ -68,40 +68,11 @@ public abstract class Entitys
 			{
 				if (isOneToMany(field))
 				{
-					Collection<?> coll = null;
-					try
-					{
-						coll = Tools.access(object, field);
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-					if (coll != null)
-					{
-						OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
-						Class<?> manyClass = meta.model();
-						Entity manyEntity = getEntityFromModelClass(sql, manyClass);
-
-						for (Object o : coll)
-						{
-							deleteObjectCascade(kit, sql, o, manyEntity);
-						}
-
-						ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
-						deleteObjects(kit, sql, object, key, manyEntity);
-					}
+					deleteOneToMany(kit, sql, object, entity, field);
 				}
-				else if (isOneToOne(field))
+				else if (isOneToOneNeedSave(sql, entity, field))
 				{
-					try
-					{
-						deleteObject(kit, sql, Tools.access(object, field), null);
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
+					deleteOneToOne(kit, sql, object, field);
 				}
 			}
 
@@ -125,6 +96,46 @@ public abstract class Entitys
 		else
 		{
 			return 0;
+		}
+	}
+
+	public static <T> void deleteOneToMany(SQLKit kit, SQL sql, T object, Entity entity, Field field)
+			throws SQLException
+	{
+		Collection<?> coll = null;
+		try
+		{
+			coll = Tools.access(object, field);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (coll != null)
+		{
+			OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
+			Class<?> manyClass = meta.model();
+			Entity manyEntity = getEntityFromModelClass(sql, manyClass);
+
+			for (Object o : coll)
+			{
+				deleteObjectCascade(kit, sql, o, manyEntity);
+			}
+
+			ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
+			deleteObjects(kit, sql, object, key, manyEntity);
+		}
+	}
+
+	public static <T> void deleteOneToOne(SQLKit kit, SQL sql, T object, Field field) throws SQLException
+	{
+		try
+		{
+			deleteObject(kit, sql, Tools.access(object, field), null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 
@@ -352,7 +363,7 @@ public abstract class Entitys
 			{
 				insertOneToMany(kit, sql, object, field);
 			}
-			else if (isOneToOne(field))
+			else if (isOneToOneNeedSave(sql, entity, field))
 			{
 				insertOneToOne(kit, sql, object, field);
 			}
@@ -404,9 +415,19 @@ public abstract class Entitys
 		return field.getAnnotation(OneToManyMeta.class) != null;
 	}
 
-	public static boolean isOneToOne(Field field)
+	public static boolean isOneToOneNeedSave(SQL sql, Entity entity, Field field)
 	{
-		return field.getAnnotation(OneToOneMeta.class) != null;
+		OneToOneMeta meta = field.getAnnotation(OneToOneMeta.class);
+		if (meta != null)
+		{
+			ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity,
+					getEntityFromModelClass(sql, meta.model()));
+			return key != null && key.inPrimaryKey();
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**

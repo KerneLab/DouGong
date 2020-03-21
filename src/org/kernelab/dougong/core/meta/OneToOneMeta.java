@@ -16,4 +16,6 @@ public @interface OneToOneMeta
 	public String key();
 
 	public boolean referred();
+
+	public boolean serialize() default true;
 }
