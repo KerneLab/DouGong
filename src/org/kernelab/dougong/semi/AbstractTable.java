@@ -1,17 +1,15 @@
 package org.kernelab.dougong.semi;
 
-import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractTable extends AbstractEntity implements Table
@@ -48,25 +46,6 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return (T) table;
 	}
 
-	public Map<Column, Expression> getInsertMeta()
-	{
-		Map<Column, Expression> meta = new LinkedHashMap<Column, Expression>();
-
-		SQL sql = this.provider().provideSQL();
-
-		for (Field field : this.getColumnFields())
-		{
-			Expression value = Utils.getDataExpressionFromField(sql, field);
-
-			if (value != null)
-			{
-				meta.put(this.getColumnByField(field), value);
-			}
-		}
-
-		return meta;
-	}
-
 	protected void initTable()
 	{
 		this.schema(Utils.getSchemaFromMember(this));
@@ -77,7 +56,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	{
 		if (meta == null)
 		{
-			meta = getInsertMeta();
+			meta = this.getColumnDefaultExpressions();
 		}
 
 		Column[] columns = new Column[meta.size()];
@@ -163,5 +142,22 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	public StringBuilder toStringViewed(StringBuilder buffer)
 	{
 		return this.provider().provideOutputTableNameAliased(buffer, this);
+	}
+
+	public Update updateByMetaMap(Map<Column, Expression> meta)
+	{
+		if (meta == null)
+		{
+			meta = this.getColumnDefaultExpressions();
+		}
+
+		Update update = this.provider().provideUpdate().update(this);
+
+		for (Entry<Column, Expression> entry : meta.entrySet())
+		{
+			update = update.set(entry.getKey(), entry.getValue());
+		}
+
+		return update;
 	}
 }

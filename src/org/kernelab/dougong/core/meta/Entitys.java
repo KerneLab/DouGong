@@ -26,7 +26,6 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
-import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.util.Utils;
@@ -168,6 +167,18 @@ public abstract class Entitys
 	{
 		Set<Column> columns = getColumns(entity);
 		return columns.toArray(new Column[columns.size()]);
+	}
+
+	public static Map<Column, String> getColumnsLabelMap(Collection<Column> columns)
+	{
+		Map<Column, String> map = new LinkedHashMap<Column, String>();
+
+		for (Column column : columns)
+		{
+			map.put(column, Utils.getDataLabelFromField(column.field()));
+		}
+
+		return map;
 	}
 
 	public static Map<Column, String> getColumnsLabelMap(Column... columns)
@@ -320,7 +331,8 @@ public abstract class Entitys
 		Column[] gencols = generates != null ? generates.value : null;
 
 		AbstractTable table = entity.as(AbstractTable.class);
-		Map<Column, Expression> insertMeta = table.getInsertMeta();
+		Map<Column, Expression> insertMeta = table.getColumnDefaultExpressions();
+		insertMeta = overwriteColumnDefaults(sql, object, insertMeta);
 
 		Map<String, Object> params = Entitys.mapObjectByMeta(object);
 
@@ -341,14 +353,13 @@ public abstract class Entitys
 		else if (generates.key == GenerateValueMeta.AUTO)
 		{
 			Set<Column> genset = Tools.setOfArray(new LinkedHashSet<Column>(), gencols);
-			Map<Column, Object> genvals = mapObjectToEntity(object, entity, gencols);
+			Map<Column, Object> genvals = mapObjectToEntity(object, gencols);
 			for (Entry<Column, Object> entry : genvals.entrySet())
 			{
 				if (entry.getValue() != null)
 				{
 					Column column = entry.getKey();
 					genset.remove(column);
-					insertMeta.put(column, Utils.getDataParameterFromField(sql, column.field()));
 				}
 			}
 
@@ -557,25 +568,13 @@ public abstract class Entitys
 	}
 
 	/**
-	 * Map model object to entity column/value pairs.
+	 * Map model object to column/value pairs.
 	 * 
 	 * @param object
-	 * @return
-	 */
-	public static <T> Map<Column, Object> mapObjectToEntity(T object, Entity entity)
-	{
-		return mapObjectToEntity(object, entity, getColumnsArray(entity));
-	}
-
-	/**
-	 * Map model object to entity column/value pairs.
-	 * 
-	 * @param object
-	 * @param entity
 	 * @param columns
 	 * @return
 	 */
-	public static <T> Map<Column, Object> mapObjectToEntity(T object, Entity entity, Column... columns)
+	public static <T> Map<Column, Object> mapObjectToEntity(T object, Collection<Column> columns)
 	{
 		Map<Column, String> labels = getColumnsLabelMap(columns);
 
@@ -606,6 +605,30 @@ public abstract class Entitys
 	}
 
 	/**
+	 * Map model object to entity column/value pairs.
+	 * 
+	 * @param object
+	 * @param entity
+	 * @param columns
+	 * @return
+	 */
+	public static <T> Map<Column, Object> mapObjectToEntity(T object, Column... columns)
+	{
+		return mapObjectToEntity(object, Tools.setOfArray(new LinkedHashSet<Column>(), columns));
+	}
+
+	/**
+	 * Map model object to entity column/value pairs.
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public static <T> Map<Column, Object> mapObjectToEntity(T object, Entity entity)
+	{
+		return mapObjectToEntity(object, getColumns(entity));
+	}
+
+	/**
 	 * Map column/values in reference by foreign key.
 	 * 
 	 * @param reference
@@ -623,6 +646,21 @@ public abstract class Entitys
 			map.put(columns[i], reference.get(refers[i]));
 		}
 		return map;
+	}
+
+	public static <T> Map<Column, Expression> overwriteColumnDefaults(SQL sql, T object, Map<Column, Expression> meta)
+	{
+		Map<Column, Object> data = mapObjectToEntity(object, meta.keySet());
+
+		for (Entry<Column, Object> entry : data.entrySet())
+		{
+			if (entry.getValue() != null && meta.containsKey(entry.getKey()))
+			{
+				meta.put(entry.getKey(), Utils.getDataParameterFromField(sql, entry.getKey().field()));
+			}
+		}
+
+		return meta;
 	}
 
 	public static <T> void saveObject(SQLKit kit, SQL sql, T object) throws SQLException
@@ -891,36 +929,15 @@ public abstract class Entitys
 		Entity entity = Entitys.getEntityFromModelClass(sql, object.getClass());
 		PrimaryKey key = entity.primaryKey();
 
-		Update update = sql.from(entity) //
-				.where(key.queryCondition()) //
-				.update();
+		AbstractTable table = entity.as(AbstractTable.class);
+		Map<Column, Expression> updateMeta = table.getColumnDefaultExpressions();
+		updateMeta = overwriteColumnDefaults(sql, object, updateMeta);
 
-		Set<Column> keySet = Tools.setOfArray(new HashSet<Column>(), key.columns());
-		Set<Column> colSet = new LinkedHashSet<Column>();
-
-		Column column = null;
-		for (Item item : entity.items())
-		{
-			column = Tools.as(item, Column.class);
-			if (column != null && !keySet.contains(column))
-			{
-				colSet.add(column);
-			}
-		}
-
-		update = updateSetColumns(sql, update, colSet.toArray(new Column[colSet.size()]));
+		Update update = table.updateByMetaMap(updateMeta) //
+				.where(key.queryCondition());
 
 		Map<String, Object> params = mapColumnToLabelByMeta(mapObjectToEntity(object, entity));
 
 		return kit.update(update.toString(), params);
-	}
-
-	public static Update updateSetColumns(SQL sql, Update update, Column... columns)
-	{
-		for (Column column : columns)
-		{
-			update = update.set(column, sql.param(Utils.getDataLabelFromField(column.field())));
-		}
-		return update;
 	}
 }

@@ -4,17 +4,21 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.util.Utils;
@@ -150,6 +154,25 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 
 		return column;
+	}
+
+	public Map<Column, Expression> getColumnDefaultExpressions()
+	{
+		Map<Column, Expression> meta = new LinkedHashMap<Column, Expression>();
+
+		SQL sql = this.provider().provideSQL();
+
+		for (Field field : this.getColumnFields())
+		{
+			Expression value = Utils.getDataExpressionFromField(sql, field);
+
+			if (value != null)
+			{
+				meta.put(this.getColumnByField(field), value);
+			}
+		}
+
+		return meta;
 	}
 
 	protected List<Field> getColumnFields()
