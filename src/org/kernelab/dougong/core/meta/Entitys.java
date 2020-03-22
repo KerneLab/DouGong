@@ -24,7 +24,7 @@ import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Delete;
-import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
@@ -297,39 +297,56 @@ public abstract class Entitys
 			entity = Entitys.getEntityFromModelClass(sql, object.getClass());
 		}
 
-		Pair<Short, Column[]> generateColumns = Entitys.getGenerateValueColumns(entity);
+		Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
 
-		Insert insert = entity.as(AbstractTable.class).insertByMetaMap();
+		AbstractTable table = entity.as(AbstractTable.class);
+
+		Map<Column, Expression> insertMeta = table.getInsertMeta();
 
 		Map<String, Object> params = Entitys.mapObjectByMeta(object);
 
 		PreparedStatement stmt = null;
 
-		if (generateColumns == null)
+		if (generates == null)
 		{
-			stmt = kit.prepareStatement(insert.toString(), params);
+			stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params);
 		}
-		else if (generateColumns.key == GenerateValueMeta.IDENTITY)
+		else if (generates.key == GenerateValueMeta.IDENTITY)
 		{
-			stmt = kit.prepareStatement(insert.toString(), params, true);
-		}
-		else if (generateColumns.key == GenerateValueMeta.AUTO)
-		{
-			Column[] columns = generateColumns.value;
-			String[] generateColumnNames = new String[columns.length];
-			for (int i = 0; i < columns.length; i++)
+			for (Column column : generates.value)
 			{
-				generateColumnNames[i] = columns[i].name();
+				insertMeta.remove(column);
 			}
-			stmt = kit.prepareStatement(insert.toString(), params, generateColumnNames);
+			stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params, true);
+		}
+		else if (generates.key == GenerateValueMeta.AUTO)
+		{
+			Column[] columns = generates.value;
+			if (isMissingValue(object, entity, columns))
+			{
+				String[] generateColumnNames = new String[columns.length];
+				for (int i = 0; i < columns.length; i++)
+				{
+					generateColumnNames[i] = columns[i].name();
+				}
+				stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params, generateColumnNames);
+			}
+			else
+			{
+				for (Column column : columns)
+				{
+					insertMeta.put(column, Utils.getDataParameterFromField(sql, column.field()));
+				}
+				stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params);
+			}
 		}
 
 		Sequel seq = kit.execute(stmt, params);
 
 		// Set generate values
-		if (generateColumns != null)
+		if (generates != null)
 		{
-			Column[] columns = generateColumns.value;
+			Column[] columns = generates.value;
 			Sequel gen = seq.getGeneratedKeys();
 			Object val = null;
 			Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass());
@@ -553,7 +570,7 @@ public abstract class Entitys
 
 			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
 
-			if (isMissingValue(object, entity, generates.value))
+			if (generates != null && isMissingValue(object, entity, generates.value))
 			{ // Missing values in generated columns
 				insertObject(kit, sql, object, entity);
 				insertObjectCascade(kit, sql, object, entity);

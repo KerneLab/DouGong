@@ -73,13 +73,9 @@ public class Utils
 						return null;
 					}
 				}
-				else if (Tools.notNullOrEmpty(meta.alias()))
-				{
-					return sql.param(meta.alias());
-				}
 				else
 				{
-					return sql.param(getNameFromField(field));
+					return getDataParameterFromField(sql, field);
 				}
 			}
 			else
@@ -99,6 +95,27 @@ public class Utils
 		{
 			String alias = getDataAliasFromField(field);
 			return alias != null ? alias : field.getName();
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public static Expression getDataParameterFromField(SQL sql, Field field)
+	{
+		if (field != null)
+		{
+			DataMeta meta = field.getAnnotation(DataMeta.class);
+
+			if (meta != null && Tools.notNullOrEmpty(meta.alias()))
+			{
+				return sql.param(meta.alias());
+			}
+			else
+			{
+				return sql.param(getNameFromField(field));
+			}
 		}
 		else
 		{

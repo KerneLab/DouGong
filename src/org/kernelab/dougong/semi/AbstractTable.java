@@ -48,7 +48,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return (T) table;
 	}
 
-	protected Map<Column, Expression> getInsertMeta()
+	public Map<Column, Expression> getInsertMeta()
 	{
 		Map<Column, Expression> meta = new LinkedHashMap<Column, Expression>();
 
@@ -73,16 +73,17 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		this.name(Utils.getNameFromNamed(this));
 	}
 
-	public Insert insertByMetaMap()
+	public Insert insertByMetaMap(Map<Column, Expression> meta)
 	{
-		Map<Column, Expression> meta = this.getInsertMeta();
+		if (meta == null)
+		{
+			meta = getInsertMeta();
+		}
 
 		Column[] columns = new Column[meta.size()];
-
 		Expression[] values = new Expression[meta.size()];
 
 		int i = 0;
-
 		for (Entry<Column, Expression> entry : meta.entrySet())
 		{
 			columns[i] = entry.getKey();

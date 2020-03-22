@@ -42,7 +42,7 @@ public class TestInsert
 
 	public static Insert makeInsertByMetaMap()
 	{
-		return SQL.table(STAF.class, "s").insertByMetaMap();
+		return SQL.table(STAF.class, "s").insertByMetaMap(null);
 	}
 
 	public static Insert makeSelect()
