@@ -595,9 +595,6 @@ public abstract class Entitys
 		sel = sel.as(AbstractSelect.class) //
 				.fillAliasByMeta();
 
-		// Tools.debug(sel);
-		// Tools.debug(params);
-
 		return new Pair<Select, Map<Column, Object>>(sel, params);
 	}
 
@@ -657,9 +654,6 @@ public abstract class Entitys
 
 		sel = sel.as(AbstractSelect.class) //
 				.fillAliasByMeta();
-
-		// Tools.debug(sel);
-		// Tools.debug(params);
 
 		return new Pair<Select, Map<Column, Object>>(sel, params);
 	}

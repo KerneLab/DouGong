@@ -13,7 +13,7 @@ public class Department
 	@ManyToOneMeta
 	private Company				company;
 
-	@DataMeta(alias = "compId")
+	@DataMeta(alias = "compId", serialize = false)
 	private String				compId;
 
 	@DataMeta(alias = "deptId")

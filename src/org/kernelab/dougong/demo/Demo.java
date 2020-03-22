@@ -20,7 +20,7 @@ public class Demo
 
 			Map<Class<?>, Object> reflects = DataReflector.register(Company.class, Department.class, Staff.class);
 
-			Tools.debug(JSON.Reflect(reflects, company));
+			Tools.debug(JSON.Reflect(reflects, company).toString(0));
 		}
 		catch (Exception e)
 		{

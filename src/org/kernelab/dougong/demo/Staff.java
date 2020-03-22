@@ -3,6 +3,7 @@ package org.kernelab.dougong.demo;
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.EntityMeta;
 import org.kernelab.dougong.core.meta.ManyToOneMeta;
+import org.kernelab.dougong.core.meta.OneToOneMeta;
 
 @EntityMeta(entity = STAF.class)
 public class Staff
@@ -10,10 +11,10 @@ public class Staff
 	@ManyToOneMeta
 	private Department	department;
 
-	@DataMeta(alias = "compId")
+	@DataMeta(alias = "compId", serialize = false)
 	private String		compId;
 
-	@DataMeta(alias = "deptId")
+	@DataMeta(alias = "deptId", serialize = false)
 	private String		deptId;
 
 	@DataMeta(alias = "stafId")
@@ -24,6 +25,12 @@ public class Staff
 
 	@DataMeta(alias = "stafSalary")
 	private Double		salary;
+
+	@DataMeta(alias = "stafJob")
+	private String		jobId;
+
+	@OneToOneMeta(key = "FK_STAF_JOB", model = Job.class, referred = true, serialize = true)
+	private Job			job;
 
 	public String getCompId()
 	{
@@ -43,6 +50,16 @@ public class Staff
 	public String getId()
 	{
 		return id;
+	}
+
+	public Job getJob()
+	{
+		return job;
+	}
+
+	public String getJobId()
+	{
+		return jobId;
 	}
 
 	public String getName()
@@ -71,6 +88,16 @@ public class Staff
 	public void setId(String id)
 	{
 		this.id = id;
+	}
+
+	public void setJob(Job job)
+	{
+		this.job = job;
+	}
+
+	public void setJobId(String jobId)
+	{
+		this.jobId = jobId;
 	}
 
 	public void setName(String name)
