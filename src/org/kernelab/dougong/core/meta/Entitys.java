@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,7 +144,7 @@ public abstract class Entitys
 
 	public static Set<Column> getColumns(Entity entity)
 	{
-		Set<Column> columns = new HashSet<Column>();
+		Set<Column> columns = new LinkedHashSet<Column>();
 
 		for (Field field : entity.getClass().getDeclaredFields())
 		{
@@ -161,6 +162,24 @@ public abstract class Entitys
 		}
 
 		return columns;
+	}
+
+	public static Column[] getColumnsArray(Entity entity)
+	{
+		Set<Column> columns = getColumns(entity);
+		return columns.toArray(new Column[columns.size()]);
+	}
+
+	public static Map<Column, String> getColumnsLabelMap(Column... columns)
+	{
+		Map<Column, String> map = new LinkedHashMap<Column, String>();
+
+		for (Column column : columns)
+		{
+			map.put(column, Utils.getDataLabelFromField(column.field()));
+		}
+
+		return map;
 	}
 
 	public static Class<? extends Entity> getEntityClassFromModel(Class<?> modelClass)
@@ -298,9 +317,9 @@ public abstract class Entitys
 		}
 
 		Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+		Column[] gencols = generates != null ? generates.value : null;
 
 		AbstractTable table = entity.as(AbstractTable.class);
-
 		Map<Column, Expression> insertMeta = table.getInsertMeta();
 
 		Map<String, Object> params = Entitys.mapObjectByMeta(object);
@@ -313,7 +332,7 @@ public abstract class Entitys
 		}
 		else if (generates.key == GenerateValueMeta.IDENTITY)
 		{
-			for (Column column : generates.value)
+			for (Column column : gencols)
 			{
 				insertMeta.remove(column);
 			}
@@ -321,41 +340,51 @@ public abstract class Entitys
 		}
 		else if (generates.key == GenerateValueMeta.AUTO)
 		{
-			Column[] columns = generates.value;
-			if (isMissingValue(object, entity, columns))
+			Set<Column> genset = Tools.setOfArray(new LinkedHashSet<Column>(), gencols);
+			Map<Column, Object> genvals = mapObjectToEntity(object, entity, gencols);
+			for (Entry<Column, Object> entry : genvals.entrySet())
 			{
-				String[] generateColumnNames = new String[columns.length];
-				for (int i = 0; i < columns.length; i++)
+				if (entry.getValue() != null)
 				{
-					generateColumnNames[i] = columns[i].name();
+					Column column = entry.getKey();
+					genset.remove(column);
+					insertMeta.put(column, Utils.getDataParameterFromField(sql, column.field()));
 				}
-				stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params, generateColumnNames);
+			}
+
+			if (genset.isEmpty())
+			{
+				gencols = null;
+				stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params);
 			}
 			else
 			{
-				for (Column column : columns)
+				gencols = genset.toArray(new Column[genset.size()]);
+				String[] genames = new String[genset.size()];
+				int i = 0;
+				for (Column column : genset)
 				{
-					insertMeta.put(column, Utils.getDataParameterFromField(sql, column.field()));
+					genames[i] = column.name();
+					i++;
 				}
-				stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params);
+				stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params, genames);
 			}
 		}
 
 		Sequel seq = kit.execute(stmt, params);
 
 		// Set generate values
-		if (generates != null)
+		if (gencols != null)
 		{
-			Column[] columns = generates.value;
 			Sequel gen = seq.getGeneratedKeys();
 			Object val = null;
 			Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass());
-			for (int i = 0; i < columns.length; i++)
+			for (int i = 0; i < gencols.length; i++)
 			{
 				val = gen.getValueObject(i + 1);
 				try
 				{
-					Tools.access(object, fields.get(Utils.getDataLabelFromField(columns[i].field())), val);
+					Tools.access(object, fields.get(Utils.getDataLabelFromField(gencols[i].field())), val);
 				}
 				catch (Exception e)
 				{
@@ -487,6 +516,18 @@ public abstract class Entitys
 		return map;
 	}
 
+	public static Map<Column, String> mapLabelsFromColumnsByMeta(Column... columns)
+	{
+		Map<Column, String> map = new LinkedHashMap<Column, String>();
+
+		for (Column column : columns)
+		{
+			map.put(column, getLabelFromColumnByMeta(column));
+		}
+
+		return map;
+	}
+
 	public static <T> Map<String, Object> mapObjectByMeta(T object)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -516,26 +557,48 @@ public abstract class Entitys
 	}
 
 	/**
-	 * Map model object to entity column/value pair.
+	 * Map model object to entity column/value pairs.
 	 * 
-	 * @param model
+	 * @param object
 	 * @return
 	 */
-	public static <T> Map<Column, Object> mapObjectToEntity(T model, Entity entity)
+	public static <T> Map<Column, Object> mapObjectToEntity(T object, Entity entity)
 	{
-		Map<String, Field> modelFields = Utils.getLabelFieldMapByMeta(model.getClass());
+		return mapObjectToEntity(object, entity, getColumnsArray(entity));
+	}
 
-		Map<Column, Object> map = new HashMap<Column, Object>();
+	/**
+	 * Map model object to entity column/value pairs.
+	 * 
+	 * @param object
+	 * @param entity
+	 * @param columns
+	 * @return
+	 */
+	public static <T> Map<Column, Object> mapObjectToEntity(T object, Entity entity, Column... columns)
+	{
+		Map<Column, String> labels = getColumnsLabelMap(columns);
 
-		for (Column column : getColumns(entity))
+		Map<String, Field> modelFields = Utils.getLabelFieldMapByMeta(object.getClass(),
+				new HashSet<String>(labels.values()));
+
+		Map<Column, Object> map = new LinkedHashMap<Column, Object>();
+
+		Field field = null;
+		for (Column column : columns)
 		{
-			try
+			field = modelFields.get(labels.get(column));
+
+			if (field != null)
 			{
-				map.put(column, Tools.access(model, modelFields.get(Utils.getDataLabelFromField(column.field()))));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
+				try
+				{
+					map.put(column, Tools.access(object, field));
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.kernelab.basis.JSON;
 import org.kernelab.basis.Tools;
@@ -153,6 +154,34 @@ public class Utils
 			if (field.getAnnotation(DataMeta.class) != null)
 			{
 				map.put(getDataLabelFromField(field), field);
+			}
+		}
+
+		return map;
+	}
+
+	/**
+	 * Get label/field map defined by DataMeta of the given class within a given
+	 * labels set.
+	 * 
+	 * @param cls
+	 * @param labels
+	 * @return
+	 */
+	public static Map<String, Field> getLabelFieldMapByMeta(Class<?> cls, Set<String> labels)
+	{
+		Map<String, Field> map = new HashMap<String, Field>();
+
+		String label = null;
+		for (Field field : cls.getDeclaredFields())
+		{
+			if (field.getAnnotation(DataMeta.class) != null)
+			{
+				label = getDataLabelFromField(field);
+				if (labels.contains(label))
+				{
+					map.put(label, field);
+				}
 			}
 		}
 
