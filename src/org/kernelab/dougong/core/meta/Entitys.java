@@ -54,7 +54,7 @@ public abstract class Entitys
 		}
 		else
 		{
-			return 0;
+			return -1;
 		}
 	}
 
@@ -78,8 +78,6 @@ public abstract class Entitys
 					deleteOneToOne(kit, sql, object, field);
 				}
 			}
-
-			deleteObject(kit, sql, object, entity);
 		}
 	}
 
@@ -120,13 +118,14 @@ public abstract class Entitys
 			Class<?> manyClass = meta.model();
 			Entity manyEntity = getEntityFromModelClass(sql, manyClass);
 
+			ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
+			deleteObjects(kit, sql, object, key, manyEntity);
+
 			for (Object o : coll)
 			{
 				deleteObjectCascade(kit, sql, o, manyEntity);
+				deleteObject(kit, sql, o, manyEntity);
 			}
-
-			ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
-			deleteObjects(kit, sql, object, key, manyEntity);
 		}
 	}
 
@@ -298,9 +297,9 @@ public abstract class Entitys
 			entity = Entitys.getEntityFromModelClass(sql, object.getClass());
 		}
 
-		Insert insert = entity.as(AbstractTable.class).insertByMetaMap();
-
 		Pair<Short, Column[]> generateColumns = Entitys.getGenerateValueColumns(entity);
+
+		Insert insert = entity.as(AbstractTable.class).insertByMetaMap();
 
 		Map<String, Object> params = Entitys.mapObjectByMeta(object);
 
@@ -358,8 +357,6 @@ public abstract class Entitys
 			entity = Entitys.getEntityFromModelClass(sql, object.getClass());
 		}
 
-		insertObject(kit, sql, object, entity);
-
 		for (Field field : object.getClass().getDeclaredFields())
 		{
 			if (isOneToMany(field))
@@ -387,6 +384,7 @@ public abstract class Entitys
 				{
 					entity = getEntityFromModelClass(sql, o.getClass());
 				}
+				insertObject(kit, sql, o, entity);
 				insertObjectCascade(kit, sql, o, entity);
 			}
 		}
@@ -400,7 +398,13 @@ public abstract class Entitys
 	{
 		try
 		{
-			insertObjectCascade(kit, sql, Tools.access(object, field), null);
+			Object o = Tools.access(object, field);
+			if (o != null)
+			{
+				Entity entity = getEntityFromModelClass(sql, o.getClass());
+				insertObject(kit, sql, o, entity);
+				insertObjectCascade(kit, sql, o, entity);
+			}
 		}
 		catch (Exception e)
 		{
@@ -411,6 +415,21 @@ public abstract class Entitys
 	public static boolean isManyToOne(Field field)
 	{
 		return field.getAnnotation(ManyToOneMeta.class) != null;
+	}
+
+	public static <T> boolean isMissingValue(T object, Entity entity, Column... columns)
+	{
+		Map<Column, Object> values = mapObjectToEntity(object, entity);
+
+		for (Column column : columns)
+		{
+			if (values.get(column) == null)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static boolean isOneToMany(Field field)
@@ -532,9 +551,19 @@ public abstract class Entitys
 		{
 			Entity entity = getEntityFromModelClass(sql, object.getClass());
 
-			deleteObjectCascade(kit, sql, object, entity);
+			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
 
-			insertObjectCascade(kit, sql, object, entity);
+			if (isMissingValue(object, entity, generates.value))
+			{ // Missing values in generated columns
+				insertObject(kit, sql, object, entity);
+				insertObjectCascade(kit, sql, object, entity);
+			}
+			else
+			{
+				deleteObjectCascade(kit, sql, object, entity);
+				updateObject(kit, sql, object);
+				insertObjectCascade(kit, sql, object, entity);
+			}
 		}
 	}
 
@@ -801,7 +830,7 @@ public abstract class Entitys
 
 		update = updateSetColumns(sql, update, colSet.toArray(new Column[colSet.size()]));
 
-		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
+		Map<String, Object> params = mapColumnToLabelByMeta(mapObjectToEntity(object, entity));
 
 		return kit.update(update.toString(), params);
 	}

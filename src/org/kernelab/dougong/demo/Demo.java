@@ -18,9 +18,14 @@ public class Demo
 
 			Tools.debug(company.toString());
 
+			company.setId("14");
+			company.setName("abc inc.");
+
 			Map<Class<?>, Object> reflects = DataReflector.register(Company.class, Department.class, Staff.class);
 
 			Tools.debug(JSON.Reflect(reflects, company).toString(0));
+
+			Entitys.saveObject(Config.getSQLKit(), Config.SQL, company);
 		}
 		catch (Exception e)
 		{

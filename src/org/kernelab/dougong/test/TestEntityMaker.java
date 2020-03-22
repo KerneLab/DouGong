@@ -22,6 +22,6 @@ public class TestEntityMaker
 
 		EntityMaker.makeTable(provider, kit, "STAF", "org.kernelab.dougong.demo", base, null, null);
 
-//		EntityMaker.makeView(provider, kit, sql.subquery(TestView.class), "org.kernelab.dougong.demo", base, "", null);
+		EntityMaker.makeView(provider, kit, sql.subquery(TestView.class), "org.kernelab.dougong.demo", base, "", null);
 	}
 }
