@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.kernelab.basis.JSON;
-import org.kernelab.dougong.core.util.Utils;
 
 public class DataReflector implements JSON.Reflector<Object>
 {
@@ -43,7 +42,7 @@ public class DataReflector implements JSON.Reflector<Object>
 			{
 				if (needSerialize(field))
 				{
-					map.put(Utils.getDataLabelFromField(field), field.getName());
+					map.put(field.getName(), field.getName());
 				}
 			}
 

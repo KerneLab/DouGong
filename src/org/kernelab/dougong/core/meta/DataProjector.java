@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.kernelab.basis.JSON;
 import org.kernelab.basis.Tools;
-import org.kernelab.dougong.core.util.Utils;
 
 public class DataProjector implements JSON.Projector<Object>
 {
@@ -52,7 +51,7 @@ public class DataProjector implements JSON.Projector<Object>
 			{
 				if (!Entitys.isManyToOne(field))
 				{
-					map.put(field.getName(), Utils.getDataLabelFromField(field));
+					map.put(field.getName(), field.getName());
 				}
 				if (Entitys.isOneToMany(field))
 				{

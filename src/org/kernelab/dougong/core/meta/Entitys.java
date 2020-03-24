@@ -26,6 +26,7 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.util.Utils;
@@ -338,9 +339,12 @@ public abstract class Entitys
 
 		PreparedStatement stmt = null;
 
+		Insert insert = null;
+
 		if (generates == null)
 		{
-			stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params);
+			insert = table.insertByMetaMap(insertMeta);
+			stmt = kit.prepareStatement(insert.toString(), params);
 		}
 		else if (generates.key == GenerateValueMeta.IDENTITY)
 		{
@@ -348,7 +352,8 @@ public abstract class Entitys
 			{
 				insertMeta.remove(column);
 			}
-			stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params, true);
+			insert = table.insertByMetaMap(insertMeta);
+			stmt = kit.prepareStatement(insert.toString(), params, true);
 		}
 		else if (generates.key == GenerateValueMeta.AUTO)
 		{
@@ -366,7 +371,8 @@ public abstract class Entitys
 			if (genset.isEmpty())
 			{
 				gencols = null;
-				stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params);
+				insert = table.insertByMetaMap(insertMeta);
+				stmt = kit.prepareStatement(insert.toString(), params);
 			}
 			else
 			{
@@ -378,7 +384,8 @@ public abstract class Entitys
 					genames[i] = column.name();
 					i++;
 				}
-				stmt = kit.prepareStatement(table.insertByMetaMap(insertMeta).toString(), params, genames);
+				insert = table.insertByMetaMap(insertMeta);
+				stmt = kit.prepareStatement(insert.toString(), params, genames);
 			}
 		}
 

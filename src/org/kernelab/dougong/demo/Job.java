@@ -7,28 +7,28 @@ import org.kernelab.dougong.core.meta.EntityMeta;
 public class Job
 {
 	@DataMeta(alias = "jobId")
-	private String	jobId;
+	private String	id;
 
 	@DataMeta(alias = "jobName")
-	private String	jobName;
+	private String	name;
 
-	public String getJobId()
+	public String getId()
 	{
-		return jobId;
+		return id;
 	}
 
-	public String getJobName()
+	public String getName()
 	{
-		return jobName;
+		return name;
 	}
 
-	public void setJobId(String jobId)
+	public void setId(String jobId)
 	{
-		this.jobId = jobId;
+		this.id = jobId;
 	}
 
-	public void setJobName(String jobName)
+	public void setName(String jobName)
 	{
-		this.jobName = jobName;
+		this.name = jobName;
 	}
 }
