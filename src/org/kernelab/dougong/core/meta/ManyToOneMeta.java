@@ -11,4 +11,9 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ManyToOneMeta
 {
+	public Class<?> model();
+
+	public String key();
+
+	public boolean referred() default true;
 }

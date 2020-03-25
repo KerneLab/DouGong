@@ -692,7 +692,7 @@ public abstract class Entitys
 		}
 	}
 
-	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, OneToManyMeta oneToMany,
+	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationMeta meta,
 			JoinMeta joinMeta)
 	{
 		Select sel = null;
@@ -724,7 +724,7 @@ public abstract class Entitys
 
 		Entity origin = getEntityFromModelClass(sql, object.getClass());
 
-		Entity target = getEntityFromModelClass(sql, oneToMany.model());
+		Entity target = getEntityFromModelClass(sql, meta.model());
 
 		Map<Column, Object> params = null;
 
@@ -732,74 +732,14 @@ public abstract class Entitys
 		{ // Join with target
 			JoinDefine firstJoin = joinMeta.joins()[0];
 			ForeignKey key = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
-			sel = sel.innerJoin(target.alias("t"), getForeignKey(oneToMany.key(), oneToMany.referred(), last, target)) //
+			sel = sel.innerJoin(target.alias("t"), getForeignKey(meta.key(), meta.referred(), last, target)) //
 					.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
 					.select(target.all());
 			params = key.mapValuesTo(object, key.entity() == first ? key.entity() : key.reference().entity());
 		}
 		else
 		{ // Query from target
-			ForeignKey key = getForeignKey(oneToMany.key(), oneToMany.referred(), origin, target);
-			sel = sql.from(target) //
-					.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
-					.select(target.all());
-			params = key.mapValuesTo(object, key.entity() == target ? key.entity() : key.reference().entity());
-		}
-
-		sel = sel.as(AbstractSelect.class) //
-				.fillAliasByMeta();
-
-		return new Pair<Select, Map<Column, Object>>(sel, params);
-	}
-
-	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, OneToOneMeta oneToMany,
-			JoinMeta joinMeta)
-	{
-		Select sel = null;
-		Entity first = null, last = null, curr = null;
-
-		if (joinMeta != null)
-		{
-			int i = 0;
-			for (JoinDefine join : joinMeta.joins())
-			{
-				curr = sql.view(join.entity());
-				curr.alias("t" + i);
-				if (first == null)
-				{
-					first = curr;
-				}
-				if (last == null)
-				{
-					sel = sql.from(curr).select();
-				}
-				else
-				{
-					sel = sel.innerJoin(curr, getForeignKey(join.key(), join.referred(), last, curr));
-				}
-				last = curr;
-				i++;
-			}
-		}
-
-		Entity origin = getEntityFromModelClass(sql, object.getClass());
-
-		Entity target = getEntityFromModelClass(sql, oneToMany.model());
-
-		Map<Column, Object> params = null;
-
-		if (sel != null)
-		{ // Join with target
-			JoinDefine firstJoin = joinMeta.joins()[0];
-			ForeignKey key = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
-			sel = sel.innerJoin(target.alias("t"), getForeignKey(oneToMany.key(), oneToMany.referred(), last, target)) //
-					.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
-					.select(target.all());
-			params = key.mapValuesTo(object, key.entity() == first ? key.entity() : key.reference().entity());
-		}
-		else
-		{ // Query from target
-			ForeignKey key = getForeignKey(oneToMany.key(), oneToMany.referred(), origin, target);
+			ForeignKey key = getForeignKey(meta.key(), meta.referred(), origin, target);
 			sel = sql.from(target) //
 					.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
 					.select(target.all());
@@ -828,15 +768,53 @@ public abstract class Entitys
 		return object;
 	}
 
+	public static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field) throws SQLException
+	{
+		try
+		{
+			if (object != null && Tools.access(object, field) == null)
+			{
+				ManyToOneMeta meta = field.getAnnotation(ManyToOneMeta.class);
+
+				if (meta != null)
+				{
+					Class<?> model = meta.model();
+
+					Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationMeta(meta),
+							field.getAnnotation(JoinMeta.class));
+					Select sel = pair.key;
+					Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
+
+					Object another = kit.execute(sel.toString(), param) //
+							.getRow(model, Utils.getFieldNameMapByMeta(model));
+					try
+					{
+						Tools.access(object, field, another);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+
+					setupObject(kit, sql, another);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
 	public static <T> void setOneToManyMembers(SQLKit kit, SQL sql, T object, Field field) throws SQLException
 	{
-		OneToManyMeta manyMeta = field.getAnnotation(OneToManyMeta.class);
+		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
 
-		if (manyMeta != null)
+		if (meta != null)
 		{
-			Class<?> manyModel = manyMeta.model();
+			Class<?> manyModel = meta.model();
 
-			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, manyMeta,
+			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationMeta(meta),
 					field.getAnnotation(JoinMeta.class));
 			Select sel = pair.key;
 			Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
@@ -874,13 +852,13 @@ public abstract class Entitys
 
 	public static <T> void setOneToOneMembers(SQLKit kit, SQL sql, T object, Field field) throws SQLException
 	{
-		OneToOneMeta oneMeta = field.getAnnotation(OneToOneMeta.class);
+		OneToOneMeta meta = field.getAnnotation(OneToOneMeta.class);
 
-		if (oneMeta != null)
+		if (meta != null)
 		{
-			Class<?> oneModel = oneMeta.model();
+			Class<?> oneModel = meta.model();
 
-			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, oneMeta,
+			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationMeta(meta),
 					field.getAnnotation(JoinMeta.class));
 			Select sel = pair.key;
 			Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
@@ -926,6 +904,10 @@ public abstract class Entitys
 				else if (field.getAnnotation(OneToOneMeta.class) != null)
 				{
 					setOneToOneMembers(kit, sql, object, field);
+				}
+				else if (field.getAnnotation(ManyToOneMeta.class) != null)
+				{
+					setManyToOneMembers(kit, sql, object, field);
 				}
 			}
 		}

@@ -10,11 +10,13 @@ import org.kernelab.dougong.core.meta.OneToManyMeta;
 @EntityMeta(entity = DEPT.class)
 public class Department
 {
-	@ManyToOneMeta
+	@ManyToOneMeta(model = Company.class, key = "FRN_DEPT")
 	private Company				company;
 
 	@DataMeta(alias = "compId", serialize = false)
 	private String				compId;
+
+	private String				compName;
 
 	@DataMeta(alias = "deptId")
 	private String				id;
@@ -33,6 +35,11 @@ public class Department
 	public String getCompId()
 	{
 		return this.getCompany() != null ? this.getCompany().getId() : this.compId;
+	}
+
+	public String getCompName()
+	{
+		return this.getCompany() != null ? this.getCompany().getName() : compName;
 	}
 
 	public String getId()
@@ -60,6 +67,11 @@ public class Department
 		this.compId = compId;
 	}
 
+	public void setCompName(String compName)
+	{
+		this.compName = compName;
+	}
+
 	public void setId(String id)
 	{
 		this.id = id;
@@ -77,8 +89,8 @@ public class Department
 
 	public String toString()
 	{
-		String str = "Depart: id=" + this.getId() + ", name=" + this.getName() + ", compId="
-				+ this.getCompany().getId();
+		String str = "Depart: id=" + this.getId() + ", name=" + this.getName() + ", compId=" + this.getCompId()
+				+ ", compName=" + this.getCompName();
 
 		if (this.getStaffs() != null)
 		{

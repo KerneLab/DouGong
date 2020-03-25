@@ -32,6 +32,13 @@ public class Demo
 			Tools.debug(company1.toString());
 
 			Entitys.saveObject(Config.getSQLKit(), Config.SQL, company1);
+
+			//////////////////////////////////////////////////////////////////////////////////
+
+			Department depart = Entitys.selectObject(Config.getSQLKit(), Config.SQL, Department.class,
+					new JSON().attr("compId", "1").attr("deptId", "11"));
+			Tools.debug(depart.toString());
+
 		}
 		catch (Exception e)
 		{
