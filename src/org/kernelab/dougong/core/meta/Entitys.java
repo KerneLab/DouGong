@@ -764,7 +764,7 @@ public abstract class Entitys
 		T object = kit.execute(select.toString(), params) //
 				.getRow(model, Utils.getFieldNameMapByMeta(model));
 
-		setupObject(kit, sql, object);
+		setupObject(kit, sql, object, true);
 
 		return object;
 	}
@@ -797,7 +797,7 @@ public abstract class Entitys
 						e.printStackTrace();
 					}
 
-					setupObject(kit, sql, another);
+					setupObject(kit, sql, another, meta.fully());
 				}
 			}
 		}
@@ -846,7 +846,7 @@ public abstract class Entitys
 					{
 					}
 				}
-				setupObject(kit, sql, obj);
+				setupObject(kit, sql, obj, true);
 			}
 		}
 	}
@@ -888,17 +888,17 @@ public abstract class Entitys
 				}
 			}
 
-			setupObject(kit, sql, another);
+			setupObject(kit, sql, another, true);
 		}
 	}
 
-	public static <T> void setupObject(SQLKit kit, SQL sql, T object) throws SQLException
+	public static <T> void setupObject(SQLKit kit, SQL sql, T object, boolean setOneToMany) throws SQLException
 	{
 		if (object != null)
 		{
 			for (Field field : object.getClass().getDeclaredFields())
 			{
-				if (field.getAnnotation(OneToManyMeta.class) != null)
+				if (setOneToMany && field.getAnnotation(OneToManyMeta.class) != null)
 				{
 					setOneToManyMembers(kit, sql, object, field);
 				}
