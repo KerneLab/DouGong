@@ -297,10 +297,11 @@ public abstract class Entitys
 
 	public static Field getManyToOneField(Class<?> manyClass, Class<?> oneClass)
 	{
+		ManyToOneMeta meta = null;
 		for (Field field : manyClass.getDeclaredFields())
 		{
-			if (field.getAnnotation(ManyToOneMeta.class) != null //
-					&& Tools.isSubClass(oneClass, field.getType()))
+			meta = field.getAnnotation(ManyToOneMeta.class);
+			if (meta != null && Tools.equals(oneClass, meta.model()))
 			{
 				return field;
 			}
