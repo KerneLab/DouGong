@@ -693,7 +693,7 @@ public abstract class Entitys
 		}
 	}
 
-	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationMeta meta,
+	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationDefine meta,
 			JoinMeta joinMeta)
 	{
 		Select sel = null;
@@ -781,7 +781,7 @@ public abstract class Entitys
 				{
 					Class<?> model = meta.model();
 
-					Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationMeta(meta),
+					Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 							field.getAnnotation(JoinMeta.class));
 					Select sel = pair.key;
 					Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
@@ -815,7 +815,7 @@ public abstract class Entitys
 		{
 			Class<?> manyModel = meta.model();
 
-			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationMeta(meta),
+			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 					field.getAnnotation(JoinMeta.class));
 			Select sel = pair.key;
 			Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
@@ -859,7 +859,7 @@ public abstract class Entitys
 		{
 			Class<?> oneModel = meta.model();
 
-			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationMeta(meta),
+			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 					field.getAnnotation(JoinMeta.class));
 			Select sel = pair.key;
 			Map<String, Object> param = mapColumnToLabelByMeta(pair.value);

@@ -1,6 +1,6 @@
 package org.kernelab.dougong.core.meta;
 
-public class RelationMeta
+public class RelationDefine
 {
 	private Class<?>	model;
 
@@ -8,24 +8,24 @@ public class RelationMeta
 
 	private boolean		referred;
 
-	public RelationMeta(Class<?> model, String key, boolean referred)
+	public RelationDefine(Class<?> model, String key, boolean referred)
 	{
 		this.model(model);
 		this.key(key);
 		this.referred(referred);
 	}
 
-	public RelationMeta(ManyToOneMeta meta)
+	public RelationDefine(ManyToOneMeta meta)
 	{
 		this(meta.model(), meta.key(), meta.referred());
 	}
 
-	public RelationMeta(OneToManyMeta meta)
+	public RelationDefine(OneToManyMeta meta)
 	{
 		this(meta.model(), meta.key(), meta.referred());
 	}
 
-	public RelationMeta(OneToOneMeta meta)
+	public RelationDefine(OneToOneMeta meta)
 	{
 		this(meta.model(), meta.key(), meta.referred());
 	}
