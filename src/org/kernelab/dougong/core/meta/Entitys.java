@@ -769,7 +769,8 @@ public abstract class Entitys
 		return object;
 	}
 
-	public static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field) throws SQLException
+	public static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
+			throws SQLException
 	{
 		try
 		{
@@ -797,7 +798,7 @@ public abstract class Entitys
 						e.printStackTrace();
 					}
 
-					setupObject(kit, sql, another, meta.fully());
+					setupObject(kit, sql, another, fully && meta.fully());
 				}
 			}
 		}
@@ -807,7 +808,8 @@ public abstract class Entitys
 		}
 	}
 
-	public static <T> void setOneToManyMembers(SQLKit kit, SQL sql, T object, Field field) throws SQLException
+	public static <T> void setOneToManyMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
+			throws SQLException
 	{
 		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
 
@@ -846,12 +848,13 @@ public abstract class Entitys
 					{
 					}
 				}
-				setupObject(kit, sql, obj, true);
+				setupObject(kit, sql, obj, fully);
 			}
 		}
 	}
 
-	public static <T> void setOneToOneMembers(SQLKit kit, SQL sql, T object, Field field) throws SQLException
+	public static <T> void setOneToOneMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
+			throws SQLException
 	{
 		OneToOneMeta meta = field.getAnnotation(OneToOneMeta.class);
 
@@ -888,27 +891,38 @@ public abstract class Entitys
 				}
 			}
 
-			setupObject(kit, sql, another, true);
+			setupObject(kit, sql, another, fully);
 		}
 	}
 
-	public static <T> void setupObject(SQLKit kit, SQL sql, T object, boolean setOneToMany) throws SQLException
+	public static <T> void setupObject(SQLKit kit, SQL sql, T object, boolean fully) throws SQLException
 	{
 		if (object != null)
 		{
 			for (Field field : object.getClass().getDeclaredFields())
 			{
-				if (setOneToMany && field.getAnnotation(OneToManyMeta.class) != null)
+				if (field.getAnnotation(ManyToOneMeta.class) != null)
 				{
-					setOneToManyMembers(kit, sql, object, field);
+					setManyToOneMembers(kit, sql, object, field, fully);
 				}
-				else if (field.getAnnotation(OneToOneMeta.class) != null)
+			}
+
+			for (Field field : object.getClass().getDeclaredFields())
+			{
+				if (field.getAnnotation(OneToOneMeta.class) != null)
 				{
-					setOneToOneMembers(kit, sql, object, field);
+					setOneToOneMembers(kit, sql, object, field, fully);
 				}
-				else if (field.getAnnotation(ManyToOneMeta.class) != null)
+			}
+
+			if (fully)
+			{
+				for (Field field : object.getClass().getDeclaredFields())
 				{
-					setManyToOneMembers(kit, sql, object, field);
+					if (field.getAnnotation(OneToManyMeta.class) != null)
+					{
+						setOneToManyMembers(kit, sql, object, field, fully);
+					}
 				}
 			}
 		}
