@@ -53,7 +53,8 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	/**
 	 * Get the text of this object as a view which could be selected from. Alias
 	 * name should be followed if given. Typically, subquery should be
-	 * surrounded with brackets.
+	 * surrounded with brackets. Notice that if this view was referenced by with
+	 * clause, this method must output the "with name" together with alias.
 	 * 
 	 * @param buffer
 	 * @return The given buffer.

@@ -1,5 +1,7 @@
 package org.kernelab.dougong.core.dml;
 
+import java.util.List;
+
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Scope;
@@ -7,8 +9,8 @@ import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 
-public interface Select
-		extends DML, Text, Alias, Item, View, Scope, Insertable, Updatable, Deletable, Source, Providable, Filterable
+public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable, Updatable, Deletable, Source,
+		Providable, Filterable, Withsable
 {
 	public Select select(Expression... exprs);
 
@@ -96,4 +98,10 @@ public interface Select
 	public Select alias(String alias);
 
 	public Select as(String alias);
+
+	// //////////////////////////////////////////////////////
+
+	public Select with(List<Withable> with);
+
+	public Subquery toSubquery();
 }

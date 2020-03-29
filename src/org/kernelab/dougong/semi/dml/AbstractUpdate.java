@@ -10,6 +10,7 @@ import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Update;
+import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractUpdate extends AbstractFilterable implements Update
@@ -99,6 +100,13 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	public AbstractUpdate where(Condition cond)
 	{
 		super.where(cond);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate with(List<Withable> with)
+	{
+		super.with(with);
 		return this;
 	}
 }

@@ -16,6 +16,7 @@ import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
 import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
@@ -191,5 +192,10 @@ public class SQL
 	public <T extends View> T view(Class<T> cls)
 	{
 		return provider().provideView(cls);
+	}
+
+	public Primitive with(Withable... views)
+	{
+		return provider().providePrimitive().with(views);
 	}
 }

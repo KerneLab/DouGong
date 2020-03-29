@@ -1,9 +1,11 @@
 package org.kernelab.dougong.core.dml;
 
+import java.util.List;
+
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.View;
 
-public interface Update extends DML, Filterable
+public interface Update extends DML, Filterable, Withsable
 {
 	public Update update(View view);
 
@@ -16,4 +18,6 @@ public interface Update extends DML, Filterable
 	// //////////////////////////////////////////////////////
 
 	public Update where(Condition cond);
+
+	public Update with(List<Withable> with);
 }

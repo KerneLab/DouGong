@@ -28,6 +28,8 @@ import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
 import org.kernelab.dougong.core.dml.Sortable;
+import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -826,6 +828,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		AbstractSelect select = prepare();
+		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
@@ -855,6 +858,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		AbstractSelect select = prepare();
 		buffer.append('(');
+		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
@@ -868,6 +872,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		AbstractSelect select = prepare();
+		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
@@ -893,6 +898,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		AbstractSelect select = prepare();
 		buffer.append('(');
+		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
@@ -908,6 +914,19 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		this.toString(buffer);
 		buffer.append(')');
 		return this.provider().provideOutputAlias(buffer, this);
+	}
+
+	public StringBuilder toStringWith(StringBuilder buffer)
+	{
+		buffer.append('(');
+		this.toString(buffer);
+		buffer.append(')');
+		return buffer;
+	}
+
+	public Subquery toSubquery()
+	{
+		return (Subquery) new AbstractSubquery().select(this).provider(this.provider());
 	}
 
 	public AbstractSelect union(Select select)
@@ -926,6 +945,13 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public AbstractSelect where(Condition condition)
 	{
 		super.where(condition);
+		return this;
+	}
+
+	@Override
+	public AbstractSelect with(List<Withable> with)
+	{
+		super.with(with);
 		return this;
 	}
 }

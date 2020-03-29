@@ -1,9 +1,12 @@
 package org.kernelab.dougong.semi.dml;
 
+import java.util.List;
+
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
+import org.kernelab.dougong.core.dml.Withable;
 
 public class AbstractDelete extends AbstractFilterable implements Delete
 {
@@ -51,6 +54,13 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 	public AbstractDelete where(Condition cond)
 	{
 		super.where(cond);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete with(List<Withable> with)
+	{
+		super.with(with);
 		return this;
 	}
 }

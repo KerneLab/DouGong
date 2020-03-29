@@ -138,6 +138,7 @@ public class OracleSelect extends AbstractSelect
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		OracleSelect select = prepare();
+		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
@@ -155,6 +156,7 @@ public class OracleSelect extends AbstractSelect
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		OracleSelect select = prepare();
+		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);

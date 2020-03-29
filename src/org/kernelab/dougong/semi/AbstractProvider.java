@@ -99,6 +99,16 @@ public abstract class AbstractProvider implements Provider
 		return buffer;
 	}
 
+	public StringBuilder provideOutputWithSubqueryAliased(StringBuilder buffer, Subquery query)
+	{
+		if (buffer != null && query != null)
+		{
+			buffer.append(this.provideAliasLabel(query.withName()));
+			this.provideOutputAlias(buffer, query);
+		}
+		return buffer;
+	}
+
 	public StringItem provideParameter(String name)
 	{
 		return provideStringItem("?" + name + "?");

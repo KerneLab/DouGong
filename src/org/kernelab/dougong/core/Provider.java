@@ -160,6 +160,8 @@ public interface Provider
 
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table);
 
+	public StringBuilder provideOutputWithSubqueryAliased(StringBuilder buffer, Subquery query);
+
 	public StringItem provideParameter(String name);
 
 	public PlusOperator providePlusOperator();

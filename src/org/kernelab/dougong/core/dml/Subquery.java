@@ -9,8 +9,8 @@ import org.kernelab.dougong.core.dml.test.MembershipTestable;
 import org.kernelab.dougong.core.dml.test.NullTestable;
 import org.kernelab.dougong.core.dml.test.RangeTestable;
 
-public interface Subquery extends View, Entity, Scope, Insertable, Source, Expression, ComparisonTestable, LikeTestable,
-		MembershipTestable, NullTestable, RangeTestable
+public interface Subquery extends View, Entity, Scope, Withable, Insertable, Source, Expression, ComparisonTestable,
+		LikeTestable, MembershipTestable, NullTestable, RangeTestable
 {
 	public Subquery alias(String alias);
 
@@ -19,4 +19,6 @@ public interface Subquery extends View, Entity, Scope, Insertable, Source, Expre
 	public Select select();
 
 	public Subquery select(Select select);
+
+	public Subquery withName(String name);
 }

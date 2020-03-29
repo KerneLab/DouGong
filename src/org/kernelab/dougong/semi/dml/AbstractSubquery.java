@@ -3,7 +3,6 @@ package org.kernelab.dougong.semi.dml;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
@@ -26,7 +25,9 @@ import org.kernelab.dougong.semi.AbstractEntity;
 
 public class AbstractSubquery extends AbstractEntity implements Subquery
 {
-	private Select select;
+	private Select	select;
+
+	private String	withName;
 
 	public AbstractSubquery()
 	{
@@ -69,6 +70,7 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		{
 			sq = this.getClass().newInstance();
 			sq.select(this.select());
+			sq.withName(this.withName());
 			sq.provider(this.provider());
 		}
 		catch (Exception e)
@@ -110,6 +112,21 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	public NullCondition isNull()
 	{
 		return this.provideNullCondition().isNull(this);
+	}
+
+	@Override
+	public List<Item> items()
+	{
+		List<Item> raw = this.select().items();
+
+		List<Item> items = new ArrayList<Item>(raw.size());
+
+		for (Item item : raw)
+		{
+			items.add(this.provider().provideReference(this, item));
+		}
+
+		return items;
 	}
 
 	public Result joint(Expression... operands)
@@ -226,6 +243,11 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return this.provider().provideRangeCondition();
 	}
 
+	public List<Item> resolveItems()
+	{
+		return this.select().resolveItems();
+	}
+
 	public Select select()
 	{
 		return select;
@@ -235,11 +257,6 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	{
 		this.select = select;
 		return this;
-	}
-
-	public List<Item> resolveItems()
-	{
-		return Tools.listOfArray(new ArrayList<Item>(1), this.select());
 	}
 
 	public StringBuilder toString(StringBuilder buffer)
@@ -284,9 +301,35 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 
 	public StringBuilder toStringViewed(StringBuilder buffer)
 	{
+		if (this.withName() != null)
+		{
+			return this.provider().provideOutputWithSubqueryAliased(buffer, this);
+		}
+		else
+		{
+			buffer.append('(');
+			this.toString(buffer);
+			buffer.append(')');
+			return this.provider().provideOutputAlias(buffer, this);
+		}
+	}
+
+	public StringBuilder toStringWith(StringBuilder buffer)
+	{
 		buffer.append('(');
 		this.toString(buffer);
 		buffer.append(')');
-		return this.provider().provideOutputAlias(buffer, this);
+		return buffer;
+	}
+
+	public String withName()
+	{
+		return withName;
+	}
+
+	public AbstractSubquery withName(String name)
+	{
+		this.withName = name;
+		return this;
 	}
 }

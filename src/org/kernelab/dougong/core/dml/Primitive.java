@@ -4,7 +4,7 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 
-public interface Primitive extends Filterable
+public interface Primitive extends Filterable, Withsable
 {
 	/**
 	 * Create a Delete using from and where information according to this
@@ -154,4 +154,6 @@ public interface Primitive extends Filterable
 	public Update update();
 
 	public Primitive where(Condition cond);
+
+	public Primitive with(Withable... views);
 }
