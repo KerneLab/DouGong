@@ -66,7 +66,14 @@ public class DataReflector implements JSON.Reflector<Object>
 			return false;
 		}
 
-		if (Entitys.isManyToOne(field))
+		OneToManyMeta otm = field.getAnnotation(OneToManyMeta.class);
+		if (otm != null && !otm.serialize())
+		{
+			return false;
+		}
+
+		ManyToOneMeta mto = field.getAnnotation(ManyToOneMeta.class);
+		if (mto != null && !mto.serialize())
 		{
 			return false;
 		}

@@ -17,6 +17,8 @@ public @interface ManyToOneMeta
 
 	public boolean referred() default true;
 
+	public boolean serialize() default false;
+
 	/**
 	 * Indicate whether all kind of meta of the ONE including OneToMany will be
 	 * setup or not. This ManyToOne field of a child object normally setup to
