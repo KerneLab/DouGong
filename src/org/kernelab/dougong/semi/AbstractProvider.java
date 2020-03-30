@@ -20,7 +20,7 @@ import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
 
-public abstract class AbstractProvider implements Provider
+public abstract class AbstractProvider extends AbstractCastable implements Provider
 {
 	public static final char	OBJECT_SEPARATOR_CHAR	= '.';
 

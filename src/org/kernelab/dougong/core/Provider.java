@@ -35,7 +35,7 @@ import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.util.KeysFetcher;
 
-public interface Provider
+public interface Provider extends Castable
 {
 	/**
 	 * Provide label string of an alias name. The label string should including
