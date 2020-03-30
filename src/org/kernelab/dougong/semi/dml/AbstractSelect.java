@@ -924,9 +924,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return buffer;
 	}
 
-	public Subquery toSubquery()
+	public Subquery toSubquery(Class<? extends Subquery> cls)
 	{
-		return (Subquery) new AbstractSubquery().select(this).provider(this.provider());
+		return this.provider().provideSubquery(cls != null ? cls : AbstractSubquery.class, this);
 	}
 
 	public AbstractSelect union(Select select)

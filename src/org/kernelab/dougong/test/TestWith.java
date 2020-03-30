@@ -15,7 +15,7 @@ public class TestWith
 	{
 		SQL sql = Config.SQL;
 
-		Subquery query = sql.from(sql.view(COMP.class)).select(sql.all()).toSubquery();
+		Subquery query = sql.from(sql.view(COMP.class)).select(sql.all()).toSubquery(null);
 
 		View q = null;
 
