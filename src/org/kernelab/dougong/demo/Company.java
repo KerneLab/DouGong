@@ -15,7 +15,7 @@ public class Company
 	@DataMeta(alias = "compName")
 	private String					name;
 
-	@OneToManyMeta(model = Department.class, key = "FRN_DEPT", referred = false)
+	@OneToManyMeta(model = Department.class, key = DEPT.FRN_DEPT, referred = false)
 	private Collection<Department>	departments;
 
 	// @OneToManyMeta(model = Staff.class, key = "FRN_STAF", referred = false)

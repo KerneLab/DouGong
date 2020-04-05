@@ -10,7 +10,7 @@ import org.kernelab.dougong.core.meta.OneToManyMeta;
 @EntityMeta(entity = DEPT.class)
 public class Department
 {
-	@ManyToOneMeta(model = Company.class, key = "FRN_DEPT")
+	@ManyToOneMeta(model = Company.class, key = DEPT.FRN_DEPT)
 	private Company				company;
 
 	@DataMeta(alias = "compId", serialize = false)
@@ -24,7 +24,7 @@ public class Department
 	@DataMeta(alias = "deptName")
 	private String				name;
 
-	@OneToManyMeta(model = Staff.class, key = "FRN_STAF", referred = false)
+	@OneToManyMeta(model = Staff.class, key = STAF.FRN_STAF, referred = false)
 	private Collection<Staff>	staffs;
 
 	public Company getCompany()

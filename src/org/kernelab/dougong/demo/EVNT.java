@@ -12,18 +12,21 @@ import org.kernelab.dougong.semi.AbstractTable;
 @MemberMeta()
 public class EVNT extends AbstractTable
 {
+	@ForeignKeyMeta
+	public static final String	FK_EVENT_SELF	= "FK_EVENT_SELF";
+
 	@NameMeta(name = "ID")
 	@DataMeta(alias = "id")
 	@PrimaryKeyMeta(ordinal = 1)
-	public Column	ID;
+	public Column				ID;
 
 	@NameMeta(name = "NAME")
 	@DataMeta(alias = "name")
-	public Column	NAME;
+	public Column				NAME;
 
 	@NameMeta(name = "NEXT_ID")
 	@DataMeta(alias = "nextId")
-	public Column	NEXT_ID;
+	public Column				NEXT_ID;
 
 	@ForeignKeyMeta
 	public ForeignKey FK_EVENT_SELF(EVNT ref)

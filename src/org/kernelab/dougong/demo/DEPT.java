@@ -12,19 +12,22 @@ import org.kernelab.dougong.semi.AbstractTable;
 @MemberMeta()
 public class DEPT extends AbstractTable
 {
+	@ForeignKeyMeta
+	public static final String	FRN_DEPT	= "FRN_DEPT";
+
 	@NameMeta(name = "COMP_ID")
 	@DataMeta(alias = "compId")
 	@PrimaryKeyMeta(ordinal = 1)
-	public Column	COMP_ID;
+	public Column				COMP_ID;
 
 	@NameMeta(name = "DEPT_ID")
 	@DataMeta(alias = "deptId")
 	@PrimaryKeyMeta(ordinal = 2)
-	public Column	DEPT_ID;
+	public Column				DEPT_ID;
 
 	@NameMeta(name = "DEPT_NAME")
 	@DataMeta(alias = "deptName")
-	public Column	DEPT_NAME;
+	public Column				DEPT_NAME;
 
 	@ForeignKeyMeta
 	public ForeignKey FRN_DEPT(COMP ref)

@@ -8,7 +8,7 @@ import org.kernelab.dougong.core.meta.OneToOneMeta;
 @EntityMeta(entity = STAF.class)
 public class Staff
 {
-	@ManyToOneMeta(model = Department.class, key = "FRN_STAF")
+	@ManyToOneMeta(model = Department.class, key = STAF.FRN_STAF)
 	private Department	department;
 
 	@DataMeta(alias = "compId", serialize = false)
@@ -29,7 +29,7 @@ public class Staff
 	@DataMeta(alias = "stafJob")
 	private String		jobId;
 
-	@OneToOneMeta(key = "FK_STAF_JOB", model = Job.class, referred = true, serialize = true)
+	@OneToOneMeta(key = STAF.FK_STAF_JOB, model = Job.class, referred = true, serialize = true)
 	private Job			job;
 
 	public String getCompId()

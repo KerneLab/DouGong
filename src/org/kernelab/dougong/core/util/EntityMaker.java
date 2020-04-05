@@ -39,10 +39,6 @@ public class EntityMaker
 {
 	public static final Pattern IMPORT_PATTERN = Pattern.compile("^import\\s+(\\S+)\\s*;$");
 
-	public static void main(String[] args)
-	{
-	}
-
 	public static final File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
 			String pkg, File base, String schema, String charSet, File template)
 			throws FileNotFoundException, SQLException
@@ -323,6 +319,12 @@ public class EntityMaker
 		out.write("public class " + name() + " extends " + sup().getSimpleName());
 		out.write("{");
 
+		for (Pair<String, String> pair : this.getForeignKeys().keySet())
+		{
+			outputForeignKeyField(out, pair.value);
+			out.write();
+		}
+
 		int columns = meta().getColumnCount();
 
 		boolean first = true;
@@ -356,7 +358,7 @@ public class EntityMaker
 		for (Entry<Pair<String, String>, List<String>> entry : this.getForeignKeys().entrySet())
 		{
 			out.write();
-			outputForeignKey(out, entry.getKey().key, entry.getKey().value, entry.getValue());
+			outputForeignKeyMethod(out, entry.getKey().key, entry.getKey().value, entry.getValue());
 		}
 
 		if (this.templateBody != null)
@@ -375,7 +377,13 @@ public class EntityMaker
 		return this;
 	}
 
-	protected void outputForeignKey(DataWriter out, String table, String name, List<String> columns)
+	protected void outputForeignKeyField(DataWriter out, String name)
+	{
+		out.write("\t@ForeignKeyMeta");
+		out.write("\tpublic static final String\t" + wash(name) + "\t= \"" + JSON.EscapeString(wash(name)) + "\";");
+	}
+
+	protected void outputForeignKeyMethod(DataWriter out, String table, String name, List<String> columns)
 	{
 		StringBuilder buf = new StringBuilder();
 		for (String column : columns)
