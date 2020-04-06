@@ -16,6 +16,6 @@ public class COMP extends AbstractTable
 	public Column	COMP_ID;
 
 	@NameMeta(name = "COM_NAME")
-	@DataMeta(alias = "comName")
+	@DataMeta(alias = "compName")
 	public Column	COM_NAME;
 }

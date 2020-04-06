@@ -34,7 +34,7 @@ public class Staff
 
 	public String getCompId()
 	{
-		return this.getDepartment().getCompId();
+		return this.getDepartment() != null ? this.getDepartment().getCompId() : compId;
 	}
 
 	public Department getDepartment()
@@ -44,7 +44,7 @@ public class Staff
 
 	public String getDeptId()
 	{
-		return this.getDepartment().getId();
+		return this.getDepartment() != null ? this.getDepartment().getId() : deptId;
 	}
 
 	public String getId()
@@ -74,6 +74,7 @@ public class Staff
 
 	public void setCompId(String compId)
 	{
+		this.compId = compId;
 	}
 
 	public void setDepartment(Department department)
@@ -83,6 +84,7 @@ public class Staff
 
 	public void setDeptId(String deptId)
 	{
+		this.deptId = deptId;
 	}
 
 	public void setId(String id)
@@ -110,6 +112,7 @@ public class Staff
 		this.salary = salary;
 	}
 
+	@Override
 	public String toString()
 	{
 		return "Staff: id=" + this.getId() + ", name=" + this.getName() + ", salary=" + this.getSalary();

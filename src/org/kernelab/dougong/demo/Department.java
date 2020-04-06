@@ -87,6 +87,7 @@ public class Department
 		this.staffs = staffs;
 	}
 
+	@Override
 	public String toString()
 	{
 		String str = "Depart: id=" + this.getId() + ", name=" + this.getName() + ", compId=" + this.getCompId()
