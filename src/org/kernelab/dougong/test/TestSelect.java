@@ -124,7 +124,7 @@ public class TestSelect
 		STAF s = null;
 
 		Select sel = SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.FRN_STAF(d)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.FK_STAF(d)) //
 				.select(d.all(), //
 						s.STAF_NAME.as("name") //
 				) //
@@ -190,7 +190,7 @@ public class TestSelect
 		return SQL.from(sub) //
 				.select(sub.item("id"), //
 						sub.item("name") //
-		) //
+				) //
 		;
 	}
 

@@ -20,7 +20,10 @@ public class TestEntityMaker
 
 		File base = new File("E:\\project\\dougong\\src");
 
-		EntityMaker.makeTable(provider, kit, "STAF", "org.kernelab.dougong.demo", base, null, null);
+		for (String table : new String[] { "COMP", "DEPT", "STAF" })
+		{
+			EntityMaker.makeTable(provider, kit, table, "org.kernelab.dougong.demo", base, null, null);
+		}
 
 		EntityMaker.makeView(provider, kit, sql.subquery(TestView.class), "org.kernelab.dougong.demo", base, "", null);
 	}

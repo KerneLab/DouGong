@@ -3,15 +3,15 @@ package org.kernelab.dougong.demo;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
-import org.kernelab.dougong.maria.MariaProvider;
+import org.kernelab.dougong.orcl.OracleProvider;
 
 public class DemoSelect
 {
-	public final static SQL	SQL	= new SQL(new MariaProvider());
+	public final static SQL SQL = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelect().toString(new StringBuilder()));
+		Tools.debug(makeSelect().toString());
 	}
 
 	public static Select makeSelect()

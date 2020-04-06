@@ -13,7 +13,7 @@ import org.kernelab.dougong.semi.AbstractTable;
 public class STAF extends AbstractTable
 {
 	@ForeignKeyMeta
-	public static final String	FRN_STAF	= "FRN_STAF";
+	public static final String	FK_STAF	= "FK_STAF";
 
 	@ForeignKeyMeta
 	public static final String	FK_STAF_JOB	= "FK_STAF_JOB";
@@ -21,32 +21,32 @@ public class STAF extends AbstractTable
 	@NameMeta(name = "COMP_ID")
 	@DataMeta(alias = "compId")
 	@PrimaryKeyMeta(ordinal = 1)
-	public Column				COMP_ID;
+	public Column	COMP_ID;
 
 	@NameMeta(name = "DEPT_ID")
 	@DataMeta(alias = "deptId")
 	@PrimaryKeyMeta(ordinal = 2)
-	public Column				DEPT_ID;
+	public Column	DEPT_ID;
 
 	@NameMeta(name = "STAF_ID")
 	@DataMeta(alias = "stafId")
 	@PrimaryKeyMeta(ordinal = 3)
-	public Column				STAF_ID;
+	public Column	STAF_ID;
 
 	@NameMeta(name = "STAF_NAME")
 	@DataMeta(alias = "stafName")
-	public Column				STAF_NAME;
+	public Column	STAF_NAME;
 
 	@NameMeta(name = "STAF_SALARY")
 	@DataMeta(alias = "stafSalary")
-	public Column				STAF_SALARY;
+	public Column	STAF_SALARY;
 
 	@NameMeta(name = "STAF_JOB")
 	@DataMeta(alias = "stafJob")
-	public Column				STAF_JOB;
+	public Column	STAF_JOB;
 
 	@ForeignKeyMeta
-	public ForeignKey FRN_STAF(DEPT ref)
+	public ForeignKey FK_STAF(DEPT ref)
 	{
 		return foreignKey(ref, COMP_ID, DEPT_ID);
 	}
