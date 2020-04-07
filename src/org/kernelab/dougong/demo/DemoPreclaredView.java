@@ -29,8 +29,8 @@ public class DemoPreclaredView extends PredeclaredView
 	@Override
 	protected Select select(SQL sql)
 	{
-		return sql.from(c = sql.view(COMP.class).as("c"))
-				.innerJoin(d = sql.view(DEPT.class).as("d"), c.COMP_ID.eq(d.COMP_ID)) //
+		return sql.from(c = sql.view(COMP.class).as("c")) //
+				.innerJoin(d = sql.view(DEPT.class).as("d"), d.FK_DEPT(c)) //
 				.select(c.COMP_ID.as("compId"), //
 						c.COM_NAME.as("compName"), //
 						d.DEPT_ID.as("id"), //
