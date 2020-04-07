@@ -322,6 +322,18 @@ public abstract class Entitys
 		return null;
 	}
 
+	public static boolean hasNullValue(Map<?, Object> param)
+	{
+		for (Object value : param.values())
+		{
+			if (value == null)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static <T> int insertObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
 		if (entity == null)
@@ -439,18 +451,21 @@ public abstract class Entitys
 	{
 		try
 		{
-			Collection<?> col = Tools.access(object, field);
+			Collection<?> coll = Tools.access(object, field);
 
 			Entity entity = null;
 
-			for (Object o : col)
+			if (coll != null)
 			{
-				if (entity == null)
+				for (Object o : coll)
 				{
-					entity = getEntityFromModelClass(sql, o.getClass());
+					if (entity == null)
+					{
+						entity = getEntityFromModelClass(sql, o.getClass());
+					}
+					insertObject(kit, sql, o, entity);
+					insertObjectCascade(kit, sql, o, entity);
 				}
-				insertObject(kit, sql, o, entity);
-				insertObjectCascade(kit, sql, o, entity);
 			}
 		}
 		catch (Exception e)
@@ -769,6 +784,38 @@ public abstract class Entitys
 		return object;
 	}
 
+	public static Collection<Object> setCollection(Object object, Field field, Collection<Object> coll)
+	{
+		Collection<Object> c = null;
+		try
+		{
+			c = Tools.access(object, field);
+		}
+		catch (Exception e)
+		{
+		}
+
+		if (c != null)
+		{
+			c.clear();
+			c.addAll(coll);
+			return c;
+		}
+		else
+		{
+			try
+			{
+				Tools.access(object, field, coll);
+				return Tools.access(object, field);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
+
 	public static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
 			throws SQLException
 	{
@@ -784,21 +831,25 @@ public abstract class Entitys
 
 					Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 							field.getAnnotation(JoinMeta.class));
-					Select sel = pair.key;
-					Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
 
-					Object another = kit.execute(sel.toString(), param) //
-							.getRow(model, Utils.getFieldNameMapByMeta(model));
-					try
+					if (!hasNullValue(pair.value))
 					{
-						Tools.access(object, field, another);
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
+						Select sel = pair.key;
+						Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
 
-					setupObject(kit, sql, another, fully && meta.fully());
+						Object another = kit.execute(sel.toString(), param) //
+								.getRow(model, Utils.getFieldNameMapByMeta(model));
+						try
+						{
+							Tools.access(object, field, another);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+
+						setupObject(kit, sql, another, fully && meta.fully());
+					}
 				}
 			}
 		}
@@ -819,36 +870,36 @@ public abstract class Entitys
 
 			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 					field.getAnnotation(JoinMeta.class));
-			Select sel = pair.key;
-			Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
 
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			Collection<?> coll = kit.execute(sel.toString(), param) //
-					.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel));
-			try
+			if (!hasNullValue(pair.value))
 			{
-				Tools.access(object, field, coll);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+				Select sel = pair.key;
+				Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
 
-			Field manyToOne = getManyToOneField(manyModel, object.getClass());
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				Collection<Object> coll = kit.execute(sel.toString(), param) //
+						.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel));
+				coll = setCollection(object, field, coll);
 
-			for (Object obj : coll)
-			{
-				if (manyToOne != null)
+				Field manyToOne = getManyToOneField(manyModel, object.getClass());
+
+				if (coll != null)
 				{
-					try
+					for (Object obj : coll)
 					{
-						Tools.access(obj, manyToOne, object);
-					}
-					catch (Exception e)
-					{
+						if (manyToOne != null)
+						{
+							try
+							{
+								Tools.access(obj, manyToOne, object);
+							}
+							catch (Exception e)
+							{
+							}
+						}
+						setupObject(kit, sql, obj, fully);
 					}
 				}
-				setupObject(kit, sql, obj, fully);
 			}
 		}
 	}
@@ -864,34 +915,38 @@ public abstract class Entitys
 
 			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 					field.getAnnotation(JoinMeta.class));
-			Select sel = pair.key;
-			Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
 
-			Object another = kit.execute(sel.toString(), param) //
-					.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel));
-			try
+			if (!hasNullValue(pair.value))
 			{
-				Tools.access(object, field, another);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+				Select sel = pair.key;
+				Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
 
-			Field oneToOne = getOneToOneField(oneModel, object.getClass());
-
-			if (oneToOne != null)
-			{
+				Object another = kit.execute(sel.toString(), param) //
+						.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel));
 				try
 				{
-					Tools.access(another, oneToOne, object);
+					Tools.access(object, field, another);
 				}
 				catch (Exception e)
 				{
+					e.printStackTrace();
 				}
-			}
 
-			setupObject(kit, sql, another, fully);
+				Field oneToOne = getOneToOneField(oneModel, object.getClass());
+
+				if (oneToOne != null)
+				{
+					try
+					{
+						Tools.access(another, oneToOne, object);
+					}
+					catch (Exception e)
+					{
+					}
+				}
+
+				setupObject(kit, sql, another, fully);
+			}
 		}
 	}
 

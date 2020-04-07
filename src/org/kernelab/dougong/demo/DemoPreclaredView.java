@@ -1,7 +1,6 @@
 package org.kernelab.dougong.demo;
 
 import org.kernelab.basis.JSON;
-import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.semi.dml.PredeclaredView;
@@ -10,9 +9,11 @@ public class DemoPreclaredView extends PredeclaredView
 {
 	public static void main(String[] args)
 	{
-		DemoPreclaredView dpv = Config.SQL.view(DemoPreclaredView.class);
+		DemoPreclaredView v = Config.SQL.view(DemoPreclaredView.class);
 
-		Tools.debug(dpv.select().where(dpv.c.COMP_ID.eq(Config.SQL.param("id"))).toString());
+		System.out.println(v.select().where(v.c.COMP_ID.eq(Config.SQL.param("compId"))));
+
+		System.out.println(v.select().where(v.d.DEPT_ID.eq(Config.SQL.param("deptId"))).orderBy(v.d.DEPT_NAME));
 	}
 
 	public COMP	c;
