@@ -334,6 +334,21 @@ public abstract class Entitys
 		return false;
 	}
 
+	public static <T> boolean hasNullValue(T object, Entity entity, Column... columns)
+	{
+		Map<Column, Object> values = mapObjectToEntity(object, entity);
+
+		for (Column column : columns)
+		{
+			if (values.get(column) == null)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public static <T> int insertObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
 		if (entity == null)
@@ -495,21 +510,6 @@ public abstract class Entitys
 	public static boolean isManyToOne(Field field)
 	{
 		return field.getAnnotation(ManyToOneMeta.class) != null;
-	}
-
-	public static <T> boolean isMissingValue(T object, Entity entity, Column... columns)
-	{
-		Map<Column, Object> values = mapObjectToEntity(object, entity);
-
-		for (Column column : columns)
-		{
-			if (values.get(column) == null)
-			{
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	public static boolean isOneToMany(Field field)
@@ -694,7 +694,7 @@ public abstract class Entitys
 
 			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
 
-			if (generates != null && isMissingValue(object, entity, generates.value))
+			if (generates != null && hasNullValue(object, entity, generates.value))
 			{ // Missing values in generated columns
 				insertObject(kit, sql, object, entity);
 				insertObjectCascade(kit, sql, object, entity);
@@ -708,64 +708,77 @@ public abstract class Entitys
 		}
 	}
 
-	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationDefine meta,
-			JoinMeta joinMeta)
+	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationDefine rels,
+			JoinMeta joins)
 	{
-		Select sel = null;
-		Entity first = null, last = null, curr = null;
-
-		if (joinMeta != null)
-		{
-			int i = 0;
-			for (JoinDefine join : joinMeta.joins())
-			{
-				curr = sql.view(join.entity());
-				curr.alias("t" + i);
-				if (first == null)
-				{
-					first = curr;
-				}
-				if (last == null)
-				{
-					sel = sql.from(curr).select();
-				}
-				else
-				{
-					sel = sel.innerJoin(curr, getForeignKey(join.key(), join.referred(), last, curr));
-				}
-				last = curr;
-				i++;
-			}
-		}
-
 		Entity origin = getEntityFromModelClass(sql, object.getClass());
+		Entity target = getEntityFromModelClass(sql, rels.model());
 
-		Entity target = getEntityFromModelClass(sql, meta.model());
-
+		ForeignKey key = null;
 		Map<Column, Object> params = null;
-
-		if (sel != null)
-		{ // Join with target
-			JoinDefine firstJoin = joinMeta.joins()[0];
-			ForeignKey key = getForeignKey(firstJoin.key(), firstJoin.referred(), origin, first);
-			sel = sel.innerJoin(target.alias("t"), getForeignKey(meta.key(), meta.referred(), last, target)) //
-					.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
-					.select(target.all());
+		if (joins != null)
+		{
+			JoinDefine join = joins.joins()[0];
+			Entity first = sql.view(join.entity());
+			key = getForeignKey(join.key(), join.referred(), origin, first);
 			params = key.mapValuesTo(object, key.entity() == first ? key.entity() : key.reference().entity());
 		}
-		else
-		{ // Query from target
-			ForeignKey key = getForeignKey(meta.key(), meta.referred(), origin, target);
-			sel = sql.from(target) //
-					.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
-					.select(target.all());
+		else if (rels != null)
+		{
+			key = getForeignKey(rels.key(), rels.referred(), origin, target);
 			params = key.mapValuesTo(object, key.entity() == target ? key.entity() : key.reference().entity());
 		}
 
-		sel = sel.as(AbstractSelect.class) //
-				.fillAliasByMeta();
+		if (params != null && !hasNullValue(params))
+		{
+			Select sel = null;
+			Entity first = null, last = null, curr = null;
 
-		return new Pair<Select, Map<Column, Object>>(sel, params);
+			if (joins != null)
+			{
+				int i = 0;
+				for (JoinDefine join : joins.joins())
+				{
+					curr = sql.view(join.entity());
+					curr.alias("t" + i);
+					if (first == null)
+					{
+						first = curr;
+					}
+					if (last == null)
+					{
+						sel = sql.from(curr).select();
+					}
+					else
+					{
+						sel = sel.innerJoin(curr, getForeignKey(join.key(), join.referred(), last, curr));
+					}
+					last = curr;
+					i++;
+				}
+			}
+
+			if (sel != null)
+			{ // Join with target
+				sel = sel.innerJoin(target.alias("t"), getForeignKey(rels.key(), rels.referred(), last, target)) //
+						.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
+						.select(target.all());
+			}
+			else
+			{ // Query from target
+				sel = sql.from(target) //
+						.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
+						.select(target.all());
+			}
+
+			sel = sel.as(AbstractSelect.class).fillAliasByMeta();
+
+			return new Pair<Select, Map<Column, Object>>(sel, params);
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
@@ -832,7 +845,7 @@ public abstract class Entitys
 					Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 							field.getAnnotation(JoinMeta.class));
 
-					if (!hasNullValue(pair.value))
+					if (pair != null)
 					{
 						Select sel = pair.key;
 						Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
@@ -871,7 +884,7 @@ public abstract class Entitys
 			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 					field.getAnnotation(JoinMeta.class));
 
-			if (!hasNullValue(pair.value))
+			if (pair != null)
 			{
 				Select sel = pair.key;
 				Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
@@ -916,7 +929,7 @@ public abstract class Entitys
 			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
 					field.getAnnotation(JoinMeta.class));
 
-			if (!hasNullValue(pair.value))
+			if (pair != null)
 			{
 				Select sel = pair.key;
 				Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
