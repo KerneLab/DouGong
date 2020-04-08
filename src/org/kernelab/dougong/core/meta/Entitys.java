@@ -713,13 +713,14 @@ public abstract class Entitys
 	{
 		Entity origin = getEntityFromModelClass(sql, object.getClass());
 		Entity target = getEntityFromModelClass(sql, rels.model());
+		Entity first = null;
 
 		ForeignKey key = null;
 		Map<Column, Object> params = null;
 		if (joins != null)
 		{
 			JoinDefine join = joins.joins()[0];
-			Entity first = sql.view(join.entity());
+			first = sql.view(join.entity());
 			key = getForeignKey(join.key(), join.referred(), origin, first);
 			params = key.mapValuesTo(object, key.entity() == first ? key.entity() : key.reference().entity());
 		}
@@ -732,19 +733,22 @@ public abstract class Entitys
 		if (params != null && !hasNullValue(params))
 		{
 			Select sel = null;
-			Entity first = null, last = null, curr = null;
+			Entity last = null, curr = null;
 
 			if (joins != null)
 			{
 				int i = 0;
 				for (JoinDefine join : joins.joins())
 				{
-					curr = sql.view(join.entity());
-					curr.alias("t" + i);
-					if (first == null)
+					if (i == 0 && first != null)
 					{
-						first = curr;
+						curr = first;
 					}
+					else
+					{
+						curr = sql.view(join.entity());
+					}
+					curr.alias("t" + i);
 					if (last == null)
 					{
 						sel = sql.from(curr).select();
