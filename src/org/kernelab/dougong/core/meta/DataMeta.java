@@ -20,6 +20,15 @@ public @interface DataMeta
 	public String alias() default "";
 
 	/**
+	 * Indicate whether this member is a raw column of a table. Typically, a
+	 * column from join table should be marked as not raw. If the column is not
+	 * raw, the column will be skipped during selecting object directly
+	 * according to this class rather than a select statement. The non-raw
+	 * column will also be skipped during inserting to the table.
+	 */
+	public boolean raw() default true;
+
+	/**
 	 * The value expression.<br/>
 	 * Which would be used to generate insert values' expression if alias is not
 	 * specified.<br/>

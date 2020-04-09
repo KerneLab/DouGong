@@ -61,7 +61,7 @@ public class Utils
 		{
 			DataMeta meta = field.getAnnotation(DataMeta.class);
 
-			if (meta != null)
+			if (meta != null && meta.raw())
 			{
 				if (Tools.notNullOrEmpty(meta.value()))
 				{
@@ -125,6 +125,24 @@ public class Utils
 	}
 
 	public static Map<String, Object> getFieldNameMapByMeta(Class<?> cls)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		DataMeta meta = null;
+
+		for (Field field : cls.getDeclaredFields())
+		{
+			if ((meta = field.getAnnotation(DataMeta.class)) != null //
+					&& meta.raw())
+			{
+				map.put(field.getName(), getDataLabelFromField(field));
+			}
+		}
+
+		return map;
+	}
+
+	public static Map<String, Object> getFieldNameMapByMetaFully(Class<?> cls)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 

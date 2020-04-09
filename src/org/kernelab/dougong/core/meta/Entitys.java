@@ -800,7 +800,7 @@ public abstract class Entitys
 			throws SQLException
 	{
 		T object = kit.execute(select.toString(), params) //
-				.getRow(model, Utils.getFieldNameMapByMeta(model));
+				.getRow(model, Utils.getFieldNameMapByMetaFully(model));
 		setupObject(kit, sql, object, true);
 		return object;
 	}
@@ -808,7 +808,7 @@ public abstract class Entitys
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
 			Collection<T> coll) throws SQLException
 	{
-		coll = kit.execute(select.toString(), params).getRows(coll, model, Utils.getFieldNameMapByMeta(model));
+		coll = kit.execute(select.toString(), params).getRows(coll, model, Utils.getFieldNameMapByMetaFully(model));
 		if (coll != null)
 		{
 			for (T t : coll)
