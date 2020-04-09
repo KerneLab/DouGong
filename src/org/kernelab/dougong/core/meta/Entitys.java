@@ -793,12 +793,30 @@ public abstract class Entitys
 				.select(entity.all()) //
 				.as(AbstractSelect.class) //
 				.fillAliasByMeta();
+		return selectObject(kit, sql, select, model, params);
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
+			throws SQLException
+	{
 		T object = kit.execute(select.toString(), params) //
 				.getRow(model, Utils.getFieldNameMapByMeta(model));
-
 		setupObject(kit, sql, object, true);
-
 		return object;
+	}
+
+	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
+			Collection<T> coll) throws SQLException
+	{
+		coll = kit.execute(select.toString(), params).getRows(coll, model, Utils.getFieldNameMapByMeta(model));
+		if (coll != null)
+		{
+			for (T t : coll)
+			{
+				setupObject(kit, sql, t, true);
+			}
+		}
+		return coll;
 	}
 
 	public static Collection<Object> setCollection(Object object, Field field, Collection<Object> coll)
