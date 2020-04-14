@@ -1,6 +1,8 @@
 package org.kernelab.dougong.core.dml;
 
-public interface StringItem extends Item, Sortable
+import org.kernelab.dougong.core.Scope;
+
+public interface StringItem extends Item, Scope, Sortable
 {
 	public String getString();
 

@@ -90,6 +90,11 @@ public abstract class AbstractStringItem extends AbstractItem implements Provida
 		return buffer;
 	}
 
+	public StringBuilder toStringScoped(StringBuilder buffer)
+	{
+		return toString(buffer);
+	}
+
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return Utils.outputAlias(this.provider(), toString(buffer), this);
