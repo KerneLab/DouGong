@@ -86,7 +86,14 @@ public class AbstractFunction extends AbstractItem implements Function
 
 	protected AbstractFunction newInstance()
 	{
-		return new AbstractFunction();
+		try
+		{
+			return this.getClass().newInstance();
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
 	}
 
 	public Provider provider()
