@@ -47,7 +47,7 @@ public class TestIn
 				.select(d.COMP_ID, //
 						d.DEPT_NAME, //
 						s.STAF_NAME, //
-						SQL.function(F_TEST_FUNC.class, SQL.expr("1")) //
+						SQL.func(F_TEST_FUNC.class, SQL.expr("1")) //
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0")) //
 						.and(d.COMP_ID.in(scope))) //

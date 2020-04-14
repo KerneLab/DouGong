@@ -8,5 +8,11 @@ public interface Function extends Named, Item, Sortable, Member, Providable
 {
 	public Expression[] args();
 
+	/**
+	 * Return a new instance of this function and set the arguments.
+	 * 
+	 * @param args
+	 * @return
+	 */
 	public Function call(Expression... args);
 }

@@ -29,11 +29,16 @@ public class AbstractFunction extends AbstractItem implements Function
 		return arguments;
 	}
 
+	protected AbstractFunction args(Expression... arguments)
+	{
+		this.arguments = arguments;
+		return this;
+	}
+
 	@Override
 	public AbstractFunction as(String alias)
 	{
-		return this.replicate() //
-				.alias(alias);
+		return this.replicate().alias(alias);
 	}
 
 	public AbstractFunction ascend()
@@ -54,8 +59,7 @@ public class AbstractFunction extends AbstractItem implements Function
 
 	public AbstractFunction call(Expression... arguments)
 	{
-		this.arguments = arguments;
-		return this;
+		return this.replicate().args(arguments);
 	}
 
 	public AbstractFunction descend()
@@ -80,6 +84,11 @@ public class AbstractFunction extends AbstractItem implements Function
 		return this;
 	}
 
+	protected AbstractFunction newInstance()
+	{
+		return new AbstractFunction();
+	}
+
 	public Provider provider()
 	{
 		return provider;
@@ -95,10 +104,10 @@ public class AbstractFunction extends AbstractItem implements Function
 	@Override
 	protected AbstractFunction replicate()
 	{
-		return new AbstractFunction() //
+		return this.newInstance() //
 				.schema(this.schema()) //
 				.name(this.name()) //
-				.call(this.args()) //
+				.args(this.args()) //
 				.ascend(this.ascending()) //
 				.provider(this.provider());
 	}

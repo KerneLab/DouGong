@@ -65,7 +65,7 @@ public class SQL
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Function> T function(Class<T> cls, Expression... args)
+	public <T extends Function> T func(Class<T> cls, Expression... args)
 	{
 		return (T) provider().provideFunction(cls).call(args);
 	}

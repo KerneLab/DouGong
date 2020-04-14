@@ -35,7 +35,7 @@ public class TestOracle
 						s.DEPT_ID.as("dept"), //
 						s.STAF_ID.as("staf"), //
 						s.STAF_SALARY.multiply(SQL.expr("0.1")).as("tax"), //
-						SQL.function(SUM.class, d.COMP_ID).partitionBy(d.COMP_ID).orderBy(s.STAF_ID)
+						SQL.func(SUM.class, d.COMP_ID).partitionBy(d.COMP_ID).orderBy(s.STAF_ID)
 								.range(d.COMP_ID, d.DEPT_NAME).as("s_") //
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
