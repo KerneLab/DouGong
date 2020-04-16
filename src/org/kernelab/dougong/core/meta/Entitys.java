@@ -132,13 +132,18 @@ public abstract class Entitys
 
 	public static <T> void deleteOneToOne(SQLKit kit, SQL sql, T object, Field field) throws SQLException
 	{
+		Object val = null;
 		try
 		{
-			deleteObject(kit, sql, Tools.access(object, field), null);
+			val = Tools.access(object, field);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+		if (val != null)
+		{
+			deleteObject(kit, sql, val, null);
 		}
 	}
 
@@ -462,48 +467,53 @@ public abstract class Entitys
 		}
 	}
 
-	public static <T> void insertOneToMany(SQLKit kit, SQL sql, T object, Field field)
+	public static <T> void insertOneToMany(SQLKit kit, SQL sql, T object, Field field) throws SQLException
 	{
+		Collection<?> coll = null;
+
 		try
 		{
-			Collection<?> coll = Tools.access(object, field);
-
-			Entity entity = null;
-
-			if (coll != null)
-			{
-				for (Object o : coll)
-				{
-					if (entity == null)
-					{
-						entity = getEntityFromModelClass(sql, o.getClass());
-					}
-					insertObject(kit, sql, o, entity);
-					insertObjectCascade(kit, sql, o, entity);
-				}
-			}
+			coll = Tools.access(object, field);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-	}
 
-	public static <T> void insertOneToOne(SQLKit kit, SQL sql, T object, Field field)
-	{
-		try
+		if (coll != null)
 		{
-			Object o = Tools.access(object, field);
-			if (o != null)
+			Entity entity = null;
+
+			for (Object o : coll)
 			{
-				Entity entity = getEntityFromModelClass(sql, o.getClass());
+				if (entity == null)
+				{
+					entity = getEntityFromModelClass(sql, o.getClass());
+				}
 				insertObject(kit, sql, o, entity);
 				insertObjectCascade(kit, sql, o, entity);
 			}
 		}
+	}
+
+	public static <T> void insertOneToOne(SQLKit kit, SQL sql, T object, Field field) throws SQLException
+	{
+		Object val = null;
+
+		try
+		{
+			val = Tools.access(object, field);
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+
+		if (val != null)
+		{
+			Entity entity = getEntityFromModelClass(sql, val.getClass());
+			insertObject(kit, sql, val, entity);
+			insertObjectCascade(kit, sql, val, entity);
 		}
 	}
 
@@ -854,43 +864,46 @@ public abstract class Entitys
 	public static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
 			throws SQLException
 	{
+		boolean setable = false;
 		try
 		{
-			if (object != null && Tools.access(object, field) == null)
-			{
-				ManyToOneMeta meta = field.getAnnotation(ManyToOneMeta.class);
-
-				if (meta != null)
-				{
-					Class<?> model = meta.model();
-
-					Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
-							field.getAnnotation(JoinMeta.class));
-
-					if (pair != null)
-					{
-						Select sel = pair.key;
-						Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
-
-						Object another = kit.execute(sel.toString(), param) //
-								.getRow(model, Utils.getFieldNameMapByMeta(model));
-						try
-						{
-							Tools.access(object, field, another);
-						}
-						catch (Exception e)
-						{
-							e.printStackTrace();
-						}
-
-						setupObject(kit, sql, another, fully && meta.fully());
-					}
-				}
-			}
+			setable = object != null && Tools.access(object, field) == null;
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+
+		if (setable)
+		{
+			ManyToOneMeta meta = field.getAnnotation(ManyToOneMeta.class);
+
+			if (meta != null)
+			{
+				Class<?> model = meta.model();
+
+				Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
+						field.getAnnotation(JoinMeta.class));
+
+				if (pair != null)
+				{
+					Select sel = pair.key;
+					Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
+
+					Object another = kit.execute(sel.toString(), param) //
+							.getRow(model, Utils.getFieldNameMapByMeta(model));
+					try
+					{
+						Tools.access(object, field, another);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+
+					setupObject(kit, sql, another, fully && meta.fully());
+				}
+			}
 		}
 	}
 
