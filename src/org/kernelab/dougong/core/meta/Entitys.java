@@ -2,6 +2,7 @@ package org.kernelab.dougong.core.meta;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,13 +37,45 @@ import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public abstract class Entitys
 {
+	public static <T> int countObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (object == null)
+		{
+			return 0;
+		}
+
+		if (entity == null)
+		{
+			entity = getEntityFromModelObject(sql, object);
+		}
+
+		PrimaryKey key = entity.primaryKey();
+
+		Select sel = sql.from(entity) //
+				.where(key.queryCondition()) //
+				.select(sql.expr("COUNT(1)"));
+
+		Map<String, Object> param = mapColumnToLabelByMeta(key.mapValues(object));
+
+		ResultSet rs = kit.query(sel.toString(), param);
+
+		if (rs.next())
+		{
+			return rs.getInt(1);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
 	public static <T> int deleteObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
 		if (object != null)
 		{
 			if (entity == null)
 			{
-				entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+				entity = Entitys.getEntityFromModelObject(sql, object);
 			}
 
 			PrimaryKey key = entity.primaryKey();
@@ -65,7 +98,7 @@ public abstract class Entitys
 		{
 			if (entity == null)
 			{
-				entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+				entity = Entitys.getEntityFromModelObject(sql, object);
 			}
 
 			for (Field field : object.getClass().getDeclaredFields())
@@ -208,6 +241,11 @@ public abstract class Entitys
 	public static <T> Entity getEntityFromModelClass(SQL sql, Class<T> model)
 	{
 		return sql.view(getEntityClassFromModel(model));
+	}
+
+	public static <T> Entity getEntityFromModelObject(SQL sql, T object)
+	{
+		return object == null ? null : getEntityFromModelClass(sql, object.getClass());
 	}
 
 	/**
@@ -358,7 +396,7 @@ public abstract class Entitys
 	{
 		if (entity == null)
 		{
-			entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
 
 		Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
@@ -451,7 +489,7 @@ public abstract class Entitys
 	{
 		if (entity == null)
 		{
-			entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
 
 		for (Field field : object.getClass().getDeclaredFields())
@@ -488,7 +526,7 @@ public abstract class Entitys
 			{
 				if (entity == null)
 				{
-					entity = getEntityFromModelClass(sql, o.getClass());
+					entity = getEntityFromModelObject(sql, o);
 				}
 				insertObject(kit, sql, o, entity);
 				insertObjectCascade(kit, sql, o, entity);
@@ -511,7 +549,7 @@ public abstract class Entitys
 
 		if (val != null)
 		{
-			Entity entity = getEntityFromModelClass(sql, val.getClass());
+			Entity entity = getEntityFromModelObject(sql, val);
 			insertObject(kit, sql, val, entity);
 			insertObjectCascade(kit, sql, val, entity);
 		}
@@ -700,7 +738,7 @@ public abstract class Entitys
 	{
 		if (object != null)
 		{
-			Entity entity = getEntityFromModelClass(sql, object.getClass());
+			Entity entity = getEntityFromModelObject(sql, object);
 
 			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
 
@@ -711,8 +749,15 @@ public abstract class Entitys
 			}
 			else
 			{
-				deleteObjectCascade(kit, sql, object, entity);
-				updateObject(kit, sql, object);
+				if (countObject(kit, sql, object, entity) == 0)
+				{ // New record
+					insertObject(kit, sql, object, entity);
+				}
+				else
+				{
+					deleteObjectCascade(kit, sql, object, entity);
+					updateObject(kit, sql, object);
+				}
 				insertObjectCascade(kit, sql, object, entity);
 			}
 		}
@@ -721,7 +766,7 @@ public abstract class Entitys
 	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationDefine rels,
 			JoinMeta joins)
 	{
-		Entity origin = getEntityFromModelClass(sql, object.getClass());
+		Entity origin = getEntityFromModelObject(sql, object);
 		Entity target = getEntityFromModelClass(sql, rels.model());
 		Entity first = null;
 
@@ -840,25 +885,23 @@ public abstract class Entitys
 		{
 		}
 
-		if (c != null)
+		if (c != null && coll != null)
 		{
 			c.clear();
 			c.addAll(coll);
-			return c;
+			coll = c;
 		}
-		else
+
+		try
 		{
-			try
-			{
-				Tools.access(object, field, coll);
-				return Tools.access(object, field);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-			return null;
+			Tools.access(object, field, coll);
+			return Tools.access(object, field);
 		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
@@ -1033,7 +1076,7 @@ public abstract class Entitys
 
 	public static <T> int updateObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
-		Entity entity = Entitys.getEntityFromModelClass(sql, object.getClass());
+		Entity entity = Entitys.getEntityFromModelObject(sql, object);
 		PrimaryKey key = entity.primaryKey();
 
 		AbstractTable table = entity.as(AbstractTable.class);
