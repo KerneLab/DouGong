@@ -734,7 +734,7 @@ public abstract class Entitys
 		return meta;
 	}
 
-	public static <T> void saveObject(SQLKit kit, SQL sql, T object) throws SQLException
+	public static <T> T saveObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
 		if (object != null)
 		{
@@ -761,6 +761,7 @@ public abstract class Entitys
 				insertObjectCascade(kit, sql, object, entity);
 			}
 		}
+		return object;
 	}
 
 	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationDefine rels,
