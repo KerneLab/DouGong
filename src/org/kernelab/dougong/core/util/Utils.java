@@ -19,6 +19,7 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.MappingMeta;
@@ -543,6 +544,20 @@ public class Utils
 		else
 		{
 			buf.append(obj.toString());
+		}
+		return buf;
+	}
+
+	public static StringBuilder outputExprInScope(StringBuilder buf, Expression expr)
+	{
+		if (expr instanceof Items)
+		{
+			buf.append('(');
+		}
+		outputExpr(buf, expr);
+		if (expr instanceof Items)
+		{
+			buf.append(')');
 		}
 		return buf;
 	}

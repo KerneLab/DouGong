@@ -156,7 +156,24 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
-		return toString(buffer);
+		if (list() != null)
+		{
+			boolean first = true;
+
+			for (Expression expr : list())
+			{
+				if (first)
+				{
+					first = false;
+				}
+				else
+				{
+					buffer.append(',');
+				}
+				Utils.outputExprInScope(buffer, expr);
+			}
+		}
+		return buffer;
 	}
 
 	public StringBuilder toStringSelected(StringBuilder buffer)
