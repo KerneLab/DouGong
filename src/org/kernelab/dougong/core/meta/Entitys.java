@@ -118,7 +118,7 @@ public abstract class Entitys
 	public static <T> int deleteObjects(SQLKit kit, SQL sql, T referenceObject, ForeignKey key, Entity referrer)
 			throws SQLException
 	{
-		if (referenceObject != null)
+		if (referenceObject != null && key != null)
 		{
 			Delete delete = sql.from(referrer) //
 					.where(key.entity() == referrer ? key.queryCondition() : key.reference().queryCondition()) //
