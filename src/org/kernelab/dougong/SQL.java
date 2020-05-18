@@ -37,6 +37,34 @@ public class SQL
 		return provider().provideTotalItems();
 	}
 
+	public ComposableCondition and(Object... conds)
+	{
+		if (conds == null)
+		{
+			return null;
+		}
+
+		ComposableCondition cond = provider().provideLogicalCondition();
+
+		for (int i = 0; i < conds.length; i++)
+		{
+			if (conds[i] instanceof Boolean)
+			{
+				if ((Boolean) conds[i] && i + 1 < conds.length && conds[i + 1] instanceof Condition)
+				{
+					cond = cond.and((Condition) conds[i + 1]);
+				}
+				i++;
+			}
+			else if (conds[i] instanceof Condition)
+			{
+				cond = cond.and((Condition) conds[i]);
+			}
+		}
+
+		return cond;
+	}
+
 	public CaseDecideExpression Case()
 	{
 		return provider().provideCaseExpression();
@@ -128,6 +156,34 @@ public class SQL
 		}
 	}
 
+	public ComposableCondition or(Object... conds)
+	{
+		if (conds == null)
+		{
+			return null;
+		}
+
+		ComposableCondition cond = provider().provideLogicalCondition();
+
+		for (int i = 0; i < conds.length; i++)
+		{
+			if (conds[i] instanceof Boolean)
+			{
+				if ((Boolean) conds[i] && i + 1 < conds.length && conds[i + 1] instanceof Condition)
+				{
+					cond = cond.or((Condition) conds[i + 1]);
+				}
+				i++;
+			}
+			else if (conds[i] instanceof Condition)
+			{
+				cond = cond.or((Condition) conds[i]);
+			}
+		}
+
+		return cond;
+	}
+
 	/**
 	 * Make a StringItem <b>?</b> which represents a single item holder.
 	 * 
@@ -187,6 +243,11 @@ public class SQL
 	public <T extends Table> T table(Class<T> cls, String alias)
 	{
 		return provider().provideTable(cls).as(alias);
+	}
+
+	public ComposableCondition True()
+	{
+		return provider().provideLogicalCondition().and(expr("0").eq(expr("0")));
 	}
 
 	public <T extends View> T view(Class<T> cls)
