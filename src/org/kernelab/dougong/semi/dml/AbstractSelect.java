@@ -294,7 +294,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public Map<String, Item> itemsMap()
 	{
-		// TODO
 		if (itemsMap == null)
 		{
 			itemsMap = new LinkedHashMap<String, Item>();
@@ -314,14 +313,14 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 							{
 								for (Entry<String, Item> entry : from.itemsMap().entrySet())
 								{
-									itemsMap.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
 								}
 							}
 							for (Join join : joins())
 							{
 								for (Entry<String, Item> entry : join.view().itemsMap().entrySet())
 								{
-									itemsMap.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
 								}
 							}
 						}
@@ -329,7 +328,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 						{
 							for (Entry<String, Item> entry : all.view().itemsMap().entrySet())
 							{
-								itemsMap.put(entry.getKey(), provider().provideReference(this, entry.getValue()));
+								itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
 							}
 						}
 					}
@@ -342,7 +341,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 							for (Expression exp : ((Items) expr).list())
 							{
-								ref = provider().provideReference(this, exp);
+								ref = this.provideReference(this, exp);
 								itemsMap.put(ref.name(), ref);
 							}
 						}
@@ -350,7 +349,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 					else
 					{
 						// Single expression
-						Reference ref = provider().provideReference(this, expr);
+						Reference ref = this.provideReference(this, expr);
 						itemsMap.put(ref.name(), ref);
 					}
 				}
@@ -555,18 +554,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provider().provideReference(view, expr);
 	}
 
-	protected List<Item> refer(View view, List<Item> items)
-	{
-		List<Item> list = new LinkedList<Item>();
-
-		for (Item item : items)
-		{
-			list.add(provideReference(view, item));
-		}
-
-		return list;
-	}
-
 	public List<Item> resolveItems()
 	{
 		return Tools.listOfArray(new ArrayList<Item>(), this);
@@ -644,9 +631,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				if (expr instanceof AllItems)
 				{
 					AllItems all = (AllItems) expr;
-					items.addAll(all.view() != null //
-							? this.refer(all.view(), all.resolveItems()) //
-							: this.resolveItemsFromViews());
+					items.addAll(all.view() != null ? all.resolveItems() : this.resolveItemsFromViews());
 				}
 				else
 				{
