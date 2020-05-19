@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
@@ -554,6 +555,18 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provider().provideReference(view, expr);
 	}
 
+	protected List<Item> refer(View view, List<Item> items)
+	{
+		List<Item> list = new LinkedList<Item>();
+
+		for (Item item : items)
+		{
+			list.add(provideReference(view, item));
+		}
+
+		return list;
+	}
+
 	public List<Item> resolveItems()
 	{
 		return Tools.listOfArray(new ArrayList<Item>(), this);
@@ -631,7 +644,21 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				if (expr instanceof AllItems)
 				{
 					AllItems all = (AllItems) expr;
-					items.addAll(all.view() != null ? all.resolveItems() : this.resolveItemsFromViews());
+					if (all.view() != null)
+					{
+						if (all.view() instanceof Entity)
+						{
+							items.addAll(all.resolveItems());
+						}
+						else
+						{
+							items.addAll(this.refer(all.view(), all.resolveItems()));
+						}
+					}
+					else
+					{
+						items.addAll(this.resolveItemsFromViews());
+					}
 				}
 				else
 				{
