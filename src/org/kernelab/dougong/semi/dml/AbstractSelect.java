@@ -550,6 +550,23 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provider().provideRangeCondition();
 	}
 
+	protected Reference provideReference(View view, Expression expr)
+	{
+		return this.provider().provideReference(view, expr);
+	}
+
+	protected List<Item> refer(View view, List<Item> items)
+	{
+		List<Item> list = new LinkedList<Item>();
+
+		for (Item item : items)
+		{
+			list.add(provideReference(view, item));
+		}
+
+		return list;
+	}
+
 	public List<Item> resolveItems()
 	{
 		return Tools.listOfArray(new ArrayList<Item>(), this);
@@ -627,7 +644,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				if (expr instanceof AllItems)
 				{
 					AllItems all = (AllItems) expr;
-					items.addAll(all.view() != null ? all.resolveItems() : this.resolveItemsFromViews());
+					items.addAll(all.view() != null //
+							? this.refer(all.view(), all.resolveItems()) //
+							: this.resolveItemsFromViews());
 				}
 				else
 				{
