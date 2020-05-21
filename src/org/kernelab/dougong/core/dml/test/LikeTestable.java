@@ -7,5 +7,9 @@ public interface LikeTestable
 {
 	public LikeCondition like(Expression pattern);
 
+	public LikeCondition like(Expression pattern, Expression escape);
+
 	public LikeCondition notLike(Expression pattern);
+
+	public LikeCondition notLike(Expression pattern, Expression escape);
 }

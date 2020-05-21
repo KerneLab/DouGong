@@ -409,7 +409,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public LikeCondition like(Expression pattern)
 	{
-		return this.provideLikeCondition().like(this, pattern);
+		return like(pattern, null);
+	}
+
+	public LikeCondition like(Expression pattern, Expression escape)
+	{
+		return this.provideLikeCondition().like(this, pattern, escape);
 	}
 
 	public AbstractSelect limit(Expression skip, Expression rows)
@@ -457,7 +462,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public LikeCondition notLike(Expression pattern)
 	{
-		return (LikeCondition) this.provideLikeCondition().like(this, pattern).not();
+		return notLike(pattern, null);
+	}
+
+	public LikeCondition notLike(Expression pattern, Expression escape)
+	{
+		return (LikeCondition) this.provideLikeCondition().like(this, pattern, escape).not();
 	}
 
 	protected Expression[] orderBy()

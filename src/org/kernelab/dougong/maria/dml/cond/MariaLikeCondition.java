@@ -10,15 +10,4 @@ public class MariaLikeCondition extends AbstractLikeCondition
 	{
 		return new MariaLogicalCondition();
 	}
-
-	public StringBuilder toString(StringBuilder buffer)
-	{
-		this.expr.toStringExpress(buffer);
-		if (this.not)
-		{
-			buffer.append(" NOT");
-		}
-		buffer.append(" LIKE ");
-		return this.pattern.toStringExpress(buffer);
-	}
 }

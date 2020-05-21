@@ -9,15 +9,35 @@ public abstract class AbstractLikeCondition extends AbstractNegatableCondition i
 
 	protected Expression	pattern;
 
-	public AbstractLikeCondition like(Expression expr, Expression pattern)
+	protected Expression	escape;
+
+	public AbstractLikeCondition like(Expression expr, Expression pattern, Expression escape)
 	{
-		return this.set(expr, pattern);
+		return this.set(expr, pattern, escape);
 	}
 
-	public AbstractLikeCondition set(Expression expr, Expression pattern)
+	public AbstractLikeCondition set(Expression expr, Expression pattern, Expression escape)
 	{
 		this.expr = expr;
 		this.pattern = pattern;
+		this.escape = escape;
 		return this;
+	}
+
+	public StringBuilder toString(StringBuilder buffer)
+	{
+		this.expr.toStringExpress(buffer);
+		if (this.not)
+		{
+			buffer.append(" NOT");
+		}
+		buffer.append(" LIKE ");
+		this.pattern.toStringExpress(buffer);
+		if (this.escape != null)
+		{
+			buffer.append(" ESCAPE ");
+			this.escape.toStringExpress(buffer);
+		}
+		return buffer;
 	}
 }

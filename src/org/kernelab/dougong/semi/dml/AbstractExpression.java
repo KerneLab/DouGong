@@ -82,7 +82,12 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 
 	public LikeCondition like(Expression pattern)
 	{
-		return this.provideLikeCondition().like(this, pattern);
+		return like(pattern, null);
+	}
+
+	public LikeCondition like(Expression pattern, Expression escape)
+	{
+		return this.provideLikeCondition().like(this, pattern, escape);
 	}
 
 	protected <T> List<T> listOf(T... es)
@@ -122,7 +127,12 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 
 	public LikeCondition notLike(Expression pattern)
 	{
-		return (LikeCondition) this.provideLikeCondition().like(this, pattern).not();
+		return notLike(pattern, null);
+	}
+
+	public LikeCondition notLike(Expression pattern, Expression escape)
+	{
+		return (LikeCondition) this.provideLikeCondition().like(this, pattern, escape).not();
 	}
 
 	public Result plus(Expression operand)

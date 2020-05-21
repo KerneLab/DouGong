@@ -83,6 +83,11 @@ public abstract class AbstractAllItems implements AllItems
 		return null;
 	}
 
+	public LikeCondition like(Expression pattern, Expression escape)
+	{
+		return null;
+	}
+
 	public ComparisonCondition lt(Expression expr)
 	{
 		return null;
@@ -114,6 +119,11 @@ public abstract class AbstractAllItems implements AllItems
 	}
 
 	public LikeCondition notLike(Expression pattern)
+	{
+		return null;
+	}
+
+	public LikeCondition notLike(Expression pattern, Expression escape)
 	{
 		return null;
 	}

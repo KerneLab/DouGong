@@ -46,5 +46,12 @@ public class DemoSelect
 				new JSON().attr("compId", "1"));
 
 		System.out.println(company);
+
+		// Staff staff = Entitys.selectObject(Config.getSQLKit(), Config.SQL,
+		// Staff.class,
+		// new JSON().attr("compId", "1").attr("deptId", "12").attr("stafId",
+		// "a21"));
+		//
+		// System.out.println(staff);
 	}
 }

@@ -33,7 +33,7 @@ public class TestLike
 								.as("c") //
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0")) //
-						.and(((OracleLikeCondition) d.COMP_ID.like(SQL.expr("'sfd%'"))).escape(SQL.expr("'\\'")))) //
+						.and(((OracleLikeCondition) d.COMP_ID.like(SQL.expr("'sfd%'"), SQL.expr("'\\'"))))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}
