@@ -87,6 +87,11 @@ public class SQL
 		return provider().provideStringItem(expr);
 	}
 
+	public ComposableCondition False()
+	{
+		return provider().provideLogicalCondition().and(expr("0").eq(expr("1")));
+	}
+
 	public Primitive from(View view)
 	{
 		return provider().providePrimitive().from(view);
