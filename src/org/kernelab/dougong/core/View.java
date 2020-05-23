@@ -48,7 +48,7 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	 * 
 	 * @return The items map.
 	 */
-	public Map<String, Item> itemsMap();
+	public Map<String, Item> referItems();
 
 	/**
 	 * Get the text of this object as a view which could be selected from. Alias

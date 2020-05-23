@@ -50,7 +50,7 @@ public abstract class AbstractView extends AbstractProvidable implements View
 
 	public Item item(String refer)
 	{
-		return itemsMap().get(refer);
+		return referItems().get(refer);
 	}
 
 	public List<Item> items()
@@ -58,7 +58,7 @@ public abstract class AbstractView extends AbstractProvidable implements View
 		return items;
 	}
 
-	public Map<String, Item> itemsMap()
+	public Map<String, Item> referItems()
 	{
 		return itemsMap;
 	}

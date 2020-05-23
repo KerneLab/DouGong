@@ -285,78 +285,12 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public Item item(String refer)
 	{
-		return itemsMap().get(refer);
+		return referItems().get(refer);
 	}
 
 	public List<Item> items()
 	{
 		return items;
-	}
-
-	public Map<String, Item> itemsMap()
-	{
-		if (itemsMap == null)
-		{
-			itemsMap = new LinkedHashMap<String, Item>();
-
-			if (select() != null)
-			{
-				for (Expression expr : select())
-				{
-					if (expr instanceof AllItems)
-					{
-						// AllItems
-						AllItems all = (AllItems) expr;
-
-						if (all.view() == null)
-						{
-							for (View from : froms())
-							{
-								for (Entry<String, Item> entry : from.itemsMap().entrySet())
-								{
-									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
-								}
-							}
-							for (Join join : joins())
-							{
-								for (Entry<String, Item> entry : join.view().itemsMap().entrySet())
-								{
-									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
-								}
-							}
-						}
-						else
-						{
-							for (Entry<String, Item> entry : all.view().itemsMap().entrySet())
-							{
-								itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
-							}
-						}
-					}
-					else if (expr instanceof Items)
-					{
-						// Items list
-						if (((Items) expr).list() != null)
-						{
-							Reference ref = null;
-
-							for (Expression exp : ((Items) expr).list())
-							{
-								ref = this.provideReference(this, exp);
-								itemsMap.put(ref.name(), ref);
-							}
-						}
-					}
-					else
-					{
-						// Single expression
-						Reference ref = this.provideReference(this, expr);
-						itemsMap.put(ref.name(), ref);
-					}
-				}
-			}
-		}
-		return itemsMap;
 	}
 
 	protected List<Join> joins()
@@ -575,6 +509,72 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 
 		return list;
+	}
+
+	public Map<String, Item> referItems()
+	{
+		if (itemsMap == null)
+		{
+			itemsMap = new LinkedHashMap<String, Item>();
+
+			if (select() != null)
+			{
+				for (Expression expr : select())
+				{
+					if (expr instanceof AllItems)
+					{
+						// AllItems
+						AllItems all = (AllItems) expr;
+
+						if (all.view() == null)
+						{
+							for (View from : froms())
+							{
+								for (Entry<String, Item> entry : from.referItems().entrySet())
+								{
+									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
+								}
+							}
+							for (Join join : joins())
+							{
+								for (Entry<String, Item> entry : join.view().referItems().entrySet())
+								{
+									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
+								}
+							}
+						}
+						else
+						{
+							for (Entry<String, Item> entry : all.view().referItems().entrySet())
+							{
+								itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
+							}
+						}
+					}
+					else if (expr instanceof Items)
+					{
+						// Items list
+						if (((Items) expr).list() != null)
+						{
+							Reference ref = null;
+
+							for (Expression exp : ((Items) expr).list())
+							{
+								ref = this.provideReference(this, exp);
+								itemsMap.put(ref.name(), ref);
+							}
+						}
+					}
+					else
+					{
+						// Single expression
+						Reference ref = this.provideReference(this, expr);
+						itemsMap.put(ref.name(), ref);
+					}
+				}
+			}
+		}
+		return itemsMap;
 	}
 
 	public List<Item> resolveItems()

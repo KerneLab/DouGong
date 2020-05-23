@@ -79,7 +79,7 @@ public class OracleSelect extends AbstractSelect
 
 				List<Expression> list = new LinkedList<Expression>();
 
-				list.addAll(semi.itemsMap().values());
+				list.addAll(semi.referItems().values());
 				list.remove(list.size() - 1);
 
 				return (OracleSelect) provider().provideSelect() //

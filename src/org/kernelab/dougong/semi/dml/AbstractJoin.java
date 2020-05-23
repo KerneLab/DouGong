@@ -125,7 +125,7 @@ public abstract class AbstractJoin implements Join
 				{
 					if (col != null)
 					{
-						item = leading().itemsMap().get(col.name());
+						item = leading().referItems().get(col.name());
 
 						if (item instanceof Column)
 						{

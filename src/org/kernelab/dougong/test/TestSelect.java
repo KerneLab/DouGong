@@ -212,7 +212,7 @@ public class TestSelect
 				.orderBy(d.COMP_ID) //
 		;
 
-		Tools.debug(sel.itemsMap());
+		Tools.debug(sel.referItems());
 
 		return sel;
 	}
