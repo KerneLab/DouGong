@@ -78,6 +78,25 @@ public abstract class Entitys
 				entity = Entitys.getEntityFromModelObject(sql, object);
 			}
 
+			deleteObjectCascade(kit, sql, object, entity);
+
+			return deleteObjectAlone(kit, sql, object, entity);
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	public static <T> int deleteObjectAlone(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (object != null)
+		{
+			if (entity == null)
+			{
+				entity = Entitys.getEntityFromModelObject(sql, object);
+			}
+
 			PrimaryKey key = entity.primaryKey();
 
 			Delete delete = sql.from(entity).where(key.queryCondition()).delete();
@@ -158,7 +177,7 @@ public abstract class Entitys
 			for (Object o : coll)
 			{
 				deleteObjectCascade(kit, sql, o, manyEntity);
-				deleteObject(kit, sql, o, manyEntity);
+				deleteObjectAlone(kit, sql, o, manyEntity);
 			}
 		}
 	}
@@ -176,7 +195,7 @@ public abstract class Entitys
 		}
 		if (val != null)
 		{
-			deleteObject(kit, sql, val, null);
+			deleteObjectAlone(kit, sql, val, null);
 		}
 	}
 
