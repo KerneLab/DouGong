@@ -413,6 +413,27 @@ public abstract class Entitys
 
 	public static <T> int insertObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
+		if (object != null)
+		{
+			if (entity == null)
+			{
+				entity = Entitys.getEntityFromModelObject(sql, object);
+			}
+
+			int res = insertObjectAlone(kit, sql, object, entity);
+
+			insertObjectCascade(kit, sql, object, entity);
+
+			return res;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	public static <T> int insertObjectAlone(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
 		if (entity == null)
 		{
 			entity = Entitys.getEntityFromModelObject(sql, object);
@@ -547,7 +568,7 @@ public abstract class Entitys
 				{
 					entity = getEntityFromModelObject(sql, o);
 				}
-				insertObject(kit, sql, o, entity);
+				insertObjectAlone(kit, sql, o, entity);
 				insertObjectCascade(kit, sql, o, entity);
 			}
 		}
@@ -569,7 +590,7 @@ public abstract class Entitys
 		if (val != null)
 		{
 			Entity entity = getEntityFromModelObject(sql, val);
-			insertObject(kit, sql, val, entity);
+			insertObjectAlone(kit, sql, val, entity);
 			insertObjectCascade(kit, sql, val, entity);
 		}
 	}
@@ -763,14 +784,14 @@ public abstract class Entitys
 
 			if (generates != null && hasNullValue(object, entity, generates.value))
 			{ // Missing values in generated columns
-				insertObject(kit, sql, object, entity);
+				insertObjectAlone(kit, sql, object, entity);
 				insertObjectCascade(kit, sql, object, entity);
 			}
 			else
 			{
 				if (countObject(kit, sql, object, entity) == 0)
 				{ // New record
-					insertObject(kit, sql, object, entity);
+					insertObjectAlone(kit, sql, object, entity);
 				}
 				else
 				{
