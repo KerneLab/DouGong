@@ -804,6 +804,33 @@ public abstract class Entitys
 		return object;
 	}
 
+	public static <T> T saveObjectAlone(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		if (object != null)
+		{
+			Entity entity = getEntityFromModelObject(sql, object);
+
+			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+
+			if (generates != null && hasNullValue(object, entity, generates.value))
+			{ // Missing values in generated columns
+				insertObjectAlone(kit, sql, object, entity);
+			}
+			else
+			{
+				if (countObject(kit, sql, object, entity) == 0)
+				{ // New record
+					insertObjectAlone(kit, sql, object, entity);
+				}
+				else
+				{
+					updateObject(kit, sql, object);
+				}
+			}
+		}
+		return object;
+	}
+
 	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationDefine rels,
 			JoinMeta joins)
 	{
