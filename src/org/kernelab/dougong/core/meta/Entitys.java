@@ -1,6 +1,7 @@
 package org.kernelab.dougong.core.meta;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -381,6 +382,33 @@ public abstract class Entitys
 				return field;
 			}
 		}
+		return null;
+	}
+
+	protected static <T> SelectAndParams getRedefinedSelectAndParams(T object, Field field)
+	{
+		if (object == null || field == null)
+		{
+			return null;
+		}
+
+		Method method = Tools.accessor(object.getClass(), null, field, SelectAndParams.class);
+		if (method == null)
+		{
+			return null;
+		}
+
+		SelectAndParams sap = new SelectAndParams();
+		try
+		{
+			method.invoke(object, sap);
+			return sap;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 
@@ -831,8 +859,7 @@ public abstract class Entitys
 		return object;
 	}
 
-	public static <T> Pair<Select, Map<Column, Object>> selectAndParams(SQL sql, T object, RelationDefine rels,
-			JoinMeta joins)
+	public static <T> SelectAndParams selectAndParams(SQL sql, T object, RelationDefine rels, JoinMeta joins)
 	{
 		Entity origin = getEntityFromModelObject(sql, object);
 		Entity target = getEntityFromModelClass(sql, rels.model());
@@ -900,7 +927,7 @@ public abstract class Entitys
 
 			sel = sel.as(AbstractSelect.class).fillAliasByMeta();
 
-			return new Pair<Select, Map<Column, Object>>(sel, params);
+			return new SelectAndParams(sel, mapColumnToLabelByMeta(params));
 		}
 		else
 		{
@@ -993,13 +1020,20 @@ public abstract class Entitys
 			{
 				Class<?> model = meta.model();
 
-				Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
-						field.getAnnotation(JoinMeta.class));
-
-				if (pair != null)
+				SelectAndParams pair = null;
+				if (field.getAnnotation(RedefineMeta.class) != null)
 				{
-					Select sel = pair.key;
-					Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
+					pair = getRedefinedSelectAndParams(object, field);
+				}
+				else
+				{
+					pair = selectAndParams(sql, object, new RelationDefine(meta), field.getAnnotation(JoinMeta.class));
+				}
+
+				if (pair != null && pair.getSelect() != null)
+				{
+					Select sel = pair.getSelect();
+					Map<String, Object> param = pair.getParams();
 
 					Object another = kit.execute(sel.toString(), param) //
 							.getRow(model, Utils.getFieldNameMapByMeta(model));
@@ -1027,13 +1061,20 @@ public abstract class Entitys
 		{
 			Class<?> manyModel = meta.model();
 
-			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
-					field.getAnnotation(JoinMeta.class));
-
-			if (pair != null)
+			SelectAndParams pair = null;
+			if (field.getAnnotation(RedefineMeta.class) != null)
 			{
-				Select sel = pair.key;
-				Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
+				pair = getRedefinedSelectAndParams(object, field);
+			}
+			else
+			{
+				pair = selectAndParams(sql, object, new RelationDefine(meta), field.getAnnotation(JoinMeta.class));
+			}
+
+			if (pair != null && pair.getSelect() != null)
+			{
+				Select sel = pair.getSelect();
+				Map<String, Object> param = pair.getParams();
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				Collection<Object> coll = kit.execute(sel.toString(), param) //
@@ -1072,13 +1113,20 @@ public abstract class Entitys
 		{
 			Class<?> oneModel = meta.model();
 
-			Pair<Select, Map<Column, Object>> pair = selectAndParams(sql, object, new RelationDefine(meta),
-					field.getAnnotation(JoinMeta.class));
-
-			if (pair != null)
+			SelectAndParams pair = null;
+			if (field.getAnnotation(RedefineMeta.class) != null)
 			{
-				Select sel = pair.key;
-				Map<String, Object> param = mapColumnToLabelByMeta(pair.value);
+				pair = getRedefinedSelectAndParams(object, field);
+			}
+			else
+			{
+				pair = selectAndParams(sql, object, new RelationDefine(meta), field.getAnnotation(JoinMeta.class));
+			}
+
+			if (pair != null && pair.getSelect() != null)
+			{
+				Select sel = pair.getSelect();
+				Map<String, Object> param = pair.getParams();
 
 				Object another = kit.execute(sel.toString(), param) //
 						.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel));
