@@ -39,18 +39,21 @@ public class Queryable
 		return sql;
 	}
 
-	public void setParams(Map<String, Object> params)
+	public Queryable setParams(Map<String, Object> params)
 	{
 		this.params = params;
+		return this;
 	}
 
-	public void setSelect(Select select)
+	public Queryable setSelect(Select select)
 	{
 		this.select = select;
+		return this;
 	}
 
-	public void setSql(SQL sql)
+	public Queryable setSql(SQL sql)
 	{
 		this.sql = sql;
+		return this;
 	}
 }

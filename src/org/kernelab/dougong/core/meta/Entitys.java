@@ -1035,8 +1035,9 @@ public abstract class Entitys
 					Select sel = pair.getSelect();
 					Map<String, Object> param = pair.getParams();
 
-					Object another = kit.execute(sel.toString(), param) //
-							.getRow(model, Utils.getFieldNameMapByMeta(model));
+					Object another = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
+							: kit.execute(sel.toString(), param)) //
+									.getRow(model, Utils.getFieldNameMapByMeta(model));
 					try
 					{
 						Tools.access(object, field, another);
@@ -1077,8 +1078,9 @@ public abstract class Entitys
 				Map<String, Object> param = pair.getParams();
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })
-				Collection<Object> coll = kit.execute(sel.toString(), param) //
-						.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel));
+				Collection<Object> coll = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
+						: kit.execute(sel.toString(), param)) //
+								.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel));
 				coll = setCollection(object, field, coll);
 
 				Field manyToOne = getManyToOneField(manyModel, object.getClass());
@@ -1128,8 +1130,9 @@ public abstract class Entitys
 				Select sel = pair.getSelect();
 				Map<String, Object> param = pair.getParams();
 
-				Object another = kit.execute(sel.toString(), param) //
-						.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel));
+				Object another = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
+						: kit.execute(sel.toString(), param)) //
+								.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel));
 				try
 				{
 					Tools.access(object, field, another);
