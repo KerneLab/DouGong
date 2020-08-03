@@ -385,20 +385,20 @@ public abstract class Entitys
 		return null;
 	}
 
-	protected static <T> SelectAndParams getRedefinedSelectAndParams(T object, Field field)
+	public static <T> Queryable getRedefinedQueryableObject(SQL sql, T object, Field field)
 	{
 		if (object == null || field == null)
 		{
 			return null;
 		}
 
-		Method method = Tools.accessor(object.getClass(), null, field, SelectAndParams.class);
+		Method method = Tools.accessor(object.getClass(), null, field, Queryable.class);
 		if (method == null)
 		{
 			return null;
 		}
 
-		SelectAndParams sap = new SelectAndParams();
+		Queryable sap = new Queryable(sql);
 		try
 		{
 			method.invoke(object, sap);
@@ -859,7 +859,7 @@ public abstract class Entitys
 		return object;
 	}
 
-	public static <T> SelectAndParams selectAndParams(SQL sql, T object, RelationDefine rels, JoinMeta joins)
+	public static <T> Queryable selectAndParams(SQL sql, T object, RelationDefine rels, JoinMeta joins)
 	{
 		Entity origin = getEntityFromModelObject(sql, object);
 		Entity target = getEntityFromModelClass(sql, rels.model());
@@ -927,7 +927,7 @@ public abstract class Entitys
 
 			sel = sel.as(AbstractSelect.class).fillAliasByMeta();
 
-			return new SelectAndParams(sel, mapColumnToLabelByMeta(params));
+			return new Queryable(sel, mapColumnToLabelByMeta(params));
 		}
 		else
 		{
@@ -1020,10 +1020,10 @@ public abstract class Entitys
 			{
 				Class<?> model = meta.model();
 
-				SelectAndParams pair = null;
+				Queryable pair = null;
 				if (field.getAnnotation(RedefineMeta.class) != null)
 				{
-					pair = getRedefinedSelectAndParams(object, field);
+					pair = getRedefinedQueryableObject(sql, object, field);
 				}
 				else
 				{
@@ -1061,10 +1061,10 @@ public abstract class Entitys
 		{
 			Class<?> manyModel = meta.model();
 
-			SelectAndParams pair = null;
+			Queryable pair = null;
 			if (field.getAnnotation(RedefineMeta.class) != null)
 			{
-				pair = getRedefinedSelectAndParams(object, field);
+				pair = getRedefinedQueryableObject(sql, object, field);
 			}
 			else
 			{
@@ -1113,10 +1113,10 @@ public abstract class Entitys
 		{
 			Class<?> oneModel = meta.model();
 
-			SelectAndParams pair = null;
+			Queryable pair = null;
 			if (field.getAnnotation(RedefineMeta.class) != null)
 			{
-				pair = getRedefinedSelectAndParams(object, field);
+				pair = getRedefinedQueryableObject(sql, object, field);
 			}
 			else
 			{
