@@ -75,6 +75,11 @@ public class SQL
 		return provider().provideCaseExpression(value);
 	}
 
+	public ComposableCondition cond(ComposableCondition c)
+	{
+		return provider().provideLogicalCondition().and(c);
+	}
+
 	/**
 	 * Make a StringItem exactly according to the given expression string.
 	 * 
