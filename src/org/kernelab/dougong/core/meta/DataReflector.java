@@ -1,6 +1,7 @@
 package org.kernelab.dougong.core.meta;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,9 +41,12 @@ public class DataReflector implements JSON.Reflector<Object>
 
 			for (Field field : cls.getDeclaredFields())
 			{
-				if (needSerialize(field))
+				if (!Modifier.isStatic(field.getModifiers()))
 				{
-					map.put(field.getName(), field.getName());
+					if (needSerialize(field))
+					{
+						map.put(field.getName(), field.getName());
+					}
 				}
 			}
 

@@ -1,6 +1,7 @@
 package org.kernelab.dougong.core.meta;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -49,17 +50,20 @@ public class DataProjector implements JSON.Projector<Object>
 
 			for (Field field : cls.getDeclaredFields())
 			{
-				if (!Entitys.isManyToOne(field))
+				if (!Modifier.isStatic(field.getModifiers()))
 				{
-					map.put(field.getName(), field.getName());
-				}
-				if (Entitys.isOneToMany(field))
-				{
-					otm.add(field);
-				}
-				if (Entitys.isManyToOne(field))
-				{
-					mto.add(field);
+					if (!Entitys.isManyToOne(field))
+					{
+						map.put(field.getName(), field.getName());
+					}
+					if (Entitys.isOneToMany(field))
+					{
+						otm.add(field);
+					}
+					if (Entitys.isManyToOne(field))
+					{
+						mto.add(field);
+					}
 				}
 			}
 
