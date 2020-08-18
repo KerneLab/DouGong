@@ -121,7 +121,7 @@ public abstract class Entitys
 				entity = Entitys.getEntityFromModelObject(sql, object);
 			}
 
-			for (Field field : object.getClass().getDeclaredFields())
+			for (Field field : Tools.getFieldsHierarchy(object.getClass(), null).values())
 			{
 				if (isOneToMany(field))
 				{
@@ -204,7 +204,7 @@ public abstract class Entitys
 	{
 		Set<Column> columns = new LinkedHashSet<Column>();
 
-		for (Field field : entity.getClass().getDeclaredFields())
+		for (Field field : Tools.getFieldsHierarchy(entity.getClass(), null).values())
 		{
 			if (Tools.isSubClass(field.getType(), Column.class))
 			{
@@ -305,7 +305,7 @@ public abstract class Entitys
 
 		Column column = null;
 
-		for (Field field : entity.getClass().getDeclaredFields())
+		for (Field field : Tools.getFieldsHierarchy(entity.getClass(), null).values())
 		{
 			if (AbstractEntity.isColumn(field))
 			{
@@ -361,7 +361,7 @@ public abstract class Entitys
 	public static Field getManyToOneField(Class<?> manyClass, Class<?> oneClass)
 	{
 		ManyToOneMeta meta = null;
-		for (Field field : manyClass.getDeclaredFields())
+		for (Field field : Tools.getFieldsHierarchy(manyClass, null).values())
 		{
 			meta = field.getAnnotation(ManyToOneMeta.class);
 			if (meta != null && Tools.equals(oneClass, meta.model()))
@@ -374,7 +374,7 @@ public abstract class Entitys
 
 	public static Field getOneToOneField(Class<?> oneClass, Class<?> anotherClass)
 	{
-		for (Field field : oneClass.getDeclaredFields())
+		for (Field field : Tools.getFieldsHierarchy(oneClass, null).values())
 		{
 			if (field.getAnnotation(OneToOneMeta.class) != null //
 					&& Tools.isSubClass(anotherClass, field.getType()))
@@ -535,7 +535,7 @@ public abstract class Entitys
 		{
 			Sequel gen = seq.getGeneratedKeys();
 			Object val = null;
-			Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass());
+			Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass(), null);
 			for (int i = 0; i < gencols.length; i++)
 			{
 				val = gen.getValueObject(i + 1);
@@ -560,7 +560,7 @@ public abstract class Entitys
 			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
 
-		for (Field field : object.getClass().getDeclaredFields())
+		for (Field field : Tools.getFieldsHierarchy(object.getClass(), null).values())
 		{
 			if (isOneToMany(field))
 			{
@@ -684,11 +684,9 @@ public abstract class Entitys
 
 		Object value = null;
 
-		for (Field field : object.getClass().getDeclaredFields())
+		for (Field field : Tools.getFieldsHierarchy(object.getClass(), null).values())
 		{
-			DataMeta meta = field.getAnnotation(DataMeta.class);
-
-			if (meta != null)
+			if (field.getAnnotation(DataMeta.class) != null)
 			{
 				try
 				{
@@ -718,7 +716,7 @@ public abstract class Entitys
 		Map<Column, String> labels = getColumnsLabelMap(columns);
 
 		Map<String, Field> modelFields = Utils.getLabelFieldMapByMeta(object.getClass(),
-				new HashSet<String>(labels.values()));
+				new HashSet<String>(labels.values()), null);
 
 		Map<Column, Object> map = new LinkedHashMap<Column, Object>();
 
@@ -950,7 +948,7 @@ public abstract class Entitys
 			throws SQLException
 	{
 		T object = kit.execute(select.toString(), params) //
-				.getRow(model, Utils.getFieldNameMapByMetaFully(model));
+				.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
 		setupObject(kit, sql, object, true);
 		return object;
 	}
@@ -958,7 +956,8 @@ public abstract class Entitys
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
 			Collection<T> coll) throws SQLException
 	{
-		coll = kit.execute(select.toString(), params).getRows(coll, model, Utils.getFieldNameMapByMetaFully(model));
+		coll = kit.execute(select.toString(), params).getRows(coll, model,
+				Utils.getFieldNameMapByMetaFully(model, null));
 		if (coll != null)
 		{
 			for (T t : coll)
@@ -1037,7 +1036,7 @@ public abstract class Entitys
 
 					Object another = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
 							: kit.execute(sel.toString(), param)) //
-									.getRow(model, Utils.getFieldNameMapByMeta(model));
+									.getRow(model, Utils.getFieldNameMapByMeta(model, null));
 					try
 					{
 						Tools.access(object, field, another);
@@ -1080,7 +1079,7 @@ public abstract class Entitys
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				Collection<Object> coll = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
 						: kit.execute(sel.toString(), param)) //
-								.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel));
+								.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel, null));
 				coll = setCollection(object, field, coll);
 
 				Field manyToOne = getManyToOneField(manyModel, object.getClass());
@@ -1132,7 +1131,7 @@ public abstract class Entitys
 
 				Object another = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
 						: kit.execute(sel.toString(), param)) //
-								.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel));
+								.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel, null));
 				try
 				{
 					Tools.access(object, field, another);
@@ -1164,7 +1163,9 @@ public abstract class Entitys
 	{
 		if (object != null)
 		{
-			for (Field field : object.getClass().getDeclaredFields())
+			Collection<Field> fields = Tools.getFieldsHierarchy(object.getClass(), null).values();
+
+			for (Field field : fields)
 			{
 				if (field.getAnnotation(ManyToOneMeta.class) != null)
 				{
@@ -1172,7 +1173,7 @@ public abstract class Entitys
 				}
 			}
 
-			for (Field field : object.getClass().getDeclaredFields())
+			for (Field field : fields)
 			{
 				if (field.getAnnotation(OneToOneMeta.class) != null)
 				{
@@ -1182,7 +1183,7 @@ public abstract class Entitys
 
 			if (fully)
 			{
-				for (Field field : object.getClass().getDeclaredFields())
+				for (Field field : fields)
 				{
 					if (field.getAnnotation(OneToManyMeta.class) != null)
 					{

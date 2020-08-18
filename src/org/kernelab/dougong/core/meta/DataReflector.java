@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.kernelab.basis.JSON;
+import org.kernelab.basis.Tools;
 
 public class DataReflector implements JSON.Reflector<Object>
 {
@@ -39,7 +40,7 @@ public class DataReflector implements JSON.Reflector<Object>
 		{
 			map = new LinkedHashMap<String, Object>();
 
-			for (Field field : cls.getDeclaredFields())
+			for (Field field : Tools.getFieldsHierarchy(cls, null).values())
 			{
 				if (!Modifier.isStatic(field.getModifiers()))
 				{

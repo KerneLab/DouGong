@@ -125,33 +125,49 @@ public class Utils
 		}
 	}
 
-	public static Map<String, Object> getFieldNameMapByMeta(Class<?> cls)
+	public static Map<String, Object> getFieldNameMapByMeta(Class<?> cls, Map<String, Object> map)
 	{
-		Map<String, Object> map = new HashMap<String, Object>();
-
-		DataMeta meta = null;
-
-		for (Field field : cls.getDeclaredFields())
+		if (cls != null)
 		{
-			if ((meta = field.getAnnotation(DataMeta.class)) != null //
-					&& meta.raw())
+			if (map == null)
 			{
-				map.put(field.getName(), getDataLabelFromField(field));
+				map = new HashMap<String, Object>();
+			}
+
+			map = getFieldNameMapByMeta(cls.getSuperclass(), map);
+
+			DataMeta meta = null;
+
+			for (Field field : cls.getDeclaredFields())
+			{
+				if ((meta = field.getAnnotation(DataMeta.class)) != null //
+						&& meta.raw())
+				{
+					map.put(field.getName(), getDataLabelFromField(field));
+				}
 			}
 		}
 
 		return map;
 	}
 
-	public static Map<String, Object> getFieldNameMapByMetaFully(Class<?> cls)
+	public static Map<String, Object> getFieldNameMapByMetaFully(Class<?> cls, Map<String, Object> map)
 	{
-		Map<String, Object> map = new HashMap<String, Object>();
-
-		for (Field field : cls.getDeclaredFields())
+		if (cls != null)
 		{
-			if (field.getAnnotation(DataMeta.class) != null)
+			if (map == null)
 			{
-				map.put(field.getName(), getDataLabelFromField(field));
+				map = new HashMap<String, Object>();
+			}
+
+			map = getFieldNameMapByMetaFully(cls.getSuperclass(), map);
+
+			for (Field field : cls.getDeclaredFields())
+			{
+				if (field.getAnnotation(DataMeta.class) != null)
+				{
+					map.put(field.getName(), getDataLabelFromField(field));
+				}
 			}
 		}
 
@@ -162,17 +178,26 @@ public class Utils
 	 * Get label/field map defined by DataMeta of the given class.
 	 * 
 	 * @param cls
+	 * @param map
 	 * @return
 	 */
-	public static Map<String, Field> getLabelFieldMapByMeta(Class<?> cls)
+	public static Map<String, Field> getLabelFieldMapByMeta(Class<?> cls, Map<String, Field> map)
 	{
-		Map<String, Field> map = new HashMap<String, Field>();
-
-		for (Field field : cls.getDeclaredFields())
+		if (cls != null)
 		{
-			if (field.getAnnotation(DataMeta.class) != null)
+			if (map == null)
 			{
-				map.put(getDataLabelFromField(field), field);
+				map = new HashMap<String, Field>();
+			}
+
+			map = getLabelFieldMapByMeta(cls.getSuperclass(), map);
+
+			for (Field field : cls.getDeclaredFields())
+			{
+				if (field.getAnnotation(DataMeta.class) != null)
+				{
+					map.put(getDataLabelFromField(field), field);
+				}
 			}
 		}
 
@@ -185,21 +210,30 @@ public class Utils
 	 * 
 	 * @param cls
 	 * @param labels
+	 * @param map
 	 * @return
 	 */
-	public static Map<String, Field> getLabelFieldMapByMeta(Class<?> cls, Set<String> labels)
+	public static Map<String, Field> getLabelFieldMapByMeta(Class<?> cls, Set<String> labels, Map<String, Field> map)
 	{
-		Map<String, Field> map = new HashMap<String, Field>();
-
-		String label = null;
-		for (Field field : cls.getDeclaredFields())
+		if (cls != null)
 		{
-			if (field.getAnnotation(DataMeta.class) != null)
+			if (map == null)
 			{
-				label = getDataLabelFromField(field);
-				if (labels.contains(label))
+				map = new HashMap<String, Field>();
+			}
+
+			map = getLabelFieldMapByMeta(cls.getSuperclass(), labels, map);
+
+			String label = null;
+			for (Field field : cls.getDeclaredFields())
+			{
+				if (field.getAnnotation(DataMeta.class) != null)
 				{
-					map.put(label, field);
+					label = getDataLabelFromField(field);
+					if (labels.contains(label))
+					{
+						map.put(label, field);
+					}
 				}
 			}
 		}

@@ -48,7 +48,7 @@ public class DataProjector implements JSON.Projector<Object>
 			Set<Field> otm = new HashSet<Field>();
 			Set<Field> mto = new HashSet<Field>();
 
-			for (Field field : cls.getDeclaredFields())
+			for (Field field : Tools.getFieldsHierarchy(cls, null).values())
 			{
 				if (!Modifier.isStatic(field.getModifiers()))
 				{

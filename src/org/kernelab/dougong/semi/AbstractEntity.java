@@ -42,7 +42,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	{
 		Set<Column> columns = new HashSet<Column>();
 
-		for (Field field : entity.getClass().getDeclaredFields())
+		for (Field field : entity.getClass().getFields())
 		{
 			if (isColumn(field))
 			{

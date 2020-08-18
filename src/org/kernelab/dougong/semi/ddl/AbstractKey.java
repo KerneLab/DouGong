@@ -28,7 +28,7 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 	 */
 	public static Map<Column, Object> mapObjectValuesOfColumns(Object object, Column... columns)
 	{
-		Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass());
+		Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass(), null);
 
 		Map<Column, Object> map = new HashMap<Column, Object>();
 
