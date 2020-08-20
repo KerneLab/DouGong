@@ -63,6 +63,17 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	public StringBuilder provideOutputColumnReference(StringBuilder buffer, Column column)
+	{
+		String alias = this.provideAliasLabel(column.view().alias());
+		if (alias != null)
+		{
+			buffer.append(alias);
+			buffer.append('.');
+		}
+		return this.provideOutputNameText(buffer, column.name());
+	}
+
 	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)
 	{
 		if (buffer != null)

@@ -117,6 +117,18 @@ public interface Provider extends Castable
 	public StringBuilder provideOutputAlias(StringBuilder buffer, Alias alias);
 
 	/**
+	 * Output the column reference which is typically used as insert target
+	 * columns. This method should always including the leading view alias
+	 * (whether the column is using by join or not), but excluding the column
+	 * alias.
+	 * 
+	 * @param buffer
+	 * @param column
+	 * @return The given buffer.
+	 */
+	public StringBuilder provideOutputColumnReference(StringBuilder buffer, Column column);
+
+	/**
 	 * Output function text including the function name and parameters' list to
 	 * the buffer.<br />
 	 * The schema name should also be considered if given.
