@@ -262,9 +262,23 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return innerJoin(view, rels.joinCondition());
 	}
 
-	public <T extends Insertable> Insert insert(T target, Column... columns)
+	public <T extends Insertable> Insert insert(T target, Expression... columnValuePairs)
 	{
-		return this.provider().provideInsert().into(target).columns(columns).values(this);
+		if (columnValuePairs == null || columnValuePairs.length == 0)
+		{
+			return this.provider().provideInsert().into(target).values(this);
+		}
+
+		Column[] columns = new Column[columnValuePairs.length / 2];
+		Expression[] values = new Expression[columns.length];
+		for (int i = 0, j = 0; i < columnValuePairs.length; i += 2)
+		{
+			columns[j] = (Column) columnValuePairs[i];
+			values[j] = columnValuePairs[i + 1];
+			j++;
+		}
+		return this.provider().provideInsert().into(target) //
+				.columns(columns).values(this.select(values));
 	}
 
 	public AbstractSelect intersect(Select select)

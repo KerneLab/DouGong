@@ -76,7 +76,7 @@ public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
-	public <T extends Insertable> Insert insert(T target, Column... column);
+	public <T extends Insertable> Insert insert(T target, Expression... columnValuePairs);
 
 	// //////////////////////////////////////////////////////
 
