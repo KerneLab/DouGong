@@ -10,24 +10,30 @@ import org.kernelab.dougong.semi.dml.PredeclaredView;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
+import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.core.meta.DataMeta;
 
 @MemberMeta(follow = true)
+@NameMeta(name = "TestView")
 public class TestView extends PredeclaredView
 {
 	@NameMeta(name = "comp_id_1")
+	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "compId1")
 	public Column	comp_id_1;
 
 	@NameMeta(name = "COMP_ID")
+	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "compId")
 	public Column	COMP_ID;
 
 	@NameMeta(name = "DEPT_NAME")
+	@TypeMeta(type = "VARCHAR2", precision = 20, nullable = TypeMeta.NULLABLE)
 	@DataMeta(alias = "deptName")
 	public Column	DEPT_NAME;
 
 	@NameMeta(name = "STAF_NAME")
+	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NULLABLE)
 	@DataMeta(alias = "stafName")
 	public Column	STAF_NAME;
 

@@ -31,6 +31,7 @@ import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
+import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.semi.AbstractTable;
 import org.kernelab.dougong.semi.dml.AbstractSubquery;
 import org.kernelab.dougong.semi.dml.PredeclaredView;
@@ -316,6 +317,7 @@ public class EntityMaker
 	{
 		Map<String, Integer> pk = this.getPrimaryKey();
 
+		out.write("@NameMeta(name = \"" + JSON.EscapeString(name()) + "\")");
 		out.write("public class " + name() + " extends " + sup().getSimpleName());
 		out.write("{");
 
@@ -330,6 +332,7 @@ public class EntityMaker
 		boolean first = true;
 
 		String column = null, name = null;
+		int precision = 0, scale = 0, nullable = 0;
 
 		for (int i = 1; i <= columns; i++)
 		{
@@ -344,9 +347,30 @@ public class EntityMaker
 			column = meta().getColumnLabel(i);
 			name = JSON.EscapeString(column);
 			out.write("\t@NameMeta(name = \"" + name + "\")");
+
 			if (this.isEntity())
 			{
+				precision = meta().getPrecision(i);
+				scale = meta().getScale(i);
+				nullable = meta().isNullable(i);
+				out.print("\t@TypeMeta(");
+				out.print("type = \"" + JSON.EscapeString(meta().getColumnTypeName(i)) + "\"");
+				if (precision != 0)
+				{
+					out.print(", precision = " + precision);
+				}
+				if (scale != 0)
+				{
+					out.print(", scale = " + scale);
+				}
+				if (nullable != ResultSetMetaData.columnNullableUnknown)
+				{
+					out.print(", nullable = TypeMeta." + (nullable == TypeMeta.NO_NULLS ? "NO_NULLS" : "NULLABLE"));
+				}
+				out.write(")");
+
 				out.write("\t@DataMeta(alias = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
+
 				if (pk.get(column) != null)
 				{
 					out.write("\t@PrimaryKeyMeta(ordinal = " + pk.get(column) + ")");
@@ -428,6 +452,7 @@ public class EntityMaker
 		imports.add(NameMeta.class.getName());
 		if (this.isEntity())
 		{
+			imports.add(TypeMeta.class.getName());
 			imports.add(DataMeta.class.getName());
 		}
 		imports.add(sup().getName());

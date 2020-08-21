@@ -6,10 +6,12 @@ import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
+import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.semi.AbstractTable;
 
 @MemberMeta()
+@NameMeta(name = "STAF")
 public class STAF extends AbstractTable
 {
 	@ForeignKeyMeta
@@ -19,29 +21,35 @@ public class STAF extends AbstractTable
 	public static final String	FK_STAF_JOB	= "FK_STAF_JOB";
 
 	@NameMeta(name = "COMP_ID")
+	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "compId")
 	@PrimaryKeyMeta(ordinal = 1)
 	public Column	COMP_ID;
 
 	@NameMeta(name = "DEPT_ID")
+	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "deptId")
 	@PrimaryKeyMeta(ordinal = 2)
 	public Column	DEPT_ID;
 
 	@NameMeta(name = "STAF_ID")
+	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "stafId")
 	@PrimaryKeyMeta(ordinal = 3)
 	public Column	STAF_ID;
 
 	@NameMeta(name = "STAF_NAME")
+	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NULLABLE)
 	@DataMeta(alias = "stafName")
 	public Column	STAF_NAME;
 
 	@NameMeta(name = "STAF_SALARY")
+	@TypeMeta(type = "NUMBER", precision = 10, scale = 2, nullable = TypeMeta.NULLABLE)
 	@DataMeta(alias = "stafSalary")
 	public Column	STAF_SALARY;
 
 	@NameMeta(name = "STAF_JOB")
+	@TypeMeta(type = "VARCHAR2", precision = 5, nullable = TypeMeta.NULLABLE)
 	@DataMeta(alias = "stafJob")
 	public Column	STAF_JOB;
 
