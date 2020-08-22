@@ -13,6 +13,7 @@ import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
+import org.kernelab.dougong.core.dml.Merge;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
@@ -82,6 +83,8 @@ public interface Provider extends Castable
 	public LogicalCondition provideLogicalCondition();
 
 	public MembershipCondition provideMembershipCondition();
+
+	public Merge provideMerge();
 
 	public MinusOperator provideMinusOperator();
 

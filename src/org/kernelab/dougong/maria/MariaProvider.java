@@ -40,6 +40,7 @@ import org.kernelab.dougong.maria.dml.opr.MariaCaseDecideExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaCaseSwitchExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaJointOperator;
 import org.kernelab.dougong.semi.AbstractProvider;
+import org.kernelab.dougong.semi.dml.AbstractMerge;
 
 public class MariaProvider extends AbstractProvider
 {
@@ -124,6 +125,12 @@ public class MariaProvider extends AbstractProvider
 	public MariaMembershipCondition provideMembershipCondition()
 	{
 		return new MariaMembershipCondition();
+	}
+
+	@Override
+	public AbstractMerge provideMerge()
+	{
+		throw new UnsupportedOperationException("Merge statement has not been supported");
 	}
 
 	public MinusOperator provideMinusOperator()

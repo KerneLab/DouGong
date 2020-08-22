@@ -11,7 +11,7 @@ public class AbstractWithsable extends AbstractProvidable implements Withsable
 {
 	private List<Withable> with = null;
 
-	public void textOfWith(StringBuilder buffer)
+	protected void textOfWith(StringBuilder buffer)
 	{
 		List<Withable> with = this.with();
 

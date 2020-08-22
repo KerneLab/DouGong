@@ -43,6 +43,7 @@ import org.kernelab.dougong.orcl.dml.opr.OracleCaseSwitchExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleJointOperator;
 import org.kernelab.dougong.orcl.util.OracleKeysFetcher;
 import org.kernelab.dougong.semi.AbstractProvider;
+import org.kernelab.dougong.semi.dml.AbstractMerge;
 
 public class OracleProvider extends AbstractProvider
 {
@@ -136,6 +137,11 @@ public class OracleProvider extends AbstractProvider
 	public OracleMembershipCondition provideMembershipCondition()
 	{
 		return new OracleMembershipCondition();
+	}
+
+	public AbstractMerge provideMerge()
+	{
+		return provideProvider(new AbstractMerge());
 	}
 
 	public MinusOperator provideMinusOperator()

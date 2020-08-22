@@ -31,9 +31,9 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 		return this;
 	}
 
-	public AbstractUpdate set(Column column, Expression expr)
+	public AbstractUpdate set(Column column, Expression value)
 	{
-		sets.add(new Relation<Column, Expression>(column, expr));
+		sets.add(new Relation<Column, Expression>(column, value));
 		return this;
 	}
 
@@ -43,18 +43,36 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	}
 
 	@Override
-	public void textOfFrom(StringBuilder buffer)
+	public AbstractUpdate sets(Expression... columnValuePairs)
+	{
+		this.sets().clear();
+
+		if (columnValuePairs == null || columnValuePairs.length == 0)
+		{
+			return this;
+		}
+
+		for (int i = 0; i < columnValuePairs.length; i += 2)
+		{
+			this.set((Column) columnValuePairs[i], columnValuePairs[i + 1]);
+		}
+
+		return this;
+	}
+
+	@Override
+	protected void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(' ');
 		from().toStringUpdatable(buffer);
 	}
 
-	public void textOfHead(StringBuilder buffer)
+	protected void textOfHead(StringBuilder buffer)
 	{
 		buffer.append("UPDATE");
 	}
 
-	public void textOfSets(StringBuilder buffer)
+	protected void textOfSets(StringBuilder buffer)
 	{
 		boolean first = true;
 
@@ -69,7 +87,7 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 			{
 				buffer.append(',');
 			}
-			Utils.outputExpr(buffer, set.getKey());
+			this.provider().provideOutputColumnReference(buffer, set.getKey());
 			buffer.append('=');
 			Utils.outputExpr(buffer, set.getValue());
 		}

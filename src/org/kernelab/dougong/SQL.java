@@ -12,6 +12,7 @@ import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
+import org.kernelab.dougong.core.dml.Merge;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
@@ -111,6 +112,11 @@ public class SQL
 	public <T extends Insertable> Insert insert(T target, Column... columns)
 	{
 		return provider().provideInsert().into(target).columns(columns);
+	}
+
+	public Merge into(View mergeTarget)
+	{
+		return provider().provideMerge().into(mergeTarget);
 	}
 
 	public Items list(Expression... exprs)

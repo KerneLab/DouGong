@@ -13,7 +13,9 @@ public interface Update extends DML, Filterable, Withsable
 
 	// //////////////////////////////////////////////////////
 
-	public Update set(Column column, Expression expr);
+	public Update set(Column column, Expression value);
+
+	public Update sets(Expression... columnValuePairs);
 
 	// //////////////////////////////////////////////////////
 

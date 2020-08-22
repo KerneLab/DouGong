@@ -21,13 +21,13 @@ public abstract class AbstractFilterable extends AbstractWithsable implements Fi
 		return this;
 	}
 
-	public void textOfFrom(StringBuilder buffer)
+	protected void textOfFrom(StringBuilder buffer)
 	{
 		buffer.append(" FROM ");
 		from().toStringViewed(buffer);
 	}
 
-	public void textOfWhere(StringBuilder buffer)
+	protected void textOfWhere(StringBuilder buffer)
 	{
 		if (where() != null && !where.isEmpty())
 		{
