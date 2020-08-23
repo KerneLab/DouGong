@@ -86,7 +86,15 @@ public interface Provider extends Castable
 
 	public KeysFetcher provideKeysFetcher();
 
+	public String provideLikeAmongPattern(String value, String escape);
+
 	public LikeCondition provideLikeCondition();
+
+	public String provideLikeHeadPattern(String value, String escape);
+
+	public String provideLikePatternEscaped(String value, String escape);
+
+	public String provideLikeTailPattern(String value, String escape);
 
 	public LogicalCondition provideLogicalCondition();
 

@@ -16,6 +16,9 @@ public class TestLike
 
 	public static void main(String[] args)
 	{
+		Tools.debug(makeSelectLike().toString(new StringBuilder()));
+		Tools.debug(SQL.likeAmong("Mik", "\\"));
+
 		Tools.debug(makeSelectCase().toString(new StringBuilder()));
 	}
 
@@ -34,6 +37,20 @@ public class TestLike
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0")) //
 						.and(((OracleLikeCondition) d.COMP_ID.like(SQL.expr("'sfd%'"), SQL.expr("'\\'"))))) //
+				.orderBy(d.COMP_ID) //
+		;
+	}
+
+	public static Select makeSelectLike()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "s")) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.all() //
+				) //
+				.where(s.STAF_NAME.like(SQL.param("name"), SQL.expr("'\\'"))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}

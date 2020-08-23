@@ -119,6 +119,45 @@ public class SQL
 		return provider().provideMerge().into(mergeTarget);
 	}
 
+	/**
+	 * Make a like among pattern ({@code '%'+value+'%'}) string according to a
+	 * given value and escape.
+	 * 
+	 * @param value
+	 * @param escape
+	 * @return
+	 */
+	public String likeAmong(String value, String escape)
+	{
+		return provider().provideLikeAmongPattern(value, escape);
+	}
+
+	/**
+	 * Make a like head pattern ({@code value+'%'}) string according to a given
+	 * value and escape.
+	 * 
+	 * @param value
+	 * @param escape
+	 * @return
+	 */
+	public String likeHead(String value, String escape)
+	{
+		return provider().provideLikeHeadPattern(value, escape);
+	}
+
+	/**
+	 * Make a like tail pattern ({@code '%'+value}) string according to a given
+	 * value and escape.
+	 * 
+	 * @param value
+	 * @param escape
+	 * @return
+	 */
+	public String likeTail(String value, String escape)
+	{
+		return provider().provideLikeTailPattern(value, escape);
+	}
+
 	public Items list(Expression... exprs)
 	{
 		return provider().provideItems().list(exprs);

@@ -56,6 +56,41 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	@Override
+	public String provideLikeAmongPattern(String value, String escape)
+	{
+		String pattern = this.provideLikePatternEscaped(value, escape);
+		return pattern == null ? null : "%" + pattern + "%";
+	}
+
+	@Override
+	public String provideLikeHeadPattern(String value, String escape)
+	{
+		String pattern = this.provideLikePatternEscaped(value, escape);
+		return pattern == null ? null : pattern + "%";
+	}
+
+	public String provideLikePatternEscaped(String value, String escape)
+	{
+		if (value == null)
+		{
+			return null;
+		}
+		if (Tools.isNullOrEmpty(escape))
+		{
+			return value;
+		}
+		return value.replace(escape, escape + escape) //
+				.replace("%", escape + "%").replace("?", escape + "?");
+	}
+
+	@Override
+	public String provideLikeTailPattern(String value, String escape)
+	{
+		String pattern = this.provideLikePatternEscaped(value, escape);
+		return pattern == null ? null : "%" + pattern;
+	}
+
 	public Item provideNullItem()
 	{
 		return this.provideStringItem(SQL.NULL);
