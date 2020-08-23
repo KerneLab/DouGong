@@ -5,7 +5,7 @@ import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.View;
 
-public interface Merge extends DML, Providable
+public interface Merge extends DML, Providable, Hintable
 {
 	public static interface UpdateClause extends Text, Providable
 	{
@@ -50,4 +50,6 @@ public interface Merge extends DML, Providable
 	public MatchedClause whenMatched();
 
 	public NotMatchedClause whenNotMatched();
+
+	public Merge hint(String hint);
 }

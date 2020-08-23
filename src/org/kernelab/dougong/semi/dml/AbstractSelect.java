@@ -72,6 +72,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private Expression				rows		= null;
 
+	private String					hint		= null;
+
 	public String alias()
 	{
 		return alias;
@@ -235,6 +237,17 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public AbstractSelect having(Condition condition)
 	{
 		this.having = condition;
+		return this;
+	}
+
+	protected String hint()
+	{
+		return hint;
+	}
+
+	public AbstractSelect hint(String hint)
+	{
+		this.hint = hint;
 		return this;
 	}
 
@@ -804,10 +817,14 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	protected void textOfHead(StringBuilder buffer)
 	{
 		buffer.append("SELECT");
+	}
 
-		if (distinct())
+	protected void textOfHint(StringBuilder buffer)
+	{
+		String hint = this.provider().provideHint(this.hint());
+		if (hint != null)
 		{
-			buffer.append(" DISTINCT");
+			buffer.append(' ').append(hint);
 		}
 	}
 
@@ -874,6 +891,14 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
+	protected void textOfUnique(StringBuilder buffer)
+	{
+		if (distinct())
+		{
+			buffer.append(" DISTINCT");
+		}
+	}
+
 	@Override
 	public String toString()
 	{
@@ -885,6 +910,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		AbstractSelect select = prepare();
 		select.textOfWith(buffer);
 		select.textOfHead(buffer);
+		select.textOfHint(buffer);
+		select.textOfUnique(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
 		select.textOfJoin(buffer);
@@ -915,6 +942,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		buffer.append('(');
 		select.textOfWith(buffer);
 		select.textOfHead(buffer);
+		select.textOfHint(buffer);
+		select.textOfUnique(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
 		select.textOfWhere(buffer);
@@ -929,6 +958,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		AbstractSelect select = prepare();
 		select.textOfWith(buffer);
 		select.textOfHead(buffer);
+		select.textOfHint(buffer);
+		select.textOfUnique(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
 		select.textOfJoin(buffer);
@@ -955,6 +986,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		buffer.append('(');
 		select.textOfWith(buffer);
 		select.textOfHead(buffer);
+		select.textOfHint(buffer);
+		select.textOfUnique(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
 		select.textOfWhere(buffer);

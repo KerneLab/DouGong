@@ -10,7 +10,7 @@ import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 
 public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable, Updatable, Deletable, Source,
-		Providable, Filterable, Withsable
+		Providable, Filterable, Hintable, Withsable
 {
 	public Select select(Expression... exprs);
 
@@ -98,6 +98,10 @@ public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable,
 	public Select alias(String alias);
 
 	public Select as(String alias);
+
+	// //////////////////////////////////////////////////////
+
+	public Select hint(String hint);
 
 	// //////////////////////////////////////////////////////
 

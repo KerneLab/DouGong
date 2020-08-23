@@ -10,10 +10,23 @@ import org.kernelab.dougong.core.dml.Withable;
 
 public class AbstractDelete extends AbstractFilterable implements Delete
 {
+	private String hint;
+
 	@Override
 	public AbstractDelete from(View view)
 	{
 		super.from(view);
+		return this;
+	}
+
+	protected String hint()
+	{
+		return hint;
+	}
+
+	public AbstractDelete hint(String hint)
+	{
+		this.hint = hint;
 		return this;
 	}
 
@@ -36,6 +49,15 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 		buffer.append("DELETE");
 	}
 
+	protected void textOfHint(StringBuilder buffer)
+	{
+		String hint = this.provider().provideHint(this.hint());
+		if (hint != null)
+		{
+			buffer.append(' ').append(hint);
+		}
+	}
+
 	@Override
 	public String toString()
 	{
@@ -45,6 +67,7 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
+		this.textOfHint(buffer);
 		this.textOfFrom(buffer);
 		this.textOfWhere(buffer);
 		return buffer;

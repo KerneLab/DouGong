@@ -29,6 +29,7 @@ public class TestInsert
 
 		return SQL.insert(s = SQL.table(STAF.class, "s"), s.COMP_ID, s.DEPT_ID) //
 				.values(SQL.param("comp"), SQL.param("dept")) //
+				.hint("append") //
 		;
 	}
 

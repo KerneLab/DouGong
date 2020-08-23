@@ -44,6 +44,18 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	public String provideHint(String hint)
+	{
+		if (Tools.isNullOrWhite(hint))
+		{
+			return null;
+		}
+		else
+		{
+			return "/*+ " + hint + " */";
+		}
+	}
+
 	public Item provideNullItem()
 	{
 		return this.provideStringItem(SQL.NULL);

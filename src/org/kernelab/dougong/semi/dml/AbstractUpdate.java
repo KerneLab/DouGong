@@ -15,12 +15,25 @@ import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractUpdate extends AbstractFilterable implements Update
 {
-	private List<Relation<Column, Expression>> sets = new LinkedList<Relation<Column, Expression>>();
+	private List<Relation<Column, Expression>>	sets	= new LinkedList<Relation<Column, Expression>>();
+
+	private String								hint;
 
 	@Override
 	public AbstractUpdate from(View view)
 	{
 		super.from(view);
+		return this;
+	}
+
+	protected String hint()
+	{
+		return hint;
+	}
+
+	public AbstractUpdate hint(String hint)
+	{
+		this.hint = hint;
 		return this;
 	}
 
@@ -72,6 +85,15 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 		buffer.append("UPDATE");
 	}
 
+	protected void textOfHint(StringBuilder buffer)
+	{
+		String hint = this.provider().provideHint(this.hint());
+		if (hint != null)
+		{
+			buffer.append(' ').append(hint);
+		}
+	}
+
 	protected void textOfSets(StringBuilder buffer)
 	{
 		boolean first = true;
@@ -102,6 +124,7 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
+		this.textOfHint(buffer);
 		this.textOfFrom(buffer);
 		this.textOfSets(buffer);
 		this.textOfWhere(buffer);

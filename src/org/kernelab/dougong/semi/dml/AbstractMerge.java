@@ -12,7 +12,7 @@ import org.kernelab.dougong.core.dml.Merge;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.AbstractProvidable;
 
-public class AbstractMerge extends AbstractProvidable implements Merge
+public class AbstractMerge extends AbstractHintable implements Merge
 {
 	public static class AbstractInsertClause extends AbstractProvidable implements InsertClause
 	{
@@ -319,6 +319,13 @@ public class AbstractMerge extends AbstractProvidable implements Merge
 
 	private AbstractNotMatchedClause	notMatchedClause;
 
+	@Override
+	public AbstractMerge hint(String hint)
+	{
+		super.hint(hint);
+		return this;
+	}
+
 	protected View into()
 	{
 		return target;
@@ -425,6 +432,7 @@ public class AbstractMerge extends AbstractProvidable implements Merge
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
+		this.textOfHint(buffer);
 		this.textOfInto(buffer);
 		this.textOfUsing(buffer);
 		this.textOfOn(buffer);

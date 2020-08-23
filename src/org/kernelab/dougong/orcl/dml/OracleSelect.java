@@ -140,6 +140,8 @@ public class OracleSelect extends AbstractSelect
 		OracleSelect select = prepare();
 		select.textOfWith(buffer);
 		select.textOfHead(buffer);
+		select.textOfHint(buffer);
+		select.textOfUnique(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
 		select.textOfJoin(buffer);
@@ -158,6 +160,8 @@ public class OracleSelect extends AbstractSelect
 		OracleSelect select = prepare();
 		select.textOfWith(buffer);
 		select.textOfHead(buffer);
+		select.textOfHint(buffer);
+		select.textOfUnique(buffer);
 		select.textOfItems(buffer);
 		select.textOfFrom(buffer);
 		select.textOfJoin(buffer);

@@ -68,6 +68,14 @@ public interface Provider extends Castable
 
 	public <T extends Function> T provideFunction(Class<T> cls);
 
+	/**
+	 * Get the full hint expression. If hint is null or white then returns null.
+	 * 
+	 * @param hint
+	 * @return
+	 */
+	public String provideHint(String hint);
+
 	public Insert provideInsert();
 
 	public Items provideItems();

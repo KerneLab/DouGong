@@ -6,9 +6,8 @@ import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Source;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.semi.AbstractProvidable;
 
-public class AbstractInsert extends AbstractProvidable implements Insert
+public class AbstractInsert extends AbstractHintable implements Insert
 {
 	protected Insertable	target;
 
@@ -18,9 +17,16 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 
 	protected Expression[]	values;
 
-	public Insert columns(Column... columns)
+	public AbstractInsert columns(Column... columns)
 	{
 		this.columns = columns;
+		return this;
+	}
+
+	@Override
+	public AbstractInsert hint(String hint)
+	{
+		super.hint(hint);
 		return this;
 	}
 
@@ -57,7 +63,7 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 
 	protected void textOfHead(StringBuilder buffer)
 	{
-		buffer.append("INSERT INTO");
+		buffer.append("INSERT");
 	}
 
 	protected void textOfSource(StringBuilder buffer)
@@ -71,7 +77,7 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 
 	protected void textOfTarget(StringBuilder buffer)
 	{
-		buffer.append(' ');
+		buffer.append(" INTO ");
 		target.toStringInsertable(buffer);
 	}
 
@@ -109,6 +115,7 @@ public class AbstractInsert extends AbstractProvidable implements Insert
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
+		this.textOfHint(buffer);
 		this.textOfTarget(buffer);
 		this.textOfColumns(buffer);
 		if (values != null)

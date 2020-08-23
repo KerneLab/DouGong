@@ -17,7 +17,8 @@ public class TestSelect
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelectNested().toString(new StringBuilder()));
+		Tools.debug(makeSelectHint().toString(new StringBuilder()));
+		// Tools.debug(makeSelectNested().toString(new StringBuilder()));
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -29,6 +30,7 @@ public class TestSelect
 				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						s.STAF_ID, //
+						s.STAF_NAME.joint(s.STAF_JOB).as("jj"), //
 						s.STAF_NAME.as("name") //
 				) //
 				.as(AbstractSelect.class).fillAliasByMeta() //
@@ -96,6 +98,25 @@ public class TestSelect
 								// .els(SQL.expr("'Z'")) //
 								.as("c") //
 				) //
+				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.orderBy(d.COMP_ID) //
+		;
+	}
+
+	public static Select makeSelectHint()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "s")) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.COMP_ID, //
+						SQL.Case() //
+								.when(d.COMP_ID.gt(SQL.expr("1")), SQL.expr("'A'")) //
+								// .els(SQL.expr("'Z'")) //
+								.as("c") //
+				) //
+				.hint("full(s)") //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;

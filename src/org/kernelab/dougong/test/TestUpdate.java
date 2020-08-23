@@ -23,6 +23,7 @@ public class TestUpdate
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.update() //
+				.hint("index(s)") //
 				.set(s.STAF_NAME, SQL.param("name")) //
 				.where(s.STAF_ID.eq(SQL.param("id"))) //
 		;
