@@ -648,6 +648,39 @@ public abstract class Entitys
 		}
 	}
 
+	public static <T> Map<String, Object> makeParams(SQL sql, T object)
+	{
+		return makeParams(object, getEntityFromModelObject(sql, object));
+	}
+
+	public static <T> Map<String, Object> makeParams(T object, Entity entity)
+	{
+		return mapColumnToLabelByMeta(mapObjectToEntity(object, entity));
+	}
+
+	public static <T> Update makeUpdate(SQL sql, Entity entity, T object)
+	{
+		if (entity == null && object == null)
+		{
+			return null;
+		}
+
+		if (entity == null && object != null)
+		{
+			entity = Entitys.getEntityFromModelObject(sql, object);
+		}
+
+		AbstractTable table = entity.as(AbstractTable.class);
+
+		Map<Column, Expression> meta = table.getColumnDefaultExpressions();
+		if (object != null)
+		{
+			meta = overwriteColumnDefaults(sql, object, meta);
+		}
+
+		return table.updateByMetaMap(meta);
+	}
+
 	/**
 	 * Map key to label defined by DataMeta.
 	 * 
@@ -1199,14 +1232,10 @@ public abstract class Entitys
 		Entity entity = Entitys.getEntityFromModelObject(sql, object);
 		PrimaryKey key = entity.primaryKey();
 
-		AbstractTable table = entity.as(AbstractTable.class);
-		Map<Column, Expression> updateMeta = table.getColumnDefaultExpressions();
-		updateMeta = overwriteColumnDefaults(sql, object, updateMeta);
-
-		Update update = table.updateByMetaMap(updateMeta) //
+		Update update = makeUpdate(sql, entity, object) //
 				.where(key.queryCondition());
 
-		Map<String, Object> params = mapColumnToLabelByMeta(mapObjectToEntity(object, entity));
+		Map<String, Object> params = makeParams(object, entity);
 
 		return kit.update(update.toString(), params);
 	}
