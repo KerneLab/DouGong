@@ -114,9 +114,9 @@ public class SQL
 		return provider().provideInsert().into(target).columns(columns);
 	}
 
-	public Merge into(View mergeTarget)
+	public Merge merge(View target)
 	{
-		return provider().provideMerge().into(mergeTarget);
+		return provider().provideMerge().into(target);
 	}
 
 	/**

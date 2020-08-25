@@ -19,19 +19,18 @@ public class TestMerge
 	{
 		STAF t = null, s = null;
 
-		return SQL.into(t = SQL.table(STAF.class, "t")) //
+		return SQL.merge(t = SQL.table(STAF.class, "t")) //
 				.using(s = SQL.table(STAF.class, "s")) //
 				.on(t.COMP_ID.eq(s.COMP_ID)) //
 				.whenMatched().update() //
 				.sets(t.DEPT_ID, s.DEPT_ID, //
 						t.STAF_ID, s.STAF_ID //
 				) //
-				.whenNotMatched().insert() //
-				.into(t.COMP_ID, s.COMP_ID, //
+				.whenNotMatched() //
+				.inserts(t.COMP_ID, s.COMP_ID, //
 						t.DEPT_ID, s.DEPT_ID, //
 						t.STAF_ID, s.STAF_ID //
-				) //
-				.merge();
+				);
 	}
 
 }
