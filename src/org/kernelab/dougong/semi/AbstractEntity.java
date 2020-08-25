@@ -17,6 +17,7 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.Key;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.meta.ForeignKeyMeta;
@@ -156,19 +157,42 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		return column;
 	}
 
-	public Map<Column, Expression> getColumnDefaultExpressions()
+	/**
+	 * Get the default expressions for each columns in this entity.<br />
+	 * If no default expression specified for some columns then these columns'
+	 * parameter will be used as the default expression.<br />
+	 * If the key parameter is given then the columns in the key will be
+	 * excluded in the result. Which is useful while generating UPDATE columns'
+	 * list and excluding the key columns.
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Map<Column, Expression> getColumnDefaultExpressions(Key key)
 	{
 		Map<Column, Expression> meta = new LinkedHashMap<Column, Expression>();
 
 		SQL sql = this.provider().provideSQL();
 
+		Set<String> keys = new HashSet<String>();
+		if (key != null)
+		{
+			for (Column k : key.columns())
+			{
+				keys.add(k.name());
+			}
+		}
+
 		for (Field field : this.getColumnFields())
 		{
-			Expression value = Utils.getDataExpressionFromField(sql, field);
-
-			if (value != null)
+			if (key == null || !keys.contains(Utils.getNameFromField(field)))
 			{
-				meta.put(this.getColumnByField(field), value);
+				Expression value = Utils.getDataExpressionFromField(sql, field);
+
+				if (value != null)
+				{
+					meta.put(this.getColumnByField(field), value);
+				}
 			}
 		}
 

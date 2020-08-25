@@ -56,7 +56,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	{
 		if (meta == null)
 		{
-			meta = this.getColumnDefaultExpressions();
+			meta = this.getColumnDefaultExpressions(null);
 		}
 
 		Column[] columns = new Column[meta.size()];
@@ -148,7 +148,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	{
 		if (meta == null)
 		{
-			meta = this.getColumnDefaultExpressions();
+			meta = this.getColumnDefaultExpressions(this.primaryKey());
 		}
 
 		Update update = this.provider().provideUpdate().update(this);

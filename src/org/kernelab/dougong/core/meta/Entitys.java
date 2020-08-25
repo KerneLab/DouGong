@@ -471,7 +471,7 @@ public abstract class Entitys
 		Column[] gencols = generates != null ? generates.value : null;
 
 		AbstractTable table = entity.as(AbstractTable.class);
-		Map<Column, Expression> insertMeta = table.getColumnDefaultExpressions();
+		Map<Column, Expression> insertMeta = table.getColumnDefaultExpressions(null);
 		insertMeta = overwriteColumnDefaults(sql, object, insertMeta);
 
 		Map<String, Object> params = Entitys.mapObjectByMeta(object);
@@ -672,7 +672,7 @@ public abstract class Entitys
 
 		AbstractTable table = entity.as(AbstractTable.class);
 
-		Map<Column, Expression> meta = table.getColumnDefaultExpressions();
+		Map<Column, Expression> meta = table.getColumnDefaultExpressions(entity.primaryKey());
 		if (object != null)
 		{
 			meta = overwriteColumnDefaults(sql, object, meta);
