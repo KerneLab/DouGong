@@ -900,7 +900,7 @@ public abstract class Entitys
 		Map<Column, Object> params = null;
 		if (joins != null)
 		{
-			JoinDefine join = joins.joins()[0];
+			JoinDefine join = joins.value()[0];
 			first = sql.view(join.entity());
 			key = getForeignKey(join.key(), join.referred(), origin, first);
 			params = key.mapValuesTo(object, key.entity() == first ? key.entity() : key.reference().entity());
@@ -919,7 +919,7 @@ public abstract class Entitys
 			if (joins != null)
 			{
 				int i = 0;
-				for (JoinDefine join : joins.joins())
+				for (JoinDefine join : joins.value())
 				{
 					if (i == 0 && first != null)
 					{

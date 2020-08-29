@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface JoinMeta
 {
-	public JoinDefine[] joins();
+	public JoinDefine[] value();
 }
