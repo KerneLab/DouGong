@@ -2,6 +2,7 @@ package org.kernelab.dougong.maria;
 
 import java.lang.reflect.Field;
 
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
@@ -162,7 +163,12 @@ public class MariaProvider extends AbstractProvider
 
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
 	{
-		this.provideOutputMember(buffer, function);
+		if (Tools.notNullOrEmpty(function.schema()))
+		{
+			this.provideOutputNameText(buffer, function.schema());
+			buffer.append(OBJECT_SEPARATOR_CHAR);
+		}
+		buffer.append(function.name());
 
 		buffer.append('(');
 

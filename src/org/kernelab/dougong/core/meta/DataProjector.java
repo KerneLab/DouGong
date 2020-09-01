@@ -75,7 +75,7 @@ public class DataProjector implements JSON.Projector<Object>
 		return map;
 	}
 
-	public Object project(Object obj, JSON json)
+	public Object project(Object obj, JSON json) throws Exception
 	{
 		if (json == null)
 		{
@@ -89,7 +89,10 @@ public class DataProjector implements JSON.Projector<Object>
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			if (json.projectStrict())
+			{
+				throw e;
+			}
 		}
 		return null;
 	}

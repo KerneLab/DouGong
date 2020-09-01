@@ -2,6 +2,7 @@ package org.kernelab.dougong.orcl;
 
 import java.lang.reflect.Field;
 
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
@@ -173,9 +174,21 @@ public class OracleProvider extends AbstractProvider
 
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
 	{
-		this.provideOutputMember(buffer, function);
-
 		Expression[] args = function.args();
+
+		if (args != null && args.length > 0)
+		{
+			this.provideOutputMember(buffer, function);
+		}
+		else
+		{
+			if (Tools.notNullOrEmpty(function.schema()))
+			{
+				this.provideOutputNameText(buffer, function.schema());
+				buffer.append(OBJECT_SEPARATOR_CHAR);
+			}
+			buffer.append(function.name());
+		}
 
 		if (args != null && args.length > 0)
 		{
