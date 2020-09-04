@@ -989,8 +989,14 @@ public abstract class Entitys
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
 			Collection<T> coll) throws SQLException
 	{
+		return selectObjects(kit, sql, select, model, params, coll, -1);
+	}
+
+	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
+			Collection<T> coll, int limit) throws SQLException
+	{
 		coll = kit.execute(select.toString(), params).getRows(coll, model,
-				Utils.getFieldNameMapByMetaFully(model, null));
+				Utils.getFieldNameMapByMetaFully(model, null), limit);
 		if (coll != null)
 		{
 			for (T t : coll)
