@@ -1020,8 +1020,11 @@ public abstract class Entitys
 
 		if (c != null && coll != null)
 		{
-			c.clear();
-			c.addAll(coll);
+			if (c != coll)
+			{
+				c.clear();
+				c.addAll(coll);
+			}
 			coll = c;
 		}
 
