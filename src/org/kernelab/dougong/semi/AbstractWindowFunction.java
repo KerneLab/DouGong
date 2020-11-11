@@ -76,7 +76,7 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 				.between(between()) //
 				.schema(this.schema()) //
 				.name(this.name()) //
-				.call(this.args()) //
+				.args(this.args()) //
 				.ascend(this.ascending()) //
 				.provider(this.provider());
 	}
