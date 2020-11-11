@@ -69,16 +69,12 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 	@Override
 	protected AbstractWindowFunction replicate()
 	{
-		return (AbstractWindowFunction) new AbstractWindowFunction() //
+		return super.replicate() //
+				.as(AbstractWindowFunction.class) //
 				.partitionBy(partitionBy()) //
 				.orderBy(orderBy()) //
 				.rows(isRows()) //
-				.between(between()) //
-				.schema(this.schema()) //
-				.name(this.name()) //
-				.args(this.args()) //
-				.ascend(this.ascending()) //
-				.provider(this.provider());
+				.between(between());
 	}
 
 	public boolean rows()
