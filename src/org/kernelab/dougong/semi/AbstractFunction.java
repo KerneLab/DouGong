@@ -73,6 +73,11 @@ public class AbstractFunction extends AbstractItem implements Function
 		this.name(Utils.getNameFromNamed(this));
 	}
 
+	public boolean isPseudoColumn()
+	{
+		return false;
+	}
+
 	public String name()
 	{
 		return name;

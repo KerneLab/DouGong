@@ -174,9 +174,7 @@ public class OracleProvider extends AbstractProvider
 
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
 	{
-		Expression[] args = function.args();
-
-		if (args != null && args.length > 0)
+		if (!function.isPseudoColumn())
 		{
 			this.provideOutputMember(buffer, function);
 		}
@@ -186,27 +184,32 @@ public class OracleProvider extends AbstractProvider
 			{
 				this.provideOutputNameText(buffer, function.schema());
 				buffer.append(OBJECT_SEPARATOR_CHAR);
-			}
+			} // SYSDATE MUST NOT be surrounded with quotes
 			buffer.append(function.name());
 		}
 
-		if (args != null && args.length > 0)
+		Expression[] args = function.args();
+
+		if (!function.isPseudoColumn() && (args != null && args.length > 0))
 		{
 			buffer.append('(');
 
-			boolean first = true;
-
-			for (Expression expr : args)
+			if (args != null && args.length > 0)
 			{
-				if (first)
+				boolean first = true;
+
+				for (Expression expr : args)
 				{
-					first = false;
+					if (first)
+					{
+						first = false;
+					}
+					else
+					{
+						buffer.append(',');
+					}
+					Utils.outputExpr(buffer, expr);
 				}
-				else
-				{
-					buffer.append(',');
-				}
-				Utils.outputExpr(buffer, expr);
 			}
 
 			buffer.append(')');

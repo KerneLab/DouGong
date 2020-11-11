@@ -170,27 +170,32 @@ public class MariaProvider extends AbstractProvider
 		}
 		buffer.append(function.name());
 
-		buffer.append('(');
+		Expression[] args = function.args();
 
-		if (function.args() != null)
+		if (!function.isPseudoColumn() && (args != null && args.length > 0))
 		{
-			boolean first = true;
+			buffer.append('(');
 
-			for (Expression expr : function.args())
+			if (args != null && args.length > 0)
 			{
-				if (first)
-				{
-					first = false;
-				}
-				else
-				{
-					buffer.append(',');
-				}
-				Utils.outputExpr(buffer, expr);
-			}
-		}
+				boolean first = true;
 
-		buffer.append(')');
+				for (Expression expr : function.args())
+				{
+					if (first)
+					{
+						first = false;
+					}
+					else
+					{
+						buffer.append(',');
+					}
+					Utils.outputExpr(buffer, expr);
+				}
+			}
+
+			buffer.append(')');
+		}
 
 		return buffer;
 	}
