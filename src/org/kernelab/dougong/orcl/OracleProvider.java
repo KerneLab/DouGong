@@ -190,7 +190,7 @@ public class OracleProvider extends AbstractProvider
 
 		Expression[] args = function.args();
 
-		if (!function.isPseudoColumn() && (args != null && args.length > 0))
+		if (!function.isPseudoColumn())
 		{
 			buffer.append('(');
 
