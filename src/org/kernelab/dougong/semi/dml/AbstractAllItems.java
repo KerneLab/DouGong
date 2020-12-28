@@ -23,11 +23,6 @@ public abstract class AbstractAllItems implements AllItems
 		this.view = view;
 	}
 
-	public List<Item> resolveItems()
-	{
-		return view.items();
-	}
-
 	public RangeCondition between(Expression from, Expression to)
 	{
 		return null;
@@ -133,6 +128,16 @@ public abstract class AbstractAllItems implements AllItems
 		return null;
 	}
 
+	public List<Item> resolveItems()
+	{
+		return view.items();
+	}
+
+	public Result toLower()
+	{
+		return null;
+	}
+
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
@@ -141,6 +146,11 @@ public abstract class AbstractAllItems implements AllItems
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return toString(buffer);
+	}
+
+	public Result toUpper()
+	{
+		return null;
 	}
 
 	public View view()

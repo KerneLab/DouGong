@@ -95,6 +95,18 @@ public class OracleProvider extends AbstractProvider
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
+	public String provideEscapeValueText(Object value)
+	{
+		if (value == null)
+		{
+			return SQL.NULL;
+		}
+		else
+		{
+			return value.toString().replace("'", "''");
+		}
+	}
+
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
 		return provideProvider(new OracleForeignKey(reference, entity, columns));

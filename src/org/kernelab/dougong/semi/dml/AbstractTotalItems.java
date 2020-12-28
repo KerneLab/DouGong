@@ -126,6 +126,11 @@ public class AbstractTotalItems implements AllItems
 		return null;
 	}
 
+	public Result toLower()
+	{
+		return null;
+	}
+
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		return buffer.append(ALL_COLUMNS);
@@ -139,6 +144,11 @@ public class AbstractTotalItems implements AllItems
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return toString(buffer);
+	}
+
+	public Result toUpper()
+	{
+		return null;
 	}
 
 	public View view()

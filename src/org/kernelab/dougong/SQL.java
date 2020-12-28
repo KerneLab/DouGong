@@ -26,6 +26,8 @@ public class SQL
 {
 	public static final String	NULL	= "NULL";
 
+	public static final String	ESCAPE	= "\\";
+
 	private final Provider		provider;
 
 	public SQL(Provider provider)
@@ -93,6 +95,11 @@ public class SQL
 		return provider().provideStringItem(expr);
 	}
 
+	public Expression escape()
+	{
+		return expr("'" + provider().provideEscapeValueText(ESCAPE) + "'");
+	}
+
 	public ComposableCondition False()
 	{
 		return provider().provideLogicalCondition().and(expr("0").eq(expr("1")));
@@ -114,53 +121,92 @@ public class SQL
 		return provider().provideInsert().into(target).columns(columns);
 	}
 
-	public Merge merge(View target)
+	/**
+	 * Make a like among pattern ({@code '%'+pattern+'%'}) according to a given
+	 * pattern with default escape.
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	public Expression likeAmong(Expression pattern)
 	{
-		return provider().provideMerge().into(target);
+		return likeAmong(pattern, null);
 	}
 
 	/**
-	 * Make a like among pattern ({@code '%'+value+'%'}) string according to a
-	 * given value and escape.
+	 * Make a like among pattern ({@code '%'+pattern+'%'}) according to a given
+	 * pattern and escape.
 	 * 
-	 * @param value
+	 * @param pattern
 	 * @param escape
 	 * @return
 	 */
-	public String likeAmong(String value, String escape)
+	public Expression likeAmong(Expression pattern, String escape)
 	{
-		return provider().provideLikeAmongPattern(value, escape);
+		return Case().when(pattern.isNull(), Null())
+				.els(provider().provideLikeAmongPattern(pattern, escape == null ? ESCAPE : escape));
 	}
 
 	/**
-	 * Make a like head pattern ({@code value+'%'}) string according to a given
-	 * value and escape.
+	 * Make a like head pattern ({@code pattern+'%'}) according to a given
+	 * pattern with default escape.
 	 * 
-	 * @param value
-	 * @param escape
+	 * @param pattern
 	 * @return
 	 */
-	public String likeHead(String value, String escape)
+	public Expression likeHead(Expression pattern)
 	{
-		return provider().provideLikeHeadPattern(value, escape);
+		return likeHead(pattern, null);
 	}
 
 	/**
-	 * Make a like tail pattern ({@code '%'+value}) string according to a given
-	 * value and escape.
+	 * Make a like head pattern ({@code pattern+'%'}) according to a given
+	 * pattern and escape.
 	 * 
-	 * @param value
+	 * @param pattern
 	 * @param escape
 	 * @return
 	 */
-	public String likeTail(String value, String escape)
+	public Expression likeHead(Expression pattern, String escape)
 	{
-		return provider().provideLikeTailPattern(value, escape);
+		return Case().when(pattern.isNull(), Null())
+				.els(provider().provideLikeHeadPattern(pattern, escape == null ? ESCAPE : escape));
+	}
+
+	/**
+	 * Make a like tail pattern ({@code '%'+pattern}) according to a given
+	 * pattern with default escape.
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	public Expression likeTail(Expression pattern)
+	{
+		return likeTail(pattern, null);
+	}
+
+	/**
+	 * Make a like tail pattern ({@code '%'+pattern}) according to a given
+	 * pattern and escape.
+	 * 
+	 * @param pattern
+	 * @param escape
+	 * @return
+	 */
+	public Expression likeTail(Expression pattern, String escape)
+	{
+		return Case().when(pattern.isNull(), Null())
+				.els(provider().provideLikeTailPattern(pattern, escape == null ? ESCAPE : escape));
 	}
 
 	public Items list(Expression... exprs)
 	{
 		return provider().provideItems().list(exprs);
+	}
+
+	public Merge merge(View target)
+	{
+		return provider().provideMerge().into(target);
 	}
 
 	public Item Null()

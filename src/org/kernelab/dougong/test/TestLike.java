@@ -17,7 +17,7 @@ public class TestLike
 	public static void main(String[] args)
 	{
 		Tools.debug(makeSelectLike().toString(new StringBuilder()));
-		Tools.debug(SQL.likeAmong("Mik", "\\"));
+		Tools.debug(SQL.likeAmong(SQL.expr("'Mik'"), "\\"));
 
 		Tools.debug(makeSelectCase().toString(new StringBuilder()));
 	}

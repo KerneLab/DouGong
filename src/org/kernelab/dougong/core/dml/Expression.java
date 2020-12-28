@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
+import org.kernelab.dougong.core.dml.opr.CastCaseOperable;
 import org.kernelab.dougong.core.dml.opr.JointOperable;
 import org.kernelab.dougong.core.dml.test.Testable;
 
-public interface Expression extends Text, Testable, ArithmeticOperable, JointOperable
+public interface Expression extends Text, Testable, ArithmeticOperable, JointOperable, CastCaseOperable
 {
 	/**
 	 * Get the items represented by this expression being selected. Which means

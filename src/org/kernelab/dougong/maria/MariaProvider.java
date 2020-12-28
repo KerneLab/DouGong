@@ -82,6 +82,18 @@ public class MariaProvider extends AbstractProvider
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
+	public String provideEscapeValueText(Object value)
+	{
+		if (value == null)
+		{
+			return SQL.NULL;
+		}
+		else
+		{
+			return value.toString().replace("\\", "\\\\").replace("'", "''");
+		}
+	}
+
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
 		return provideProvider(new MariaForeignKey(reference, entity, columns));

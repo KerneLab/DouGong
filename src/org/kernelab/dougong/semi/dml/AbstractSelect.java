@@ -899,6 +899,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
+	public Result toLower()
+	{
+		return provider().provideToLowerCase(this);
+	}
+
 	@Override
 	public String toString()
 	{
@@ -1015,6 +1020,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public Subquery toSubquery(Class<? extends Subquery> cls)
 	{
 		return this.provider().provideSubquery(cls != null ? cls : AbstractSubquery.class, this);
+	}
+
+	public Result toUpper()
+	{
+		return provider().provideToUpperCase(this);
 	}
 
 	public AbstractSelect union(Select select)

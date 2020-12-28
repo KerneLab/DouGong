@@ -17,8 +17,10 @@ import org.kernelab.dougong.core.dml.Label;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
+import org.kernelab.dougong.semi.dml.opr.AbstractStringExpressionResult;
 
 public abstract class AbstractProvider extends AbstractCastable implements Provider
 {
@@ -57,38 +59,35 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	}
 
 	@Override
-	public String provideLikeAmongPattern(String value, String escape)
+	public Expression provideLikeAmongPattern(Expression pattern, String escape)
 	{
-		String pattern = this.provideLikePatternEscaped(value, escape);
-		return pattern == null ? null : "%" + pattern + "%";
+		Expression wildcard = provideStringItem("'%'");
+		return provideJointOperator().operate(wildcard, this.provideLikePatternEscaped(pattern, escape), wildcard);
 	}
 
 	@Override
-	public String provideLikeHeadPattern(String value, String escape)
+	public Expression provideLikeHeadPattern(Expression pattern, String escape)
 	{
-		String pattern = this.provideLikePatternEscaped(value, escape);
-		return pattern == null ? null : pattern + "%";
+		Expression wildcard = provideStringItem("'%'");
+		return provideJointOperator().operate(this.provideLikePatternEscaped(pattern, escape), wildcard);
 	}
 
-	public String provideLikePatternEscaped(String value, String escape)
+	public Expression provideLikePatternEscaped(Expression pattern, String escape)
 	{
-		if (value == null)
-		{
-			return null;
-		}
 		if (Tools.isNullOrEmpty(escape))
 		{
-			return value;
+			return pattern;
 		}
-		return value.replace(escape, escape + escape) //
-				.replace("%", escape + "%").replace("?", escape + "?");
+		String expr = pattern.toStringExpress(new StringBuilder()).toString();
+		String esc = provideEscapeValueText(escape);
+		return provideStringItem("REPLACE(REPLACE(" + expr + ",'%','" + esc + "%'),'_','" + esc + "_')");
 	}
 
 	@Override
-	public String provideLikeTailPattern(String value, String escape)
+	public Expression provideLikeTailPattern(Expression pattern, String escape)
 	{
-		String pattern = this.provideLikePatternEscaped(value, escape);
-		return pattern == null ? null : "%" + pattern;
+		Expression wildcard = provideStringItem("'%'");
+		return provideJointOperator().operate(wildcard, this.provideLikePatternEscaped(pattern, escape));
 	}
 
 	public Item provideNullItem()
@@ -225,6 +224,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return refer;
 	}
 
+	public Result provideResult(String expression)
+	{
+		return provideProvider(new AbstractStringExpressionResult(expression));
+	}
+
 	public SQL provideSQL()
 	{
 		if (this.sql == null)
@@ -259,9 +263,19 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return provideView(cls);
 	}
 
+	public Result provideToLowerCase(Expression expr)
+	{
+		return provideResult("LOWER(" + expr.toStringExpress(new StringBuilder()) + ")");
+	}
+
 	public AllItems provideTotalItems()
 	{
 		return new AbstractTotalItems();
+	}
+
+	public Result provideToUpperCase(Expression expr)
+	{
+		return provideResult("UPPER(" + expr.toStringExpress(new StringBuilder()) + ")");
 	}
 
 	public <T extends View> T provideView(Class<T> cls)

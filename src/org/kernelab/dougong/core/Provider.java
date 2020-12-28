@@ -34,6 +34,7 @@ import org.kernelab.dougong.core.dml.opr.JointOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.util.KeysFetcher;
 
 public interface Provider extends Castable
@@ -64,6 +65,8 @@ public interface Provider extends Castable
 
 	public DivideOperator provideDivideOperator();
 
+	public String provideEscapeValueText(Object value);
+
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns);
 
 	public <T extends Function> T provideFunction(Class<T> cls);
@@ -86,15 +89,15 @@ public interface Provider extends Castable
 
 	public KeysFetcher provideKeysFetcher();
 
-	public String provideLikeAmongPattern(String value, String escape);
+	public Expression provideLikeAmongPattern(Expression pattern, String escape);
 
 	public LikeCondition provideLikeCondition();
 
-	public String provideLikeHeadPattern(String value, String escape);
+	public Expression provideLikeHeadPattern(Expression pattern, String escape);
 
-	public String provideLikePatternEscaped(String value, String escape);
+	public Expression provideLikePatternEscaped(Expression value, String escape);
 
-	public String provideLikeTailPattern(String value, String escape);
+	public Expression provideLikeTailPattern(Expression pattern, String escape);
 
 	public LogicalCondition provideLogicalCondition();
 
@@ -222,6 +225,8 @@ public interface Provider extends Castable
 	 */
 	public String provideReferName(Expression expr);
 
+	public Result provideResult(String expression);
+
 	public Select provideSelect();
 
 	public SQL provideSQL();
@@ -237,10 +242,14 @@ public interface Provider extends Castable
 
 	public <T extends Table> T provideTable(Class<T> cls);
 
+	public Result provideToLowerCase(Expression expr);
+
 	/**
 	 * Provide an AllItems object which stands for total items of all Views.
 	 */
 	public AllItems provideTotalItems();
+
+	public Result provideToUpperCase(Expression expr);
 
 	public Update provideUpdate();
 

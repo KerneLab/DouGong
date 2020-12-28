@@ -11,6 +11,7 @@ import org.kernelab.dougong.core.dml.opr.JointOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.semi.dml.AbstractExpression;
 
@@ -93,5 +94,17 @@ public abstract class OracleExpression extends AbstractExpression implements Exp
 	protected RangeCondition provideRangeCondition()
 	{
 		return provider().provideRangeCondition();
+	}
+
+	@Override
+	protected Result provideToLowerCase(Expression expr)
+	{
+		return this.provider().provideToLowerCase(expr);
+	}
+
+	@Override
+	protected Result provideToUpperCase(Expression expr)
+	{
+		return this.provider().provideToUpperCase(expr);
 	}
 }

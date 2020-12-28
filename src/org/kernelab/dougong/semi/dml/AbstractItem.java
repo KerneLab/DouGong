@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
@@ -15,6 +16,7 @@ import org.kernelab.dougong.core.dml.opr.JointOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.dml.opr.Result;
 
 public abstract class AbstractItem extends AbstractExpression implements Item
 {
@@ -101,6 +103,18 @@ public abstract class AbstractItem extends AbstractExpression implements Item
 	protected RangeCondition provideRangeCondition()
 	{
 		return provider().provideRangeCondition();
+	}
+
+	@Override
+	protected Result provideToLowerCase(Expression expr)
+	{
+		return this.provider().provideToLowerCase(expr);
+	}
+
+	@Override
+	protected Result provideToUpperCase(Expression expr)
+	{
+		return this.provider().provideToUpperCase(expr);
 	}
 
 	/**

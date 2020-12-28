@@ -18,6 +18,7 @@ import org.kernelab.dougong.core.dml.opr.JointOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractItems extends AbstractExpression implements Items, Providable
@@ -110,6 +111,18 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 	protected RangeCondition provideRangeCondition()
 	{
 		return provider().provideRangeCondition();
+	}
+
+	@Override
+	protected Result provideToLowerCase(Expression expr)
+	{
+		return this.provider().provideToLowerCase(expr);
+	}
+
+	@Override
+	protected Result provideToUpperCase(Expression expr)
+	{
+		return this.provider().provideToUpperCase(expr);
 	}
 
 	protected abstract AbstractItems replicate();
