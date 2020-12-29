@@ -153,6 +153,12 @@ public abstract class AbstractAllItems implements AllItems
 		return view.items();
 	}
 
+	@Override
+	public Result toLower()
+	{
+		return null;
+	}
+
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
@@ -161,6 +167,12 @@ public abstract class AbstractAllItems implements AllItems
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return toString(buffer);
+	}
+
+	@Override
+	public Result toUpper()
+	{
+		return null;
 	}
 
 	public View view()

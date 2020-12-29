@@ -300,6 +300,12 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return this;
 	}
 
+	@Override
+	public Result toLower()
+	{
+		return provideToLowerCase(this);
+	}
+
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		return this.select().toString(buffer);
@@ -361,6 +367,12 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		this.toString(buffer);
 		buffer.append(')');
 		return buffer;
+	}
+
+	@Override
+	public Result toUpper()
+	{
+		return provideToUpperCase(this);
 	}
 
 	public String withName()

@@ -186,4 +186,14 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 	protected abstract Result provideToUpperCase(Expression expr);
 
 	protected abstract AbstractExpression replicate();
+
+	public Result toLower()
+	{
+		return provideToLowerCase(this);
+	}
+
+	public Result toUpper()
+	{
+		return provideToUpperCase(this);
+	}
 }
