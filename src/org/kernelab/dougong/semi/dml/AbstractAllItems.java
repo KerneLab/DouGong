@@ -48,6 +48,16 @@ public abstract class AbstractAllItems implements AllItems
 		return null;
 	}
 
+	public LikeCondition iLike(Expression pattern)
+	{
+		return null;
+	}
+
+	public LikeCondition iLike(Expression pattern, Expression escape)
+	{
+		return null;
+	}
+
 	public MembershipCondition in(Scope scope)
 	{
 		return null;
@@ -108,6 +118,16 @@ public abstract class AbstractAllItems implements AllItems
 		return null;
 	}
 
+	public LikeCondition notILike(Expression pattern)
+	{
+		return null;
+	}
+
+	public LikeCondition notILike(Expression pattern, Expression escape)
+	{
+		return null;
+	}
+
 	public MembershipCondition notIn(Scope scope)
 	{
 		return null;
@@ -133,11 +153,6 @@ public abstract class AbstractAllItems implements AllItems
 		return view.items();
 	}
 
-	public Result toLower()
-	{
-		return null;
-	}
-
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
@@ -146,11 +161,6 @@ public abstract class AbstractAllItems implements AllItems
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return toString(buffer);
-	}
-
-	public Result toUpper()
-	{
-		return null;
 	}
 
 	public View view()

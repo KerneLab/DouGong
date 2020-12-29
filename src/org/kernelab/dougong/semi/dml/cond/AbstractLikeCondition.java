@@ -5,11 +5,13 @@ import org.kernelab.dougong.core.dml.cond.LikeCondition;
 
 public abstract class AbstractLikeCondition extends AbstractNegatableCondition implements LikeCondition
 {
-	protected Expression	expr;
+	public static final String	ESCAPE	= "\\";
 
-	protected Expression	pattern;
+	protected Expression		expr;
 
-	protected Expression	escape;
+	protected Expression		pattern;
+
+	protected Expression		escape;
 
 	public AbstractLikeCondition like(Expression expr, Expression pattern, Expression escape)
 	{
@@ -33,11 +35,8 @@ public abstract class AbstractLikeCondition extends AbstractNegatableCondition i
 		}
 		buffer.append(" LIKE ");
 		this.pattern.toStringExpress(buffer);
-		if (this.escape != null)
-		{
-			buffer.append(" ESCAPE ");
-			this.escape.toStringExpress(buffer);
-		}
+		buffer.append(" ESCAPE ");
+		(this.escape != null ? this.escape : provider().provideLikePatternDefaultEscape()).toStringExpress(buffer);
 		return buffer;
 	}
 }

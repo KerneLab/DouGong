@@ -5,21 +5,21 @@ import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.orcl.OracleProvider;
+import org.kernelab.dougong.maria.MariaProvider;
 import org.kernelab.dougong.orcl.dml.cond.OracleLikeCondition;
 
 public class TestLike
 {
 	// public static SQL SQL = new SQL(new MariaProvider());
 
-	public static SQL SQL = new SQL(new OracleProvider());
+	public static SQL SQL = new SQL(new MariaProvider());
 
 	public static void main(String[] args)
 	{
 		Tools.debug(makeSelectLike().toString(new StringBuilder()));
-		Tools.debug(SQL.likeAmong(SQL.expr("'Mik'"), "\\"));
+		Tools.debug(SQL.patnAmong(SQL.expr("'Mik'"), "\\").toString(new StringBuilder()));
 
-		Tools.debug(makeSelectCase().toString(new StringBuilder()));
+		// Tools.debug(makeSelectCase().toString(new StringBuilder()));
 	}
 
 	public static Select makeSelectCase()
@@ -50,7 +50,8 @@ public class TestLike
 				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.all() //
 				) //
-				.where(s.STAF_NAME.like(SQL.param("name"), SQL.expr("'\\'"))) //
+				.where(s.STAF_NAME.like(SQL.patnAmong(SQL.param("name"))) //
+						.and(s.STAF_ID.iLike(SQL.patnAmong("name")))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}

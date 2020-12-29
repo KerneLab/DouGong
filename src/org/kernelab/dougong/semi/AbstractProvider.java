@@ -20,6 +20,7 @@ import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
+import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 import org.kernelab.dougong.semi.dml.opr.AbstractStringExpressionResult;
 
 public abstract class AbstractProvider extends AbstractCastable implements Provider
@@ -79,8 +80,9 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 			return pattern;
 		}
 		String expr = pattern.toStringExpress(new StringBuilder()).toString();
-		String esc = provideEscapeValueText(escape);
-		return provideStringItem("REPLACE(REPLACE(" + expr + ",'%','" + esc + "%'),'_','" + esc + "_')");
+		String esc = provideEscapeValueLiterally(escape);
+		return provideStringItem("REPLACE(REPLACE(REPLACE(" + expr + ",'" + esc + "','" + esc + esc + "')" //
+				+ ",'%','" + esc + "%'),'_','" + esc + "_')");
 	}
 
 	@Override
@@ -118,6 +120,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 			buffer.append('.');
 		}
 		return this.provideOutputNameText(buffer, column.name());
+	}
+
+	public Expression provideLikePatternDefaultEscape()
+	{
+		return provideStringItem("'" + provideEscapeValueLiterally(AbstractLikeCondition.ESCAPE) + "'");
 	}
 
 	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)

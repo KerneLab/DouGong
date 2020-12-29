@@ -46,6 +46,16 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 		return this.provideComparisonCondition().gt(this, expr);
 	}
 
+	public LikeCondition iLike(Expression pattern)
+	{
+		return iLike(pattern, null);
+	}
+
+	public LikeCondition iLike(Expression pattern, Expression escape)
+	{
+		return this.provideLikeCondition().like(provideToUpperCase(this), provideToUpperCase(pattern), escape);
+	}
+
 	public MembershipCondition in(Scope scope)
 	{
 		return this.provideMembershipCondition().in(this, scope);
@@ -120,6 +130,17 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 		return (RangeCondition) this.provideRangeCondition().between(this, from, to).not();
 	}
 
+	public LikeCondition notILike(Expression pattern)
+	{
+		return notILike(pattern, null);
+	}
+
+	public LikeCondition notILike(Expression pattern, Expression escape)
+	{
+		return (LikeCondition) this.provideLikeCondition()
+				.like(provideToUpperCase(this), provideToUpperCase(pattern), escape).not();
+	}
+
 	public MembershipCondition notIn(Scope scope)
 	{
 		return (MembershipCondition) this.provideMembershipCondition().in(this, scope).not();
@@ -165,14 +186,4 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 	protected abstract Result provideToUpperCase(Expression expr);
 
 	protected abstract AbstractExpression replicate();
-
-	public Result toLower()
-	{
-		return provideToLowerCase(this);
-	}
-
-	public Result toUpper()
-	{
-		return provideToUpperCase(this);
-	}
 }

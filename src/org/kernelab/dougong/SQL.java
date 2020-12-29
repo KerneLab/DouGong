@@ -21,12 +21,11 @@ import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
 import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
+import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 
 public class SQL
 {
 	public static final String	NULL	= "NULL";
-
-	public static final String	ESCAPE	= "\\";
 
 	private final Provider		provider;
 
@@ -83,6 +82,11 @@ public class SQL
 		return provider().provideLogicalCondition().and(c);
 	}
 
+	public Expression escape()
+	{
+		return provider().provideLikePatternDefaultEscape();
+	}
+
 	/**
 	 * Make a StringItem exactly according to the given expression string.
 	 * 
@@ -93,11 +97,6 @@ public class SQL
 	public StringItem expr(String expr)
 	{
 		return provider().provideStringItem(expr);
-	}
-
-	public Expression escape()
-	{
-		return expr("'" + provider().provideEscapeValueText(ESCAPE) + "'");
 	}
 
 	public ComposableCondition False()
@@ -122,81 +121,120 @@ public class SQL
 	}
 
 	/**
-	 * Make a like among pattern ({@code '%'+pattern+'%'}) according to a given
-	 * pattern with default escape.
+	 * Make case insensitive among pattern ({@code '%'+value+'%'}) according to
+	 * a given value with default escape.
 	 * 
-	 * @param pattern
+	 * @param value
 	 * @return
 	 */
-	public Expression likeAmong(Expression pattern)
+	public Expression iPatnAmong(Expression value)
 	{
-		return likeAmong(pattern, null);
+		return iPatnAmong(value, null);
 	}
 
 	/**
-	 * Make a like among pattern ({@code '%'+pattern+'%'}) according to a given
-	 * pattern and escape.
+	 * Make case insensitive among pattern ({@code '%'+value+'%'}) according to
+	 * a given value and escape.
 	 * 
-	 * @param pattern
+	 * @param value
 	 * @param escape
 	 * @return
 	 */
-	public Expression likeAmong(Expression pattern, String escape)
+	public Expression iPatnAmong(Expression value, String escape)
 	{
-		return Case().when(pattern.isNull(), Null())
-				.els(provider().provideLikeAmongPattern(pattern, escape == null ? ESCAPE : escape));
+		return Case().when(value.isNull(), Null()) //
+				.els(provider().provideLikeAmongPattern(provider().provideToUpperCase(value),
+						escape == null ? AbstractLikeCondition.ESCAPE : escape));
 	}
 
 	/**
-	 * Make a like head pattern ({@code pattern+'%'}) according to a given
-	 * pattern with default escape.
+	 * Make case insensitive among pattern ({@code '%'+?param?+'%'}) according
+	 * to a given param with default escape.
 	 * 
-	 * @param pattern
+	 * @param param
 	 * @return
 	 */
-	public Expression likeHead(Expression pattern)
+	public Expression iPatnAmong(String param)
 	{
-		return likeHead(pattern, null);
+		return iPatnAmong(param(param));
 	}
 
 	/**
-	 * Make a like head pattern ({@code pattern+'%'}) according to a given
-	 * pattern and escape.
+	 * Make case insensitive head pattern ({@code value+'%'}) according to a
+	 * given value with default escape.
 	 * 
-	 * @param pattern
+	 * @param value
+	 * @return
+	 */
+	public Expression iPatnHead(Expression value)
+	{
+		return iPatnHead(value, null);
+	}
+
+	/**
+	 * Make case insensitive head pattern ({@code value+'%'}) according to a
+	 * given value and escape.
+	 * 
+	 * @param value
 	 * @param escape
 	 * @return
 	 */
-	public Expression likeHead(Expression pattern, String escape)
+	public Expression iPatnHead(Expression value, String escape)
 	{
-		return Case().when(pattern.isNull(), Null())
-				.els(provider().provideLikeHeadPattern(pattern, escape == null ? ESCAPE : escape));
+		return Case().when(value.isNull(), Null()) //
+				.els(provider().provideLikeHeadPattern(provider().provideToUpperCase(value),
+						escape == null ? AbstractLikeCondition.ESCAPE : escape));
 	}
 
 	/**
-	 * Make a like tail pattern ({@code '%'+pattern}) according to a given
-	 * pattern with default escape.
+	 * Make case insensitive head pattern ({@code ?param?+'%'}) according to a
+	 * given param with default escape.
 	 * 
-	 * @param pattern
+	 * @param param
 	 * @return
 	 */
-	public Expression likeTail(Expression pattern)
+	public Expression iPatnHead(String param)
 	{
-		return likeTail(pattern, null);
+		return iPatnHead(param(param));
 	}
 
 	/**
-	 * Make a like tail pattern ({@code '%'+pattern}) according to a given
-	 * pattern and escape.
+	 * Make case insensitive tail pattern ({@code '%'+value}) according to a
+	 * given value with default escape.
 	 * 
-	 * @param pattern
+	 * @param value
+	 * @return
+	 */
+	public Expression iPatnTail(Expression value)
+	{
+		return iPatnTail(value, null);
+	}
+
+	/**
+	 * Make case insensitive tail pattern ({@code '%'+value}) according to a
+	 * given value and escape.
+	 * 
+	 * @param value
 	 * @param escape
 	 * @return
 	 */
-	public Expression likeTail(Expression pattern, String escape)
+	public Expression iPatnTail(Expression value, String escape)
 	{
-		return Case().when(pattern.isNull(), Null())
-				.els(provider().provideLikeTailPattern(pattern, escape == null ? ESCAPE : escape));
+		return Case().when(value.isNull(), Null()) //
+				.els(provider().provideLikeTailPattern(provider().provideToUpperCase(value),
+						escape == null ? AbstractLikeCondition.ESCAPE : escape));
+	}
+
+	/**
+	 * Make case insensitive tail pattern ({@code '%'+?param?}) according to a
+	 * given param with default escape.
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public Expression iPatnTail(String param)
+	{
+		return iPatnTail(param(param));
 	}
 
 	public Items list(Expression... exprs)
@@ -306,6 +344,120 @@ public class SQL
 	public StringItem param(String key)
 	{
 		return provider().provideParameter(key);
+	}
+
+	/**
+	 * Make among pattern ({@code '%'+value+'%'}) according to a given value
+	 * with default escape.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public Expression patnAmong(Expression value)
+	{
+		return patnAmong(value, null);
+	}
+
+	/**
+	 * Make among pattern ({@code '%'+value+'%'}) according to a given value and
+	 * escape.
+	 * 
+	 * @param value
+	 * @param escape
+	 * @return
+	 */
+	public Expression patnAmong(Expression value, String escape)
+	{
+		return Case().when(value.isNull(), Null()) //
+				.els(provider().provideLikeAmongPattern(value, escape == null ? AbstractLikeCondition.ESCAPE : escape));
+	}
+
+	/**
+	 * Make among pattern ({@code '%'+?param?+'%'}) according to a given param
+	 * with default escape.
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public Expression patnAmong(String param)
+	{
+		return patnAmong(param(param));
+	}
+
+	/**
+	 * Make head pattern ({@code value+'%'}) according to a given value with
+	 * default escape.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public Expression patnHead(Expression value)
+	{
+		return patnHead(value, null);
+	}
+
+	/**
+	 * Make head pattern ({@code value+'%'}) according to a given value and
+	 * escape.
+	 * 
+	 * @param value
+	 * @param escape
+	 * @return
+	 */
+	public Expression patnHead(Expression value, String escape)
+	{
+		return Case().when(value.isNull(), Null()) //
+				.els(provider().provideLikeHeadPattern(value, escape == null ? AbstractLikeCondition.ESCAPE : escape));
+	}
+
+	/**
+	 * Make head pattern ({@code ?param?+'%'}) according to a given param with
+	 * default escape.
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public Expression patnHead(String param)
+	{
+		return patnHead(param(param));
+	}
+
+	/**
+	 * Make tail pattern ({@code '%'+value}) according to a given value with
+	 * default escape.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public Expression patnTail(Expression value)
+	{
+		return patnTail(value, null);
+	}
+
+	/**
+	 * Make tail pattern ({@code '%'+value}) according to a given value and
+	 * escape.
+	 * 
+	 * @param value
+	 * @param escape
+	 * @return
+	 */
+	public Expression patnTail(Expression value, String escape)
+	{
+		return Case().when(value.isNull(), Null()) //
+				.els(provider().provideLikeTailPattern(value, escape == null ? AbstractLikeCondition.ESCAPE : escape));
+	}
+
+	/**
+	 * Make tail pattern ({@code '%'+?param?}) according to a given param with
+	 * default escape.
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public Expression patnTail(String param)
+	{
+		return patnTail(param(param));
 	}
 
 	public Provider provider()

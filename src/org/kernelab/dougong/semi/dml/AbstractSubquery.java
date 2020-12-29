@@ -99,6 +99,16 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return this.provideComparisonCondition().gt(this, expr);
 	}
 
+	public LikeCondition iLike(Expression pattern)
+	{
+		return iLike(pattern, null);
+	}
+
+	public LikeCondition iLike(Expression pattern, Expression escape)
+	{
+		return this.provideLikeCondition().like(provideToUpperCase(this), provideToUpperCase(pattern), escape);
+	}
+
 	public MembershipCondition in(Scope scope)
 	{
 		return this.provideMembershipCondition().in(this, scope);
@@ -183,6 +193,17 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return (RangeCondition) this.provideRangeCondition().between(this, from, to).not();
 	}
 
+	public LikeCondition notILike(Expression pattern)
+	{
+		return notILike(pattern, null);
+	}
+
+	public LikeCondition notILike(Expression pattern, Expression escape)
+	{
+		return (LikeCondition) this.provideLikeCondition()
+				.like(provideToUpperCase(this), provideToUpperCase(pattern), escape).not();
+	}
+
 	public MembershipCondition notIn(Scope scope)
 	{
 		return (MembershipCondition) this.provideMembershipCondition().in(this, scope).not();
@@ -253,6 +274,16 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return this.provider().provideRangeCondition();
 	}
 
+	protected Result provideToLowerCase(Expression expr)
+	{
+		return this.provider().provideToLowerCase(expr);
+	}
+
+	protected Result provideToUpperCase(Expression expr)
+	{
+		return this.provider().provideToUpperCase(expr);
+	}
+
 	public List<Item> resolveItems()
 	{
 		return this.select().resolveItems();
@@ -267,12 +298,6 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	{
 		this.select = select;
 		return this;
-	}
-
-	@Override
-	public Result toLower()
-	{
-		return this.provider().provideToLowerCase(this);
 	}
 
 	public StringBuilder toString(StringBuilder buffer)
@@ -336,12 +361,6 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		this.toString(buffer);
 		buffer.append(')');
 		return buffer;
-	}
-
-	@Override
-	public Result toUpper()
-	{
-		return this.provider().provideToUpperCase(this);
 	}
 
 	public String withName()

@@ -6,9 +6,9 @@ import java.util.List;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 
-public abstract class AbstractLogicalCondition implements LogicalCondition
+public abstract class AbstractLogicalCondition extends AbstractCondition implements LogicalCondition
 {
-	protected List<Object>	conds	= new LinkedList<Object>();
+	protected List<Object> conds = new LinkedList<Object>();
 
 	public AbstractLogicalCondition and(boolean when, Condition cond)
 	{

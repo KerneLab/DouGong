@@ -65,7 +65,7 @@ public interface Provider extends Castable
 
 	public DivideOperator provideDivideOperator();
 
-	public String provideEscapeValueText(Object value);
+	public String provideEscapeValueLiterally(Object value);
 
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns);
 
@@ -94,6 +94,8 @@ public interface Provider extends Castable
 	public LikeCondition provideLikeCondition();
 
 	public Expression provideLikeHeadPattern(Expression pattern, String escape);
+
+	public Expression provideLikePatternDefaultEscape();
 
 	public Expression provideLikePatternEscaped(Expression value, String escape);
 

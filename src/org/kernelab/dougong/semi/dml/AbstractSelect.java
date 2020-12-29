@@ -251,6 +251,16 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public LikeCondition iLike(Expression pattern)
+	{
+		return iLike(pattern, null);
+	}
+
+	public LikeCondition iLike(Expression pattern, Expression escape)
+	{
+		return this.provideLikeCondition().like(provideToUpperCase(this), provideToUpperCase(pattern), escape);
+	}
+
 	public MembershipCondition in(Scope scope)
 	{
 		return this.provideMembershipCondition().in(this, scope);
@@ -416,6 +426,17 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return (RangeCondition) this.provideRangeCondition().between(this, from, to).not();
 	}
 
+	public LikeCondition notILike(Expression pattern)
+	{
+		return notILike(pattern, null);
+	}
+
+	public LikeCondition notILike(Expression pattern, Expression escape)
+	{
+		return (LikeCondition) this.provideLikeCondition()
+				.like(provideToUpperCase(this), provideToUpperCase(pattern), escape).not();
+	}
+
 	public MembershipCondition notIn(Scope scope)
 	{
 		return (MembershipCondition) this.provideMembershipCondition().in(this, scope).not();
@@ -524,6 +545,16 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	protected Reference provideReference(View view, Expression expr)
 	{
 		return this.provider().provideReference(view, expr);
+	}
+
+	protected Result provideToLowerCase(Expression expr)
+	{
+		return this.provider().provideToLowerCase(expr);
+	}
+
+	protected Result provideToUpperCase(Expression expr)
+	{
+		return this.provider().provideToUpperCase(expr);
 	}
 
 	protected List<Item> refer(View view, List<Item> items)
@@ -899,11 +930,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
-	public Result toLower()
-	{
-		return provider().provideToLowerCase(this);
-	}
-
 	@Override
 	public String toString()
 	{
@@ -1020,11 +1046,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public Subquery toSubquery(Class<? extends Subquery> cls)
 	{
 		return this.provider().provideSubquery(cls != null ? cls : AbstractSubquery.class, this);
-	}
-
-	public Result toUpper()
-	{
-		return provider().provideToUpperCase(this);
 	}
 
 	public AbstractSelect union(Select select)

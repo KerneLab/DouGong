@@ -82,7 +82,7 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleComparisonCondition provideComparisonCondition()
 	{
-		return new OracleComparisonCondition();
+		return this.provideProvider(new OracleComparisonCondition());
 	}
 
 	public OracleDelete provideDelete()
@@ -95,7 +95,7 @@ public class OracleProvider extends AbstractProvider
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
-	public String provideEscapeValueText(Object value)
+	public String provideEscapeValueLiterally(Object value)
 	{
 		if (value == null)
 		{
@@ -139,17 +139,17 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleLikeCondition provideLikeCondition()
 	{
-		return new OracleLikeCondition();
+		return this.provideProvider(new OracleLikeCondition());
 	}
 
 	public OracleLogicalCondition provideLogicalCondition()
 	{
-		return new OracleLogicalCondition();
+		return this.provideProvider(new OracleLogicalCondition());
 	}
 
 	public OracleMembershipCondition provideMembershipCondition()
 	{
-		return new OracleMembershipCondition();
+		return this.provideProvider(new OracleMembershipCondition());
 	}
 
 	public AbstractMerge provideMerge()
@@ -181,7 +181,7 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleNullCondition provideNullCondition()
 	{
-		return new OracleNullCondition();
+		return this.provideProvider(new OracleNullCondition());
 	}
 
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
@@ -281,7 +281,7 @@ public class OracleProvider extends AbstractProvider
 
 	public OracleRangeCondition provideRangeCondition()
 	{
-		return new OracleRangeCondition();
+		return this.provideProvider(new OracleRangeCondition());
 	}
 
 	public OracleReference provideReference(View view, Expression expr)

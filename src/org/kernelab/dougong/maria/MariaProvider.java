@@ -69,7 +69,7 @@ public class MariaProvider extends AbstractProvider
 
 	public MariaComparisonCondition provideComparisonCondition()
 	{
-		return new MariaComparisonCondition();
+		return this.provideProvider(new MariaComparisonCondition());
 	}
 
 	public MariaDelete provideDelete()
@@ -82,7 +82,7 @@ public class MariaProvider extends AbstractProvider
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
-	public String provideEscapeValueText(Object value)
+	public String provideEscapeValueLiterally(Object value)
 	{
 		if (value == null)
 		{
@@ -127,17 +127,17 @@ public class MariaProvider extends AbstractProvider
 
 	public MariaLikeCondition provideLikeCondition()
 	{
-		return new MariaLikeCondition();
+		return this.provideProvider(new MariaLikeCondition());
 	}
 
 	public MariaLogicalCondition provideLogicalCondition()
 	{
-		return new MariaLogicalCondition();
+		return this.provideProvider(new MariaLogicalCondition());
 	}
 
 	public MariaMembershipCondition provideMembershipCondition()
 	{
-		return new MariaMembershipCondition();
+		return this.provideProvider(new MariaMembershipCondition());
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class MariaProvider extends AbstractProvider
 
 	public MariaNullCondition provideNullCondition()
 	{
-		return new MariaNullCondition();
+		return this.provideProvider(new MariaNullCondition());
 	}
 
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
@@ -242,7 +242,7 @@ public class MariaProvider extends AbstractProvider
 
 	public MariaRangeCondition provideRangeCondition()
 	{
-		return new MariaRangeCondition();
+		return this.provideProvider(new MariaRangeCondition());
 	}
 
 	public MariaReference provideReference(View view, Expression expr)
