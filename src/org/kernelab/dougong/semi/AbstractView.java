@@ -27,6 +27,11 @@ public abstract class AbstractView extends AbstractProvidable implements View
 		super();
 	}
 
+	public Item $(String refer)
+	{
+		return item(refer);
+	}
+
 	public String alias()
 	{
 		return alias;

@@ -74,6 +74,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private String					hint		= null;
 
+	public Item $(String refer)
+	{
+		return item(refer);
+	}
+
 	public String alias()
 	{
 		return alias;

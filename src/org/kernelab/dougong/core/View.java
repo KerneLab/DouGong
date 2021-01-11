@@ -14,6 +14,17 @@ import org.kernelab.dougong.core.dml.Updatable;
  */
 public interface View extends Text, Alias, Updatable, Deletable, Providable
 {
+	/**
+	 * Get the Item associated with the given name in this View. <br />
+	 * This method is alias of {@code item(String)}.
+	 * 
+	 * @param refer
+	 *            The reference name of the Item.
+	 * @return The item.
+	 * @see View#item(String)
+	 */
+	public Item $(String refer);
+
 	public View alias(String alias);
 
 	/**
