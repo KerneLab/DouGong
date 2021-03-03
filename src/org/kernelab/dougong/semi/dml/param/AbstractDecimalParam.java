@@ -14,6 +14,6 @@ public class AbstractDecimalParam extends AbstractParam<BigDecimal> implements D
 	@Override
 	protected AbstractParam<BigDecimal> replicate()
 	{
-		return new AbstractDecimalParam(this.name(), this.value());
+		return this.provider().provideProvider(new AbstractDecimalParam(name(), value()));
 	}
 }

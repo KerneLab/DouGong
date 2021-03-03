@@ -19,6 +19,6 @@ public class AbstractIterableParam extends AbstractParam<Iterable<?>> implements
 	@Override
 	protected AbstractParam<Iterable<?>> replicate()
 	{
-		return new AbstractIterableParam(this.name(), this.value());
+		return this.provider().provideProvider(new AbstractIterableParam(name(), value()));
 	}
 }

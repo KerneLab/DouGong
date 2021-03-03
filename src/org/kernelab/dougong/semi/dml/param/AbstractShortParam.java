@@ -12,6 +12,6 @@ public class AbstractShortParam extends AbstractParam<Short> implements ShortPar
 	@Override
 	protected AbstractParam<Short> replicate()
 	{
-		return new AbstractShortParam(this.name(), this.value());
+		return this.provider().provideProvider(new AbstractShortParam(name(), value()));
 	}
 }

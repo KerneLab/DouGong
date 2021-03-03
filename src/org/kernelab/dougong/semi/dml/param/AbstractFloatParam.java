@@ -12,6 +12,6 @@ public class AbstractFloatParam extends AbstractParam<Float> implements FloatPar
 	@Override
 	protected AbstractParam<Float> replicate()
 	{
-		return new AbstractFloatParam(this.name(), this.value());
+		return this.provider().provideProvider(new AbstractFloatParam(name(), value()));
 	}
 }

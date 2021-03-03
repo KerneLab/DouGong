@@ -12,6 +12,6 @@ public class AbstractLongParam extends AbstractParam<Long> implements LongParam
 	@Override
 	protected AbstractParam<Long> replicate()
 	{
-		return new AbstractLongParam(this.name(), this.value());
+		return this.provider().provideProvider(new AbstractLongParam(name(), value()));
 	}
 }
