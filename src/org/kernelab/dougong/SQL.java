@@ -419,6 +419,18 @@ public class SQL
 		return provider().provideParameter(name, value);
 	}
 
+	public Map<String, Object> params(Iterable<Param<?>> params)
+	{
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+
+		for (Param<?> param : params)
+		{
+			map.put(param.name(), param.value());
+		}
+
+		return map;
+	}
+
 	public Map<String, Object> params(Param<?>... params)
 	{
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
