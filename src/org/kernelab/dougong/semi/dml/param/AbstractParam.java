@@ -24,6 +24,12 @@ public abstract class AbstractParam<E> extends AbstractItem implements Param<E>,
 	@Override
 	public boolean given()
 	{
+		return got();
+	}
+
+	@Override
+	public boolean got()
+	{
 		return this.value != null;
 	}
 

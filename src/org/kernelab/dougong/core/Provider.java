@@ -44,6 +44,7 @@ import org.kernelab.dougong.core.dml.param.DecimalParam;
 import org.kernelab.dougong.core.dml.param.DoubleParam;
 import org.kernelab.dougong.core.dml.param.FloatParam;
 import org.kernelab.dougong.core.dml.param.IntParam;
+import org.kernelab.dougong.core.dml.param.IterableParam;
 import org.kernelab.dougong.core.dml.param.LongParam;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
@@ -224,6 +225,8 @@ public interface Provider extends Castable
 	public FloatParam provideParameter(String name, Float value);
 
 	public IntParam provideParameter(String name, Integer value);
+
+	public IterableParam provideParameter(String name, Iterable<?> value);
 
 	public LongParam provideParameter(String name, Long value);
 

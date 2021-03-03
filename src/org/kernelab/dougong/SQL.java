@@ -3,6 +3,8 @@ package org.kernelab.dougong;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Function;
@@ -31,7 +33,9 @@ import org.kernelab.dougong.core.dml.param.DecimalParam;
 import org.kernelab.dougong.core.dml.param.DoubleParam;
 import org.kernelab.dougong.core.dml.param.FloatParam;
 import org.kernelab.dougong.core.dml.param.IntParam;
+import org.kernelab.dougong.core.dml.param.IterableParam;
 import org.kernelab.dougong.core.dml.param.LongParam;
+import org.kernelab.dougong.core.dml.param.Param;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
@@ -390,6 +394,11 @@ public class SQL
 		return provider().provideParameter(name, value);
 	}
 
+	public IterableParam param(String name, Iterable<?> value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
 	public LongParam param(String name, Long value)
 	{
 		return provider().provideParameter(name, value);
@@ -408,6 +417,18 @@ public class SQL
 	public TimestampParam param(String name, Timestamp value)
 	{
 		return provider().provideParameter(name, value);
+	}
+
+	public Map<String, Object> params(Param<?>... params)
+	{
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+
+		for (Param<?> param : params)
+		{
+			map.put(param.name(), param.value());
+		}
+
+		return map;
 	}
 
 	/**

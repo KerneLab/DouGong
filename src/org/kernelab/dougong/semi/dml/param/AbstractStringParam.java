@@ -10,6 +10,12 @@ public class AbstractStringParam extends AbstractParam<String> implements String
 	}
 
 	@Override
+	public boolean given()
+	{
+		return super.given() && this.value().length() > 0;
+	}
+
+	@Override
 	protected AbstractParam<String> replicate()
 	{
 		return new AbstractStringParam(this.name(), this.value());

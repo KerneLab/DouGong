@@ -28,6 +28,7 @@ import org.kernelab.dougong.core.dml.param.DecimalParam;
 import org.kernelab.dougong.core.dml.param.DoubleParam;
 import org.kernelab.dougong.core.dml.param.FloatParam;
 import org.kernelab.dougong.core.dml.param.IntParam;
+import org.kernelab.dougong.core.dml.param.IterableParam;
 import org.kernelab.dougong.core.dml.param.LongParam;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
@@ -42,6 +43,7 @@ import org.kernelab.dougong.semi.dml.param.AbstractDecimalParam;
 import org.kernelab.dougong.semi.dml.param.AbstractDoubleParam;
 import org.kernelab.dougong.semi.dml.param.AbstractFloatParam;
 import org.kernelab.dougong.semi.dml.param.AbstractIntParam;
+import org.kernelab.dougong.semi.dml.param.AbstractIterableParam;
 import org.kernelab.dougong.semi.dml.param.AbstractLongParam;
 import org.kernelab.dougong.semi.dml.param.AbstractShortParam;
 import org.kernelab.dougong.semi.dml.param.AbstractStringParam;
@@ -230,6 +232,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public IntParam provideParameter(String name, Integer value)
 	{
 		return provideProvider(new AbstractIntParam(name, value));
+	}
+
+	public IterableParam provideParameter(String name, Iterable<?> value)
+	{
+		return provideProvider(new AbstractIterableParam(name, value));
 	}
 
 	public LongParam provideParameter(String name, Long value)
