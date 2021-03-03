@@ -8,11 +8,6 @@ import org.kernelab.basis.Mapper;
 
 public class ResultSetMapper<T> implements Mapper<ResultSet, T>
 {
-	/**
-	 * 
-	 */
-	private static final long	serialVersionUID	= -4833838041224384666L;
-
 	private Class<T>			cls;
 
 	private Map<Field, String>	map;

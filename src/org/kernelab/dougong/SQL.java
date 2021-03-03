@@ -1,5 +1,9 @@
 package org.kernelab.dougong;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
@@ -21,6 +25,16 @@ import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
 import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
+import org.kernelab.dougong.core.dml.param.ByteParam;
+import org.kernelab.dougong.core.dml.param.DateParam;
+import org.kernelab.dougong.core.dml.param.DecimalParam;
+import org.kernelab.dougong.core.dml.param.DoubleParam;
+import org.kernelab.dougong.core.dml.param.FloatParam;
+import org.kernelab.dougong.core.dml.param.IntParam;
+import org.kernelab.dougong.core.dml.param.LongParam;
+import org.kernelab.dougong.core.dml.param.ShortParam;
+import org.kernelab.dougong.core.dml.param.StringParam;
+import org.kernelab.dougong.core.dml.param.TimestampParam;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 
 public class SQL
@@ -344,6 +358,56 @@ public class SQL
 	public StringItem param(String key)
 	{
 		return provider().provideParameter(key);
+	}
+
+	public DecimalParam param(String name, BigDecimal value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public ByteParam param(String name, Byte value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public DateParam param(String name, Date value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public DoubleParam param(String name, Double value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public FloatParam param(String name, Float value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public IntParam param(String name, Integer value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public LongParam param(String name, Long value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public ShortParam param(String name, Short value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public StringParam param(String name, String value)
+	{
+		return provider().provideParameter(name, value);
+	}
+
+	public TimestampParam param(String name, Timestamp value)
+	{
+		return provider().provideParameter(name, value);
 	}
 
 	/**

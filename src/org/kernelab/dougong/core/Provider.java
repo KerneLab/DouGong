@@ -1,6 +1,9 @@
 package org.kernelab.dougong.core;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.ddl.ForeignKey;
@@ -35,6 +38,16 @@ import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.dml.param.ByteParam;
+import org.kernelab.dougong.core.dml.param.DateParam;
+import org.kernelab.dougong.core.dml.param.DecimalParam;
+import org.kernelab.dougong.core.dml.param.DoubleParam;
+import org.kernelab.dougong.core.dml.param.FloatParam;
+import org.kernelab.dougong.core.dml.param.IntParam;
+import org.kernelab.dougong.core.dml.param.LongParam;
+import org.kernelab.dougong.core.dml.param.ShortParam;
+import org.kernelab.dougong.core.dml.param.StringParam;
+import org.kernelab.dougong.core.dml.param.TimestampParam;
 import org.kernelab.dougong.core.util.KeysFetcher;
 
 public interface Provider extends Castable
@@ -199,6 +212,34 @@ public interface Provider extends Castable
 	public StringBuilder provideOutputWithSubqueryAliased(StringBuilder buffer, Subquery query);
 
 	public StringItem provideParameter(String name);
+
+	public DecimalParam provideParameter(String name, BigDecimal value);
+
+	public ByteParam provideParameter(String name, Byte value);
+
+	public DateParam provideParameter(String name, Date value);
+
+	public DoubleParam provideParameter(String name, Double value);
+
+	public FloatParam provideParameter(String name, Float value);
+
+	public IntParam provideParameter(String name, Integer value);
+
+	public LongParam provideParameter(String name, Long value);
+
+	public ShortParam provideParameter(String name, Short value);
+
+	public StringParam provideParameter(String name, String value);
+
+	public TimestampParam provideParameter(String name, Timestamp value);
+
+	/**
+	 * To provide an expression of parameter according to the given name.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public String provideParameterExpression(String name);
 
 	public PlusOperator providePlusOperator();
 

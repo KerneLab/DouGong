@@ -1,5 +1,9 @@
 package org.kernelab.dougong.semi;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
@@ -18,10 +22,30 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.dml.param.ByteParam;
+import org.kernelab.dougong.core.dml.param.DateParam;
+import org.kernelab.dougong.core.dml.param.DecimalParam;
+import org.kernelab.dougong.core.dml.param.DoubleParam;
+import org.kernelab.dougong.core.dml.param.FloatParam;
+import org.kernelab.dougong.core.dml.param.IntParam;
+import org.kernelab.dougong.core.dml.param.LongParam;
+import org.kernelab.dougong.core.dml.param.ShortParam;
+import org.kernelab.dougong.core.dml.param.StringParam;
+import org.kernelab.dougong.core.dml.param.TimestampParam;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 import org.kernelab.dougong.semi.dml.opr.AbstractStringExpressionResult;
+import org.kernelab.dougong.semi.dml.param.AbstractByteParam;
+import org.kernelab.dougong.semi.dml.param.AbstractDateParam;
+import org.kernelab.dougong.semi.dml.param.AbstractDecimalParam;
+import org.kernelab.dougong.semi.dml.param.AbstractDoubleParam;
+import org.kernelab.dougong.semi.dml.param.AbstractFloatParam;
+import org.kernelab.dougong.semi.dml.param.AbstractIntParam;
+import org.kernelab.dougong.semi.dml.param.AbstractLongParam;
+import org.kernelab.dougong.semi.dml.param.AbstractShortParam;
+import org.kernelab.dougong.semi.dml.param.AbstractStringParam;
+import org.kernelab.dougong.semi.dml.param.AbstractTimestampParam;
 
 public abstract class AbstractProvider extends AbstractCastable implements Provider
 {
@@ -73,6 +97,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return provideJointOperator().operate(this.provideLikePatternEscaped(pattern, escape), wildcard);
 	}
 
+	public Expression provideLikePatternDefaultEscape()
+	{
+		return provideStringItem("'" + provideEscapeValueLiterally(AbstractLikeCondition.ESCAPE) + "'");
+	}
+
 	public Expression provideLikePatternEscaped(Expression pattern, String escape)
 	{
 		if (Tools.isNullOrEmpty(escape))
@@ -120,11 +149,6 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 			buffer.append('.');
 		}
 		return this.provideOutputNameText(buffer, column.name());
-	}
-
-	public Expression provideLikePatternDefaultEscape()
-	{
-		return provideStringItem("'" + provideEscapeValueLiterally(AbstractLikeCondition.ESCAPE) + "'");
 	}
 
 	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)
@@ -176,6 +200,61 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public StringItem provideParameter(String name)
 	{
 		return provideStringItem("?" + name + "?");
+	}
+
+	public DecimalParam provideParameter(String name, BigDecimal value)
+	{
+		return provideProvider(new AbstractDecimalParam(name, value));
+	}
+
+	public ByteParam provideParameter(String name, Byte value)
+	{
+		return provideProvider(new AbstractByteParam(name, value));
+	}
+
+	public DateParam provideParameter(String name, Date value)
+	{
+		return provideProvider(new AbstractDateParam(name, value));
+	}
+
+	public DoubleParam provideParameter(String name, Double value)
+	{
+		return provideProvider(new AbstractDoubleParam(name, value));
+	}
+
+	public FloatParam provideParameter(String name, Float value)
+	{
+		return provideProvider(new AbstractFloatParam(name, value));
+	}
+
+	public IntParam provideParameter(String name, Integer value)
+	{
+		return provideProvider(new AbstractIntParam(name, value));
+	}
+
+	public LongParam provideParameter(String name, Long value)
+	{
+		return provideProvider(new AbstractLongParam(name, value));
+	}
+
+	public ShortParam provideParameter(String name, Short value)
+	{
+		return provideProvider(new AbstractShortParam(name, value));
+	}
+
+	public StringParam provideParameter(String name, String value)
+	{
+		return provideProvider(new AbstractStringParam(name, value));
+	}
+
+	public TimestampParam provideParameter(String name, Timestamp value)
+	{
+		return provideProvider(new AbstractTimestampParam(name, value));
+	}
+
+	public String provideParameterExpression(String name)
+	{
+		return "?" + name + "?";
 	}
 
 	public AbstractPrimitive providePrimitive()
