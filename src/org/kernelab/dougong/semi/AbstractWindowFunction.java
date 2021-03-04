@@ -31,6 +31,13 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 		return rows;
 	}
 
+	protected boolean isWindowed()
+	{
+		return (partitionBy() != null && partitionBy().length > 0) //
+				|| (orderBy() != null && orderBy().length > 0) //
+				|| (between() != null && between().length > 0);
+	}
+
 	public Expression[] orderBy()
 	{
 		return orderBy;
@@ -100,86 +107,89 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 	{
 		super.toString(buffer);
 
-		buffer.append(" OVER(");
-
-		if (partitionBy() != null && partitionBy().length > 0)
+		if (this.isWindowed())
 		{
-			buffer.append("PARTITION BY ");
+			buffer.append(" OVER(");
 
-			boolean first = true;
-
-			for (Expression expr : partitionBy())
+			if (partitionBy() != null && partitionBy().length > 0)
 			{
-				if (first)
-				{
-					first = false;
-				}
-				else
-				{
-					buffer.append(',');
-				}
-				Utils.outputExpr(buffer, expr);
-			}
+				buffer.append("PARTITION BY ");
 
-			buffer.append(' ');
-		}
+				boolean first = true;
 
-		if (orderBy() != null && orderBy().length > 0)
-		{
-			buffer.append("ORDER BY ");
-
-			boolean first = true;
-
-			for (Expression expr : orderBy())
-			{
-				if (first)
+				for (Expression expr : partitionBy())
 				{
-					first = false;
-				}
-				else
-				{
-					buffer.append(',');
-				}
-
-				if (expr instanceof Sortable)
-				{
-					((Sortable) expr).toStringOrdered(buffer);
-				}
-				else
-				{
+					if (first)
+					{
+						first = false;
+					}
+					else
+					{
+						buffer.append(',');
+					}
 					Utils.outputExpr(buffer, expr);
 				}
+
+				buffer.append(' ');
 			}
 
-			buffer.append(' ');
+			if (orderBy() != null && orderBy().length > 0)
+			{
+				buffer.append("ORDER BY ");
+
+				boolean first = true;
+
+				for (Expression expr : orderBy())
+				{
+					if (first)
+					{
+						first = false;
+					}
+					else
+					{
+						buffer.append(',');
+					}
+
+					if (expr instanceof Sortable)
+					{
+						((Sortable) expr).toStringOrdered(buffer);
+					}
+					else
+					{
+						Utils.outputExpr(buffer, expr);
+					}
+				}
+
+				buffer.append(' ');
+			}
+
+			if (between() != null && between().length > 0)
+			{
+				if (isRows())
+				{
+					buffer.append("ROWS ");
+				}
+				else
+				{
+					buffer.append("RANGE ");
+				}
+
+				if (between().length > 1)
+				{
+					buffer.append("BETWEEN ");
+				}
+
+				Utils.outputExpr(buffer, between()[0]);
+
+				if (between().length > 1)
+				{
+					buffer.append(" AND ");
+					Utils.outputExpr(buffer, between()[1]);
+				}
+			}
+
+			buffer.append(')');
 		}
-
-		if (between() != null && between().length > 0)
-		{
-			if (isRows())
-			{
-				buffer.append("ROWS ");
-			}
-			else
-			{
-				buffer.append("RANGE ");
-			}
-
-			if (between().length > 1)
-			{
-				buffer.append("BETWEEN ");
-			}
-
-			Utils.outputExpr(buffer, between()[0]);
-
-			if (between().length > 1)
-			{
-				buffer.append(" AND ");
-				Utils.outputExpr(buffer, between()[1]);
-			}
-		}
-
-		buffer.append(')');
 
 		return buffer;
 	}
