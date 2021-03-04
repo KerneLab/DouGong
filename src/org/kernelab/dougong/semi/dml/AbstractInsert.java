@@ -1,5 +1,9 @@
 package org.kernelab.dougong.semi.dml;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.kernelab.basis.Pair;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
@@ -9,17 +13,34 @@ import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractInsert extends AbstractHintable implements Insert
 {
-	protected Insertable	target;
+	protected Insertable						target;
 
-	protected Column[]		columns;
+	protected Column[]							columns;
 
-	protected Source		source;
+	protected Source							source;
 
-	protected Expression[]	values;
+	protected Expression[]						values;
+
+	protected List<Pair<Column, Expression>>	pairs;
+
+	protected Column[] columns()
+	{
+		if (this.columns == null && this.pairs != null)
+		{
+			this.columns = new Column[this.pairs.size()];
+			int i = 0;
+			for (Pair<Column, Expression> pair : this.pairs)
+			{
+				this.columns[i++] = pair.key;
+			}
+		}
+		return this.columns;
+	}
 
 	public AbstractInsert columns(Column... columns)
 	{
 		this.columns = columns;
+		this.pairs = null;
 		return this;
 	}
 
@@ -36,15 +57,28 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		return this;
 	}
 
+	public AbstractInsert pair(Column column, Expression value)
+	{
+		if (this.pairs == null)
+		{
+			this.pairs = new LinkedList<Pair<Column, Expression>>();
+			this.columns = null;
+			this.values = null;
+			this.source = null;
+		}
+		this.pairs.add(new Pair<Column, Expression>(column, value));
+		return this;
+	}
+
 	protected void textOfColumns(StringBuilder buffer)
 	{
-		if (columns != null && columns.length > 0)
+		if (columns() != null && columns().length > 0)
 		{
 			buffer.append(" (");
 
 			boolean first = true;
 
-			for (Column column : columns)
+			for (Column column : columns())
 			{
 				if (first)
 				{
@@ -83,13 +117,13 @@ public class AbstractInsert extends AbstractHintable implements Insert
 
 	protected void textOfValues(StringBuilder buffer)
 	{
-		if (values != null)
+		if (values() != null)
 		{
 			buffer.append(" VALUES (");
 
 			boolean first = true;
 
-			for (Expression value : values)
+			for (Expression value : values())
 			{
 				if (first)
 				{
@@ -118,7 +152,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		this.textOfHint(buffer);
 		this.textOfTarget(buffer);
 		this.textOfColumns(buffer);
-		if (values != null)
+		if (values() != null)
 		{
 			this.textOfValues(buffer);
 		}
@@ -129,10 +163,25 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		return buffer;
 	}
 
+	protected Expression[] values()
+	{
+		if (this.values == null && this.pairs != null)
+		{
+			this.values = new Expression[this.pairs.size()];
+			int i = 0;
+			for (Pair<Column, Expression> pair : this.pairs)
+			{
+				this.values[i++] = pair.value;
+			}
+		}
+		return this.values;
+	}
+
 	public AbstractInsert values(Expression... values)
 	{
 		this.source = null;
 		this.values = values;
+		this.pairs = null;
 		return this;
 	}
 
@@ -140,6 +189,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 	{
 		this.values = null;
 		this.source = source;
+		this.pairs = null;
 		return this;
 	}
 }

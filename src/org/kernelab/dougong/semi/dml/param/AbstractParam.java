@@ -90,9 +90,9 @@ public abstract class AbstractParam<E> extends AbstractItem implements Param<E>,
 		return value;
 	}
 
-	protected <T extends AbstractParam<E>> T value(E value)
+	@Override
+	public void value(E value)
 	{
 		this.value = value;
-		return Tools.cast(this);
 	}
 }

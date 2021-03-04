@@ -26,4 +26,11 @@ public interface Param<E> extends Item, Named, Testable
 	 * @return
 	 */
 	public E value();
+
+	/**
+	 * Set the value of the parameter.
+	 * 
+	 * @param value
+	 */
+	public void value(E value);
 }

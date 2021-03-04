@@ -18,6 +18,7 @@ public class TestInsert
 	{
 		Tools.debug(makeInsert().toString(new StringBuilder()));
 		Tools.debug(makeInsert1().toString(new StringBuilder()));
+		Tools.debug(makeInsertByPairs().toString(new StringBuilder()));
 		Tools.debug(makeInsertByMetaMap().toString(new StringBuilder()));
 		Tools.debug(makeSelect().toString(new StringBuilder()));
 		Tools.debug(makeSelectPairs().toString(new StringBuilder()));
@@ -61,6 +62,17 @@ public class TestInsert
 				.orderBy(d.COMP_ID.descend()) //
 				.insert(s) //
 				.columns(s.DEPT_ID) //
+		;
+	}
+
+	public static Insert makeInsertByPairs()
+	{
+		STAF s = null;
+
+		return SQL.insert(s = SQL.table(STAF.class, "s")) //
+				.pair(s.COMP_ID, SQL.param("comp")) //
+				.pair(s.DEPT_ID, SQL.param("dept")) //
+				.hint("append") //
 		;
 	}
 
