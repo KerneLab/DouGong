@@ -13,6 +13,16 @@ public abstract class AbstractComparisonCondition extends AbstractComposableCond
 
 	protected String		groupQual;
 
+	public Expression $_1()
+	{
+		return leftExpr;
+	}
+
+	public Expression $_2()
+	{
+		return rightExpr;
+	}
+
 	public AbstractComparisonCondition all()
 	{
 		this.groupQual = ALL;

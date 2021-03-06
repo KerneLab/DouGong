@@ -11,6 +11,21 @@ public abstract class AbstractRangeCondition extends AbstractNegatableCondition 
 
 	protected Expression	to;
 
+	public Expression $_1()
+	{
+		return expr;
+	}
+
+	public Expression $_2()
+	{
+		return from;
+	}
+
+	public Expression $_3()
+	{
+		return to;
+	}
+
 	public AbstractRangeCondition between(Expression item, Expression from, Expression to)
 	{
 		this.expr = item;

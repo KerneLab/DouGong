@@ -5,7 +5,12 @@ import org.kernelab.dougong.core.dml.cond.NullCondition;
 
 public abstract class AbstractNullCondition extends AbstractNegatableCondition implements NullCondition
 {
-	protected Expression	expr;
+	protected Expression expr;
+
+	public Expression $_1()
+	{
+		return expr;
+	}
 
 	public AbstractNullCondition isNull(Expression expr)
 	{

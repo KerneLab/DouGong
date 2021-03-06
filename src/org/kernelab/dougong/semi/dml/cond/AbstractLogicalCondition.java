@@ -28,6 +28,11 @@ public abstract class AbstractLogicalCondition extends AbstractCondition impleme
 		return and(true, cond);
 	}
 
+	public List<Object> getConditions()
+	{
+		return conds;
+	}
+
 	public boolean isEmpty()
 	{
 		return conds.isEmpty();

@@ -11,7 +11,9 @@ import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.Withable;
+import org.kernelab.dougong.core.util.AccessGather;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.core.util.AccessGather.Access;
 
 public class AbstractUpdate extends AbstractFilterable implements Update
 {
@@ -141,6 +143,7 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	public AbstractUpdate where(Condition cond)
 	{
 		super.where(cond);
+		AccessGather.gather(this, Access.TYPE_WHERE, cond);
 		return this;
 	}
 

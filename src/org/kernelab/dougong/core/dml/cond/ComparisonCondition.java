@@ -2,7 +2,7 @@ package org.kernelab.dougong.core.dml.cond;
 
 import org.kernelab.dougong.core.dml.Expression;
 
-public interface ComparisonCondition extends ComposableCondition, GroupCondition
+public interface ComparisonCondition extends ComposableCondition, GroupCondition, BinaryCondition
 {
 	public static final String	EQUALS			= "=";
 

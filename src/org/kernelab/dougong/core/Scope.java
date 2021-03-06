@@ -1,6 +1,8 @@
 package org.kernelab.dougong.core;
 
-public interface Scope extends Text
+import org.kernelab.dougong.core.dml.Expression;
+
+public interface Scope extends Text, Expression
 {
 	/**
 	 * Get the text of the object as scope without the surrounding brackets

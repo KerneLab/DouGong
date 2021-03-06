@@ -7,6 +7,8 @@ import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Withable;
+import org.kernelab.dougong.core.util.AccessGather;
+import org.kernelab.dougong.core.util.AccessGather.Access;
 
 public class AbstractDelete extends AbstractFilterable implements Delete
 {
@@ -77,6 +79,7 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 	public AbstractDelete where(Condition cond)
 	{
 		super.where(cond);
+		AccessGather.gather(this, Access.TYPE_WHERE, cond);
 		return this;
 	}
 

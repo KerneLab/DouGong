@@ -42,7 +42,9 @@ import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.util.AccessGather;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.core.util.AccessGather.Access;
 
 public abstract class AbstractSelect extends AbstractFilterable implements Select
 {
@@ -195,6 +197,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		joins().add(provider().provideJoin() //
 				.join(getLastFrom(), getLastJoin(), AbstractJoin.FULL_JOIN, view, view.alias()).on(on));
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
 		return this;
 	}
 
@@ -282,6 +285,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		joins().add(provider().provideJoin() //
 				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).on(on));
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
 		return this;
 	}
 
@@ -375,6 +379,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		joins().add(provider().provideJoin() //
 				.join(getLastFrom(), getLastJoin(), AbstractJoin.LEFT_JOIN, view, view.alias()).on(on));
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
 		return this;
 	}
 
@@ -680,6 +685,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		joins().add(provider().provideJoin() //
 				.join(getLastFrom(), getLastJoin(), AbstractJoin.RIGHT_JOIN, view, view.alias()).on(on));
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
 		return this;
 	}
 
@@ -1076,9 +1082,10 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	}
 
 	@Override
-	public AbstractSelect where(Condition condition)
+	public AbstractSelect where(Condition cond)
 	{
-		super.where(condition);
+		super.where(cond);
+		AccessGather.gather(this, Access.TYPE_WHERE, cond);
 		return this;
 	}
 

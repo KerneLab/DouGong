@@ -11,6 +11,16 @@ public abstract class AbstractMembershipCondition extends AbstractNegatableCondi
 
 	protected Scope			scope;
 
+	public Expression $_1()
+	{
+		return expr;
+	}
+
+	public Expression $_2()
+	{
+		return scope;
+	}
+
 	public AbstractMembershipCondition in(Expression expr, Scope scope)
 	{
 		return this.set(expr, scope);
@@ -22,7 +32,7 @@ public abstract class AbstractMembershipCondition extends AbstractNegatableCondi
 		this.scope = scope;
 		return this;
 	}
-	
+
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		Utils.outputExprInScope(buffer, this.expr);

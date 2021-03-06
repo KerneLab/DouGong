@@ -13,6 +13,21 @@ public abstract class AbstractLikeCondition extends AbstractNegatableCondition i
 
 	protected Expression		escape;
 
+	public Expression $_1()
+	{
+		return expr;
+	}
+
+	public Expression $_2()
+	{
+		return pattern;
+	}
+
+	public Expression $_3()
+	{
+		return escape;
+	}
+
 	public AbstractLikeCondition like(Expression expr, Expression pattern, Expression escape)
 	{
 		return this.set(expr, pattern, escape);
