@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 import org.kernelab.dougong.SQL;
+import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Alias;
@@ -53,6 +54,8 @@ import org.kernelab.dougong.core.util.KeysFetcher;
 
 public interface Provider extends Castable
 {
+	public AbsoluteKey provideAbsoluteKey(Entity entity, Column... columns);
+
 	/**
 	 * Provide label string of an alias name. The label string should including
 	 * the boundary characters.
@@ -205,6 +208,10 @@ public interface Provider extends Castable
 	 * @return The given buffer.
 	 */
 	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort);
+
+	public StringBuilder provideOutputColumnSelect(StringBuilder buffer, Column column);
+
+	public StringBuilder provideOutputColumnExpress(StringBuilder buffer, Column column);
 
 	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table);
 

@@ -11,6 +11,9 @@ public class Staff
 	@ManyToOneMeta(model = Department.class, key = STAF.FK_STAF)
 	private Department	department;
 
+	@DataMeta(alias = "rowid")
+	private String		rowid;
+
 	@DataMeta(alias = "compId", serialize = false)
 	private String		compId;
 
@@ -67,6 +70,11 @@ public class Staff
 		return name;
 	}
 
+	public String getRowid()
+	{
+		return rowid;
+	}
+
 	public Double getSalary()
 	{
 		return salary;
@@ -107,6 +115,11 @@ public class Staff
 		this.name = name;
 	}
 
+	public void setRowid(String rowid)
+	{
+		this.rowid = rowid;
+	}
+
 	public void setSalary(Double salary)
 	{
 		this.salary = salary;
@@ -115,6 +128,7 @@ public class Staff
 	@Override
 	public String toString()
 	{
-		return "Staff: id=" + this.getId() + ", name=" + this.getName() + ", salary=" + this.getSalary();
+		return "Staff: rowid=" + this.getRowid() + " id=" + this.getId() + ", name=" + this.getName() + ", salary="
+				+ this.getSalary();
 	}
 }

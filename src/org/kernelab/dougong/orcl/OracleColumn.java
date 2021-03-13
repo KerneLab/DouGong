@@ -37,19 +37,4 @@ public class OracleColumn extends AbstractColumn implements OracleSortable
 	{
 		return new OracleColumn(view(), name(), field());
 	}
-
-	public StringBuilder toString(StringBuilder buffer)
-	{
-		if (!isUsingByJoin())
-		{
-			String alias = this.view().provider().provideAliasLabel(view().alias());
-			if (alias != null)
-			{
-				buffer.append(alias);
-				buffer.append('.');
-			}
-		}
-		this.view().provider().provideOutputNameText(buffer, name());
-		return buffer;
-	}
 }

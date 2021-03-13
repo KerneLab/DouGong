@@ -184,6 +184,21 @@ public class OracleProvider extends AbstractProvider
 		return this.provideProvider(new OracleNullCondition());
 	}
 
+	@Override
+	public StringBuilder provideOutputColumnExpress(StringBuilder buffer, Column column)
+	{
+		if (!column.isUsingByJoin())
+		{
+			String alias = column.view().provider().provideAliasLabel(column.view().alias());
+			if (alias != null)
+			{
+				buffer.append(alias);
+				buffer.append('.');
+			}
+		}
+		return this.provideOutputNameText(buffer, column.name());
+	}
+
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
 	{
 		if (!function.isPseudoColumn())

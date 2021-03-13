@@ -7,12 +7,14 @@ import java.sql.Timestamp;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Member;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
@@ -33,6 +35,9 @@ import org.kernelab.dougong.core.dml.param.LongParam;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
+import org.kernelab.dougong.core.meta.DataMeta;
+import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
@@ -54,6 +59,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public static final char	OBJECT_SEPARATOR_CHAR	= '.';
 
 	private SQL					sql;
+
+	public AbsoluteKey provideAbsoluteKey(Entity entity, Column... columns)
+	{
+		return provideProvider(new AbstractAbsoluteKey(entity, columns));
+	}
 
 	public String provideAliasLabel(String alias)
 	{
@@ -142,6 +152,18 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	public StringBuilder provideOutputColumnExpress(StringBuilder buffer, Column column)
+	{
+		String alias = this.provideAliasLabel(column.view().alias());
+		if (alias != null)
+		{
+			buffer.append(alias);
+			buffer.append('.');
+		}
+		this.provideOutputNameText(buffer, column.name());
+		return buffer;
+	}
+
 	public StringBuilder provideOutputColumnReference(StringBuilder buffer, Column column)
 	{
 		String alias = this.provideAliasLabel(column.view().alias());
@@ -151,6 +173,20 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 			buffer.append('.');
 		}
 		return this.provideOutputNameText(buffer, column.name());
+	}
+
+	public StringBuilder provideOutputColumnSelect(StringBuilder buffer, Column column)
+	{
+		DataMeta meta = column.field().getAnnotation(DataMeta.class);
+		if (meta == null || meta.select().length() == 0)
+		{
+			this.provideOutputColumnExpress(buffer, column);
+		}
+		else
+		{
+			buffer.append(meta.select());
+		}
+		return Utils.outputAlias(this, buffer, column);
 	}
 
 	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)

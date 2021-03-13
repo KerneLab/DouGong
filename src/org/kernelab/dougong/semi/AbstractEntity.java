@@ -16,10 +16,12 @@ import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.Key;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.meta.AbsoluteKeyMeta;
 import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.util.Utils;
@@ -121,6 +123,29 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		else
 		{
 			return false;
+		}
+	}
+
+	public AbsoluteKey absoluteKey()
+	{
+		TreeMap<Integer, Column> keys = new TreeMap<Integer, Column>();
+
+		for (Field field : this.getColumnFields())
+		{
+			AbsoluteKeyMeta meta = field.getAnnotation(AbsoluteKeyMeta.class);
+			if (meta != null)
+			{
+				keys.put(meta.ordinal(), this.getColumnByField(field));
+			}
+		}
+
+		if (keys.isEmpty())
+		{
+			return null;
+		}
+		else
+		{
+			return provider().provideAbsoluteKey(this, keys.values().toArray(new Column[keys.size()]));
 		}
 	}
 

@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.dml.AbstractItem;
 
 public abstract class AbstractColumn extends AbstractItem implements Column
@@ -116,19 +115,24 @@ public abstract class AbstractColumn extends AbstractItem implements Column
 		return toString(new StringBuilder()).toString();
 	}
 
+	public StringBuilder toString(StringBuilder buffer)
+	{
+		return this.toStringExpress(buffer);
+	}
+
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
-		return toString(buffer);
+		return this.provider().provideOutputColumnExpress(buffer, this);
 	}
 
 	public StringBuilder toStringOrdered(StringBuilder buffer)
 	{
-		return this.view().provider().provideOutputOrder(toString(buffer), this);
+		return this.provider().provideOutputOrder(toString(buffer), this);
 	}
 
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
-		return Utils.outputAlias(this.view().provider(), this.toStringExpress(buffer), this);
+		return this.provider().provideOutputColumnSelect(buffer, this);
 	}
 
 	public AbstractColumn usingByJoin(boolean using)

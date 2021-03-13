@@ -36,8 +36,6 @@ public @interface DataMeta
 	 * real value refers to the member in another object. So that this field is
 	 * no need to be serialized because the reference object should already be
 	 * serialized.
-	 * 
-	 * @return
 	 */
 	public boolean serialize() default true;
 
@@ -49,4 +47,11 @@ public @interface DataMeta
 	 * column will also be skipped during inserting to the table.
 	 */
 	public boolean raw() default true;
+
+	/**
+	 * Indicate the expression of this item on being selected. If this
+	 * expression is not empty, it will take place of NameMeta as the select
+	 * expression.
+	 */
+	public String select() default "";
 }

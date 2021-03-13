@@ -17,16 +17,4 @@ public class MariaColumn extends AbstractColumn
 	{
 		return new MariaColumn(view(), name(), field());
 	}
-
-	public StringBuilder toString(StringBuilder buffer)
-	{
-		String alias = this.view().provider().provideAliasLabel(view().alias());
-		if (alias != null)
-		{
-			buffer.append(alias);
-			buffer.append('.');
-		}
-		this.view().provider().provideOutputNameText(buffer, name());
-		return buffer;
-	}
 }
