@@ -1,5 +1,6 @@
 package org.kernelab.dougong.core;
 
+import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 
@@ -9,6 +10,13 @@ import org.kernelab.dougong.core.ddl.PrimaryKey;
  */
 public interface Entity extends View
 {
+	/**
+	 * Return the AbsoluteKey of this view.
+	 * 
+	 * @return The AbsoluteKey or null if not defined.
+	 */
+	public AbsoluteKey absoluteKey();
+
 	/**
 	 * Find a foreign key of given name and refers to the reference.
 	 * 

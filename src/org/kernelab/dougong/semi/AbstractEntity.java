@@ -128,25 +128,18 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 	public AbsoluteKey absoluteKey()
 	{
-		TreeMap<Integer, Column> keys = new TreeMap<Integer, Column>();
+		Column column = null;
 
 		for (Field field : this.getColumnFields())
 		{
-			AbsoluteKeyMeta meta = field.getAnnotation(AbsoluteKeyMeta.class);
-			if (meta != null)
+			if (field.getAnnotation(AbsoluteKeyMeta.class) != null)
 			{
-				keys.put(meta.ordinal(), this.getColumnByField(field));
+				column = this.getColumnByField(field);
+				break;
 			}
 		}
 
-		if (keys.isEmpty())
-		{
-			return null;
-		}
-		else
-		{
-			return provider().provideAbsoluteKey(this, keys.values().toArray(new Column[keys.size()]));
-		}
+		return column == null ? null : provider().provideAbsoluteKey(this, column);
 	}
 
 	protected ForeignKey foreignKey(Entity ref, Column... columns)

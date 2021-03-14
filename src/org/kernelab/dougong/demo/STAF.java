@@ -24,7 +24,7 @@ public class STAF extends AbstractTable
 	@NameMeta(name = "ROWID")
 	@TypeMeta(type = "ROWID", nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "rowid", select = "ROWIDTOCHAR(ROWID)")
-	@AbsoluteKeyMeta(ordinal = 1)
+	@AbsoluteKeyMeta
 	public Column				ROWID;
 
 	@NameMeta(name = "COMP_ID")

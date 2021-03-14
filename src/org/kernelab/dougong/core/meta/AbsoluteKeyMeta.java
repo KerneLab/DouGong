@@ -11,18 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface OneToOneMeta
+public @interface AbsoluteKeyMeta
 {
-	public Class<?> model();
-
-	public String key();
-
-	/**
-	 * Indicate whether this field is on the reference side or not.
-	 * 
-	 * @return
-	 */
-	public boolean referred();
-
-	public boolean serialize() default true;
 }

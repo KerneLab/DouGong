@@ -17,6 +17,11 @@ public @interface ManyToOneMeta
 
 	public String key();
 
+	/**
+	 * Indicate whether this field is on the reference side or not.
+	 * 
+	 * @return true by default.
+	 */
 	public boolean referred() default true;
 
 	public boolean serialize() default false;

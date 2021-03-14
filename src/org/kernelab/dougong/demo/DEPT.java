@@ -21,7 +21,7 @@ public class DEPT extends AbstractTable
 	@NameMeta(name = "ROWID")
 	@TypeMeta(type = "ROWID", nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "rowid")
-	@AbsoluteKeyMeta(ordinal = 1)
+	@AbsoluteKeyMeta
 	public Column				ROWID;
 
 	@NameMeta(name = "COMP_ID")

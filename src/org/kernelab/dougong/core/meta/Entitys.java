@@ -16,7 +16,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.kernelab.basis.Canal;
 import org.kernelab.basis.JSON;
+import org.kernelab.basis.Mapper;
 import org.kernelab.basis.Pair;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.sql.SQLKit;
@@ -24,8 +26,10 @@ import org.kernelab.basis.sql.Sequel;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
+import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
+import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
@@ -114,23 +118,25 @@ public abstract class Entitys
 
 	public static <T> void deleteObjectCascade(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
-		if (object != null)
+		if (object == null)
 		{
-			if (entity == null)
-			{
-				entity = Entitys.getEntityFromModelObject(sql, object);
-			}
+			return;
+		}
 
-			for (Field field : Tools.getFieldsHierarchy(object.getClass(), null).values())
+		if (entity == null)
+		{
+			entity = Entitys.getEntityFromModelObject(sql, object);
+		}
+
+		for (Field field : Tools.getFieldsHierarchy(object.getClass(), null).values())
+		{
+			if (isOneToMany(field))
 			{
-				if (isOneToMany(field))
-				{
-					deleteOneToMany(kit, sql, object, entity, field);
-				}
-				else if (isOneToOneNeedSave(sql, entity, field))
-				{
-					deleteOneToOne(kit, sql, object, field);
-				}
+				deleteOneToMany(kit, sql, object, entity, field);
+			}
+			else if (isOneToOneNeedSave(sql, entity, field))
+			{
+				deleteOneToOne(kit, sql, object, field);
 			}
 		}
 	}
@@ -841,10 +847,16 @@ public abstract class Entitys
 
 			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
 
+			AbsoluteKey abskey = null;
+
 			if (generates != null && hasNullValue(object, entity, generates.value))
 			{ // Missing values in generated columns
 				insertObjectAlone(kit, sql, object, entity);
 				insertObjectCascade(kit, sql, object, entity);
+			}
+			else if ((abskey = entity.absoluteKey()) != null)
+			{
+
 			}
 			else
 			{
@@ -861,6 +873,113 @@ public abstract class Entitys
 			}
 		}
 		return object;
+	}
+
+	public static <T> void saveObjectCascade(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (object == null)
+		{
+			return;
+		}
+
+		if (entity == null)
+		{
+			entity = Entitys.getEntityFromModelObject(sql, object);
+		}
+
+		for (Field field : Tools.getFieldsHierarchy(object.getClass(), null).values())
+		{
+			if (isOneToMany(field))
+			{
+				saveOneToMany(kit, sql, object, entity, field);
+			}
+			else if (isOneToOneNeedSave(sql, entity, field))
+			{
+				// TODO deleteOneToOne(kit, sql, object, field);
+			}
+		}
+	}
+
+	public static <T, S> void deleteObjectBeyondAbsoluteKeyValues(SQLKit kit, SQL sql, T parent, AbsoluteKey abskey,
+			Iterable<Object> absKeyVals, ForeignKey key, Entity referrer, Class<S> referrerModel) throws SQLException
+	{
+		Column abscol = abskey.columns()[0];
+		String absname = Utils.getDataLabelFromField(abscol.field());
+
+		Condition cond = key.entity() == referrer ? key.queryCondition() : key.reference().queryCondition();
+		if (absKeyVals.iterator().hasNext())
+		{
+			Condition beyondCond = abscol.notIn(sql.provider().provideParameter(absname));
+			cond = sql.and(cond, beyondCond);
+		}
+
+		Select select = sql.from(referrer) //
+				.where(cond) //
+				.select(referrer.all()) //
+				.as(AbstractSelect.class) //
+				.fillAliasByMeta();
+
+		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValuesTo(parent, referrer));
+		params.put(absname, absKeyVals);
+
+		Tools.debug(select.toString());
+
+		Collection<S> subs = selectObjects(kit, sql, select, referrerModel, new JSON().attrAll(params),
+				new LinkedList<S>());
+
+		for (S s : subs)
+		{
+			Tools.debug(s);
+		}
+
+		// TODO
+	}
+
+	public static <T> void saveOneToMany(SQLKit kit, SQL sql, T parent, Entity entity, Field field) throws SQLException
+	{
+		Collection<Object> coll = null;
+		try
+		{
+			coll = Tools.access(parent, field);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (coll != null)
+		{
+			OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
+			Class<?> manyClass = meta.model();
+			Entity manyEntity = getEntityFromModelClass(sql, manyClass);
+			ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
+			final AbsoluteKey abskey = manyEntity.absoluteKey();
+
+			if (abskey != null)
+			{
+				Iterable<Object> absKeyVals = Canal.of(coll).map(new Mapper<Object, Object>()
+				{
+					@Override
+					public Object map(Object el)
+					{
+						return Canal.of(abskey.mapValues(el).values()).first().get();
+					}
+				});
+				deleteObjectBeyondAbsoluteKeyValues(kit, sql, parent, abskey, absKeyVals, key, manyEntity, manyClass);
+			}
+			else
+			{
+				// TODO
+				// deleteObjects(kit, sql, parent, key, manyEntity);
+				//
+				// for (Object o : coll)
+				// {
+				// deleteObjectCascade(kit, sql, o, manyEntity);
+				// deleteObjectAlone(kit, sql, o, manyEntity);
+				// }
+			}
+		}
+
+		// TODO
 	}
 
 	public static <T> T saveObjectAlone(SQLKit kit, SQL sql, T object) throws SQLException

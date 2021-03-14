@@ -1,6 +1,6 @@
 package org.kernelab.dougong.demo;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.EntityMeta;
@@ -11,21 +11,21 @@ import org.kernelab.dougong.core.meta.OneToManyMeta;
 public class Department
 {
 	@ManyToOneMeta(model = Company.class, key = DEPT.FK_DEPT)
-	private Company				company;
+	private Company		company;
 
 	@DataMeta(alias = "compId", serialize = false)
-	private String				compId;
+	private String		compId;
 
-	private String				compName;
+	private String		compName;
 
 	@DataMeta(alias = "deptId")
-	private String				id;
+	private String		id;
 
 	@DataMeta(alias = "deptName")
-	private String				name;
+	private String		name;
 
 	@OneToManyMeta(model = Staff.class, key = STAF.FK_STAF, referred = false)
-	private Collection<Staff>	staffs;
+	private List<Staff>	staffs;
 
 	public Company getCompany()
 	{
@@ -52,7 +52,7 @@ public class Department
 		return name;
 	}
 
-	public Collection<Staff> getStaffs()
+	public List<Staff> getStaffs()
 	{
 		return staffs;
 	}
@@ -82,7 +82,7 @@ public class Department
 		this.name = name;
 	}
 
-	public void setStaffs(Collection<Staff> staffs)
+	public void setStaffs(List<Staff> staffs)
 	{
 		this.staffs = staffs;
 	}
