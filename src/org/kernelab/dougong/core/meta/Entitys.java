@@ -102,17 +102,61 @@ public abstract class Entitys
 				entity = Entitys.getEntityFromModelObject(sql, object);
 			}
 
-			PrimaryKey key = entity.primaryKey();
+			Pair<AbsoluteKey, Object> absVal = getAbsoluteKeyValue(kit, sql, object, entity);
 
-			Delete delete = sql.from(entity).where(key.queryCondition()).delete();
+			if (absVal != null)
+			{
+				Delete delete = sql.from(entity).where(absVal.key.queryCondition()).delete();
 
-			Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
+				Map<String, Object> params = mapColumnToLabelByMeta(absVal.key.columns()[0], absVal.value);
 
-			return kit.update(delete.toString(), params);
+				return kit.update(delete.toString(), params);
+			}
+			else
+			{
+				PrimaryKey key = entity.primaryKey();
+
+				Delete delete = sql.from(entity).where(key.queryCondition()).delete();
+
+				Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
+
+				return kit.update(delete.toString(), params);
+			}
 		}
 		else
 		{
 			return -1;
+		}
+	}
+
+	public static <T, R> void deleteReferrerBeyondAbsoluteKeyValues(SQLKit kit, SQL sql, T parent, AbsoluteKey abskey,
+			Iterable<Object> absKeyVals, ForeignKey key, Entity referrer, Class<R> referrerModel) throws SQLException
+	{
+		Column abscol = abskey.columns()[0];
+		String absname = Utils.getDataLabelFromField(abscol.field());
+
+		Condition cond = key.entity() == referrer ? key.queryCondition() : key.reference().queryCondition();
+		if (absKeyVals.iterator().hasNext())
+		{
+			Condition beyondCond = abscol.notIn(sql.provider().provideParameter(absname));
+			cond = sql.and(cond, beyondCond);
+		}
+
+		Select select = sql.from(referrer) //
+				.where(cond) //
+				.select(referrer.all()) //
+				.as(AbstractSelect.class) //
+				.fillAliasByMeta();
+
+		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValuesTo(parent, referrer));
+		params.put(absname, absKeyVals);
+
+		Collection<R> refs = selectObjects(kit, sql, select, referrerModel, new JSON().attrAll(params),
+				new LinkedList<R>());
+
+		for (R ref : refs)
+		{
+			deleteObject(kit, sql, ref, referrer);
 		}
 	}
 
@@ -204,6 +248,36 @@ public abstract class Entitys
 		{
 			deleteObjectAlone(kit, sql, val, null);
 		}
+	}
+
+	public static <T> Pair<AbsoluteKey, Object> getAbsoluteKeyValue(SQLKit kit, SQL sql, T object, Entity entity)
+	{
+		if (object == null)
+		{
+			return null;
+		}
+
+		if (entity == null)
+		{
+			entity = Entitys.getEntityFromModelObject(sql, object);
+		}
+
+		AbsoluteKey abskey = null;
+		if ((abskey = entity.absoluteKey()) == null)
+		{
+			return null;
+		}
+
+		for (Entry<Column, Object> entry : abskey.mapValues(object).entrySet())
+		{
+			if (entry.getValue() != null)
+			{
+				return new Pair<AbsoluteKey, Object>(abskey, entry.getValue());
+			}
+			break;
+		}
+
+		return null;
 	}
 
 	public static Set<Column> getColumns(Entity entity)
@@ -687,6 +761,11 @@ public abstract class Entitys
 		return table.updateByMetaMap(meta);
 	}
 
+	public static Map<String, Object> mapColumnToLabelByMeta(Column column, Object value)
+	{
+		return mapColumnToLabelByMeta(new HashMap<String, Object>(), column, value);
+	}
+
 	/**
 	 * Map key to label defined by DataMeta.
 	 * 
@@ -699,10 +778,16 @@ public abstract class Entitys
 
 		for (Entry<Column, Object> entry : data.entrySet())
 		{
-			map.put(getLabelFromColumnByMeta(entry.getKey()), entry.getValue());
+			mapColumnToLabelByMeta(map, entry.getKey(), entry.getValue());
 		}
 
 		return map;
+	}
+
+	public static Map<String, Object> mapColumnToLabelByMeta(Map<String, Object> result, Column column, Object value)
+	{
+		result.put(getLabelFromColumnByMeta(column), value);
+		return result;
 	}
 
 	public static Map<Column, String> mapLabelsFromColumnsByMeta(Column... columns)
@@ -875,6 +960,33 @@ public abstract class Entitys
 		return object;
 	}
 
+	public static <T> T saveObjectAlone(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		if (object != null)
+		{
+			Entity entity = getEntityFromModelObject(sql, object);
+
+			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+
+			if (generates != null && hasNullValue(object, entity, generates.value))
+			{ // Missing values in generated columns
+				insertObjectAlone(kit, sql, object, entity);
+			}
+			else
+			{
+				if (countObject(kit, sql, object, entity) == 0)
+				{ // New record
+					insertObjectAlone(kit, sql, object, entity);
+				}
+				else
+				{
+					updateObject(kit, sql, object);
+				}
+			}
+		}
+		return object;
+	}
+
 	public static <T> void saveObjectCascade(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
 		if (object == null)
@@ -898,41 +1010,6 @@ public abstract class Entitys
 				// TODO deleteOneToOne(kit, sql, object, field);
 			}
 		}
-	}
-
-	public static <T, S> void deleteObjectBeyondAbsoluteKeyValues(SQLKit kit, SQL sql, T parent, AbsoluteKey abskey,
-			Iterable<Object> absKeyVals, ForeignKey key, Entity referrer, Class<S> referrerModel) throws SQLException
-	{
-		Column abscol = abskey.columns()[0];
-		String absname = Utils.getDataLabelFromField(abscol.field());
-
-		Condition cond = key.entity() == referrer ? key.queryCondition() : key.reference().queryCondition();
-		if (absKeyVals.iterator().hasNext())
-		{
-			Condition beyondCond = abscol.notIn(sql.provider().provideParameter(absname));
-			cond = sql.and(cond, beyondCond);
-		}
-
-		Select select = sql.from(referrer) //
-				.where(cond) //
-				.select(referrer.all()) //
-				.as(AbstractSelect.class) //
-				.fillAliasByMeta();
-
-		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValuesTo(parent, referrer));
-		params.put(absname, absKeyVals);
-
-		Tools.debug(select.toString());
-
-		Collection<S> subs = selectObjects(kit, sql, select, referrerModel, new JSON().attrAll(params),
-				new LinkedList<S>());
-
-		for (S s : subs)
-		{
-			Tools.debug(s);
-		}
-
-		// TODO
 	}
 
 	public static <T> void saveOneToMany(SQLKit kit, SQL sql, T parent, Entity entity, Field field) throws SQLException
@@ -964,7 +1041,7 @@ public abstract class Entitys
 						return Canal.of(abskey.mapValues(el).values()).first().get();
 					}
 				});
-				deleteObjectBeyondAbsoluteKeyValues(kit, sql, parent, abskey, absKeyVals, key, manyEntity, manyClass);
+				deleteReferrerBeyondAbsoluteKeyValues(kit, sql, parent, abskey, absKeyVals, key, manyEntity, manyClass);
 			}
 			else
 			{
@@ -980,33 +1057,6 @@ public abstract class Entitys
 		}
 
 		// TODO
-	}
-
-	public static <T> T saveObjectAlone(SQLKit kit, SQL sql, T object) throws SQLException
-	{
-		if (object != null)
-		{
-			Entity entity = getEntityFromModelObject(sql, object);
-
-			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
-
-			if (generates != null && hasNullValue(object, entity, generates.value))
-			{ // Missing values in generated columns
-				insertObjectAlone(kit, sql, object, entity);
-			}
-			else
-			{
-				if (countObject(kit, sql, object, entity) == 0)
-				{ // New record
-					insertObjectAlone(kit, sql, object, entity);
-				}
-				else
-				{
-					updateObject(kit, sql, object);
-				}
-			}
-		}
-		return object;
 	}
 
 	public static <T> Queryable selectAndParams(SQL sql, T object, RelationDefine rels, JoinMeta joins)
