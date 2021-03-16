@@ -46,7 +46,7 @@ public class EntityMaker
 	}
 
 	public static File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
-			String pkg, File base, String schema, String charSet, File template)
+			String pkg, File base, String schema, boolean innerClass, String charSet, File template)
 			throws FileNotFoundException, SQLException
 	{
 		return new EntityMaker() //
@@ -58,6 +58,7 @@ public class EntityMaker
 				.pkg(pkg) //
 				.base(base) //
 				.schema(schema) //
+				.innerClass(innerClass) //
 				.charSet(charSet) //
 				.template(template) //
 				.make() //
@@ -65,7 +66,7 @@ public class EntityMaker
 	}
 
 	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg, File base,
-			String schema, String charSet) throws FileNotFoundException, SQLException
+			String charSet) throws FileNotFoundException, SQLException
 	{
 		return make(provider, //
 				kit, //
@@ -74,9 +75,34 @@ public class EntityMaker
 				AbstractSubquery.class, //
 				pkg, //
 				base, //
-				schema, //
+				null, //
+				false, //
 				charSet, //
 				null);
+	}
+
+	public static File makeSubquery(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, File base,
+			Class<?> inClass, String charSet) throws FileNotFoundException, SQLException
+	{
+		String clsName = inClass.getCanonicalName();
+		if (Tools.isNullOrEmpty(inClass.getSimpleName()) //
+				|| clsName == null || clsName.indexOf('$') >= 0 || clsName.indexOf('[') >= 0)
+		{
+			throw new RuntimeException("Invalid PredeclaredView class: " + clsName);
+		}
+
+		return make(provider, //
+				kit, //
+				meta, //
+				name, //
+				AbstractSubquery.class, //
+				inClass.getPackage().getName(), //
+				base, //
+				null, //
+				true, //
+				charSet, //
+				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar)
+						+ ".java"));
 	}
 
 	public static File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String schema,
@@ -91,17 +117,18 @@ public class EntityMaker
 				pkg, //
 				base, //
 				schema, //
+				false, //
 				charSet, //
 				null);
 	}
 
-	public static File makeView(Provider provider, SQLKit kit, PredefinedView view, File base, String schema,
-			String charSet) throws FileNotFoundException, SQLException
+	public static File makeView(Provider provider, SQLKit kit, PredefinedView view, File base, String charSet)
+			throws FileNotFoundException, SQLException
 	{
 		Class<?> cls = view.getClass();
 		String name = view.getClass().getSimpleName();
 		String clsName = view.getClass().getCanonicalName();
-		if (name == null || name.length() == 0 //
+		if (Tools.isNullOrEmpty(name) //
 				|| clsName == null || clsName.indexOf('$') >= 0 || clsName.indexOf('[') >= 0)
 		{
 			throw new RuntimeException("Invalid PredeclaredView class: " + clsName);
@@ -118,7 +145,8 @@ public class EntityMaker
 				PredefinedView.class, //
 				cls.getPackage().getName(), //
 				base, //
-				schema, //
+				null, //
+				false, //
 				charSet, //
 				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar)
 						+ ".java"));
@@ -138,6 +166,8 @@ public class EntityMaker
 
 	private File									base;
 
+	private boolean									innerClass;
+
 	private String									schema;
 
 	private String									cs;
@@ -145,6 +175,8 @@ public class EntityMaker
 	private Set<String>								imports	= new LinkedHashSet<String>();
 
 	private File									template;
+
+	private List<String>							templateHead;
 
 	private List<String>							templateBody;
 
@@ -246,9 +278,25 @@ public class EntityMaker
 		return primaryKey;
 	}
 
+	public boolean innerClass()
+	{
+		return innerClass;
+	}
+
+	public EntityMaker innerClass(boolean innerClass)
+	{
+		this.innerClass = innerClass;
+		return this;
+	}
+
 	protected boolean isEntity()
 	{
 		return Entity.class.isAssignableFrom(sup());
+	}
+
+	protected boolean isOutputAsInnerClass()
+	{
+		return innerClass() && template() != null;
 	}
 
 	public SQLKit kit()
@@ -326,7 +374,8 @@ public class EntityMaker
 		Map<String, Integer> pk = this.getPrimaryKey();
 
 		out.write("@NameMeta(name = \"" + JSON.EscapeString(name()) + "\")");
-		out.write("public class " + name() + " extends " + sup().getSimpleName());
+		out.write("public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name() + " extends "
+				+ sup().getSimpleName());
 		out.write("{");
 
 		for (Pair<String, String> pair : this.getForeignKeys().keySet())
@@ -393,6 +442,11 @@ public class EntityMaker
 			outputForeignKeyMethod(out, entry.getKey().key, entry.getKey().value, entry.getValue());
 		}
 
+		if (this.isOutputAsInnerClass())
+		{
+			out.write("}");
+		}
+
 		if (this.templateBody != null)
 		{
 			out.write();
@@ -437,6 +491,15 @@ public class EntityMaker
 		out.write();
 		this.outputImports(out);
 		out.write();
+
+		if (this.isOutputAsInnerClass())
+		{
+			for (String line : templateHead)
+			{
+				out.write(line);
+			}
+		}
+
 		out.print("@MemberMeta(");
 		if (schema() != null)
 		{
@@ -450,6 +513,7 @@ public class EntityMaker
 			}
 		}
 		out.write(")");
+
 		return this;
 	}
 
@@ -477,6 +541,7 @@ public class EntityMaker
 	{
 		if (this.template() != null)
 		{
+			templateHead = new LinkedList<String>();
 			templateBody = new LinkedList<String>();
 
 			boolean beginBody = false;
@@ -497,11 +562,20 @@ public class EntityMaker
 					else if ((idx = line.indexOf('{')) >= 0)
 					{
 						beginBody = true;
+						String head = line.substring(0, idx + 1);
+						if (head.length() > 0)
+						{
+							templateHead.add(head);
+						}
 						String body = line.substring(idx + 1);
 						if (body.length() > 0)
 						{
 							templateBody.add(body);
 						}
+					}
+					else
+					{
+						templateHead.add(line);
 					}
 				}
 				else
