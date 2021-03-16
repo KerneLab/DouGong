@@ -289,6 +289,7 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return this.select().resolveItems();
 	}
 
+	@Override
 	public Select select()
 	{
 		return select;

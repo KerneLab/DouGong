@@ -43,8 +43,8 @@ import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.util.AccessGather;
-import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.core.util.AccessGather.Access;
+import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractSelect extends AbstractFilterable implements Select
 {
@@ -95,6 +95,21 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public AllItems all()
 	{
 		return this.provider().provideAllItems(this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T as(Class<T> cls)
+	{
+		if (Tools.isSubClass(cls, Subquery.class))
+		{
+			T t = (T) provider().provideSubquery((Class<? extends Subquery>) cls, this);
+			if (t != null)
+			{
+				return t;
+			}
+		}
+		return super.as(cls);
 	}
 
 	public AbstractSelect as(String alias)
