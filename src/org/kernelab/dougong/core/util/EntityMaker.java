@@ -40,7 +40,12 @@ public class EntityMaker
 {
 	public static final Pattern IMPORT_PATTERN = Pattern.compile("^import\\s+(\\S+)\\s*;$");
 
-	public static final File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
+	public static String fillParametersWithNull(String sql)
+	{
+		return sql.replaceAll("\\?[^?]+?\\?", "NULL");
+	}
+
+	public static File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
 			String pkg, File base, String schema, String charSet, File template)
 			throws FileNotFoundException, SQLException
 	{
@@ -59,8 +64,8 @@ public class EntityMaker
 				.file();
 	}
 
-	public static final File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg,
-			File base, String schema, String charSet) throws FileNotFoundException, SQLException
+	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg, File base,
+			String schema, String charSet) throws FileNotFoundException, SQLException
 	{
 		return make(provider, //
 				kit, //
@@ -74,7 +79,7 @@ public class EntityMaker
 				null);
 	}
 
-	public static final File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String schema,
+	public static File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String schema,
 			String charSet) throws FileNotFoundException, SQLException
 	{
 		String tab = (Tools.notNullOrEmpty(schema) ? schema + "." : "") + name;
@@ -90,9 +95,10 @@ public class EntityMaker
 				null);
 	}
 
-	public static final File makeView(Provider provider, SQLKit kit, PredefinedView view, String pkg, File base,
-			String schema, String charSet) throws FileNotFoundException, SQLException
+	public static File makeView(Provider provider, SQLKit kit, PredefinedView view, File base, String schema,
+			String charSet) throws FileNotFoundException, SQLException
 	{
+		Class<?> cls = view.getClass();
 		String name = view.getClass().getSimpleName();
 		String clsName = view.getClass().getCanonicalName();
 		if (name == null || name.length() == 0 //
@@ -103,12 +109,14 @@ public class EntityMaker
 
 		String sql = view.select().toString();
 
+		JSON params = view.parameters();
+
 		return make(provider, //
 				kit, //
-				kit.query(sql, view.parameters()).getMetaData(), //
+				(params == null ? kit.query(fillParametersWithNull(sql)) : kit.query(sql, params)).getMetaData(), //
 				name, //
 				PredefinedView.class, //
-				pkg, //
+				cls.getPackage().getName(), //
 				base, //
 				schema, //
 				charSet, //
