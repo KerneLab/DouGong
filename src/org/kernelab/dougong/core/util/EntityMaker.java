@@ -263,9 +263,16 @@ public class EntityMaker
 
 	public File file()
 	{
-		return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
-				+ pkg().replace('.', File.separatorChar) //
-				+ File.separatorChar + name() + ".java");
+		if (this.isOutputAsInnerClass())
+		{
+			return this.template();
+		}
+		else
+		{
+			return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
+					+ pkg().replace('.', File.separatorChar) //
+					+ File.separatorChar + name() + ".java");
+		}
 	}
 
 	protected Map<Pair<String, String>, List<String>> getForeignKeys()
@@ -573,7 +580,7 @@ public class EntityMaker
 							templateBody.add(body);
 						}
 					}
-					else
+					else if (!line.matches("^package\\s+.+$"))
 					{
 						templateHead.add(line);
 					}
