@@ -6,7 +6,7 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.semi.dml.PredeclaredView;
+import org.kernelab.dougong.semi.dml.PredefinedView;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
@@ -15,7 +15,7 @@ import org.kernelab.dougong.core.meta.DataMeta;
 
 @MemberMeta(follow = true)
 @NameMeta(name = "TestView")
-public class TestView extends PredeclaredView
+public class TestView extends PredefinedView
 {
 	@NameMeta(name = "comp_id_1")
 	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NO_NULLS)

@@ -6,9 +6,9 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.semi.dml.PredeclaredView;
+import org.kernelab.dougong.semi.dml.PredefinedView;
 
-public class TestView extends PredeclaredView
+public class TestView extends PredefinedView
 {
 	@Override
 	public JSON parameters()

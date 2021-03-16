@@ -34,7 +34,7 @@ import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.semi.AbstractTable;
 import org.kernelab.dougong.semi.dml.AbstractSubquery;
-import org.kernelab.dougong.semi.dml.PredeclaredView;
+import org.kernelab.dougong.semi.dml.PredefinedView;
 
 public class EntityMaker
 {
@@ -90,7 +90,7 @@ public class EntityMaker
 				null);
 	}
 
-	public static final File makeView(Provider provider, SQLKit kit, PredeclaredView view, String pkg, File base,
+	public static final File makeView(Provider provider, SQLKit kit, PredefinedView view, String pkg, File base,
 			String schema, String charSet) throws FileNotFoundException, SQLException
 	{
 		String name = view.getClass().getSimpleName();
@@ -107,7 +107,7 @@ public class EntityMaker
 				kit, //
 				kit.query(sql, view.parameters()).getMetaData(), //
 				name, //
-				PredeclaredView.class, //
+				PredefinedView.class, //
 				pkg, //
 				base, //
 				schema, //

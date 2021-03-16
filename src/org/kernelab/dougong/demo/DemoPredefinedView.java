@@ -3,13 +3,13 @@ package org.kernelab.dougong.demo;
 import org.kernelab.basis.JSON;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
-import org.kernelab.dougong.semi.dml.PredeclaredView;
+import org.kernelab.dougong.semi.dml.PredefinedView;
 
-public class DemoPreclaredView extends PredeclaredView
+public class DemoPredefinedView extends PredefinedView
 {
 	public static void main(String[] args)
 	{
-		DemoPreclaredView v = Config.SQL.view(DemoPreclaredView.class);
+		DemoPredefinedView v = Config.SQL.view(DemoPredefinedView.class);
 
 		System.out.println(v.select().where(v.c.COMP_ID.eq(Config.SQL.param("compId"))));
 

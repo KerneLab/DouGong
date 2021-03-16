@@ -4,9 +4,9 @@ import org.kernelab.basis.JSON;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
 
-public abstract class PredeclaredView extends AbstractSubquery
+public abstract class PredefinedView extends AbstractSubquery
 {
-	public PredeclaredView()
+	public PredefinedView()
 	{
 		super();
 	}
