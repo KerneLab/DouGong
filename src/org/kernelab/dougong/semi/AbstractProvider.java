@@ -177,7 +177,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 
 	public StringBuilder provideOutputColumnSelect(StringBuilder buffer, Column column)
 	{
-		DataMeta meta = column.field().getAnnotation(DataMeta.class);
+		DataMeta meta = column.field() == null ? null : column.field().getAnnotation(DataMeta.class);
 		if (meta == null || meta.select().length() == 0)
 		{
 			this.provideOutputColumnExpress(buffer, column);
