@@ -26,6 +26,6 @@ public class TestEntityMaker
 		// "org.kernelab.dougong.demo", base, null, null);
 		// }
 
-		EntityMaker.makeView(provider, kit, sql.view(TestView.class), base, null, null);
+		EntityMaker.makeView(provider, kit, sql.view(TestView.class), base, null);
 	}
 }
