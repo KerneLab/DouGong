@@ -580,7 +580,7 @@ public class EntityMaker
 							templateBody.add(body);
 						}
 					}
-					else if (!line.matches("^package\\s+.+$"))
+					else if (Tools.notNullOrWhite(line) && !line.matches("^package\\s+.+$"))
 					{
 						templateHead.add(line);
 					}
