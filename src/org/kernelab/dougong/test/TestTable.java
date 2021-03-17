@@ -1,6 +1,7 @@
 package org.kernelab.dougong.test;
 
-import org.kernelab.basis.Tools;
+import java.io.File;
+
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.dml.Delete;
@@ -8,7 +9,9 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
+import org.kernelab.dougong.core.util.EntityMaker;
 import org.kernelab.dougong.demo.COMP;
+import org.kernelab.dougong.demo.Config;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
@@ -17,11 +20,24 @@ import org.kernelab.dougong.semi.AbstractTable;
 @MemberMeta(schema = "fdsafd")
 public class TestTable extends AbstractTable
 {
-	public static SQL	SQL	= new SQL(new OracleProvider());
+	public static SQL SQL = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelect().toString(new StringBuilder()));
+		// Tools.debug(makeSelect().toString(new StringBuilder()));
+
+		Select select = makeSelectWithJoinOnCondition();
+
+		try
+		{
+			EntityMaker.makeSubquery(Config.PROVIDER, Config.getSQLKit(),
+					Config.getSQLKit().query(EntityMaker.fillParametersWithNull(select.toString())).getMetaData(),
+					"DEMO_SUBQUERY", new File("E:\\project\\DouGong\\src"), TestTable.class, "UTF-8");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public static Delete makeDelete()
@@ -31,7 +47,7 @@ public class TestTable extends AbstractTable
 		return SQL.from(t = SQL.table(TestTable.class).as("t")) //
 				.where(t.TEST_COLUMN.eq(SQL.expr("1")).and( //
 						t.TEST_COLUMN.ge(SQL.expr("'1'")).or(t.TEST_COLUMN.le(SQL.expr("'hey'"))) //
-						)) //
+				)) //
 				.delete() //
 		;
 	}
@@ -45,7 +61,7 @@ public class TestTable extends AbstractTable
 						t.TEST_COLUMN.eq(SQL.expr("1")).and( //
 								t.TEST_COLUMN.ge(SQL.expr("'1'")) //
 										.or(2 > 2, t.TEST_COLUMN.le(SQL.expr("'hey'"))) //
-								), //
+						), //
 						t.TEST_COLUMN.eq(SQL.expr("2"))) //
 				) //
 				.select(t.TEST_COLUMN.as("col")) //
@@ -87,12 +103,12 @@ public class TestTable extends AbstractTable
 		return SQL.from(t = SQL.table(TestTable.class).as("t")) //
 				.where(t.TEST_COLUMN.eq(SQL.expr("1")).and( //
 						t.TEST_COLUMN.ge(SQL.expr("'1'")).or(t.TEST_COLUMN.le(SQL.expr("'hey'"))) //
-						)) //
+				)) //
 				.update() //
 				.set(t.TEST_COLUMN, SQL.expr("1")) //
 		;
 	}
 
 	@NameMeta(name = "fdsafe")
-	public Column	TEST_COLUMN;
+	public Column TEST_COLUMN;
 }

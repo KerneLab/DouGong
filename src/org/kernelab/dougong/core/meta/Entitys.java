@@ -138,8 +138,8 @@ public abstract class Entitys
 		Condition cond = key.entity() == referrer ? key.queryCondition() : key.reference().queryCondition();
 		if (absKeyVals.iterator().hasNext())
 		{
-			Condition beyondCond = abscol.notIn(sql.provider().provideParameter(absname));
-			cond = sql.and(cond, beyondCond);
+			Condition beyond = abscol.notIn(sql.provider().provideParameter(absname));
+			cond = sql.and(cond, beyond);
 		}
 
 		Select select = sql.from(referrer) //
@@ -188,20 +188,18 @@ public abstract class Entitys
 	public static <T> int deleteObjects(SQLKit kit, SQL sql, T referenceObject, ForeignKey key, Entity referrer)
 			throws SQLException
 	{
-		if (referenceObject != null && key != null)
-		{
-			Delete delete = sql.from(referrer) //
-					.where(key.entity() == referrer ? key.queryCondition() : key.reference().queryCondition()) //
-					.delete();
-
-			Map<String, Object> params = mapColumnToLabelByMeta(key.mapValuesTo(referenceObject, referrer));
-
-			return kit.update(delete.toString(), params);
-		}
-		else
+		if (referenceObject == null || key == null)
 		{
 			return 0;
 		}
+
+		Delete delete = sql.from(referrer) //
+				.where(key.entity() == referrer ? key.queryCondition() : key.reference().queryCondition()) //
+				.delete();
+
+		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValuesTo(referenceObject, referrer));
+
+		return kit.update(delete.toString(), params);
 	}
 
 	public static <T> void deleteOneToMany(SQLKit kit, SQL sql, T object, Entity entity, Field field)
@@ -941,7 +939,8 @@ public abstract class Entitys
 			}
 			else if ((abskey = entity.absoluteKey()) != null)
 			{
-
+				// TODO update or insert by abskey
+				// TODO saveCascade
 			}
 			else
 			{
@@ -972,6 +971,7 @@ public abstract class Entitys
 			{ // Missing values in generated columns
 				insertObjectAlone(kit, sql, object, entity);
 			}
+			// TODO save by abskey
 			else
 			{
 				if (countObject(kit, sql, object, entity) == 0)
@@ -1023,40 +1023,41 @@ public abstract class Entitys
 		{
 			e.printStackTrace();
 		}
-		if (coll != null)
-		{
-			OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
-			Class<?> manyClass = meta.model();
-			Entity manyEntity = getEntityFromModelClass(sql, manyClass);
-			ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
-			final AbsoluteKey abskey = manyEntity.absoluteKey();
 
-			if (abskey != null)
-			{
-				Iterable<Object> absKeyVals = Canal.of(coll).map(new Mapper<Object, Object>()
-				{
-					@Override
-					public Object map(Object el)
-					{
-						return Canal.of(abskey.mapValues(el).values()).first().get();
-					}
-				});
-				deleteReferrerBeyondAbsoluteKeyValues(kit, sql, parent, abskey, absKeyVals, key, manyEntity, manyClass);
-			}
-			else
-			{
-				// TODO
-				// deleteObjects(kit, sql, parent, key, manyEntity);
-				//
-				// for (Object o : coll)
-				// {
-				// deleteObjectCascade(kit, sql, o, manyEntity);
-				// deleteObjectAlone(kit, sql, o, manyEntity);
-				// }
-			}
+		if (coll == null)
+		{
+			return;
 		}
 
-		// TODO
+		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
+		Class<?> manyClass = meta.model();
+		Entity manyEntity = getEntityFromModelClass(sql, manyClass);
+		ForeignKey key = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
+		final AbsoluteKey abskey = manyEntity.absoluteKey();
+
+		if (abskey != null)
+		{
+			Iterable<Object> absKeyVals = Canal.of(coll).map(new Mapper<Object, Object>()
+			{
+				@Override
+				public Object map(Object el)
+				{
+					return Canal.of(abskey.mapValues(el).values()).first().get();
+				}
+			});
+			deleteReferrerBeyondAbsoluteKeyValues(kit, sql, parent, abskey, absKeyVals, key, manyEntity, manyClass);
+		}
+		else
+		{
+			// TODO
+			deleteObjects(kit, sql, parent, key, manyEntity);
+
+			for (Object o : coll)
+			{
+				deleteObjectCascade(kit, sql, o, manyEntity);
+				deleteObjectAlone(kit, sql, o, manyEntity);
+			}
+		}
 	}
 
 	public static <T> Queryable selectAndParams(SQL sql, T object, RelationDefine rels, JoinMeta joins)
