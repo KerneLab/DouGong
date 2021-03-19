@@ -7,6 +7,7 @@ import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
+import org.kernelab.dougong.orcl.dml.OracleInsert;
 
 public class TestInsert
 {
@@ -22,6 +23,7 @@ public class TestInsert
 		Tools.debug(makeInsertByMetaMap().toString(new StringBuilder()));
 		Tools.debug(makeSelect().toString(new StringBuilder()));
 		Tools.debug(makeSelectPairs().toString(new StringBuilder()));
+		Tools.debug(makeSelectWithReturn().toString(new StringBuilder()));
 	}
 
 	public static Insert makeInsert()
@@ -92,4 +94,16 @@ public class TestInsert
 		;
 	}
 
+	public static Insert makeSelectWithReturn()
+	{
+		STAF s = null;
+		Insert insert = SQL.insert(s = SQL.table(STAF.class, "s")) //
+				.pair(s.COMP_ID, SQL.param("comp")) //
+				.pair(s.DEPT_ID, SQL.param("dept")) //
+				.pair(s.STAF_ID, SQL.param("stafId")) //
+				.as(OracleInsert.class) //
+				.returning(s.COMP_ID, s.STAF_ID) //
+		;
+		return insert;
+	}
 }

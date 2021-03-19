@@ -48,7 +48,9 @@ import org.kernelab.dougong.semi.dml.AbstractMerge;
 
 public class OracleProvider extends AbstractProvider
 {
-	public static final char TEXT_BOUNDARY_CHAR = '"';
+	public static final char	TEXT_BOUNDARY_CHAR	= '"';
+
+	public static final String	RETURN_VAR_PREFIX	= ":ret_";
 
 	public static void main(String[] args)
 	{
@@ -276,6 +278,32 @@ public class OracleProvider extends AbstractProvider
 				}
 			}
 		}
+		return buffer;
+	}
+
+	public StringBuilder provideOutputReturningClause(StringBuilder buffer, Expression[] returning)
+	{
+		if (returning != null && returning.length > 0)
+		{
+			buffer.append(" RETURNING ");
+
+			StringBuilder into = new StringBuilder();
+			int index = 1;
+			for (Expression expr : returning)
+			{
+				if (index > 1)
+				{
+					buffer.append(',');
+					into.append(',');
+				}
+				expr.toStringExpress(buffer);
+				into.append(OracleProvider.RETURN_VAR_PREFIX + (index++));
+			}
+
+			buffer.append(" INTO ");
+			buffer.append(into);
+		}
+
 		return buffer;
 	}
 
