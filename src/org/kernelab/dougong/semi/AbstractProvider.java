@@ -1,10 +1,18 @@
 package org.kernelab.dougong.semi;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Map;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
@@ -18,6 +26,7 @@ import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Label;
 import org.kernelab.dougong.core.dml.Select;
@@ -35,7 +44,8 @@ import org.kernelab.dougong.core.dml.param.LongParam;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
-import org.kernelab.dougong.core.meta.DataMeta;
+import org.kernelab.dougong.core.meta.Entitys;
+import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
@@ -68,6 +78,43 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public String provideAliasLabel(String alias)
 	{
 		return Tools.notNullOrEmpty(alias) ? provideNameText(alias) : null;
+	}
+
+	public int provideColumnType(Column column)
+	{
+		if (column == null)
+		{
+			return Types.NULL;
+		}
+
+		TypeMeta type = column.field() == null ? null : column.field().getAnnotation(TypeMeta.class);
+
+		if (type != null)
+		{
+			Integer t = provideTypeByName(type.type());
+
+			if (t != null)
+			{
+				return t;
+			}
+		}
+
+		return Types.OTHER;
+	}
+
+	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
+			Column[] generates) throws SQLException
+	{
+		String[] genames = new String[generates.length];
+		int i = 0;
+		for (Column column : generates)
+		{
+			genames[i] = column.name();
+			i++;
+		}
+		PreparedStatement ps = kit.prepareStatement(insert.toString(), params, genames);
+		kit.update(ps, params);
+		return ps.getGeneratedKeys();
 	}
 
 	public <T extends Function> T provideFunction(Class<T> cls)
@@ -177,14 +224,14 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 
 	public StringBuilder provideOutputColumnSelect(StringBuilder buffer, Column column)
 	{
-		DataMeta meta = column.field() == null ? null : column.field().getAnnotation(DataMeta.class);
-		if (meta == null || meta.select().length() == 0)
+		String select = Entitys.getColumnSelectExpression(column);
+		if (select == null)
 		{
 			this.provideOutputColumnExpress(buffer, column);
 		}
 		else
 		{
-			buffer.append(meta.select());
+			buffer.append(select);
 		}
 		return Utils.outputAlias(this, buffer, column);
 	}
@@ -367,6 +414,23 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return this.sql;
 	}
 
+	public String provideStandardTypeName(String name)
+	{
+		if (name == null)
+		{
+			return null;
+		}
+
+		int end = name.indexOf('(');
+
+		if (end == -1)
+		{
+			end = name.length();
+		}
+
+		return name.substring(0, end).trim().toUpperCase();
+	}
+
 	public <T extends Subquery> T provideSubquery(Class<T> cls)
 	{
 		return provideView(cls);
@@ -405,6 +469,31 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public Result provideToUpperCase(Expression expr)
 	{
 		return provideResult("UPPER(" + expr.toStringExpress(new StringBuilder()) + ")");
+	}
+
+	public Integer provideTypeByName(String name)
+	{
+		name = provideStandardTypeName(name);
+
+		if (name == null)
+		{
+			return null;
+		}
+
+		try
+		{
+			Field field = Types.class.getField(name);
+
+			if (Modifier.isStatic(field.getModifiers()))
+			{
+				return field.getInt(null);
+			}
+		}
+		catch (Exception e)
+		{
+		}
+
+		return null;
 	}
 
 	public <T extends View> T provideView(Class<T> cls)

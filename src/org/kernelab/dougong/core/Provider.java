@@ -3,8 +3,12 @@ package org.kernelab.dougong.core;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Map;
 
+import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
@@ -76,11 +80,34 @@ public interface Provider extends Castable
 
 	public Column provideColumn(View view, String name, Field field);
 
+	/**
+	 * Provide the type value in {@link java.sql.Types} of the given column.
+	 * 
+	 * @param column
+	 * @return The value in Types according to the column's
+	 *         {@code TypeMeta.type}, or {@code Types.NULL} if the column is
+	 *         {@code null}, otherwise {@code Types.OTHER} would be returned.
+	 */
+	public int provideColumnType(Column column);
+
 	public ComparisonCondition provideComparisonCondition();
 
 	public Delete provideDelete();
 
 	public DivideOperator provideDivideOperator();
+
+	/**
+	 * Execute the Insert statement and return the generates ResultSet.
+	 * 
+	 * @param kit
+	 * @param sql
+	 * @param insert
+	 * @param params
+	 * @param generates
+	 * @return
+	 */
+	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
+			Column[] generates) throws SQLException;
 
 	public String provideEscapeValueLiterally(Object value);
 
@@ -157,6 +184,8 @@ public interface Provider extends Castable
 	 */
 	public StringBuilder provideOutputAlias(StringBuilder buffer, Alias alias);
 
+	public StringBuilder provideOutputColumnExpress(StringBuilder buffer, Column column);
+
 	/**
 	 * Output the column reference which is typically used as insert target
 	 * columns. This method should always including the leading view alias
@@ -168,6 +197,8 @@ public interface Provider extends Castable
 	 * @return The given buffer.
 	 */
 	public StringBuilder provideOutputColumnReference(StringBuilder buffer, Column column);
+
+	public StringBuilder provideOutputColumnSelect(StringBuilder buffer, Column column);
 
 	/**
 	 * Output function text including the function name and parameters' list to
@@ -208,10 +239,6 @@ public interface Provider extends Castable
 	 * @return The given buffer.
 	 */
 	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort);
-
-	public StringBuilder provideOutputColumnSelect(StringBuilder buffer, Column column);
-
-	public StringBuilder provideOutputColumnExpress(StringBuilder buffer, Column column);
 
 	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table);
 
@@ -285,6 +312,15 @@ public interface Provider extends Castable
 	public SQL provideSQL();
 
 	/**
+	 * Convert the given type name into standard type name defined in
+	 * {@link java.sql.Types}.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public String provideStandardTypeName(String name);
+
+	/**
 	 * Provide a StringItem exactly according to the given expression.
 	 */
 	public StringItem provideStringItem(String expr);
@@ -303,6 +339,14 @@ public interface Provider extends Castable
 	public AllItems provideTotalItems();
 
 	public Result provideToUpperCase(Expression expr);
+
+	/**
+	 * Provide type in {@link java.sql.Types} according to the given type name.
+	 * 
+	 * @param name
+	 * @return The type value in Types or null if could not found.
+	 */
+	public Integer provideTypeByName(String name);
 
 	public Update provideUpdate();
 

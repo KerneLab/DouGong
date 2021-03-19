@@ -1,8 +1,12 @@
 package org.kernelab.dougong.orcl;
 
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
@@ -11,12 +15,14 @@ import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.orcl.ddl.OracleForeignKey;
@@ -45,6 +51,8 @@ import org.kernelab.dougong.orcl.dml.opr.OracleJointOperator;
 import org.kernelab.dougong.orcl.util.OracleKeysFetcher;
 import org.kernelab.dougong.semi.AbstractProvider;
 import org.kernelab.dougong.semi.dml.AbstractMerge;
+
+import oracle.jdbc.OraclePreparedStatement;
 
 public class OracleProvider extends AbstractProvider
 {
@@ -95,6 +103,34 @@ public class OracleProvider extends AbstractProvider
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
+	}
+
+	@Override
+	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
+			Column[] generates) throws SQLException
+	{
+		Expression[] returns = new Expression[generates.length];
+		for (int i = 0; i < generates.length; i++)
+		{
+			Column column = generates[i];
+			String select = Entitys.getColumnSelectExpression(column);
+			returns[i] = select != null ? sql.expr(select) : column;
+		}
+
+		insert.as(OracleInsert.class).returning(returns);
+
+		OraclePreparedStatement ps = (OraclePreparedStatement) kit.prepareStatement(insert.toString(), params);
+
+		int offset = kit.getParameter(ps).size() + 1;
+
+		for (int i = 0; i < generates.length; i++)
+		{
+			ps.registerReturnParameter(offset + i, this.provideColumnType(generates[i]));
+		}
+
+		kit.update(ps, params);
+
+		return ps.getReturnResultSet();
 	}
 
 	public String provideEscapeValueLiterally(Object value)
@@ -335,6 +371,31 @@ public class OracleProvider extends AbstractProvider
 	public OracleSelect provideSelect()
 	{
 		return this.provideProvider(new OracleSelect());
+	}
+
+	@Override
+	public String provideStandardTypeName(String name)
+	{
+		name = super.provideStandardTypeName(name);
+
+		name = name.replaceFirst("\\d+$", "");
+
+		if ("NUMBER".equals(name))
+		{
+			return "NUMERIC";
+		}
+		else if ("DATE".equals(name))
+		{
+			return "TIMESTAMP";
+		}
+		else if ("INT".equals(name) || "INTEGER".equals(name))
+		{
+			return "NUMERIC";
+		}
+		else
+		{
+			return name;
+		}
 	}
 
 	public OracleStringItem provideStringItem(String item)
