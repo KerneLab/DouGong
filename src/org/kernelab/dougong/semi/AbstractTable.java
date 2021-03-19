@@ -146,11 +146,6 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 
 	public Update updateByMetaMap(Map<Column, Expression> meta)
 	{
-		if (meta == null)
-		{
-			meta = this.getColumnDefaultExpressions(this.primaryKey());
-		}
-
 		Update update = this.provider().provideUpdate().update(this);
 
 		for (Entry<Column, Expression> entry : meta.entrySet())
