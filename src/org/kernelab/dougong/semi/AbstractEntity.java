@@ -180,8 +180,9 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	 * If no default expression specified for some columns then these columns'
 	 * parameter will be used as the default expression.<br />
 	 * If the key parameter is given then the columns in the key will be
-	 * excluded in the result. Which is useful while generating UPDATE columns'
-	 * list and excluding the key columns.
+	 * excluded in the result. The column of AbsoluteKey will also be excluded.
+	 * Which is useful while generating UPDATE columns' list and excluding these
+	 * key columns.
 	 * 
 	 * @param key
 	 * @return
@@ -193,6 +194,23 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		SQL sql = this.provider().provideSQL();
 
 		Set<String> keys = new HashSet<String>();
+
+		AbsoluteKey abs = null;
+		if (key instanceof AbsoluteKey)
+		{
+			abs = (AbsoluteKey) key;
+			key = null;
+		}
+		else
+		{
+			abs = this.absoluteKey();
+		}
+
+		if (abs != null)
+		{
+			keys.add(abs.columns()[0].name());
+		}
+
 		if (key != null)
 		{
 			for (Column k : key.columns())
@@ -203,7 +221,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 		for (Field field : this.getColumnFields())
 		{
-			if (key == null || !keys.contains(Utils.getNameFromField(field)))
+			if (!keys.contains(Utils.getNameFromField(field)))
 			{
 				Expression value = Utils.getDataExpressionFromField(sql, field);
 
