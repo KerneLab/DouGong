@@ -3,9 +3,10 @@ package org.kernelab.dougong.core.dml;
 import java.util.List;
 
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.View;
 
-public interface Update extends DML, Filterable, Hintable, Withsable
+public interface Update extends DML, Providable, Filterable, Hintable, Withsable
 {
 	public Update update(View view);
 

@@ -1,8 +1,9 @@
 package org.kernelab.dougong.core.dml;
 
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Providable;
 
-public interface Insert extends DML, Hintable
+public interface Insert extends DML, Providable, Hintable
 {
 	public Insert columns(Column... columns);
 
