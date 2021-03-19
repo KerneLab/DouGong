@@ -13,4 +13,8 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface AbsoluteKeyMeta
 {
+	/**
+	 * Indicate whether this AbsoluteKey is generating value on insert or not.
+	 */
+	public boolean generate() default true;
 }
