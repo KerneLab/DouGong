@@ -380,7 +380,7 @@ public class OracleProvider extends AbstractProvider
 
 		name = name.replaceFirst("\\d+$", "");
 
-		if ("NUMBER".equals(name))
+		if ("NUMBER".equals(name) || "INT".equals(name) || "INTEGER".equals(name))
 		{
 			return "NUMERIC";
 		}
@@ -388,9 +388,17 @@ public class OracleProvider extends AbstractProvider
 		{
 			return "TIMESTAMP";
 		}
-		else if ("INT".equals(name) || "INTEGER".equals(name))
+		else if ("LONG".equals(name))
 		{
-			return "NUMERIC";
+			return "LONGVARCHAR";
+		}
+		else if ("RAW".equals(name))
+		{
+			return "VARBINARY";
+		}
+		else if ("LONG RAW".equals(name))
+		{
+			return "LONGVARBINARY";
 		}
 		else
 		{
