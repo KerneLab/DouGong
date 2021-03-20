@@ -255,6 +255,51 @@ public class MariaProvider extends AbstractProvider
 		return new MariaSelect().provider(this);
 	}
 
+	@Override
+	public String provideStandardTypeName(String name)
+	{
+		name = super.provideStandardTypeName(name);
+
+		name = name.replaceFirst("^(\\w+)\\b.*$", "$1");
+
+		if ("INT".equals(name) || "MEDIUMINT".equals(name))
+		{
+			return "INTEGER";
+		}
+		else if ("DATETIME".equals(name))
+		{
+			return "TIMESTAMP";
+		}
+		else if ("TEXT".equals(name) || "TINYTEXT".equals(name) || "MEDIUMTEXT".equals(name))
+		{
+			return "VARCHAR";
+		}
+		else if ("LONGTEXT".equals(name) || "JSON".equals(name))
+		{
+			return "LONGVARCHAR";
+		}
+		else if ("FLOAT".equals(name))
+		{
+			return "REAL";
+		}
+		else if ("YEAR".equals(name))
+		{
+			return "DATE";
+		}
+		else if ("BLOB".equals(name) || "TINYBLOB".equals(name) || "MEDIUMBLOB".equals(name))
+		{
+			return "VARBINARY";
+		}
+		else if ("LONGBLOB".equals(name))
+		{
+			return "LONGVARBINARY";
+		}
+		else
+		{
+			return name;
+		}
+	}
+
 	public MariaStringItem provideStringItem(String item)
 	{
 		return (MariaStringItem) provideProvider(new MariaStringItem(this).setString(item));
