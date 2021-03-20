@@ -18,7 +18,7 @@ public class TestEntityMaker
 		SQL sql = new SQL(provider);
 		SQLKit kit = Config.getSQLKit();
 
-		File base = new File("E:\\project\\dougong\\src");
+		File base = new File("./src");
 
 		// for (String table : new String[] { "COMP", "DEPT", "STAF" })
 		// {
