@@ -35,6 +35,18 @@ public class Staff
 	@OneToOneMeta(key = STAF.FK_STAF_JOB, model = Job.class, referred = true, serialize = true)
 	private Job			job;
 
+	public Staff()
+	{
+	}
+
+	public Staff(Department dept, String name, Double salary, Job job)
+	{
+		this.setDepartment(dept);
+		this.setName(name);
+		this.setSalary(salary);
+		this.setJob(job);
+	}
+
 	public String getCompId()
 	{
 		return this.getDepartment() != null ? this.getDepartment().getCompId() : compId;
@@ -62,7 +74,7 @@ public class Staff
 
 	public String getJobId()
 	{
-		return jobId;
+		return this.getJob() != null ? this.getJob().getId() : jobId;
 	}
 
 	public String getName()
@@ -129,6 +141,6 @@ public class Staff
 	public String toString()
 	{
 		return "Staff: rowid=" + this.getRowid() + " id=" + this.getId() + ", name=" + this.getName() + ", salary="
-				+ this.getSalary();
+				+ this.getSalary() + " job=" + this.getJob();
 	}
 }

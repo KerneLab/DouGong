@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.kernelab.basis.Canal;
+import org.kernelab.basis.Filter;
 import org.kernelab.basis.JSON;
 import org.kernelab.basis.Mapper;
 import org.kernelab.basis.Pair;
@@ -205,7 +206,14 @@ public abstract class Entitys
 			@Override
 			public Object map(Object el)
 			{
-				return Canal.of(abskey.mapValues(el).values()).first().get();
+				return Canal.of(abskey.mapValues(el).values()).first().orNull();
+			}
+		}).filter(new Filter<Object>()
+		{
+			@Override
+			public boolean filter(Object el)
+			{
+				return el != null;
 			}
 		});
 
@@ -307,17 +315,8 @@ public abstract class Entitys
 			return null;
 		}
 
-		// TODO refine with Canal.of(Map)
-		for (Entry<Column, Object> entry : abskey.mapValues(object).entrySet())
-		{
-			if (entry.getValue() != null)
-			{
-				return new Pair<AbsoluteKey, Object>(abskey, entry.getValue());
-			}
-			break;
-		}
-
-		return null;
+		Object value = Canal.of(abskey.mapValues(object).values()).first().orNull();
+		return value != null ? new Pair<AbsoluteKey, Object>(abskey, value) : null;
 	}
 
 	protected static Set<Column> getColumns(Entity entity)
@@ -610,16 +609,7 @@ public abstract class Entitys
 		}
 		else if (strategy == GenerateValueMeta.AUTO)
 		{
-			String[] genames = new String[returns.length];
-			int i = 0;
-			for (Column column : returns)
-			{
-				genames[i] = column.name();
-				i++;
-			}
-			PreparedStatement ps = kit.prepareStatement(insert.toString(), params, genames);
-			kit.update(ps, params);
-			return ps.getGeneratedKeys();
+			return sql.provider().provideDoInsertAndReturnGenerates(kit, sql, insert, params, returns);
 		}
 		else
 		{
@@ -754,32 +744,78 @@ public abstract class Entitys
 		}
 	}
 
+	protected static <T> void insertOneToMany(SQLKit kit, SQL sql, T parent, Entity entity, Field field,
+			Collection<Object> many) throws SQLException
+	{
+		if (many == null)
+		{
+			try
+			{
+				many = Tools.access(parent, field);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		if (many == null)
+		{
+			return;
+		}
+
+		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
+		Class<?> manyClass = meta.model();
+		Entity manyEntity = getEntityFromModelClass(sql, manyClass);
+		Pair<Short, Column[]> generates = getGenerateValueColumns(manyEntity);
+
+		if (generates != null)
+		{
+			for (Object child : many)
+			{
+				if (hasNullValue(child, manyEntity, generates.value))
+				{
+					saveObject(kit, sql, child, manyEntity);
+				}
+			}
+		}
+	}
+
 	protected static <T> void insertOneToMany(SQLKit kit, SQL sql, T object, Field field) throws SQLException
 	{
-		Collection<?> coll = null;
+		insertOneToMany(kit, sql, object, field, null);
+	}
 
-		try
+	protected static <T> void insertOneToMany(SQLKit kit, SQL sql, T object, Field field, Collection<?> many)
+			throws SQLException
+	{
+		if (many == null)
 		{
-			coll = Tools.access(object, field);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		if (coll != null)
-		{
-			Entity entity = null;
-
-			for (Object o : coll)
+			try
 			{
-				if (entity == null)
-				{
-					entity = getEntityFromModelObject(sql, o);
-				}
-				insertObjectAlone(kit, sql, o, entity);
-				insertObjectCascade(kit, sql, o, entity);
+				many = Tools.access(object, field);
 			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		if (many == null)
+		{
+			return;
+		}
+
+		Entity entity = null;
+
+		for (Object o : many)
+		{
+			if (entity == null)
+			{
+				entity = getEntityFromModelObject(sql, o);
+			}
+			insertObjectAlone(kit, sql, o, entity);
+			insertObjectCascade(kit, sql, o, entity);
 		}
 	}
 
@@ -1029,53 +1065,66 @@ public abstract class Entitys
 
 	public static <T> T saveObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
-		if (object != null)
+		return saveObject(kit, sql, object, null);
+	}
+
+	public static <T> T saveObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (object == null)
 		{
-			Entity entity = getEntityFromModelObject(sql, object);
+			return null;
+		}
 
-			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+		if (entity == null)
+		{
+			entity = getEntityFromModelObject(sql, object);
+		}
 
-			if (generates != null && hasNullValue(object, entity, generates.value))
-			{ // Missing values in generated columns
+		Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+
+		if (generates != null && hasNullValue(object, entity, generates.value))
+		{ // Missing values in generated columns
+			insertObjectAlone(kit, sql, object, entity);
+			insertObjectCascade(kit, sql, object, entity);
+		}
+		else if (entity.absoluteKey() != null)
+		{
+			if (countObject(kit, sql, object, entity) == 0)
+			{
 				insertObjectAlone(kit, sql, object, entity);
 				insertObjectCascade(kit, sql, object, entity);
 			}
-			else if (entity.absoluteKey() != null)
+			else
 			{
-				if (countObject(kit, sql, object, entity) == 0)
-				{
-					insertObjectAlone(kit, sql, object, entity);
-					insertObjectCascade(kit, sql, object, entity);
-				}
-				else
-				{
-					updateObject(kit, sql, object, entity);
-					// TODO saveCascade
-					saveObjectCascade(kit, sql, object, entity);
-				}
+				updateObject(kit, sql, object, entity);
+				saveObjectCascade(kit, sql, object, entity);
+			}
+		}
+		else
+		{
+			if (countObject(kit, sql, object, entity) == 0)
+			{ // New record
+				insertObjectAlone(kit, sql, object, entity);
 			}
 			else
 			{
-				if (countObject(kit, sql, object, entity) == 0)
-				{ // New record
-					insertObjectAlone(kit, sql, object, entity);
-				}
-				else
-				{
-					deleteObjectCascade(kit, sql, object, entity);
-					updateObject(kit, sql, object);
-				}
-				insertObjectCascade(kit, sql, object, entity);
+				deleteObjectCascade(kit, sql, object, entity);
+				updateObject(kit, sql, object);
 			}
+			insertObjectCascade(kit, sql, object, entity);
 		}
+
 		return object;
 	}
 
-	public static <T> T saveObjectAlone(SQLKit kit, SQL sql, T object) throws SQLException
+	public static <T> T saveObjectAlone(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
 		if (object != null)
 		{
-			Entity entity = getEntityFromModelObject(sql, object);
+			if (entity == null)
+			{
+				entity = getEntityFromModelObject(sql, object);
+			}
 
 			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
 
@@ -1098,8 +1147,7 @@ public abstract class Entitys
 		return object;
 	}
 
-	// TODO to protected
-	public static <T> void saveObjectCascade(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	protected static <T> void saveObjectCascade(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
 		if (object == null)
 		{
@@ -1119,8 +1167,38 @@ public abstract class Entitys
 			}
 			else if (isOneToOneNeedSave(sql, entity, field))
 			{
-				// TODO deleteOneToOne(kit, sql, object, field);
+				saveOneToOne(kit, sql, object, entity, field);
 			}
+		}
+	}
+
+	/**
+	 * Save the objects in referrer entity but whose absolute key are within the
+	 * correspond values in the given children collection.
+	 * 
+	 * @param kit
+	 * @param sql
+	 * @param parent
+	 * @param children
+	 * @param abskey
+	 * @param referrerEntity
+	 * @throws SQLException
+	 */
+	protected static <T, R> void saveObjectsWithinAbsoluteKey(SQLKit kit, SQL sql, T parent,
+			Collection<Object> children, final AbsoluteKey abskey, Entity referrerEntity) throws SQLException
+	{
+		Iterable<Object> withins = Canal.of(children).filter(new Filter<Object>()
+		{
+			@Override
+			public boolean filter(Object el)
+			{
+				return Canal.of(abskey.mapValues(el).values()).first().orNull() != null;
+			}
+		});
+
+		for (Object child : withins)
+		{
+			saveObject(kit, sql, child, referrerEntity);
 		}
 	}
 
@@ -1144,9 +1222,70 @@ public abstract class Entitys
 
 		deleteOneToMany(kit, sql, parent, entity, field, many);
 
-		// TODO updateOneToMany
+		saveOneToMany(kit, sql, parent, entity, field, many);
 
-		// TODO insertOneToMany
+		insertOneToMany(kit, sql, parent, entity, field, many);
+	}
+
+	protected static <T> void saveOneToMany(SQLKit kit, SQL sql, T parent, Entity entity, Field field,
+			Collection<Object> many) throws SQLException
+	{
+		if (many == null)
+		{
+			try
+			{
+				many = Tools.access(parent, field);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		if (many == null)
+		{
+			return;
+		}
+
+		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
+		Class<?> manyClass = meta.model();
+		Entity manyEntity = getEntityFromModelClass(sql, manyClass);
+		AbsoluteKey abskey = manyEntity.absoluteKey();
+
+		if (abskey != null)
+		{
+			saveObjectsWithinAbsoluteKey(kit, sql, parent, many, abskey, manyEntity);
+		}
+		else
+		{
+			for (Object child : many)
+			{
+				updateObject(kit, sql, child, manyEntity);
+				saveObjectCascade(kit, sql, child, manyEntity);
+			}
+		}
+	}
+
+	protected static <T> void saveOneToOne(SQLKit kit, SQL sql, T object, Entity entity, Field field)
+			throws SQLException
+	{
+		Object val = null;
+
+		try
+		{
+			val = Tools.access(object, field);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		if (val != null)
+		{
+			Entity other = getEntityFromModelObject(sql, val);
+			saveObjectAlone(kit, sql, val, other);
+			saveObjectCascade(kit, sql, val, other);
+		}
 	}
 
 	protected static <T> Queryable selectAndParams(SQL sql, T object, RelationDefine rels, JoinMeta joins)

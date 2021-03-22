@@ -1,6 +1,7 @@
 package org.kernelab.dougong.demo;
 
-import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.EntityMeta;
@@ -9,16 +10,29 @@ import org.kernelab.dougong.core.meta.OneToManyMeta;
 @EntityMeta(entity = COMP.class)
 public class Company
 {
+	@DataMeta(alias = "rowid")
+	private String				rowid;
+
 	@DataMeta(alias = "compId")
-	private String					id;
+	private String				id;
 
 	@DataMeta(alias = "compName")
-	private String					name;
+	private String				name;
 
 	@OneToManyMeta(model = Department.class, key = DEPT.FK_DEPT, referred = false)
-	private Collection<Department>	departments;
+	private List<Department>	departments	= new LinkedList<Department>();
 
-	public Collection<Department> getDepartments()
+	public Company()
+	{
+	}
+
+	public Company(String id, String name)
+	{
+		this.setId(id);
+		this.setName(name);
+	}
+
+	public List<Department> getDepartments()
 	{
 		return departments;
 	}
@@ -33,7 +47,12 @@ public class Company
 		return name;
 	}
 
-	public void setDepartments(Collection<Department> departments)
+	public String getRowid()
+	{
+		return rowid;
+	}
+
+	public void setDepartments(List<Department> departments)
 	{
 		this.departments = departments;
 	}
@@ -48,10 +67,15 @@ public class Company
 		this.name = name;
 	}
 
+	public void setRowid(String rowid)
+	{
+		this.rowid = rowid;
+	}
+
 	@Override
 	public String toString()
 	{
-		String str = "Company: id=" + this.getId() + ", name=" + this.getName();
+		String str = "Company: rowid=" + this.getRowid() + " id=" + this.getId() + ", name=" + this.getName();
 
 		if (this.getDepartments() != null)
 		{

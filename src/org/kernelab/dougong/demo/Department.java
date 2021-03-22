@@ -1,5 +1,6 @@
 package org.kernelab.dougong.demo;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.kernelab.dougong.core.meta.DataMeta;
@@ -10,6 +11,9 @@ import org.kernelab.dougong.core.meta.OneToManyMeta;
 @EntityMeta(entity = DEPT.class)
 public class Department
 {
+	@DataMeta(alias = "rowid")
+	private String		rowid;
+
 	@ManyToOneMeta(model = Company.class, key = DEPT.FK_DEPT)
 	private Company		company;
 
@@ -25,7 +29,18 @@ public class Department
 	private String		name;
 
 	@OneToManyMeta(model = Staff.class, key = STAF.FK_STAF, referred = false)
-	private List<Staff>	staffs;
+	private List<Staff>	staffs	= new LinkedList<Staff>();
+
+	public Department()
+	{
+	}
+
+	public Department(Company company, String id, String name)
+	{
+		this.setCompany(company);
+		this.setId(id);
+		this.setName(name);
+	}
 
 	public Company getCompany()
 	{
@@ -50,6 +65,11 @@ public class Department
 	public String getName()
 	{
 		return name;
+	}
+
+	public String getRowid()
+	{
+		return rowid;
 	}
 
 	public List<Staff> getStaffs()
@@ -82,6 +102,11 @@ public class Department
 		this.name = name;
 	}
 
+	public void setRowid(String rowid)
+	{
+		this.rowid = rowid;
+	}
+
 	public void setStaffs(List<Staff> staffs)
 	{
 		this.staffs = staffs;
@@ -90,8 +115,8 @@ public class Department
 	@Override
 	public String toString()
 	{
-		String str = "Depart: id=" + this.getId() + ", name=" + this.getName() + ", compId=" + this.getCompId()
-				+ ", compName=" + this.getCompName();
+		String str = "Depart: rowid=" + this.getRowid() + " id=" + this.getId() + ", name=" + this.getName()
+				+ ", compId=" + this.getCompId() + ", compName=" + this.getCompName();
 
 		if (this.getStaffs() != null)
 		{

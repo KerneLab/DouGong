@@ -14,8 +14,8 @@ import org.kernelab.dougong.semi.AbstractTable;
 public class COMP extends AbstractTable
 {
 	@NameMeta(name = "ROWID")
-	@TypeMeta(type = "ROWID", nullable = TypeMeta.NO_NULLS)
-	@DataMeta(alias = "rowid")
+	@TypeMeta(type = "VARCHAR2", precision = 18, nullable = TypeMeta.NO_NULLS)
+	@DataMeta(alias = "rowid", select = "ROWIDTOCHAR(ROWID)")
 	@AbsoluteKeyMeta
 	public Column	ROWID;
 
