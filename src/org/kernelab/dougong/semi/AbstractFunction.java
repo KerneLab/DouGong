@@ -18,10 +18,39 @@ public class AbstractFunction extends AbstractItem implements Function
 
 	private String			schema	= null;
 
+	private String[]		aliases	= null;
+
 	@Override
 	public AbstractFunction alias(String alias)
 	{
 		return (AbstractFunction) super.alias(alias);
+	}
+
+	public String[] aliases()
+	{
+		return this.aliases;
+	}
+
+	@Override
+	public AbstractFunction aliases(String... aliases)
+	{
+		if (aliases == null || aliases.length == 0)
+		{
+			this.aliases = null;
+		}
+		else
+		{
+			if (aliases.length == 1)
+			{
+				this.aliases = null;
+				this.alias(aliases[0]);
+			}
+			else
+			{
+				this.aliases = aliases;
+			}
+		}
+		return this;
 	}
 
 	public Expression[] args()
@@ -39,6 +68,12 @@ public class AbstractFunction extends AbstractItem implements Function
 	public AbstractFunction as(String alias)
 	{
 		return this.replicate().alias(alias);
+	}
+
+	@Override
+	public AbstractFunction as(String... alias)
+	{
+		return this.replicate().aliases(alias);
 	}
 
 	public AbstractFunction ascend()

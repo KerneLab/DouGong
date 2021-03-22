@@ -17,6 +17,7 @@ import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
+import org.kernelab.dougong.core.dml.Aliases;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Expression;
@@ -634,6 +635,13 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 							}
 						}
 					}
+					else if (expr instanceof Aliases && ((Aliases) expr).aliases() != null)
+					{ // Multi-Return-Columns Function
+						for (String alias : ((Aliases) expr).aliases())
+						{
+							itemsMap.put(alias, this.provideReference(this, expr));
+						}
+					}
 					else if (expr instanceof Items)
 					{
 						// Items list
@@ -728,6 +736,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		this.select = exprs;
 
 		items().clear();
+		this.itemsMap = null;
 
 		if (exprs != null && exprs.length > 0)
 		{

@@ -12,7 +12,7 @@ public class TestFunc
 {
 	// public static SQL SQL = new SQL(new MariaProvider());
 
-	public static SQL	SQL	= new SQL(new OracleProvider());
+	public static SQL SQL = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
@@ -28,7 +28,7 @@ public class TestFunc
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
-				.select(d.COMP_ID, d.DEPT_NAME, s.STAF_NAME, SQL.func(F_TEST_FUNC.class)) //
+				.select(d.COMP_ID, d.DEPT_NAME, s.STAF_NAME, SQL.func(F_TEST_FUNC.class).as("a")) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID.descend()) //
 		;

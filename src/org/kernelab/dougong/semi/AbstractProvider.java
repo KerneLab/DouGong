@@ -24,6 +24,7 @@ import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.dml.Alias;
+import org.kernelab.dougong.core.dml.Aliases;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
@@ -189,11 +190,32 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	{
 		if (buffer != null && alias != null)
 		{
-			String label = this.provideAliasLabel(alias.alias());
-			if (label != null)
+			if (alias instanceof Aliases && ((Aliases) alias).aliases() != null)
 			{
-				buffer.append(' ');
-				buffer.append(label);
+				buffer.append(" (");
+				boolean first = true;
+				for (String al : ((Aliases) alias).aliases())
+				{
+					if (first)
+					{
+						first = false;
+					}
+					else
+					{
+						buffer.append(',');
+					}
+					buffer.append(this.provideAliasLabel(al));
+				}
+				buffer.append(')');
+			}
+			else
+			{
+				String label = this.provideAliasLabel(alias.alias());
+				if (label != null)
+				{
+					buffer.append(' ');
+					buffer.append(label);
+				}
 			}
 		}
 		return buffer;
