@@ -30,7 +30,6 @@ import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.EntityKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.Key;
-import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
@@ -81,59 +80,59 @@ public abstract class Entitys
 		}
 	}
 
+	public static <T> int deleteObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		return deleteObject(kit, sql, object, null);
+	}
+
 	public static <T> int deleteObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
-		if (object != null)
+		if (object == null)
 		{
-			if (entity == null)
-			{
-				entity = Entitys.getEntityFromModelObject(sql, object);
-			}
-
-			deleteObjectCascade(kit, sql, object, entity);
-
-			return deleteObjectAlone(kit, sql, object, entity);
+			return 0;
 		}
-		else
+
+		if (entity == null)
 		{
-			return -1;
+			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
+
+		deleteObjectCascade(kit, sql, object, entity);
+
+		return deleteObjectAlone(kit, sql, object, entity);
+	}
+
+	public static <T> int deleteObjectAlone(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		return deleteObjectAlone(kit, sql, object, null);
 	}
 
 	public static <T> int deleteObjectAlone(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
-		if (object != null)
+		if (object == null)
 		{
-			if (entity == null)
-			{
-				entity = Entitys.getEntityFromModelObject(sql, object);
-			}
-
-			Pair<AbsoluteKey, Object> absVal = getAbsoluteKeyValue(kit, sql, object, entity);
-
-			if (absVal != null)
-			{
-				Delete delete = sql.from(entity).where(absVal.key.queryCondition()).delete();
-
-				Map<String, Object> params = mapColumnToLabelByMeta(absVal.key.columns()[0], absVal.value);
-
-				return kit.update(delete.toString(), params);
-			}
-			else
-			{
-				PrimaryKey key = entity.primaryKey();
-
-				Delete delete = sql.from(entity).where(key.queryCondition()).delete();
-
-				Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
-
-				return kit.update(delete.toString(), params);
-			}
+			return 0;
 		}
-		else
+
+		if (entity == null)
 		{
-			return -1;
+			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
+
+		EntityKey key = getUpdateKey(entity);
+
+		if (key == null)
+		{
+			return 0;
+		}
+
+		Delete delete = sql.from(entity) //
+				.where(key.queryCondition()) //
+				.delete();
+
+		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
+
+		return kit.update(delete.toString(), params);
 	}
 
 	protected static <T> void deleteObjectCascade(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
@@ -297,28 +296,6 @@ public abstract class Entitys
 		}
 	}
 
-	protected static <T> Pair<AbsoluteKey, Object> getAbsoluteKeyValue(SQLKit kit, SQL sql, T object, Entity entity)
-	{
-		if (object == null)
-		{
-			return null;
-		}
-
-		if (entity == null)
-		{
-			entity = Entitys.getEntityFromModelObject(sql, object);
-		}
-
-		AbsoluteKey abskey = null;
-		if ((abskey = entity.absoluteKey()) == null)
-		{
-			return null;
-		}
-
-		Object value = Canal.of(abskey.mapValues(object).values()).first().orNull();
-		return value != null ? new Pair<AbsoluteKey, Object>(abskey, value) : null;
-	}
-
 	protected static Set<Column> getColumns(Entity entity)
 	{
 		Set<Column> columns = new LinkedHashSet<Column>();
@@ -341,12 +318,6 @@ public abstract class Entitys
 		return columns;
 	}
 
-	protected static Column[] getColumnsArray(Entity entity)
-	{
-		Set<Column> columns = getColumns(entity);
-		return columns.toArray(new Column[columns.size()]);
-	}
-
 	public static String getColumnSelectExpression(Column column)
 	{
 		DataMeta meta = column.field() == null ? null : column.field().getAnnotation(DataMeta.class);
@@ -361,18 +332,6 @@ public abstract class Entitys
 	}
 
 	protected static Map<Column, String> getColumnsLabelMap(Collection<Column> columns)
-	{
-		Map<Column, String> map = new LinkedHashMap<Column, String>();
-
-		for (Column column : columns)
-		{
-			map.put(column, Utils.getDataLabelFromField(column.field()));
-		}
-
-		return map;
-	}
-
-	protected static Map<Column, String> getColumnsLabelMap(Column... columns)
 	{
 		Map<Column, String> map = new LinkedHashMap<Column, String>();
 
@@ -498,7 +457,7 @@ public abstract class Entitys
 		}
 	}
 
-	protected static String getLabelFromColumnByMeta(Column column)
+	public static String getLabelFromColumnByMeta(Column column)
 	{
 		return Utils.getDataLabelFromField(column.field());
 	}
@@ -557,7 +516,7 @@ public abstract class Entitys
 		return null;
 	}
 
-	protected static EntityKey getUpdateKey(Entity entity)
+	public static EntityKey getUpdateKey(Entity entity)
 	{
 		EntityKey key = null;
 
@@ -618,29 +577,42 @@ public abstract class Entitys
 		}
 	}
 
+	public static <T> int insertObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		return insertObject(kit, sql, object, null);
+	}
+
 	public static <T> int insertObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
-		if (object != null)
+		if (object == null)
 		{
-			if (entity == null)
-			{
-				entity = Entitys.getEntityFromModelObject(sql, object);
-			}
-
-			int res = insertObjectAlone(kit, sql, object, entity);
-
-			insertObjectCascade(kit, sql, object, entity);
-
-			return res;
+			return 0;
 		}
-		else
+
+		if (entity == null)
 		{
-			return -1;
+			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
+
+		int res = insertObjectAlone(kit, sql, object, entity);
+
+		insertObjectCascade(kit, sql, object, entity);
+
+		return res;
+	}
+
+	public static <T> int insertObjectAlone(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		return insertObjectAlone(kit, sql, object, null);
 	}
 
 	public static <T> int insertObjectAlone(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
+		if (object == null)
+		{
+			return 0;
+		}
+
 		if (entity == null)
 		{
 			entity = Entitys.getEntityFromModelObject(sql, object);
@@ -865,17 +837,17 @@ public abstract class Entitys
 		}
 	}
 
-	protected static <T> Map<String, Object> makeParams(SQL sql, T object)
+	public static <T> Map<String, Object> makeParams(SQL sql, T object)
 	{
 		return makeParams(object, getEntityFromModelObject(sql, object));
 	}
 
-	protected static <T> Map<String, Object> makeParams(T object, Entity entity)
+	public static <T> Map<String, Object> makeParams(T object, Entity entity)
 	{
 		return mapColumnToLabelByMeta(mapObjectToEntity(object, entity));
 	}
 
-	protected static <T> Update makeUpdate(SQL sql, Entity entity, T object, Key key)
+	public static <T> Update makeUpdate(SQL sql, Entity entity, T object, Key key)
 	{
 		if (entity == null && object == null)
 		{
@@ -1063,6 +1035,43 @@ public abstract class Entitys
 		return meta;
 	}
 
+	public static <T> T refreshObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		return refreshObject(kit, sql, object, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T refreshObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (object == null)
+		{
+			return null;
+		}
+
+		if (entity == null)
+		{
+			entity = getEntityFromModelObject(sql, object);
+		}
+
+		Select select = sql.from(entity) //
+				.select(entity.all()) //
+				.as(AbstractSelect.class) //
+				.fillAliasByMeta();
+
+		EntityKey key = getUpdateKey(entity);
+
+		if (key != null)
+		{
+			select.where(key.queryCondition());
+			return selectObject(kit, sql, select, (Class<T>) object.getClass(),
+					mapColumnToLabelByMeta(key.mapValues(object)));
+		}
+		else
+		{
+			return object;
+		}
+	}
+
 	public static <T> T saveObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
 		return saveObject(kit, sql, object, null);
@@ -1109,7 +1118,7 @@ public abstract class Entitys
 			else
 			{
 				deleteObjectCascade(kit, sql, object, entity);
-				updateObject(kit, sql, object);
+				updateObject(kit, sql, object, entity);
 			}
 			insertObjectCascade(kit, sql, object, entity);
 		}
@@ -1117,33 +1126,41 @@ public abstract class Entitys
 		return object;
 	}
 
+	public static <T> T saveObjectAlone(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		return saveObjectAlone(kit, sql, object, null);
+	}
+
 	public static <T> T saveObjectAlone(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
-		if (object != null)
+		if (object == null)
 		{
-			if (entity == null)
-			{
-				entity = getEntityFromModelObject(sql, object);
-			}
+			return null;
+		}
 
-			Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+		if (entity == null)
+		{
+			entity = getEntityFromModelObject(sql, object);
+		}
 
-			if (generates != null && hasNullValue(object, entity, generates.value))
-			{ // Missing values in generated columns
+		Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+
+		if (generates != null && hasNullValue(object, entity, generates.value))
+		{ // Missing values in generated columns
+			insertObjectAlone(kit, sql, object, entity);
+		}
+		else
+		{
+			if (countObject(kit, sql, object, entity) == 0)
+			{ // New record
 				insertObjectAlone(kit, sql, object, entity);
 			}
 			else
 			{
-				if (countObject(kit, sql, object, entity) == 0)
-				{ // New record
-					insertObjectAlone(kit, sql, object, entity);
-				}
-				else
-				{
-					updateObject(kit, sql, object, entity);
-				}
+				updateObject(kit, sql, object, entity);
 			}
 		}
+
 		return object;
 	}
 
@@ -1375,7 +1392,28 @@ public abstract class Entitys
 		return selectObject(kit, sql, select, model, params);
 	}
 
+	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, Map<String, Object> params)
+			throws SQLException
+	{
+		Entity entity = Entitys.getEntityFromModelClass(sql, model);
+		Select select = sql.from(entity) //
+				.where(entity.primaryKey().queryCondition()) //
+				.select(entity.all()) //
+				.as(AbstractSelect.class) //
+				.fillAliasByMeta();
+		return selectObject(kit, sql, select, model, params);
+	}
+
 	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
+			throws SQLException
+	{
+		T object = kit.execute(select.toString(), params) //
+				.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+		setupObject(kit, sql, object, true);
+		return object;
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, Map<String, Object> params)
 			throws SQLException
 	{
 		T object = kit.execute(select.toString(), params) //
@@ -1392,6 +1430,27 @@ public abstract class Entitys
 
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
 			Collection<T> coll, int limit) throws SQLException
+	{
+		coll = kit.execute(select.toString(), params).getRows(coll, model,
+				Utils.getFieldNameMapByMetaFully(model, null), limit);
+		if (coll != null)
+		{
+			for (T t : coll)
+			{
+				setupObject(kit, sql, t, true);
+			}
+		}
+		return coll;
+	}
+
+	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
+			Map<String, Object> params, Collection<T> coll) throws SQLException
+	{
+		return selectObjects(kit, sql, select, model, params, coll, -1);
+	}
+
+	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
+			Map<String, Object> params, Collection<T> coll, int limit) throws SQLException
 	{
 		coll = kit.execute(select.toString(), params).getRows(coll, model,
 				Utils.getFieldNameMapByMetaFully(model, null), limit);
@@ -1497,49 +1556,51 @@ public abstract class Entitys
 	{
 		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
 
-		if (meta != null)
+		if (meta == null)
 		{
-			Class<?> manyModel = meta.model();
+			return;
+		}
 
-			Queryable pair = null;
-			if (field.getAnnotation(RedefineMeta.class) != null)
+		Class<?> manyModel = meta.model();
+
+		Queryable pair = null;
+		if (field.getAnnotation(RedefineMeta.class) != null)
+		{
+			pair = getRedefinedQueryableObject(sql, object, field);
+		}
+		else
+		{
+			pair = selectAndParams(sql, object, new RelationDefine(meta), field.getAnnotation(JoinMeta.class));
+		}
+
+		if (pair != null && pair.getSelect() != null)
+		{
+			Select sel = pair.getSelect();
+			Map<String, Object> param = pair.getParams();
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			Collection<Object> coll = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
+					: kit.execute(sel.toString(), param)) //
+							.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel, null));
+			coll = setCollection(object, field, coll);
+
+			Field manyToOne = getManyToOneField(manyModel, object.getClass());
+
+			if (coll != null)
 			{
-				pair = getRedefinedQueryableObject(sql, object, field);
-			}
-			else
-			{
-				pair = selectAndParams(sql, object, new RelationDefine(meta), field.getAnnotation(JoinMeta.class));
-			}
-
-			if (pair != null && pair.getSelect() != null)
-			{
-				Select sel = pair.getSelect();
-				Map<String, Object> param = pair.getParams();
-
-				@SuppressWarnings({ "unchecked", "rawtypes" })
-				Collection<Object> coll = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
-						: kit.execute(sel.toString(), param)) //
-								.getRows(new LinkedList(), manyModel, Utils.getFieldNameMapByMeta(manyModel, null));
-				coll = setCollection(object, field, coll);
-
-				Field manyToOne = getManyToOneField(manyModel, object.getClass());
-
-				if (coll != null)
+				for (Object obj : coll)
 				{
-					for (Object obj : coll)
+					if (manyToOne != null)
 					{
-						if (manyToOne != null)
+						try
 						{
-							try
-							{
-								Tools.access(obj, manyToOne, object);
-							}
-							catch (Exception e)
-							{
-							}
+							Tools.access(obj, manyToOne, object);
 						}
-						setupObject(kit, sql, obj, fully);
+						catch (Exception e)
+						{
+						}
 					}
+					setupObject(kit, sql, obj, fully);
 				}
 			}
 		}
@@ -1550,85 +1611,89 @@ public abstract class Entitys
 	{
 		OneToOneMeta meta = field.getAnnotation(OneToOneMeta.class);
 
-		if (meta != null)
+		if (meta == null)
 		{
-			Class<?> oneModel = meta.model();
+			return;
+		}
 
-			Queryable pair = null;
-			if (field.getAnnotation(RedefineMeta.class) != null)
+		Class<?> oneModel = meta.model();
+
+		Queryable pair = null;
+		if (field.getAnnotation(RedefineMeta.class) != null)
+		{
+			pair = getRedefinedQueryableObject(sql, object, field);
+		}
+		else
+		{
+			pair = selectAndParams(sql, object, new RelationDefine(meta), field.getAnnotation(JoinMeta.class));
+		}
+
+		if (pair != null && pair.getSelect() != null)
+		{
+			Select sel = pair.getSelect();
+			Map<String, Object> param = pair.getParams();
+
+			Object another = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
+					: kit.execute(sel.toString(), param)) //
+							.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel, null));
+			try
 			{
-				pair = getRedefinedQueryableObject(sql, object, field);
+				Tools.access(object, field, another);
 			}
-			else
+			catch (Exception e)
 			{
-				pair = selectAndParams(sql, object, new RelationDefine(meta), field.getAnnotation(JoinMeta.class));
+				e.printStackTrace();
 			}
 
-			if (pair != null && pair.getSelect() != null)
-			{
-				Select sel = pair.getSelect();
-				Map<String, Object> param = pair.getParams();
+			Field oneToOne = getOneToOneField(oneModel, object.getClass());
 
-				Object another = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
-						: kit.execute(sel.toString(), param)) //
-								.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel, null));
+			if (oneToOne != null)
+			{
 				try
 				{
-					Tools.access(object, field, another);
+					Tools.access(another, oneToOne, object);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
 				}
-
-				Field oneToOne = getOneToOneField(oneModel, object.getClass());
-
-				if (oneToOne != null)
-				{
-					try
-					{
-						Tools.access(another, oneToOne, object);
-					}
-					catch (Exception e)
-					{
-					}
-				}
-
-				setupObject(kit, sql, another, fully);
 			}
+
+			setupObject(kit, sql, another, fully);
 		}
 	}
 
 	protected static <T> void setupObject(SQLKit kit, SQL sql, T object, boolean fully) throws SQLException
 	{
-		if (object != null)
+		if (object == null)
 		{
-			Collection<Field> fields = Tools.getFieldsHierarchy(object.getClass(), null).values();
+			return;
+		}
 
+		Collection<Field> fields = Tools.getFieldsHierarchy(object.getClass(), null).values();
+
+		for (Field field : fields)
+		{
+			if (field.getAnnotation(ManyToOneMeta.class) != null)
+			{
+				setManyToOneMembers(kit, sql, object, field, fully);
+			}
+		}
+
+		for (Field field : fields)
+		{
+			if (field.getAnnotation(OneToOneMeta.class) != null)
+			{
+				setOneToOneMembers(kit, sql, object, field, fully);
+			}
+		}
+
+		if (fully)
+		{
 			for (Field field : fields)
 			{
-				if (field.getAnnotation(ManyToOneMeta.class) != null)
+				if (field.getAnnotation(OneToManyMeta.class) != null)
 				{
-					setManyToOneMembers(kit, sql, object, field, fully);
-				}
-			}
-
-			for (Field field : fields)
-			{
-				if (field.getAnnotation(OneToOneMeta.class) != null)
-				{
-					setOneToOneMembers(kit, sql, object, field, fully);
-				}
-			}
-
-			if (fully)
-			{
-				for (Field field : fields)
-				{
-					if (field.getAnnotation(OneToManyMeta.class) != null)
-					{
-						setOneToManyMembers(kit, sql, object, field, fully);
-					}
+					setOneToManyMembers(kit, sql, object, field, fully);
 				}
 			}
 		}
@@ -1641,6 +1706,11 @@ public abstract class Entitys
 
 	public static <T> int updateObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
+		if (object == null)
+		{
+			return 0;
+		}
+
 		if (entity == null)
 		{
 			entity = Entitys.getEntityFromModelObject(sql, object);
