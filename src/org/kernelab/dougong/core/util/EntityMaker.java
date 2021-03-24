@@ -507,19 +507,21 @@ public class EntityMaker
 			}
 		}
 
-		out.print("@MemberMeta(");
 		if (schema() != null)
 		{
+			out.print("@MemberMeta(");
+
 			if (schema().length() == 0)
 			{
 				out.print("follow = " + true);
 			}
 			else
 			{
-				out.print("schema = \"" + JSON.EscapeString((String) schema()) + "\"");
+				out.print("schema = \"" + JSON.EscapeString(schema()) + "\"");
 			}
+
+			out.write(")");
 		}
-		out.write(")");
 
 		return this;
 	}
