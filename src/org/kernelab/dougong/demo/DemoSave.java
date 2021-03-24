@@ -15,7 +15,7 @@ public class DemoSave
 
 	public static void demo1(SQLKit kit, SQL sql) throws SQLException
 	{
-		Job j = new Job("j4", "boss");
+		Job j = new Job("J4", "boss");
 
 		Entitys.saveObject(kit, sql, j);
 

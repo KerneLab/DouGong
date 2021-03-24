@@ -52,6 +52,7 @@ import org.kernelab.dougong.orcl.util.OracleKeysFetcher;
 import org.kernelab.dougong.semi.AbstractProvider;
 import org.kernelab.dougong.semi.dml.AbstractMerge;
 
+import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
 public class OracleProvider extends AbstractProvider
@@ -119,7 +120,10 @@ public class OracleProvider extends AbstractProvider
 
 		insert.as(OracleInsert.class).returning(returns);
 
-		OraclePreparedStatement ps = (OraclePreparedStatement) kit.prepareStatement(insert.toString(), params);
+		OraclePreparedStatement ps = (OraclePreparedStatement) kit.unwrap(OracleConnection.class)
+				.prepareStatement(insert.toString(), params);
+
+		kit.unwrap(null);
 
 		int offset = kit.getParameter(ps).size() + 1;
 
