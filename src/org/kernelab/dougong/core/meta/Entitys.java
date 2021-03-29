@@ -216,7 +216,9 @@ public abstract class Entitys
 			}
 		});
 
-		if (absKeyVals.iterator().hasNext())
+		boolean gotKey = absKeyVals.iterator().hasNext();
+
+		if (gotKey)
 		{
 			Condition beyond = abscol.notIn(sql.provider().provideParameter(absname));
 			cond = sql.and(cond, beyond);
@@ -229,7 +231,10 @@ public abstract class Entitys
 				.fillAliasByMeta();
 
 		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValuesTo(parent, referrerEntity));
-		params.put(absname, absKeyVals);
+		if (gotKey)
+		{
+			params.put(absname, absKeyVals);
+		}
 
 		for (R miss : selectObjects(kit, sql, select, referrerModel, new JSON().attrAll(params), new LinkedList<R>()))
 		{
@@ -1117,10 +1122,9 @@ public abstract class Entitys
 			}
 			else
 			{
-				deleteObjectCascade(kit, sql, object, entity);
 				updateObject(kit, sql, object, entity);
 			}
-			insertObjectCascade(kit, sql, object, entity);
+			saveObjectCascade(kit, sql, object, entity);
 		}
 
 		return object;
@@ -1323,7 +1327,7 @@ public abstract class Entitys
 		else if (rels != null)
 		{
 			key = getForeignKey(rels.key(), rels.referred(), origin, target);
-			params = key.mapValuesTo(object, key.entity() == target ? key.entity() : key.reference().entity());
+			params = key.mapValuesTo(object, rels.referred() ? key.reference().entity() : key.entity());
 		}
 
 		if (params != null && !hasNullValue(params))
