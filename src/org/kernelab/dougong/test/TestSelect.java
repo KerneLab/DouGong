@@ -17,7 +17,8 @@ public class TestSelect
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelectHint().toString(new StringBuilder()));
+		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
+		Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		// Tools.debug(makeSelectNested().toString(new StringBuilder()));
 	}
 
@@ -100,6 +101,18 @@ public class TestSelect
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
+		;
+	}
+
+	public static Select makeSelectExists()
+	{
+		DEPT d = null;
+		STAF s = null;
+		return SQL.from(d = SQL.view(DEPT.class).as("D")) //
+				.where(SQL.notExists(SQL.from(s = SQL.view(STAF.class).as("S")) //
+						.where(s.DEPT_ID.eq(d.DEPT_ID)) //
+						.select(SQL.expr("1")))) //
+				.select(d.all()) //
 		;
 	}
 

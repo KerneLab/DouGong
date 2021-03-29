@@ -10,10 +10,4 @@ public class MariaExistsCondition extends AbstractExistsCondition
 	{
 		return new MariaLogicalCondition();
 	}
-
-	public StringBuilder toString(StringBuilder buffer)
-	{
-		buffer.append("EXISTS ");
-		return this.select.toStringExpress(buffer);
-	}
 }

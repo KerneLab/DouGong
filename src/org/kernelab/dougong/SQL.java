@@ -25,6 +25,7 @@ import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
+import org.kernelab.dougong.core.dml.cond.ExistsCondition;
 import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
 import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
 import org.kernelab.dougong.core.dml.param.ByteParam;
@@ -103,6 +104,16 @@ public class SQL
 	public Expression escape()
 	{
 		return provider().provideLikePatternDefaultEscape();
+	}
+
+	public ExistsCondition exists(Select select)
+	{
+		return provider().provideExistsCondition().exists(select);
+	}
+
+	public ExistsCondition exists(Subquery subquery)
+	{
+		return provider().provideExistsCondition().exists(subquery.select());
 	}
 
 	/**
@@ -263,6 +274,16 @@ public class SQL
 	public Merge merge(View target)
 	{
 		return provider().provideMerge().into(target);
+	}
+
+	public ExistsCondition notExists(Select select)
+	{
+		return (ExistsCondition) provider().provideExistsCondition().exists(select).not();
+	}
+
+	public ExistsCondition notExists(Subquery subquery)
+	{
+		return (ExistsCondition) provider().provideExistsCondition().exists(subquery.select()).not();
 	}
 
 	public Item Null()

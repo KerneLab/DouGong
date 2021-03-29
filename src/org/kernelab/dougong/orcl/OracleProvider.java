@@ -39,6 +39,7 @@ import org.kernelab.dougong.orcl.dml.OracleSortable;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
 import org.kernelab.dougong.orcl.dml.cond.OracleComparisonCondition;
+import org.kernelab.dougong.orcl.dml.cond.OracleExistsCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleLikeCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleLogicalCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleMembershipCondition;
@@ -147,6 +148,11 @@ public class OracleProvider extends AbstractProvider
 		{
 			return value.toString().replace("'", "''");
 		}
+	}
+
+	public OracleExistsCondition provideExistsCondition()
+	{
+		return this.provideProvider(new OracleExistsCondition());
 	}
 
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)

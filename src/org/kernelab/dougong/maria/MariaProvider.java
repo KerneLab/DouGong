@@ -31,6 +31,7 @@ import org.kernelab.dougong.maria.dml.MariaSelect;
 import org.kernelab.dougong.maria.dml.MariaStringItem;
 import org.kernelab.dougong.maria.dml.MariaUpdate;
 import org.kernelab.dougong.maria.dml.cond.MariaComparisonCondition;
+import org.kernelab.dougong.maria.dml.cond.MariaExistsCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaLikeCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaLogicalCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaMembershipCondition;
@@ -92,6 +93,12 @@ public class MariaProvider extends AbstractProvider
 		{
 			return value.toString().replace("\\", "\\\\").replace("'", "''");
 		}
+	}
+
+	@Override
+	public MariaExistsCondition provideExistsCondition()
+	{
+		return this.provideProvider(new MariaExistsCondition());
 	}
 
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)

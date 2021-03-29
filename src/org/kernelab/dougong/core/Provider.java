@@ -30,6 +30,7 @@ import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
+import org.kernelab.dougong.core.dml.cond.ExistsCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -110,6 +111,8 @@ public interface Provider extends Castable
 			Column[] generates) throws SQLException;
 
 	public String provideEscapeValueLiterally(Object value);
+
+	public ExistsCondition provideExistsCondition();
 
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns);
 

@@ -1,8 +1,8 @@
 package org.kernelab.dougong.core.dml.cond;
 
-import org.kernelab.dougong.semi.dml.AbstractSelect;
+import org.kernelab.dougong.core.dml.Select;
 
-public interface ExistsCondition extends ComposableCondition, UnaryCondition
+public interface ExistsCondition extends ComposableCondition, NegatableCondition, UnaryCondition
 {
-	public ExistsCondition exists(AbstractSelect select);
+	public ExistsCondition exists(Select select);
 }
