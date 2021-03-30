@@ -746,14 +746,11 @@ public abstract class Entitys
 		Entity manyEntity = getEntityFromModelClass(sql, manyClass);
 		Pair<Short, Column[]> generates = getGenerateValueColumns(manyEntity);
 
-		if (generates != null)
+		for (Object child : many)
 		{
-			for (Object child : many)
+			if (generates == null || hasNullValue(child, manyEntity, generates.value))
 			{
-				if (hasNullValue(child, manyEntity, generates.value))
-				{
-					saveObject(kit, sql, child, manyEntity);
-				}
+				saveObject(kit, sql, child, manyEntity);
 			}
 		}
 	}
@@ -1276,14 +1273,6 @@ public abstract class Entitys
 		if (abskey != null)
 		{
 			saveObjectsWithinAbsoluteKey(kit, sql, parent, many, abskey, manyEntity);
-		}
-		else
-		{
-			for (Object child : many)
-			{
-				updateObject(kit, sql, child, manyEntity);
-				saveObjectCascade(kit, sql, child, manyEntity);
-			}
 		}
 	}
 
