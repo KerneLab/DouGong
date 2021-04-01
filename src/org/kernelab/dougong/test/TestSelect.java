@@ -13,12 +13,13 @@ public class TestSelect
 {
 	// public static SQL SQL = new SQL(new MariaProvider());
 
-	public static SQL SQL = new SQL(new OracleProvider());
+	public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
 		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
-		Tools.debug(makeSelectExists().toString(new StringBuilder()));
+		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
+		Tools.debug(makeSelectGE().toString(new StringBuilder()));
 		// Tools.debug(makeSelectNested().toString(new StringBuilder()));
 	}
 
@@ -27,15 +28,15 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						s.STAF_ID, //
 						s.STAF_NAME.joint(s.STAF_JOB).as("jj"), //
 						s.STAF_NAME.as("name") //
 				) //
 				.as(AbstractSelect.class).fillAliasByMeta() //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}
@@ -45,11 +46,11 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(SQL.all()) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select($.all()) //
 				.as(AbstractSelect.class).fillAliasByMeta() //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}
@@ -59,15 +60,15 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						s.all(), //
-						SQL.param("key").multiply(d.COMP_ID.plus(SQL.expr("2"))).as("k"), //
-						d.DEPT_NAME.joint(SQL.param("nm").plus(SQL.expr("1"))).as("j"), //
-						SQL.Null().as("n") //
+						$.param("key").multiply(d.COMP_ID.plus($.expr("2"))).as("k"), //
+						d.DEPT_NAME.joint($.param("nm").plus($.expr("1"))).as("j"), //
+						$.Null().as("n") //
 				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}
@@ -77,11 +78,11 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(SQL.all() //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select($.all() //
 				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}
@@ -91,15 +92,15 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
-						SQL.Case() //
-								.when(d.COMP_ID.gt(SQL.expr("1")), SQL.expr("'A'")) //
+						$.Case() //
+								.when(d.COMP_ID.gt($.expr("1")), $.expr("'A'")) //
 								// .els(SQL.expr("'Z'")) //
 								.as("c") //
 				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}
@@ -108,12 +109,20 @@ public class TestSelect
 	{
 		DEPT d = null;
 		STAF s = null;
-		return SQL.from(d = SQL.view(DEPT.class).as("D")) //
-				.where(SQL.notExists(SQL.from(s = SQL.view(STAF.class).as("S")) //
+		return $.from(d = $.view(DEPT.class).as("D")) //
+				.where($.notExists($.from(s = $.view(STAF.class).as("S")) //
 						.where(s.DEPT_ID.eq(d.DEPT_ID)) //
-						.select(SQL.expr("1")))) //
+						.select($.expr("1")))) //
 				.select(d.all()) //
 		;
+	}
+
+	public static Select makeSelectGE()
+	{
+		DEPT d = null;
+		return $.from(d = $.table(DEPT.class)) //
+				.where(d.COMP_ID.ge($.expr("1"))) //
+				.select(d.COMP_ID);
 	}
 
 	public static Select makeSelectHint()
@@ -121,16 +130,16 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
-						SQL.Case() //
-								.when(d.COMP_ID.gt(SQL.expr("1")), SQL.expr("'A'")) //
+						$.Case() //
+								.when(d.COMP_ID.gt($.expr("1")), $.expr("'A'")) //
 								// .els(SQL.expr("'Z'")) //
 								.as("c") //
 				) //
 				.hint("full(s)") //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}
@@ -140,15 +149,15 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID.as("c"), //
-						SQL.Case(d.COMP_ID).when(SQL.expr("1"), SQL.expr("'s'")).as("d"), //
+						$.Case(d.COMP_ID).when($.expr("1"), $.expr("'s'")).as("d"), //
 						s.all() //
 				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
-				.limit(SQL.expr("0"), SQL.expr("1")) //
+				.limit($.expr("0"), $.expr("1")) //
 		;
 	}
 
@@ -157,19 +166,19 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		Select sel = SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.FK_STAF(d)) //
+		Select sel = $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.FK_STAF(d)) //
 				.select(d.all(), //
 						s.STAF_NAME.as("name") //
 				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 				.as(AbstractSelect.class).fillAliasByMeta()
 		// .as("t") //
 		;
 
-		return SQL.from(sel) //
-				.select(SQL.all()) //
+		return $.from(sel) //
+				.select($.all()) //
 		;
 	}
 
@@ -178,17 +187,17 @@ public class TestSelect
 		DEPT d = null;
 		STAF s = null;
 
-		Select sel = SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		Select sel = $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						s.STAF_NAME.as("name") //
 				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		// .as("t") //
 		;
 
-		return SQL.from(sel) //
+		return $.from(sel) //
 				.select(sel.item("name").as("nm")) //
 		;
 	}
@@ -199,15 +208,15 @@ public class TestSelect
 		STAF s = null;
 		COMP c = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
-						SQL.from(c = SQL.table(COMP.class, "c")) //
-								.select(SQL.expr("1")) //
-								.where(c.COMP_ID.eq(SQL.expr("1"))) //
+						$.from(c = $.table(COMP.class, "c")) //
+								.select($.expr("1")) //
+								.where(c.COMP_ID.eq($.expr("1"))) //
 								.orderBy(c.COMP_ID).as("i") //
 				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}
@@ -216,12 +225,12 @@ public class TestSelect
 	{
 		STAF s = null;
 
-		Select sub = SQL.from(s = SQL.table(STAF.class, "s")) //
+		Select sub = $.from(s = $.table(STAF.class, "s")) //
 				.select(s.STAF_ID.as("id"), //
 						s.STAF_NAME.as("name") //
 				).as("sub");
 
-		return SQL.from(sub) //
+		return $.from(sub) //
 				.select(sub.item("id"), //
 						sub.item("name") //
 				) //
@@ -234,15 +243,15 @@ public class TestSelect
 		STAF s = null;
 		COMP c = null;
 
-		Select sel = SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		Select sel = $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
-						SQL.from(c = SQL.table(COMP.class, "c")) //
-								.select(SQL.expr("1")) //
-								.where(c.COMP_ID.eq(SQL.expr("1"))) //
+						$.from(c = $.table(COMP.class, "c")) //
+								.select($.expr("1")) //
+								.where(c.COMP_ID.eq($.expr("1"))) //
 								.orderBy(c.COMP_ID).as("i") //
 				) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
 

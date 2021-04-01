@@ -38,7 +38,7 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 
 	public ComparisonCondition ge(Expression expr)
 	{
-		return this.provideComparisonCondition().eq(this, expr);
+		return this.provideComparisonCondition().ge(this, expr);
 	}
 
 	public ComparisonCondition gt(Expression expr)
