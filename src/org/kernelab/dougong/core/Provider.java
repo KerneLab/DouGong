@@ -247,6 +247,8 @@ public interface Provider extends Castable
 
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table);
 
+	public StringBuilder provideOutputTablePartitionClause(StringBuilder buffer, Partitioned part);
+
 	public StringBuilder provideOutputWithSubqueryAliased(StringBuilder buffer, Subquery query);
 
 	public StringItem provideParameter(String name);

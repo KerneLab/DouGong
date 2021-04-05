@@ -18,6 +18,8 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 
 	private String	name;
 
+	private String	partition;
+
 	public AbstractTable()
 	{
 		super();
@@ -42,6 +44,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		if (table != null)
 		{
 			table.alias(alias);
+			table.partition = this.partition();
 		}
 		return (T) table;
 	}
@@ -82,6 +85,22 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	{
 		this.name = name;
 		return this;
+	}
+
+	public String partition()
+	{
+		return partition;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends Table> T partition(String partName)
+	{
+		AbstractTable table = this.replicate();
+		if (table != null)
+		{
+			table.partition = partName;
+		}
+		return (T) table;
 	}
 
 	@Override

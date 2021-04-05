@@ -19,7 +19,7 @@ public class TestSelect
 	{
 		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
 		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
-		Tools.debug(makeSelectGE().toString(new StringBuilder()));
+		Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
 		// Tools.debug(makeSelectNested().toString(new StringBuilder()));
 	}
 
@@ -121,6 +121,14 @@ public class TestSelect
 	{
 		DEPT d = null;
 		return $.from(d = $.table(DEPT.class)) //
+				.where(d.COMP_ID.ge($.expr("1"))) //
+				.select(d.COMP_ID);
+	}
+
+	public static Select makeSelectPartitioned()
+	{
+		DEPT d = null;
+		return $.from(d = $.table(DEPT.class).partition("ff")) //
 				.where(d.COMP_ID.ge($.expr("1"))) //
 				.select(d.COMP_ID);
 	}

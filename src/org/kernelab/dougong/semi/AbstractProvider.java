@@ -18,6 +18,7 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Member;
+import org.kernelab.dougong.core.Partitioned;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
@@ -290,7 +291,20 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table)
 	{
 		this.provideOutputTableName(buffer, table);
+		this.provideOutputTablePartitionClause(buffer, table);
 		this.provideOutputAlias(buffer, table);
+		return buffer;
+	}
+
+	public StringBuilder provideOutputTablePartitionClause(StringBuilder buffer, Partitioned part)
+	{
+		String name = part.partition();
+		if (name != null)
+		{
+			buffer.append(" PARTITION (");
+			buffer.append(name);
+			buffer.append(')');
+		}
 		return buffer;
 	}
 
