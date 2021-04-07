@@ -20,7 +20,6 @@ import org.kernelab.basis.Canal;
 import org.kernelab.basis.Filter;
 import org.kernelab.basis.JSON;
 import org.kernelab.basis.Mapper;
-import org.kernelab.basis.Pair;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
@@ -43,6 +42,25 @@ import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public abstract class Entitys
 {
+	public static class GenerateValueColumns
+	{
+		public final short		strategy;
+
+		public final Column[]	columns;
+
+		public final Column[]	gencols;
+
+		public final Column[]	abscols;
+
+		public GenerateValueColumns(short strategy, Column[] columns, Column[] gencols, Column[] abscols)
+		{
+			this.strategy = strategy;
+			this.columns = columns;
+			this.gencols = gencols != null ? gencols : new Column[0];
+			this.abscols = abscols != null ? abscols : new Column[0];
+		}
+	}
+
 	public static <T> int countObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
 		if (object == null)
@@ -393,13 +411,14 @@ public abstract class Entitys
 	 * @param entity
 	 * @return
 	 */
-	protected static Pair<Short, Column[]> getGenerateValueColumns(Entity entity)
+	protected static GenerateValueColumns getGenerateValueColumns(Entity entity)
 	{
 		GenerateValueMeta gen = null;
-
 		AbsoluteKeyMeta abs = null;
 
 		List<Column> columns = new LinkedList<Column>();
+		List<Column> gencols = new LinkedList<Column>();
+		List<Column> abscols = new LinkedList<Column>();
 
 		Column column = null;
 
@@ -421,19 +440,13 @@ public abstract class Entitys
 							switch (gen.strategy())
 							{
 								case GenerateValueMeta.AUTO:
-									try
-									{
-										columns.add(column);
-									}
-									catch (Exception e)
-									{
-										e.printStackTrace();
-									}
+									columns.add(column);
+									gencols.add(column);
 									break;
 
 								case GenerateValueMeta.IDENTITY:
-									return new Pair<Short, Column[]>(GenerateValueMeta.IDENTITY,
-											new Column[] { column });
+									return new GenerateValueColumns(GenerateValueMeta.IDENTITY, new Column[] { column },
+											null, new Column[] { column });
 							}
 						}
 						else if (abs != null)
@@ -441,6 +454,7 @@ public abstract class Entitys
 							if (abs.generate())
 							{
 								columns.add(column);
+								abscols.add(column);
 							}
 						}
 					}
@@ -456,10 +470,12 @@ public abstract class Entitys
 		{
 			return null;
 		}
-		else
-		{
-			return new Pair<Short, Column[]>(GenerateValueMeta.AUTO, columns.toArray(new Column[columns.size()]));
-		}
+
+		Column[] cols = columns.toArray(new Column[columns.size()]);
+		Column[] gens = gencols.toArray(new Column[gencols.size()]);
+		Column[] abss = abscols.toArray(new Column[abscols.size()]);
+
+		return new GenerateValueColumns(GenerateValueMeta.AUTO, cols, gens, abss);
 	}
 
 	public static String getLabelFromColumnByMeta(Column column)
@@ -563,21 +579,44 @@ public abstract class Entitys
 	}
 
 	protected static ResultSet insertAndReturn(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
-			short strategy, Column[] returns) throws SQLException
+			GenerateValueColumns generates, Column[] returns) throws SQLException
 	{
-		if (strategy == GenerateValueMeta.IDENTITY)
+		if (generates == null || generates.strategy == GenerateValueMeta.NONE)
+		{
+			kit.update(insert.toString(), params);
+			return null;
+		}
+		else if (generates.strategy == GenerateValueMeta.IDENTITY)
 		{
 			PreparedStatement ps = kit.prepareStatement(insert.toString(), params, true);
 			kit.update(ps, params);
 			return ps.getGeneratedKeys();
 		}
-		else if (strategy == GenerateValueMeta.AUTO)
+		else if (generates.strategy == GenerateValueMeta.AUTO)
 		{
-			return sql.provider().provideDoInsertAndReturnGenerates(kit, sql, insert, params, returns);
+			Set<Column> retSet = Tools.setOfArray(new HashSet<Column>(), returns);
+
+			boolean hasAbs = false;
+			for (Column column : generates.abscols)
+			{
+				if (retSet.contains(column))
+				{
+					hasAbs = true;
+					break;
+				}
+			}
+
+			if (!hasAbs)
+			{
+				return sql.provider().provideDoInsertAndReturnGenerates(kit, sql, insert, params, returns);
+			}
+			else
+			{
+				return sql.provider().provideDoInsertAndReturnGenerates(kit, sql, insert, params, generates, returns);
+			}
 		}
 		else
 		{
-			kit.update(insert.toString(), params);
 			return null;
 		}
 	}
@@ -623,8 +662,8 @@ public abstract class Entitys
 			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
 
-		Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
-		Column[] gencols = generates != null ? generates.value : null;
+		GenerateValueColumns generates = Entitys.getGenerateValueColumns(entity);
+		Column[] gencols = generates != null ? generates.columns : null;
 
 		AbstractTable table = entity.as(AbstractTable.class);
 		Map<Column, Expression> insertMeta = table.getColumnDefaultExpressions(null);
@@ -632,14 +671,13 @@ public abstract class Entitys
 
 		Map<String, Object> params = Entitys.mapObjectByMeta(object);
 		Insert insert = null;
-		short strategy = GenerateValueMeta.NONE;
 		Column[] returns = null;
 
 		if (generates == null)
 		{
 			insert = table.insertByMetaMap(insertMeta);
 		}
-		else if (generates.key == GenerateValueMeta.IDENTITY)
+		else if (generates.strategy == GenerateValueMeta.IDENTITY)
 		{
 			for (Column column : gencols)
 			{
@@ -648,9 +686,8 @@ public abstract class Entitys
 				break;
 			}
 			insert = table.insertByMetaMap(insertMeta);
-			strategy = GenerateValueMeta.IDENTITY;
 		}
-		else if (generates.key == GenerateValueMeta.AUTO)
+		else if (generates.strategy == GenerateValueMeta.AUTO)
 		{
 			Set<Column> genset = Tools.setOfArray(new LinkedHashSet<Column>(), gencols);
 			Map<Column, Object> genvals = mapObjectToEntity(object, gencols);
@@ -665,16 +702,16 @@ public abstract class Entitys
 			if (genset.isEmpty())
 			{
 				insert = table.insertByMetaMap(insertMeta);
+				generates = null;
 			}
 			else
 			{
 				returns = genset.toArray(new Column[genset.size()]);
 				insert = table.insertByMetaMap(insertMeta);
-				strategy = GenerateValueMeta.AUTO;
 			}
 		}
 
-		ResultSet returnSet = insertAndReturn(kit, sql, insert, params, strategy, returns);
+		ResultSet returnSet = insertAndReturn(kit, sql, insert, params, generates, returns);
 
 		// Set generate values
 		if (returnSet != null)
@@ -744,11 +781,11 @@ public abstract class Entitys
 		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
 		Class<?> manyClass = meta.model();
 		Entity manyEntity = getEntityFromModelClass(sql, manyClass);
-		Pair<Short, Column[]> generates = getGenerateValueColumns(manyEntity);
+		GenerateValueColumns generates = getGenerateValueColumns(manyEntity);
 
 		for (Object child : many)
 		{
-			if (generates == null || hasNullValue(child, manyEntity, generates.value))
+			if (generates == null || hasNullValue(child, manyEntity, generates.columns))
 			{
 				saveObject(kit, sql, child, manyEntity);
 			}
@@ -1091,9 +1128,9 @@ public abstract class Entitys
 			entity = getEntityFromModelObject(sql, object);
 		}
 
-		Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+		GenerateValueColumns generates = Entitys.getGenerateValueColumns(entity);
 
-		if (generates != null && hasNullValue(object, entity, generates.value))
+		if (generates != null && hasNullValue(object, entity, generates.columns))
 		{ // Missing values in generated columns
 			insertObjectAlone(kit, sql, object, entity);
 			insertObjectCascade(kit, sql, object, entity);
@@ -1144,9 +1181,9 @@ public abstract class Entitys
 			entity = getEntityFromModelObject(sql, object);
 		}
 
-		Pair<Short, Column[]> generates = Entitys.getGenerateValueColumns(entity);
+		GenerateValueColumns generates = Entitys.getGenerateValueColumns(entity);
 
-		if (generates != null && hasNullValue(object, entity, generates.value))
+		if (generates != null && hasNullValue(object, entity, generates.columns))
 		{ // Missing values in generated columns
 			insertObjectAlone(kit, sql, object, entity);
 		}

@@ -65,7 +65,7 @@ public class DemoSave
 			SQLKit kit = Config.getSQLKit();
 			SQL sql = Config.SQL;
 
-			demo3(kit, sql);
+			demo2(kit, sql);
 		}
 		catch (SQLException e)
 		{

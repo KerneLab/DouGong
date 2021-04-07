@@ -23,6 +23,7 @@ import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.meta.Entitys;
+import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.orcl.ddl.OracleForeignKey;
@@ -109,17 +110,17 @@ public class OracleProvider extends AbstractProvider
 
 	@Override
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
-			Column[] generates) throws SQLException
+			GenerateValueColumns generates, Column[] returns) throws SQLException
 	{
-		Expression[] returns = new Expression[generates.length];
-		for (int i = 0; i < generates.length; i++)
+		Expression[] rets = new Expression[returns.length];
+		for (int i = 0; i < returns.length; i++)
 		{
-			Column column = generates[i];
+			Column column = returns[i];
 			String select = Entitys.getColumnSelectExpression(column);
-			returns[i] = select != null ? sql.expr(select) : column;
+			rets[i] = select != null ? sql.expr(select) : column;
 		}
 
-		insert.as(OracleInsert.class).returning(returns);
+		insert.as(OracleInsert.class).returning(rets);
 
 		OraclePreparedStatement ps = (OraclePreparedStatement) kit.unwrap(OracleConnection.class)
 				.prepareStatement(insert.toString(), params);
@@ -128,9 +129,9 @@ public class OracleProvider extends AbstractProvider
 
 		int offset = kit.getParameter(ps).size() + 1;
 
-		for (int i = 0; i < generates.length; i++)
+		for (int i = 0; i < returns.length; i++)
 		{
-			ps.registerReturnParameter(offset + i, this.provideColumnType(generates[i]));
+			ps.registerReturnParameter(offset + i, this.provideColumnType(returns[i]));
 		}
 
 		kit.update(ps, params);

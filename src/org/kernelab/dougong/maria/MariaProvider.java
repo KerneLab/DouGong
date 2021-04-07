@@ -1,8 +1,12 @@
 package org.kernelab.dougong.maria;
 
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
@@ -11,12 +15,14 @@ import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.maria.ddl.MariaForeignKey;
@@ -81,6 +87,13 @@ public class MariaProvider extends AbstractProvider
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
+	}
+
+	@Override
+	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
+			GenerateValueColumns generates, Column[] returns) throws SQLException
+	{
+		throw new SQLException("Insert and return AbsoluteKey with GenerateValues is not supported.");
 	}
 
 	public String provideEscapeValueLiterally(Object value)

@@ -55,6 +55,7 @@ import org.kernelab.dougong.core.dml.param.LongParam;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
+import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
 
 public interface Provider extends Castable
@@ -98,17 +99,34 @@ public interface Provider extends Castable
 	public DivideOperator provideDivideOperator();
 
 	/**
-	 * Execute the Insert statement and return the generates ResultSet.
+	 * Execute the Insert statement and return the generates ResultSet according
+	 * to the given generate value columns.
+	 * 
+	 * @param kit
+	 * @param sql
+	 * @param insert
+	 * @param params
+	 * @param returns
+	 * @return
+	 * @throws SQLException
+	 */
+	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
+			Column[] returns) throws SQLException;
+
+	/**
+	 * Execute the Insert statement and return the generates ResultSet which
+	 * contains both AbsoluteKey and generate value columns.
 	 * 
 	 * @param kit
 	 * @param sql
 	 * @param insert
 	 * @param params
 	 * @param generates
+	 * @param returns
 	 * @return
 	 */
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
-			Column[] generates) throws SQLException;
+			GenerateValueColumns generates, Column[] returns) throws SQLException;
 
 	public String provideEscapeValueLiterally(Object value);
 

@@ -105,11 +105,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	}
 
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
-			Column[] generates) throws SQLException
+			Column[] returns) throws SQLException
 	{
-		String[] genames = new String[generates.length];
+		String[] genames = new String[returns.length];
 		int i = 0;
-		for (Column column : generates)
+		for (Column column : returns)
 		{
 			genames[i] = column.name();
 			i++;
