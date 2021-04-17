@@ -40,7 +40,7 @@ public class TestAccessGather
 				.innerJoin(d = SQL.table(DEPT.class, "d"), //
 						s.DEPT_ID.eq(d.DEPT_ID).and(s.COMP_ID.eq(d.COMP_ID))) //
 				.select(SQL.all()) //
-				.as(AbstractSelect.class).fillAliasByMeta() //
+				.to(AbstractSelect.class).fillAliasByMeta() //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;

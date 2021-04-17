@@ -120,7 +120,7 @@ public class OracleProvider extends AbstractProvider
 			rets[i] = select != null ? sql.expr(select) : column;
 		}
 
-		insert.as(OracleInsert.class).returning(rets);
+		insert.to(OracleInsert.class).returning(rets);
 
 		OraclePreparedStatement ps = (OraclePreparedStatement) kit.unwrap(OracleConnection.class)
 				.prepareStatement(insert.toString(), params);

@@ -4,9 +4,9 @@ import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Select;
-import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.Config;
+import org.kernelab.dougong.semi.dml.AbstractSubquery;
 
 public class TestWith
 {
@@ -15,7 +15,7 @@ public class TestWith
 	{
 		SQL sql = Config.SQL;
 
-		Subquery query = sql.from(sql.view(COMP.class)).select(sql.all()).toSubquery(null);
+		AbstractSubquery query = sql.from(sql.view(COMP.class)).select(sql.all()).to(AbstractSubquery.class);
 
 		View q = null;
 

@@ -1,5 +1,7 @@
 package org.kernelab.dougong.core;
 
+import org.kernelab.basis.Castable;
+
 public interface Providable extends Castable
 {
 	/**

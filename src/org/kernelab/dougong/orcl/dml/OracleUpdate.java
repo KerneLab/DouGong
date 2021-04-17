@@ -34,7 +34,7 @@ public class OracleUpdate extends AbstractUpdate
 
 		if (returning() != null)
 		{
-			this.provider().as(OracleProvider.class).provideOutputReturningClause(buffer, returning());
+			this.provider().to(OracleProvider.class).provideOutputReturningClause(buffer, returning());
 		}
 
 		return buffer;

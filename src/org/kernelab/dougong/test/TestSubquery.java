@@ -14,7 +14,7 @@ public class TestSubquery extends AbstractSubquery
 
 		TestSubquery sub = null;
 
-		Select s = sql.from(sub = TestTable.makeSelect().as(TestSubquery.class).as("T")) //
+		Select s = sql.from(sub = TestTable.makeSelect().to(TestSubquery.class).as("T")) //
 				.where(sub.col.isNotNull()) //
 				.select(sub.all(), sql.func(F_TEST_FUNC.class, sub.col).as("FF"));
 

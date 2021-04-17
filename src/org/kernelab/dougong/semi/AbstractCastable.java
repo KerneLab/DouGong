@@ -1,10 +1,10 @@
 package org.kernelab.dougong.semi;
 
-import org.kernelab.dougong.core.Castable;
+import org.kernelab.basis.Castable;
 
 public class AbstractCastable implements Castable
 {
-	public <T> T as(Class<T> cls)
+	public <T> T to(Class<T> cls)
 	{
 		try
 		{

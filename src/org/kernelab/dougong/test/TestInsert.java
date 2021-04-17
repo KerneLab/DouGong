@@ -101,7 +101,7 @@ public class TestInsert
 				.pair(s.COMP_ID, SQL.param("comp")) //
 				.pair(s.DEPT_ID, SQL.param("dept")) //
 				.pair(s.STAF_ID, SQL.param("stafId")) //
-				.as(OracleInsert.class) //
+				.to(OracleInsert.class) //
 				.returning(s.COMP_ID, s.STAF_ID) //
 		;
 		return insert;

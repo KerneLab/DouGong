@@ -77,7 +77,7 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 	protected AbstractWindowFunction replicate()
 	{
 		return super.replicate() //
-				.as(AbstractWindowFunction.class) //
+				.to(AbstractWindowFunction.class) //
 				.partitionBy(partitionBy()) //
 				.orderBy(orderBy()) //
 				.rows(isRows()) //

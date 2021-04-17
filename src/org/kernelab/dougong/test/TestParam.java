@@ -31,7 +31,7 @@ public class TestParam
 						s.STAF_NAME.joint(s.STAF_JOB).as("jj"), //
 						s.STAF_NAME.as("name") //
 				) //
-				.as(AbstractSelect.class).fillAliasByMeta() //
+				.to(AbstractSelect.class).fillAliasByMeta() //
 				.where(d.COMP_ID.gt(a)) //
 				.orderBy(d.COMP_ID) //
 		;

@@ -35,7 +35,7 @@ public class TestSelect
 						s.STAF_NAME.joint(s.STAF_JOB).as("jj"), //
 						s.STAF_NAME.as("name") //
 				) //
-				.as(AbstractSelect.class).fillAliasByMeta() //
+				.to(AbstractSelect.class).fillAliasByMeta() //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
@@ -49,7 +49,7 @@ public class TestSelect
 		return $.from(s = $.table(STAF.class, "s")) //
 				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select($.all()) //
-				.as(AbstractSelect.class).fillAliasByMeta() //
+				.to(AbstractSelect.class).fillAliasByMeta() //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
@@ -181,7 +181,7 @@ public class TestSelect
 				) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
-				.as(AbstractSelect.class).fillAliasByMeta()
+				.to(AbstractSelect.class).fillAliasByMeta()
 		// .as("t") //
 		;
 

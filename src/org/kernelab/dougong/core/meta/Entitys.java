@@ -245,7 +245,7 @@ public abstract class Entitys
 		Select select = sql.from(referrerEntity) //
 				.where(cond) //
 				.select(referrerEntity.all()) //
-				.as(AbstractSelect.class) //
+				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
 
 		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValuesTo(parent, referrerEntity));
@@ -665,7 +665,7 @@ public abstract class Entitys
 		GenerateValueColumns generates = Entitys.getGenerateValueColumns(entity);
 		Column[] gencols = generates != null ? generates.columns : null;
 
-		AbstractTable table = entity.as(AbstractTable.class);
+		AbstractTable table = entity.to(AbstractTable.class);
 		Map<Column, Expression> insertMeta = table.getColumnDefaultExpressions(null);
 		insertMeta = overwriteColumnDefaults(sql, object, insertMeta);
 
@@ -898,7 +898,7 @@ public abstract class Entitys
 			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
 
-		AbstractTable table = entity.as(AbstractTable.class);
+		AbstractTable table = entity.to(AbstractTable.class);
 
 		Map<Column, Expression> meta = table.getColumnDefaultExpressions(key);
 
@@ -1094,7 +1094,7 @@ public abstract class Entitys
 
 		Select select = sql.from(entity) //
 				.select(entity.all()) //
-				.as(AbstractSelect.class) //
+				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
 
 		EntityKey key = getUpdateKey(entity);
@@ -1401,7 +1401,7 @@ public abstract class Entitys
 						.select(target.all());
 			}
 
-			sel = sel.as(AbstractSelect.class).fillAliasByMeta();
+			sel = sel.to(AbstractSelect.class).fillAliasByMeta();
 
 			return new Queryable(sel, mapColumnToLabelByMeta(params));
 		}
@@ -1417,7 +1417,7 @@ public abstract class Entitys
 		Select select = sql.from(entity) //
 				.where(entity.primaryKey().queryCondition()) //
 				.select(entity.all()) //
-				.as(AbstractSelect.class) //
+				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
 		return selectObject(kit, sql, select, model, params);
 	}
@@ -1429,7 +1429,7 @@ public abstract class Entitys
 		Select select = sql.from(entity) //
 				.where(entity.primaryKey().queryCondition()) //
 				.select(entity.all()) //
-				.as(AbstractSelect.class) //
+				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
 		return selectObject(kit, sql, select, model, params);
 	}

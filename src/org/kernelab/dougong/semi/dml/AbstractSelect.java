@@ -98,21 +98,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provider().provideAllItems(this);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T as(Class<T> cls)
-	{
-		if (Tools.isSubClass(cls, Subquery.class))
-		{
-			T t = (T) provider().provideSubquery((Class<? extends Subquery>) cls, this);
-			if (t != null)
-			{
-				return t;
-			}
-		}
-		return super.as(cls);
-	}
-
 	public AbstractSelect as(String alias)
 	{
 		try
@@ -965,6 +950,21 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T to(Class<T> cls)
+	{
+		if (Tools.isSubClass(cls, Subquery.class))
+		{
+			T t = (T) provider().provideSubquery((Class<? extends Subquery>) cls, this);
+			if (t != null)
+			{
+				return t;
+			}
+		}
+		return super.to(cls);
+	}
+
 	public Result toLower()
 	{
 		return provideToLowerCase(this);
@@ -1081,11 +1081,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		this.toString(buffer);
 		buffer.append(')');
 		return buffer;
-	}
-
-	public Subquery toSubquery(Class<? extends Subquery> cls)
-	{
-		return this.provider().provideSubquery(cls != null ? cls : AbstractSubquery.class, this);
 	}
 
 	public Result toUpper()

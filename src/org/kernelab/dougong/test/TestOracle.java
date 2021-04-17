@@ -27,7 +27,7 @@ public class TestOracle
 		DEPT d = null;
 		STAF s = null;
 
-		OracleProvider orcl = SQL.provider().as(OracleProvider.class);
+		OracleProvider orcl = SQL.provider().to(OracleProvider.class);
 
 		OracleSelect select = (OracleSelect) SQL.from(d = SQL.table(DEPT.class, "d")) //
 				.innerJoin(s = SQL.table(STAF.class, "s"), s.DEPT_ID.eq(d.DEPT_ID)) //
