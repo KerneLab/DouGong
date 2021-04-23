@@ -271,7 +271,7 @@ public abstract class Entitys
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -311,7 +311,7 @@ public abstract class Entitys
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		if (val != null)
 		{
@@ -333,7 +333,7 @@ public abstract class Entitys
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 		}
@@ -460,7 +460,7 @@ public abstract class Entitys
 					}
 					catch (Exception ex)
 					{
-						ex.printStackTrace();
+						throw new RuntimeException(ex);
 					}
 				}
 			}
@@ -531,10 +531,8 @@ public abstract class Entitys
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-
-		return null;
 	}
 
 	public static EntityKey getUpdateKey(Entity entity)
@@ -729,7 +727,7 @@ public abstract class Entitys
 					}
 					catch (Exception e)
 					{
-						e.printStackTrace();
+						throw new RuntimeException(e);
 					}
 				}
 			}
@@ -769,7 +767,7 @@ public abstract class Entitys
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -808,7 +806,7 @@ public abstract class Entitys
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -840,7 +838,7 @@ public abstract class Entitys
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		if (val != null)
@@ -967,8 +965,7 @@ public abstract class Entitys
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
-					value = null;
+					throw new RuntimeException(e);
 				}
 				map.put(Utils.getDataLabelFromField(field), value);
 			}
@@ -1006,7 +1003,7 @@ public abstract class Entitys
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 		}
@@ -1267,7 +1264,7 @@ public abstract class Entitys
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		if (many == null)
@@ -1293,7 +1290,7 @@ public abstract class Entitys
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -1324,7 +1321,7 @@ public abstract class Entitys
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		if (val != null)
@@ -1503,6 +1500,7 @@ public abstract class Entitys
 		}
 		catch (Exception e)
 		{
+			throw new RuntimeException(e);
 		}
 
 		if (c != null && coll != null)
@@ -1522,9 +1520,8 @@ public abstract class Entitys
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
 	protected static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
@@ -1537,7 +1534,7 @@ public abstract class Entitys
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		if (setable)
@@ -1572,7 +1569,7 @@ public abstract class Entitys
 					}
 					catch (Exception e)
 					{
-						e.printStackTrace();
+						throw new RuntimeException(e);
 					}
 
 					setupObject(kit, sql, another, fully && meta.fully());
@@ -1628,6 +1625,7 @@ public abstract class Entitys
 						}
 						catch (Exception e)
 						{
+							throw new RuntimeException(e);
 						}
 					}
 					setupObject(kit, sql, obj, fully);
@@ -1672,7 +1670,7 @@ public abstract class Entitys
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 
 			Field oneToOne = getOneToOneField(oneModel, object.getClass());
@@ -1685,6 +1683,7 @@ public abstract class Entitys
 				}
 				catch (Exception e)
 				{
+					throw new RuntimeException(e);
 				}
 			}
 
