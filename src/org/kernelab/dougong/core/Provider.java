@@ -95,6 +95,17 @@ public interface Provider extends Castable
 
 	public ComparisonCondition provideComparisonCondition();
 
+	/**
+	 * Provide date time format according to the given format in
+	 * {@link java.text.SimpleDateFormat}. Only numeric component will appear in
+	 * the format.
+	 * 
+	 * @param format
+	 *            A date time format in {@link java.text.SimpleDateFormat}
+	 * @return
+	 */
+	public String provideDatetimeFormat(String format);
+
 	public Delete provideDelete();
 
 	public DivideOperator provideDivideOperator();

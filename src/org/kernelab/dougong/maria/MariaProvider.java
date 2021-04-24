@@ -79,6 +79,25 @@ public class MariaProvider extends AbstractProvider
 		return this.provideProvider(new MariaComparisonCondition());
 	}
 
+	@Override
+	public String provideDatetimeFormat(String format)
+	{
+		return format //
+				.replace("%", "%%") //
+				.replaceAll("y{3,}", "%Y") //
+				.replaceAll("y{2}", "%y") //
+				.replaceAll("m+", "%i") //
+				.replaceAll("M{2,}", "%m") //
+				.replaceAll("M", "%c") //
+				.replaceAll("d+", "%d") //
+				.replaceAll("H+", "%H") //
+				.replaceAll("h+", "%h") //
+				.replaceAll("s+", "%s") //
+				.replaceAll("a+", "%p") //
+				.replaceAll("S+", "%f") //
+		;
+	}
+
 	public MariaDelete provideDelete()
 	{
 		return new MariaDelete().provider(this);

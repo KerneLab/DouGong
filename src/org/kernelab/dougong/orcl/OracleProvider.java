@@ -63,11 +63,6 @@ public class OracleProvider extends AbstractProvider
 
 	public static final String	RETURN_VAR_PREFIX	= ":ret_";
 
-	public static void main(String[] args)
-	{
-		// SQL q = new SQL(new OracleProvider());
-	}
-
 	public OraclePriorExpression prior(Expression expr)
 	{
 		return providePriorExpression(expr);
@@ -96,6 +91,24 @@ public class OracleProvider extends AbstractProvider
 	public OracleComparisonCondition provideComparisonCondition()
 	{
 		return this.provideProvider(new OracleComparisonCondition());
+	}
+
+	@Override
+	public String provideDatetimeFormat(String format)
+	{
+		return format //
+				.replaceAll("y", "Y") //
+				.replaceAll("H+", "HH24") //
+				.replaceAll("h+", "HH12") //
+				.replaceAll("D+", "DDD") //
+				.replaceAll("d+", "DD") //
+				.replaceAll("M+", "MM") //
+				.replaceAll("m+", "MI") //
+				.replaceAll("a+", "PM") //
+				.replaceAll("S+", "FF") //
+				.replaceAll("s+", "SS") //
+				.replaceAll("X+", "TZH") //
+		;
 	}
 
 	public OracleDelete provideDelete()
