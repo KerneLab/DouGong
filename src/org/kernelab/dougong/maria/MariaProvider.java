@@ -80,6 +80,18 @@ public class MariaProvider extends AbstractProvider
 	}
 
 	@Override
+	public String provideDateExpression(String date, String format)
+	{
+		return "STR_TO_DATE(" + date + "," + format + ")";
+	}
+
+	@Override
+	public String provideDateTimeExpression(String datetime, String format)
+	{
+		return "STR_TO_DATE(" + datetime + "," + format + ")";
+	}
+
+	@Override
 	public String provideDatetimeFormat(String format)
 	{
 		return format //
@@ -342,6 +354,20 @@ public class MariaProvider extends AbstractProvider
 	public MariaStringItem provideStringItem(String item)
 	{
 		return (MariaStringItem) provideProvider(new MariaStringItem(this).setString(item));
+	}
+
+	public String provideTextContent(String text)
+	{
+		return text.replace("\\", "\\\\").replace("'", "\\'") //
+				.replace("\n", "\\n").replace("\r", "\\r") //
+				.replace("\t", "\\t").replace("\b", "\\b") //
+				.replace(String.valueOf((char) 26), "\\Z");
+	}
+
+	@Override
+	public String provideTimestampExpression(String timestamp, String format)
+	{
+		return "STR_TO_DATE(" + timestamp + "," + format + ")";
 	}
 
 	public MariaUpdate provideUpdate()

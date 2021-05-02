@@ -621,6 +621,34 @@ public class SQL
 		return provider().provideLogicalCondition().and(expr("0").eq(expr("0")));
 	}
 
+	public StringItem valDate(String date, String format)
+	{
+		return expr(provider().provideDateExpression(provider().provideTextLiteral(date), //
+				provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
+	}
+
+	public StringItem valDatetime(String datetime, String format)
+	{
+		return expr(provider().provideDateTimeExpression(provider().provideTextLiteral(datetime), //
+				provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
+	}
+
+	public StringItem valNum(Number number)
+	{
+		return expr(provider().provideNumberLiteral(number));
+	}
+
+	public StringItem valStr(String text)
+	{
+		return expr(provider().provideTextLiteral(text));
+	}
+
+	public StringItem valTimestamp(String timestamp, String format)
+	{
+		return expr(provider().provideTimestampExpression(provider().provideTextLiteral(timestamp), //
+				provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
+	}
+
 	public <T extends View> T view(Class<T> cls)
 	{
 		return provider().provideView(cls);

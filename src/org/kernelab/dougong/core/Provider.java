@@ -208,6 +208,41 @@ public interface Provider extends Castable
 	public Item provideNullItem();
 
 	/**
+	 * Provide literal of a given number.
+	 * 
+	 * @param number
+	 * @return
+	 */
+	public String provideNumberLiteral(Number number);
+
+	/**
+	 * Provide date expression according to given date and its format.
+	 * 
+	 * @param date
+	 * @param format
+	 * @return
+	 */
+	public String provideDateExpression(String date, String format);
+
+	/**
+	 * Provide date time expression according to given date time and its format.
+	 * 
+	 * @param datetime
+	 * @param format
+	 * @return
+	 */
+	public String provideDateTimeExpression(String datetime, String format);
+
+	/**
+	 * Provide timestamp expression according to given timestamp and its format.
+	 * 
+	 * @param date
+	 * @param format
+	 * @return
+	 */
+	public String provideTimestampExpression(String timestamp, String format);
+
+	/**
 	 * Output the alias name, if given, to the buffer including the white
 	 * separating characters before the alias.
 	 * 
@@ -365,6 +400,24 @@ public interface Provider extends Castable
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select);
 
 	public <T extends Table> T provideTable(Class<T> cls);
+
+	/**
+	 * Provide content of a given string which excluding opening and closing
+	 * marks.
+	 * 
+	 * @param text
+	 * @return
+	 */
+	public String provideTextContent(String text);
+
+	/**
+	 * Provide literal of a given string which including opening and closing
+	 * marks.
+	 * 
+	 * @param text
+	 * @return
+	 */
+	public String provideTextLiteral(String text);
 
 	public Result provideToLowerCase(Expression expr);
 

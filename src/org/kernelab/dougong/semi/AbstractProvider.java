@@ -70,6 +70,8 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 {
 	public static final char	OBJECT_SEPARATOR_CHAR	= '.';
 
+	public static final char	STRING_QUOTE_BOUNDARY	= '\'';
+
 	private SQL					sql;
 
 	public AbsoluteKey provideAbsoluteKey(Entity entity, Column... columns)
@@ -185,6 +187,18 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public Item provideNullItem()
 	{
 		return this.provideStringItem(SQL.NULL);
+	}
+
+	public String provideNumberLiteral(Number number)
+	{
+		if (number == null)
+		{
+			return SQL.NULL;
+		}
+		else
+		{
+			return number.toString();
+		}
 	}
 
 	public StringBuilder provideOutputAlias(StringBuilder buffer, Alias alias)
@@ -490,6 +504,18 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public <T extends Table> T provideTable(Class<T> cls)
 	{
 		return provideView(cls);
+	}
+
+	public String provideTextLiteral(String text)
+	{
+		if (text == null)
+		{
+			return SQL.NULL;
+		}
+		else
+		{
+			return STRING_QUOTE_BOUNDARY + this.provideTextContent(text) + STRING_QUOTE_BOUNDARY;
+		}
 	}
 
 	public Result provideToLowerCase(Expression expr)
