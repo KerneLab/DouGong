@@ -647,19 +647,19 @@ public class SQL
 				provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
 	}
 
-	public StringItem valDatetime(Calendar datetime, String format)
+	public StringItem valDatetime(Calendar datetime)
 	{
 		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
 				provider().provideDefaultDateTimeFormat());
 	}
 
-	public StringItem valDatetime(java.util.Date datetime, String format)
+	public StringItem valDatetime(java.util.Date datetime)
 	{
 		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
 				provider().provideDefaultDateTimeFormat());
 	}
 
-	public StringItem valDatetime(long datetime, String format)
+	public StringItem valDatetime(long datetime)
 	{
 		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
 				provider().provideDefaultDateTimeFormat());
@@ -681,19 +681,19 @@ public class SQL
 		return expr(provider().provideTextLiteral(text));
 	}
 
-	public StringItem valTimestamp(Calendar timestamp, String format)
+	public StringItem valTimestamp(Calendar timestamp)
 	{
 		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
 				provider().provideDefaultTimestampFormat());
 	}
 
-	public StringItem valTimestamp(Date timestamp, String format)
+	public StringItem valTimestamp(Date timestamp)
 	{
 		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
 				provider().provideDefaultTimestampFormat());
 	}
 
-	public StringItem valTimestamp(long timestamp, String format)
+	public StringItem valTimestamp(long timestamp)
 	{
 		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
 				provider().provideDefaultTimestampFormat());

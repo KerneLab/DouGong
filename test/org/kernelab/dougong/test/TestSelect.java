@@ -1,21 +1,19 @@
 package org.kernelab.dougong.test;
 
-import java.math.BigDecimal;
-
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
+import org.kernelab.dougong.demo.DUAL;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.orcl.OracleProvider;
+import org.kernelab.dougong.maria.MariaProvider;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class TestSelect
 {
-	// public static SQL SQL = new SQL(new MariaProvider());
-
-	public static SQL $ = new SQL(new OracleProvider());
+	public static SQL $ = new SQL(new MariaProvider());
+	// public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
@@ -23,8 +21,16 @@ public class TestSelect
 		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
 		// Tools.debug(makeSelectNested().toString(new StringBuilder()));
+		Tools.debug(maekSelectValues().toString(new StringBuilder()));
+	}
 
-		Tools.debug($.valNum(new BigDecimal("1232142154264527563865487.64")));
+	public static Select maekSelectValues()
+	{
+		return $.from($.table(DUAL.class)) //
+				.select($.valDate(System.currentTimeMillis()).as("a"), //
+						$.valDatetime(System.currentTimeMillis()).as("b"), //
+						$.valTimestamp(System.currentTimeMillis()).as("c") //
+				);
 	}
 
 	public static Select makeSelectAliasByMeta()
