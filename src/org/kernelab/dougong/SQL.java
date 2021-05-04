@@ -623,52 +623,40 @@ public class SQL
 		return provider().provideLogicalCondition().and(expr("0").eq(expr("0")));
 	}
 
-	public StringItem valDate(Calendar date)
+	public Function valDate(Class<? extends Function> func, Calendar date)
 	{
-		return valDate(Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
+		return valTime(func, Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
 				provider().provideDefaultDateFormat());
 	}
 
-	public StringItem valDate(java.util.Date date)
+	public Function valDate(Class<? extends Function> func, java.util.Date date)
 	{
-		return valDate(Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
+		return valTime(func, Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
 				provider().provideDefaultDateFormat());
 	}
 
-	public StringItem valDate(long date)
+	public Function valDate(Class<? extends Function> func, long date)
 	{
-		return valDate(Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
+		return valTime(func, Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
 				provider().provideDefaultDateFormat());
 	}
 
-	public StringItem valDate(String date, String format)
+	public Function valDatetime(Class<? extends Function> func, Calendar datetime)
 	{
-		return expr(provider().provideDateExpression(provider().provideTextLiteral(date), //
-				provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
-	}
-
-	public StringItem valDatetime(Calendar datetime)
-	{
-		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
+		return valTime(func, Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
 				provider().provideDefaultDateTimeFormat());
 	}
 
-	public StringItem valDatetime(java.util.Date datetime)
+	public Function valDatetime(Class<? extends Function> func, java.util.Date datetime)
 	{
-		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
+		return valTime(func, Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
 				provider().provideDefaultDateTimeFormat());
 	}
 
-	public StringItem valDatetime(long datetime)
+	public Function valDatetime(Class<? extends Function> func, long datetime)
 	{
-		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
+		return valTime(func, Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
 				provider().provideDefaultDateTimeFormat());
-	}
-
-	public StringItem valDatetime(String datetime, String format)
-	{
-		return expr(provider().provideDateTimeExpression(provider().provideTextLiteral(datetime), //
-				provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
 	}
 
 	public StringItem valNum(Number number)
@@ -681,28 +669,28 @@ public class SQL
 		return expr(provider().provideTextLiteral(text));
 	}
 
-	public StringItem valTimestamp(Calendar timestamp)
+	public Function valTime(Class<? extends Function> func, String datetime, String format)
 	{
-		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
+		return func(func).call(expr(provider().provideTextLiteral(datetime)),
+				expr(provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
+	}
+
+	public Function valTimestamp(Class<? extends Function> func, Calendar timestamp)
+	{
+		return valTime(func, Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
 				provider().provideDefaultTimestampFormat());
 	}
 
-	public StringItem valTimestamp(Date timestamp)
+	public Function valTimestamp(Class<? extends Function> func, java.util.Date timestamp)
 	{
-		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
+		return valTime(func, Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
 				provider().provideDefaultTimestampFormat());
 	}
 
-	public StringItem valTimestamp(long timestamp)
+	public Function valTimestamp(Class<? extends Function> func, long timestamp)
 	{
-		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
+		return valTime(func, Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
 				provider().provideDefaultTimestampFormat());
-	}
-
-	public StringItem valTimestamp(String timestamp, String format)
-	{
-		return expr(provider().provideTimestampExpression(provider().provideTextLiteral(timestamp), //
-				provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
 	}
 
 	public <T extends View> T view(Class<T> cls)

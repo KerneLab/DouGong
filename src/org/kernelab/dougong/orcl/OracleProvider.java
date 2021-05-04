@@ -94,18 +94,6 @@ public class OracleProvider extends AbstractProvider
 	}
 
 	@Override
-	public String provideDateExpression(String date, String format)
-	{
-		return "TO_DATE(" + date + "," + format + ")";
-	}
-
-	@Override
-	public String provideDateTimeExpression(String datetime, String format)
-	{
-		return "TO_DATE(" + datetime + "," + format + ")";
-	}
-
-	@Override
 	public String provideDatetimeFormat(String format)
 	{
 		return format //
@@ -450,12 +438,6 @@ public class OracleProvider extends AbstractProvider
 	public String provideTextContent(String text)
 	{
 		return text.replace("'", "''");
-	}
-
-	@Override
-	public String provideTimestampExpression(String timestamp, String format)
-	{
-		return "TO_TIMESTAMP(" + timestamp + "," + format + ")";
 	}
 
 	public OracleUpdate provideUpdate()
