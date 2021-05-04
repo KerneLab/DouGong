@@ -96,6 +96,24 @@ public interface Provider extends Castable
 	public ComparisonCondition provideComparisonCondition();
 
 	/**
+	 * Provide date expression according to given date and its format.
+	 * 
+	 * @param date
+	 * @param format
+	 * @return
+	 */
+	public String provideDateExpression(String date, String format);
+
+	/**
+	 * Provide date time expression according to given date time and its format.
+	 * 
+	 * @param datetime
+	 * @param format
+	 * @return
+	 */
+	public String provideDateTimeExpression(String datetime, String format);
+
+	/**
 	 * Provide date time format according to the given format in
 	 * {@link java.text.SimpleDateFormat}. Only numeric component will appear in
 	 * the format.
@@ -105,6 +123,12 @@ public interface Provider extends Castable
 	 * @return
 	 */
 	public String provideDatetimeFormat(String format);
+
+	public String provideDefaultDateFormat();
+
+	public String provideDefaultDateTimeFormat();
+
+	public String provideDefaultTimestampFormat();
 
 	public Delete provideDelete();
 
@@ -214,33 +238,6 @@ public interface Provider extends Castable
 	 * @return
 	 */
 	public String provideNumberLiteral(Number number);
-
-	/**
-	 * Provide date expression according to given date and its format.
-	 * 
-	 * @param date
-	 * @param format
-	 * @return
-	 */
-	public String provideDateExpression(String date, String format);
-
-	/**
-	 * Provide date time expression according to given date time and its format.
-	 * 
-	 * @param datetime
-	 * @param format
-	 * @return
-	 */
-	public String provideDateTimeExpression(String datetime, String format);
-
-	/**
-	 * Provide timestamp expression according to given timestamp and its format.
-	 * 
-	 * @param date
-	 * @param format
-	 * @return
-	 */
-	public String provideTimestampExpression(String timestamp, String format);
 
 	/**
 	 * Output the alias name, if given, to the buffer including the white
@@ -418,6 +415,15 @@ public interface Provider extends Castable
 	 * @return
 	 */
 	public String provideTextLiteral(String text);
+
+	/**
+	 * Provide timestamp expression according to given timestamp and its format.
+	 * 
+	 * @param date
+	 * @param format
+	 * @return
+	 */
+	public String provideTimestampExpression(String timestamp, String format);
 
 	public Result provideToLowerCase(Expression expr);
 

@@ -3,9 +3,11 @@ package org.kernelab.dougong;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
@@ -621,10 +623,46 @@ public class SQL
 		return provider().provideLogicalCondition().and(expr("0").eq(expr("0")));
 	}
 
+	public StringItem valDate(Calendar date)
+	{
+		return valDate(Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
+				provider().provideDefaultDateFormat());
+	}
+
+	public StringItem valDate(java.util.Date date)
+	{
+		return valDate(Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
+				provider().provideDefaultDateFormat());
+	}
+
+	public StringItem valDate(long date)
+	{
+		return valDate(Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
+				provider().provideDefaultDateFormat());
+	}
+
 	public StringItem valDate(String date, String format)
 	{
 		return expr(provider().provideDateExpression(provider().provideTextLiteral(date), //
 				provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
+	}
+
+	public StringItem valDatetime(Calendar datetime, String format)
+	{
+		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
+				provider().provideDefaultDateTimeFormat());
+	}
+
+	public StringItem valDatetime(java.util.Date datetime, String format)
+	{
+		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
+				provider().provideDefaultDateTimeFormat());
+	}
+
+	public StringItem valDatetime(long datetime, String format)
+	{
+		return valDatetime(Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
+				provider().provideDefaultDateTimeFormat());
 	}
 
 	public StringItem valDatetime(String datetime, String format)
@@ -641,6 +679,24 @@ public class SQL
 	public StringItem valStr(String text)
 	{
 		return expr(provider().provideTextLiteral(text));
+	}
+
+	public StringItem valTimestamp(Calendar timestamp, String format)
+	{
+		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
+				provider().provideDefaultTimestampFormat());
+	}
+
+	public StringItem valTimestamp(Date timestamp, String format)
+	{
+		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
+				provider().provideDefaultTimestampFormat());
+	}
+
+	public StringItem valTimestamp(long timestamp, String format)
+	{
+		return valTimestamp(Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
+				provider().provideDefaultTimestampFormat());
 	}
 
 	public StringItem valTimestamp(String timestamp, String format)

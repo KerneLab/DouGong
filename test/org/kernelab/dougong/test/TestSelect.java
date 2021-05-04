@@ -1,5 +1,7 @@
 package org.kernelab.dougong.test;
 
+import java.math.BigDecimal;
+
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
@@ -19,8 +21,10 @@ public class TestSelect
 	{
 		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
 		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
-		Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
+		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
 		// Tools.debug(makeSelectNested().toString(new StringBuilder()));
+
+		Tools.debug($.valNum(new BigDecimal("1232142154264527563865487.64")));
 	}
 
 	public static Select makeSelectAliasByMeta()
