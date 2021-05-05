@@ -521,7 +521,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return provideView(cls);
 	}
 
-	public String provideTextLiteral(String text)
+	public String provideTextLiteral(CharSequence text)
 	{
 		if (text == null)
 		{

@@ -10,13 +10,13 @@ import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.DUAL;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.orcl.OracleProvider;
+import org.kernelab.dougong.maria.MariaProvider;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class TestSelect
 {
-	// public static SQL $ = new SQL(new MariaProvider());
-	public static SQL $ = new SQL(new OracleProvider());
+	public static SQL $ = new SQL(new MariaProvider());
+	// public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
@@ -24,7 +24,8 @@ public class TestSelect
 		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
 		// Tools.debug(makeSelectNested().toString(new StringBuilder()));
-		Tools.debug(maekSelectValuesOracle().toString(new StringBuilder()));
+		Tools.debug(maekSelectValuesMaria().toString(new StringBuilder()));
+		// Tools.debug(maekSelectValuesOracle().toString(new StringBuilder()));
 	}
 
 	public static Select maekSelectValuesMaria()
@@ -32,7 +33,9 @@ public class TestSelect
 		Calendar c = new GregorianCalendar();
 		java.util.Date d = new java.util.Date();
 		return $.from($.table(DUAL.class)) //
-				.select($.valDate(STR_TO_DATE.class, System.currentTimeMillis()).as("a"), //
+				.select($.val("hey'").as("x"), //
+						$.val(123.56).as("y"), //
+						$.valDate(STR_TO_DATE.class, System.currentTimeMillis()).as("a"), //
 						$.valDatetime(STR_TO_DATE.class, System.currentTimeMillis()).as("b"), //
 						$.valTimestamp(STR_TO_DATE.class, System.currentTimeMillis()).as("c"), //
 						$.valDate(STR_TO_DATE.class, c).as("d"), //
@@ -41,7 +44,7 @@ public class TestSelect
 						$.valDate(STR_TO_DATE.class, d).as("g"), //
 						$.valDatetime(STR_TO_DATE.class, d).as("h"), //
 						$.valTimestamp(STR_TO_DATE.class, d).as("i"), //
-						$.valTime(STR_TO_DATE.class, "20181231", "yyyyMMdd").as("j") //
+						$.valDatetime(STR_TO_DATE.class, "20181231", "yyyyMMdd").as("j") //
 				);
 	}
 
@@ -50,7 +53,9 @@ public class TestSelect
 		Calendar c = new GregorianCalendar();
 		java.util.Date d = new java.util.Date();
 		return $.from($.table(DUAL.class)) //
-				.select($.valDate(TO_DATE.class, System.currentTimeMillis()).as("a"), //
+				.select($.val("hey'").as("x"), //
+						$.val(123.56).as("y"), //
+						$.valDate(TO_DATE.class, System.currentTimeMillis()).as("a"), //
 						$.valDatetime(TO_DATE.class, System.currentTimeMillis()).as("b"), //
 						$.valTimestamp(TO_TIMESTAMP.class, System.currentTimeMillis()).as("c"), //
 						$.valDate(TO_DATE.class, c).as("d"), //
@@ -59,7 +64,7 @@ public class TestSelect
 						$.valDate(TO_DATE.class, d).as("g"), //
 						$.valDatetime(TO_DATE.class, d).as("h"), //
 						$.valTimestamp(TO_TIMESTAMP.class, d).as("i"), //
-						$.valTime(TO_DATE.class, "20181231", "yyyyMMdd").as("j") //
+						$.valDatetime(TO_DATE.class, "20181231", "yyyyMMdd").as("j") //
 				);
 	}
 

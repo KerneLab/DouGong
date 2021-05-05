@@ -435,9 +435,9 @@ public class OracleProvider extends AbstractProvider
 		return (OracleStringItem) provideProvider(new OracleStringItem(this).setString(item));
 	}
 
-	public String provideTextContent(String text)
+	public String provideTextContent(CharSequence text)
 	{
-		return text.replace("'", "''");
+		return text.toString().replace("'", "''");
 	}
 
 	public OracleUpdate provideUpdate()

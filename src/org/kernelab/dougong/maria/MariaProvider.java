@@ -344,9 +344,10 @@ public class MariaProvider extends AbstractProvider
 		return (MariaStringItem) provideProvider(new MariaStringItem(this).setString(item));
 	}
 
-	public String provideTextContent(String text)
+	public String provideTextContent(CharSequence text)
 	{
-		return text.replace("\\", "\\\\").replace("'", "\\'") //
+		return text.toString() //
+				.replace("\\", "\\\\").replace("'", "\\'") //
 				.replace("\n", "\\n").replace("\r", "\\r") //
 				.replace("\t", "\\t").replace("\b", "\\b") //
 				.replace(String.valueOf((char) 26), "\\Z");

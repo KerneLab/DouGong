@@ -387,7 +387,7 @@ public interface Provider extends Castable
 	 * @param text
 	 * @return
 	 */
-	public String provideTextContent(String text);
+	public String provideTextContent(CharSequence text);
 
 	/**
 	 * Provide literal of a given string which including opening and closing
@@ -396,7 +396,7 @@ public interface Provider extends Castable
 	 * @param text
 	 * @return
 	 */
-	public String provideTextLiteral(String text);
+	public String provideTextLiteral(CharSequence text);
 
 	public Result provideToLowerCase(Expression expr);
 
