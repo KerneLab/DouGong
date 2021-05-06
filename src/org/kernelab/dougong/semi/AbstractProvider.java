@@ -106,21 +106,6 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return Types.OTHER;
 	}
 
-	public String provideDefaultDateFormat()
-	{
-		return "yyyy-MM-dd";
-	}
-
-	public String provideDefaultDateTimeFormat()
-	{
-		return "yyyy-MM-dd HH:mm:ss";
-	}
-
-	public String provideDefaultTimestampFormat()
-	{
-		return "yyyy-MM-dd HH:mm:ss.SSS";
-	}
-
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
 			Column[] returns) throws SQLException
 	{

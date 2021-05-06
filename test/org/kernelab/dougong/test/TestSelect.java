@@ -1,8 +1,5 @@
 package org.kernelab.dougong.test;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
@@ -10,61 +7,39 @@ import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.DUAL;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.maria.MariaProvider;
+import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class TestSelect
 {
-	public static SQL $ = new SQL(new MariaProvider());
-	// public static SQL $ = new SQL(new OracleProvider());
+	// public static SQL $ = new SQL(new MariaProvider());
+	public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
 		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
 		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
-		// Tools.debug(makeSelectNested().toString(new StringBuilder()));
-		Tools.debug(maekSelectValuesMaria().toString(new StringBuilder()));
+		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
+		// Tools.debug(maekSelectValuesMaria().toString(new StringBuilder()));
 		// Tools.debug(maekSelectValuesOracle().toString(new StringBuilder()));
 	}
 
 	public static Select maekSelectValuesMaria()
 	{
-		Calendar c = new GregorianCalendar();
-		java.util.Date d = new java.util.Date();
 		return $.from($.table(DUAL.class)) //
-				.select($.val("hey'").as("x"), //
-						$.val(123.56).as("y"), //
-						$.valDate(STR_TO_DATE.class, System.currentTimeMillis()).as("a"), //
-						$.valDatetime(STR_TO_DATE.class, System.currentTimeMillis()).as("b"), //
-						$.valTimestamp(STR_TO_DATE.class, System.currentTimeMillis()).as("c"), //
-						$.valDate(STR_TO_DATE.class, c).as("d"), //
-						$.valDatetime(STR_TO_DATE.class, c).as("e"), //
-						$.valTimestamp(STR_TO_DATE.class, c).as("f"), //
-						$.valDate(STR_TO_DATE.class, d).as("g"), //
-						$.valDatetime(STR_TO_DATE.class, d).as("h"), //
-						$.valTimestamp(STR_TO_DATE.class, d).as("i"), //
-						$.valDatetime(STR_TO_DATE.class, "20181231", "yyyyMMdd").as("j") //
+				.select($.val("hey'").as("a"), //
+						$.val(123.56).as("b"), //
+						$.func(STR_TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
 				);
 	}
 
 	public static Select maekSelectValuesOracle()
 	{
-		Calendar c = new GregorianCalendar();
-		java.util.Date d = new java.util.Date();
 		return $.from($.table(DUAL.class)) //
-				.select($.val("hey'").as("x"), //
-						$.val(123.56).as("y"), //
-						$.valDate(TO_DATE.class, System.currentTimeMillis()).as("a"), //
-						$.valDatetime(TO_DATE.class, System.currentTimeMillis()).as("b"), //
-						$.valTimestamp(TO_TIMESTAMP.class, System.currentTimeMillis()).as("c"), //
-						$.valDate(TO_DATE.class, c).as("d"), //
-						$.valDatetime(TO_DATE.class, c).as("e"), //
-						$.valTimestamp(TO_TIMESTAMP.class, c).as("f"), //
-						$.valDate(TO_DATE.class, d).as("g"), //
-						$.valDatetime(TO_DATE.class, d).as("h"), //
-						$.valTimestamp(TO_TIMESTAMP.class, d).as("i"), //
-						$.valDatetime(TO_DATE.class, "20181231", "yyyyMMdd").as("j") //
+				.select($.val("hey'").as("a"), //
+						$.val(123.56).as("b"), //
+						$.func(TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
 				);
 	}
 
@@ -247,11 +222,12 @@ public class TestSelect
 				) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
-		// .as("t") //
+				.as("t") //
 		;
 
 		return $.from(sel) //
-				.select(sel.item("name").as("nm")) //
+				.select(sel.ref("name").as("nm")) //
+				.orderBy(sel.$("COMP_ID").ascend(), sel.$("name").descend(), sel.$("name").plus($.val(1)).ascend()) //
 		;
 	}
 
@@ -284,8 +260,8 @@ public class TestSelect
 				).as("sub");
 
 		return $.from(sub) //
-				.select(sub.item("id"), //
-						sub.item("name") //
+				.select(sub.ref("id"), //
+						sub.ref("name") //
 				) //
 		;
 	}

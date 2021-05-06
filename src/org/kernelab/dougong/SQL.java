@@ -3,11 +3,9 @@ package org.kernelab.dougong;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
@@ -133,6 +131,11 @@ public class SQL
 	public ComposableCondition False()
 	{
 		return provider().provideLogicalCondition().and(expr("0").eq(expr("1")));
+	}
+
+	public StringItem formatDT(String format)
+	{
+		return val(provider().provideDatetimeFormat(format));
 	}
 
 	public Primitive from(View view)
@@ -631,66 +634,6 @@ public class SQL
 	public StringItem val(Number number)
 	{
 		return expr(provider().provideNumberLiteral(number));
-	}
-
-	public Function valDate(Class<? extends Function> func, Calendar date)
-	{
-		return valDatetime(func, Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
-				provider().provideDefaultDateFormat());
-	}
-
-	public Function valDate(Class<? extends Function> func, java.util.Date date)
-	{
-		return valDatetime(func, Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
-				provider().provideDefaultDateFormat());
-	}
-
-	public Function valDate(Class<? extends Function> func, long date)
-	{
-		return valDatetime(func, Tools.getDateTimeString(date, provider().provideDefaultDateFormat()),
-				provider().provideDefaultDateFormat());
-	}
-
-	public Function valDatetime(Class<? extends Function> func, Calendar datetime)
-	{
-		return valDatetime(func, Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
-				provider().provideDefaultDateTimeFormat());
-	}
-
-	public Function valDatetime(Class<? extends Function> func, java.util.Date datetime)
-	{
-		return valDatetime(func, Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
-				provider().provideDefaultDateTimeFormat());
-	}
-
-	public Function valDatetime(Class<? extends Function> func, long datetime)
-	{
-		return valDatetime(func, Tools.getDateTimeString(datetime, provider().provideDefaultDateTimeFormat()),
-				provider().provideDefaultDateTimeFormat());
-	}
-
-	public Function valDatetime(Class<? extends Function> func, String datetime, String format)
-	{
-		return func(func).call(expr(provider().provideTextLiteral(datetime)),
-				expr(provider().provideTextLiteral(provider().provideDatetimeFormat(format))));
-	}
-
-	public Function valTimestamp(Class<? extends Function> func, Calendar timestamp)
-	{
-		return valDatetime(func, Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
-				provider().provideDefaultTimestampFormat());
-	}
-
-	public Function valTimestamp(Class<? extends Function> func, java.util.Date timestamp)
-	{
-		return valDatetime(func, Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
-				provider().provideDefaultTimestampFormat());
-	}
-
-	public Function valTimestamp(Class<? extends Function> func, long timestamp)
-	{
-		return valDatetime(func, Tools.getDateTimeString(timestamp, provider().provideDefaultTimestampFormat()),
-				provider().provideDefaultTimestampFormat());
 	}
 
 	public <T extends View> T view(Class<T> cls)

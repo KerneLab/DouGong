@@ -11,6 +11,7 @@ import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 
@@ -27,9 +28,9 @@ public abstract class AbstractView extends AbstractProvidable implements View
 		super();
 	}
 
-	public Item $(String refer)
+	public Reference $(String refer)
 	{
-		return item(refer);
+		return ref(refer);
 	}
 
 	public String alias()
@@ -53,14 +54,14 @@ public abstract class AbstractView extends AbstractProvidable implements View
 		return this.provider().provideInsert().into((Insertable) this);
 	}
 
-	public Item item(String refer)
-	{
-		return referItems().get(refer);
-	}
-
 	public List<Item> items()
 	{
 		return items;
+	}
+
+	public Reference ref(String refer)
+	{
+		return this.provider().provideReference(this, referItems().get(refer));
 	}
 
 	public Map<String, Item> referItems()

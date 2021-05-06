@@ -4,17 +4,15 @@ import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.semi.dml.AbstractItem;
+import org.kernelab.dougong.semi.dml.AbstractSortable;
 
-public class AbstractFunction extends AbstractItem implements Function
+public class AbstractFunction extends AbstractSortable implements Function
 {
 	private Provider		provider;
 
 	private String			name;
 
 	private Expression[]	arguments;
-
-	private boolean			order	= true;
 
 	private String			schema	= null;
 
@@ -76,30 +74,9 @@ public class AbstractFunction extends AbstractItem implements Function
 		return this.replicate().aliases(alias);
 	}
 
-	public AbstractFunction ascend()
-	{
-		return ascend(true);
-	}
-
-	public AbstractFunction ascend(boolean ascend)
-	{
-		this.order = ascend;
-		return this;
-	}
-
-	public boolean ascending()
-	{
-		return order;
-	}
-
 	public AbstractFunction call(Expression... arguments)
 	{
 		return this.replicate().args(arguments);
-	}
-
-	public AbstractFunction descend()
-	{
-		return ascend(false);
 	}
 
 	protected void initFunction()
@@ -151,12 +128,13 @@ public class AbstractFunction extends AbstractItem implements Function
 	@Override
 	protected AbstractFunction replicate()
 	{
-		return this.newInstance() //
+		return (AbstractFunction) this.newInstance() //
 				.schema(this.schema()) //
 				.name(this.name()) //
 				.args(this.args()) //
+				.provider(this.provider()) //
 				.ascend(this.ascending()) //
-				.provider(this.provider());
+		;
 	}
 
 	public String schema()
@@ -178,11 +156,6 @@ public class AbstractFunction extends AbstractItem implements Function
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
-	}
-
-	public StringBuilder toStringOrdered(StringBuilder buffer)
-	{
-		return this.provider().provideOutputOrder(this.toString(buffer), this);
 	}
 
 	public StringBuilder toStringSelected(StringBuilder buffer)

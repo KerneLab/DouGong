@@ -6,39 +6,15 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.util.Utils;
 
-public abstract class AbstractStringItem extends AbstractItem implements Providable, StringItem
+public abstract class AbstractStringItem extends AbstractSortable implements Providable, StringItem
 {
 	private Provider	provider;
 
 	protected String	item;
 
-	private boolean		order;
-
 	public AbstractStringItem(Provider provider)
 	{
 		this.provider(provider);
-		this.order = true;
-	}
-
-	public AbstractStringItem ascend()
-	{
-		return ascend(true);
-	}
-
-	public AbstractStringItem ascend(boolean ascend)
-	{
-		this.order = ascend;
-		return this;
-	}
-
-	public boolean ascending()
-	{
-		return order;
-	}
-
-	public AbstractStringItem descend()
-	{
-		return ascend(false);
 	}
 
 	public String getString()
@@ -82,12 +58,6 @@ public abstract class AbstractStringItem extends AbstractItem implements Provida
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
-	}
-
-	public StringBuilder toStringOrdered(StringBuilder buffer)
-	{
-		this.provider().provideOutputOrder(toString(buffer), this);
-		return buffer;
 	}
 
 	public StringBuilder toStringScoped(StringBuilder buffer)

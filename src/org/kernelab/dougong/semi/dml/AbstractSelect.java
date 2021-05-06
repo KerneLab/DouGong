@@ -77,9 +77,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private String					hint		= null;
 
-	public Item $(String refer)
+	public Reference $(String refer)
 	{
-		return item(refer);
+		return ref(refer);
 	}
 
 	public String alias()
@@ -330,11 +330,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideNullCondition().isNull(this);
 	}
 
-	public Item item(String refer)
-	{
-		return referItems().get(refer);
-	}
-
 	public List<Item> items()
 	{
 		return items;
@@ -566,6 +561,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	protected Result provideToUpperCase(Expression expr)
 	{
 		return this.provider().provideToUpperCase(expr);
+	}
+
+	public Reference ref(String refer)
+	{
+		return this.provider().provideReference(this, referItems().get(refer));
 	}
 
 	protected List<Item> refer(View view, List<Item> items)

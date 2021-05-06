@@ -7,6 +7,7 @@ import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Deletable;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Updatable;
 
 /**
@@ -16,14 +17,14 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 {
 	/**
 	 * Get the Item associated with the given name in this View. <br />
-	 * This method is alias of {@code item(String)}.
+	 * This method is alias of {@code ref(String)}.
 	 * 
 	 * @param refer
 	 *            The reference name of the Item.
-	 * @return The item.
-	 * @see View#item(String)
+	 * @return The reference.
+	 * @see View#ref(String)
 	 */
-	public Item $(String refer);
+	public Reference $(String refer);
 
 	public View alias(String alias);
 
@@ -40,9 +41,9 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	 * 
 	 * @param refer
 	 *            The reference name of the Item.
-	 * @return The item.
+	 * @return The reference.
 	 */
-	public Item item(String refer);
+	public Reference ref(String refer);
 
 	/**
 	 * Get the real items on this view which including the items represented by

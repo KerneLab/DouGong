@@ -1,7 +1,7 @@
 package org.kernelab.dougong.core.dml.opr;
 
-import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Sortable;
 
-public interface Result extends Item
+public interface Result extends Sortable
 {
 }

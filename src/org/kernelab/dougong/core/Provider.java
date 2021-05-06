@@ -106,12 +106,6 @@ public interface Provider extends Castable
 	 */
 	public String provideDatetimeFormat(String format);
 
-	public String provideDefaultDateFormat();
-
-	public String provideDefaultDateTimeFormat();
-
-	public String provideDefaultTimestampFormat();
-
 	public Delete provideDelete();
 
 	public DivideOperator provideDivideOperator();
