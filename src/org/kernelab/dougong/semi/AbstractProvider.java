@@ -212,7 +212,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 		else
 		{
-			return number.toString();
+			return this.provideTextContent(number.toString());
 		}
 	}
 
