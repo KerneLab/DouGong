@@ -15,16 +15,6 @@ public class TestSelect
 	// public static SQL $ = new SQL(new MariaProvider());
 	public static SQL $ = new SQL(new OracleProvider());
 
-	public static void main(String[] args)
-	{
-		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
-		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
-		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
-		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
-		// Tools.debug(maekSelectValuesMaria().toString(new StringBuilder()));
-		// Tools.debug(maekSelectValuesOracle().toString(new StringBuilder()));
-	}
-
 	public static Select maekSelectValuesMaria()
 	{
 		return $.from($.table(DUAL.class)) //
@@ -41,6 +31,17 @@ public class TestSelect
 						$.val(123.56).as("b"), //
 						$.func(TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
 				);
+	}
+
+	public static void main(String[] args)
+	{
+		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
+		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
+		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
+		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
+		Tools.debug(makeSelectSetopr().toString(new StringBuilder()));
+		// Tools.debug(maekSelectValuesMaria().toString(new StringBuilder()));
+		// Tools.debug(maekSelectValuesOracle().toString(new StringBuilder()));
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -145,14 +146,6 @@ public class TestSelect
 				.select(d.COMP_ID);
 	}
 
-	public static Select makeSelectPartitioned()
-	{
-		DEPT d = null;
-		return $.from(d = $.table(DEPT.class).partition("ff")) //
-				.where(d.COMP_ID.ge($.expr("1"))) //
-				.select(d.COMP_ID);
-	}
-
 	public static Select makeSelectHint()
 	{
 		DEPT d = null;
@@ -210,6 +203,14 @@ public class TestSelect
 		;
 	}
 
+	public static Select makeSelectPartitioned()
+	{
+		DEPT d = null;
+		return $.from(d = $.table(DEPT.class).partition("ff")) //
+				.where(d.COMP_ID.ge($.expr("1"))) //
+				.select(d.COMP_ID);
+	}
+
 	public static Select makeSelectReferece()
 	{
 		DEPT d = null;
@@ -248,6 +249,23 @@ public class TestSelect
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
+	}
+
+	public static Select makeSelectSetopr()
+	{
+		DEPT d = null;
+
+		Select s = $.from(d = $.table(DEPT.class)) //
+				.select(d.COMP_ID, d.DEPT_ID);
+		Select t = null;
+
+		COMP c = null;
+		Select u = $.from(c = $.table(COMP.class)) //
+				.where(c.COMP_ID.in($.from(t = s.as("T")).select(t.$("COMP_ID")))) //
+				.select(c.COMP_ID);
+
+		return $.from(s).select(s.$("COMP_ID")) //
+				.unionAll(u);
 	}
 
 	public static Select makeSelectSubquery()

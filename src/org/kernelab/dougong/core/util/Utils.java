@@ -4,8 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -28,6 +31,35 @@ import org.kernelab.dougong.core.meta.NameMeta;
 
 public class Utils
 {
+	public static <E> Collection<E> copy(Collection<E> source, Collection<E> target)
+	{
+		target.addAll(source);
+		return target;
+	}
+
+	public static <E> E[] copy(E[] source)
+	{
+		return Arrays.copyOf(source, source.length);
+	}
+
+	public static <E> List<E> copy(List<E> source, List<E> target)
+	{
+		target.addAll(source);
+		return target;
+	}
+
+	public static <K, V> Map<K, V> copy(Map<K, V> source, Map<K, V> target)
+	{
+		target.putAll(source);
+		return target;
+	}
+
+	public static <E> Set<E> copy(Set<E> source, Set<E> target)
+	{
+		target.addAll(source);
+		return target;
+	}
+
 	public static String getDataAliasFromField(Field field)
 	{
 		if (field != null)

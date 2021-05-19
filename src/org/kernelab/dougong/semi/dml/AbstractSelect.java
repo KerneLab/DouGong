@@ -102,7 +102,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	{
 		try
 		{
-			AbstractSelect select = (AbstractSelect) this.clone();
+			AbstractSelect select = this.clone();
 
 			select.alias(alias);
 
@@ -117,6 +117,54 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public RangeCondition between(Expression from, Expression to)
 	{
 		return this.provideRangeCondition().between(this, from, to);
+	}
+
+	@Override
+	protected AbstractSelect clone() throws CloneNotSupportedException
+	{
+		AbstractSelect clone = (AbstractSelect) super.clone();
+
+		if (this.select != null)
+		{
+			clone.select = Utils.copy(this.select);
+		}
+
+		if (this.froms != null)
+		{
+			clone.froms = Utils.copy(this.froms, new ArrayList<View>());
+		}
+
+		if (this.joins != null)
+		{
+			clone.joins = Utils.copy(this.joins, new ArrayList<Join>());
+		}
+
+		if (this.groupBy != null)
+		{
+			clone.groupBy = Utils.copy(this.groupBy);
+		}
+
+		if (this.setopr != null)
+		{
+			clone.setopr = Utils.copy(this.setopr, new LinkedList<AbstractSetopr>());
+		}
+
+		if (this.orderBy != null)
+		{
+			clone.orderBy = Utils.copy(this.orderBy);
+		}
+
+		if (this.items != null)
+		{
+			clone.items = Utils.copy(this.items, new LinkedList<Item>());
+		}
+
+		if (this.itemsMap != null)
+		{
+			clone.itemsMap = Utils.copy(this.itemsMap, new LinkedHashMap<String, Item>());
+		}
+
+		return clone;
 	}
 
 	protected boolean distinct()
