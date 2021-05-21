@@ -1691,11 +1691,11 @@ public abstract class Entitys
 		}
 	}
 
-	protected static <T> void setupObject(SQLKit kit, SQL sql, T object, boolean fully) throws SQLException
+	public static <T> T setupObject(SQLKit kit, SQL sql, T object, boolean fully) throws SQLException
 	{
 		if (object == null)
 		{
-			return;
+			return null;
 		}
 
 		Collection<Field> fields = Tools.getFieldsHierarchy(object.getClass(), null).values();
@@ -1726,6 +1726,8 @@ public abstract class Entitys
 				}
 			}
 		}
+
+		return object;
 	}
 
 	public static <T> int updateObject(SQLKit kit, SQL sql, T object) throws SQLException
