@@ -1436,8 +1436,7 @@ public abstract class Entitys
 	{
 		T object = kit.execute(select.toString(), params) //
 				.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
-		setupObject(kit, sql, object, true);
-		return object;
+		return setupObject(kit, sql, object, true);
 	}
 
 	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, Map<String, Object> params)
@@ -1445,8 +1444,7 @@ public abstract class Entitys
 	{
 		T object = kit.execute(select.toString(), params) //
 				.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
-		setupObject(kit, sql, object, true);
-		return object;
+		return setupObject(kit, sql, object, true);
 	}
 
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
