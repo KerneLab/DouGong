@@ -1,22 +1,22 @@
 package org.kernelab.dougong.orcl.dml;
 
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.semi.dml.AbstractReference;
 
 public class OracleReference extends AbstractReference
 {
-	public OracleReference(View view, Expression refer)
+	public OracleReference(View view, String name)
 	{
-		super(view, refer);
+		super(view, name);
 	}
 
 	@Override
 	protected OracleReference replicate()
 	{
-		return new OracleReference(view(), refer());
+		return new OracleReference(view(), name());
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		if (!isUsingByJoin())

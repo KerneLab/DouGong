@@ -387,9 +387,9 @@ public class OracleProvider extends AbstractProvider
 		return this.provideProvider(new OracleRangeCondition());
 	}
 
-	public OracleReference provideReference(View view, Expression expr)
+	public OracleReference provideReference(View view, String name)
 	{
-		return provideProvider(new OracleReference(view, expr));
+		return provideProvider(new OracleReference(view, name));
 	}
 
 	public OracleSelect provideSelect()

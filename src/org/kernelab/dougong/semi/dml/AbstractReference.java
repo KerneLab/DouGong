@@ -1,18 +1,14 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.semi.AbstractColumn;
 
 public abstract class AbstractReference extends AbstractColumn implements Reference
 {
-	private Expression refer;
-
-	public AbstractReference(View view, Expression refer)
+	public AbstractReference(View view, String name)
 	{
-		super(view, null, null);
-		this.refer(refer);
+		super(view, name, null);
 	}
 
 	@Override
@@ -22,29 +18,8 @@ public abstract class AbstractReference extends AbstractColumn implements Refere
 	}
 
 	@Override
-	public String name()
-	{
-		if (super.name() == null)
-		{
-			super.name(view().provider().provideReferName(this.refer()));
-		}
-		return super.name();
-	}
-
-	@Override
 	public AbstractColumn name(String name)
 	{
-		return this;
-	}
-
-	public Expression refer()
-	{
-		return refer;
-	}
-
-	protected AbstractReference refer(Expression refer)
-	{
-		this.refer = refer;
 		return this;
 	}
 

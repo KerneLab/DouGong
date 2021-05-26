@@ -1,20 +1,19 @@
 package org.kernelab.dougong.maria.dml;
 
 import org.kernelab.dougong.core.View;
-import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.semi.dml.AbstractReference;
 
 public class MariaReference extends AbstractReference
 {
-	public MariaReference(View view, Expression refer)
+	public MariaReference(View view, String name)
 	{
-		super(view, refer);
+		super(view, name);
 	}
 
 	@Override
 	protected MariaReference replicate()
 	{
-		return new MariaReference(view(), refer());
+		return new MariaReference(view(), name());
 	}
 
 	public StringBuilder toString(StringBuilder buffer)

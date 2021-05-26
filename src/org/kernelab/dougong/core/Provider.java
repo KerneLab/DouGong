@@ -335,7 +335,7 @@ public interface Provider extends Castable
 	 * Provide a Reference which refers to the given expression within the given
 	 * view.
 	 */
-	public Reference provideReference(View view, Expression expr);
+	public Reference provideReference(View view, String name);
 
 	/**
 	 * Get the reference name of an expression which is usually used by outer

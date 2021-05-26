@@ -23,6 +23,7 @@ import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Items;
+import org.kernelab.dougong.core.dml.Label;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.MappingMeta;
@@ -271,6 +272,35 @@ public class Utils
 		}
 
 		return map;
+	}
+
+	public static String getLabelOfExpression(Expression expr)
+	{
+		if (expr == null)
+		{
+			return null;
+		}
+
+		if (expr instanceof Label)
+		{
+			return ((Label) expr).label();
+		}
+
+		if (expr instanceof Alias)
+		{
+			String alias = ((Alias) expr).alias();
+			if (alias != null)
+			{
+				return alias;
+			}
+		}
+
+		if (expr instanceof Named)
+		{
+			return ((Named) expr).name();
+		}
+
+		return expr.toString();
 	}
 
 	public static Map<String, Field> getMappingFields(Class<?> cls, Map<String, Field> result)

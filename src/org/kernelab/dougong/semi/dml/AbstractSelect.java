@@ -596,9 +596,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provider().provideRangeCondition();
 	}
 
-	protected Reference provideReference(View view, Expression expr)
+	protected Reference provideReference(View view, String name)
 	{
-		return this.provider().provideReference(view, expr);
+		return this.provider().provideReference(view, name);
 	}
 
 	protected Result provideToLowerCase(Expression expr)
@@ -613,7 +613,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public Reference ref(String refer)
 	{
-		return this.provider().provideReference(this, referItems().get(refer));
+		return this.provider().provideReference(this, referItems().get(refer).label());
 	}
 
 	protected List<Item> refer(View view, List<Item> items)
@@ -622,7 +622,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 		for (Item item : items)
 		{
-			list.add(provideReference(view, item));
+			list.add(provideReference(view, item.label()));
 		}
 
 		return list;
@@ -649,14 +649,14 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 							{
 								for (Entry<String, Item> entry : from.referItems().entrySet())
 								{
-									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
+									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue().label()));
 								}
 							}
 							for (Join join : joins())
 							{
 								for (Entry<String, Item> entry : join.view().referItems().entrySet())
 								{
-									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
+									itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue().label()));
 								}
 							}
 						}
@@ -664,7 +664,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 						{
 							for (Entry<String, Item> entry : all.view().referItems().entrySet())
 							{
-								itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue()));
+								itemsMap.put(entry.getKey(), this.provideReference(this, entry.getValue().label()));
 							}
 						}
 					}
@@ -672,7 +672,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 					{ // Multi-Return-Columns Function
 						for (String alias : ((Aliases) expr).aliases())
 						{
-							itemsMap.put(alias, this.provideReference(this, expr));
+							itemsMap.put(alias, this.provideReference(this, alias));
 						}
 					}
 					else if (expr instanceof Items)
@@ -684,7 +684,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 							for (Expression exp : ((Items) expr).list())
 							{
-								ref = this.provideReference(this, exp);
+
+								ref = this.provideReference(this, Utils.getLabelOfExpression(exp));
 								itemsMap.put(ref.name(), ref);
 							}
 						}
@@ -692,7 +693,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 					else
 					{
 						// Single expression
-						Reference ref = this.provideReference(this, expr);
+						Reference ref = this.provideReference(this, Utils.getLabelOfExpression(expr));
 						itemsMap.put(ref.name(), ref);
 					}
 				}
@@ -714,7 +715,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		{
 			for (Item item : view.items())
 			{
-				items.add(provider().provideReference(view, item));
+				items.add(provider().provideReference(view, item.label()));
 			}
 		}
 
@@ -723,7 +724,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 			View view = join.view();
 			for (Item item : view.items())
 			{
-				items.add(provider().provideReference(view, item));
+				items.add(provider().provideReference(view, item.label()));
 			}
 		}
 

@@ -39,9 +39,25 @@ public class TestSelect
 		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
 		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
-		Tools.debug(makeSelectSetopr().toString(new StringBuilder()));
+		Tools.debug(makeSelectReferFunction().toString(new StringBuilder()));
+		// Tools.debug(makeSelectSetopr().toString(new StringBuilder()));
 		// Tools.debug(maekSelectValuesMaria().toString(new StringBuilder()));
 		// Tools.debug(maekSelectValuesOracle().toString(new StringBuilder()));
+	}
+
+	public static Select makeSelectReferFunction()
+	{
+		DEPT d = null;
+
+		Select sel = $.from(d = $.table(DEPT.class, "D")) //
+				.select(d.COMP_ID, //
+						$.func(STACK.class, $.val(2), $.val("ID"), d.DEPT_ID, $.val("NAME"), d.DEPT_NAME).as("KEY",
+								"VAL"));
+
+		Select sel1 = $.from(sel.alias("V")) //
+				.select(sel.$("COMP_ID"), sel.$("KEY"));
+
+		return sel1;
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -278,8 +294,8 @@ public class TestSelect
 				).as("sub");
 
 		return $.from(sub) //
-				.select(sub.ref("id"), //
-						sub.ref("name") //
+				.select(sub.$("id"), //
+						sub.$("name") //
 				) //
 		;
 	}

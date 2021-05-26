@@ -133,7 +133,7 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 
 		for (Item item : raw)
 		{
-			items.add(this.provider().provideReference(this, item));
+			items.add(this.provider().provideReference(this, item.label()));
 		}
 
 		return items;

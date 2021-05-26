@@ -284,9 +284,9 @@ public class MariaProvider extends AbstractProvider
 		return this.provideProvider(new MariaRangeCondition());
 	}
 
-	public MariaReference provideReference(View view, Expression expr)
+	public MariaReference provideReference(View view, String name)
 	{
-		return provideProvider(new MariaReference(view, expr));
+		return provideProvider(new MariaReference(view, name));
 	}
 
 	public MariaSelect provideSelect()

@@ -61,7 +61,7 @@ public abstract class AbstractView extends AbstractProvidable implements View
 
 	public Reference ref(String refer)
 	{
-		return this.provider().provideReference(this, referItems().get(refer));
+		return this.provider().provideReference(this, referItems().get(refer).label());
 	}
 
 	public Map<String, Item> referItems()
