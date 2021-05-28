@@ -39,11 +39,11 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	/**
 	 * Get the Item associated with the given name in this View.
 	 * 
-	 * @param refer
-	 *            The reference name of the Item.
-	 * @return The reference.
+	 * @param name
+	 *            The label name of the Item.
+	 * @return
 	 */
-	public Reference ref(String refer);
+	public Item item(String name);
 
 	/**
 	 * Get the real items on this view which including the items represented by
@@ -52,6 +52,16 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	 * @return
 	 */
 	public List<Item> items();
+
+	/**
+	 * Get the Reference of the Item associated with the given name in this
+	 * View.
+	 * 
+	 * @param refer
+	 *            The reference name of the Item.
+	 * @return The reference.
+	 */
+	public Reference ref(String refer);
 
 	/**
 	 * Return a <name, Item> map to describe the items could be selected from

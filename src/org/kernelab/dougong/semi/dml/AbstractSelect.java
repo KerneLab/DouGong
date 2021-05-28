@@ -378,6 +378,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideNullCondition().isNull(this);
 	}
 
+	public Item item(String name)
+	{
+		return referItems().get(name);
+	}
+
 	public List<Item> items()
 	{
 		return items;
@@ -613,7 +618,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public Reference ref(String refer)
 	{
-		return this.provider().provideReference(this, referItems().get(refer).label());
+		return (Reference) item(refer);
 	}
 
 	protected List<Item> refer(View view, List<Item> items)
@@ -684,7 +689,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 							for (Expression exp : ((Items) expr).list())
 							{
-
 								ref = this.provideReference(this, Utils.getLabelOfExpression(exp));
 								itemsMap.put(ref.name(), ref);
 							}

@@ -106,7 +106,7 @@ public abstract class AbstractJoin implements Join
 			{
 				if (col != null)
 				{
-					item = view().ref(col.name());
+					item = view().item(col.name());
 
 					if (item != null)
 					{
@@ -125,7 +125,7 @@ public abstract class AbstractJoin implements Join
 				{
 					if (col != null)
 					{
-						item = leading().referItems().get(col.name());
+						item = leading().item(col.name());
 
 						if (item instanceof Column)
 						{

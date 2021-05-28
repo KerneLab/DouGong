@@ -54,6 +54,11 @@ public abstract class AbstractView extends AbstractProvidable implements View
 		return this.provider().provideInsert().into((Insertable) this);
 	}
 
+	public Item item(String name)
+	{
+		return referItems().get(name);
+	}
+
 	public List<Item> items()
 	{
 		return items;
@@ -61,7 +66,16 @@ public abstract class AbstractView extends AbstractProvidable implements View
 
 	public Reference ref(String refer)
 	{
-		return this.provider().provideReference(this, referItems().get(refer).label());
+		Item item = item(refer);
+
+		if (item != null)
+		{
+			return this.provider().provideReference(this, item.label());
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public Map<String, Item> referItems()

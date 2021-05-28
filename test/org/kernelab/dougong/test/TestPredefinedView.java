@@ -15,7 +15,7 @@ public class TestPredefinedView
 		Select sel = sql.from(view.alias("D")) //
 				.select(view.DEPT_NAME, //
 						view.$("COMP_ID").as("compId"), //
-						view.$("comp_id_1") //
+						view.$("comp_id_1").as("compId1") //
 				);
 
 		Tools.debug(sel.toString());

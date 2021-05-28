@@ -7,6 +7,7 @@ import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.DUAL;
 import org.kernelab.dougong.demo.STAF;
+import org.kernelab.dougong.orcl.OracleColumn;
 import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
 
@@ -38,26 +39,13 @@ public class TestSelect
 		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
 		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
+		Tools.debug(makeSelectSubquery().toString(new StringBuilder()));
 		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
 		Tools.debug(makeSelectReferFunction().toString(new StringBuilder()));
+		Tools.debug(makeSelectUsingColumnsFromSubquery().toString(new StringBuilder()));
 		// Tools.debug(makeSelectSetopr().toString(new StringBuilder()));
 		// Tools.debug(maekSelectValuesMaria().toString(new StringBuilder()));
 		// Tools.debug(maekSelectValuesOracle().toString(new StringBuilder()));
-	}
-
-	public static Select makeSelectReferFunction()
-	{
-		DEPT d = null;
-
-		Select sel = $.from(d = $.table(DEPT.class, "D")) //
-				.select(d.COMP_ID, //
-						$.func(STACK.class, $.val(2), $.val("ID"), d.DEPT_ID, $.val("NAME"), d.DEPT_NAME).as("KEY",
-								"VAL"));
-
-		Select sel1 = $.from(sel.alias("V")) //
-				.select(sel.$("COMP_ID"), sel.$("KEY"));
-
-		return sel1;
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -248,6 +236,21 @@ public class TestSelect
 		;
 	}
 
+	public static Select makeSelectReferFunction()
+	{
+		DEPT d = null;
+
+		Select sel = $.from(d = $.table(DEPT.class, "D")) //
+				.select(d.COMP_ID, //
+						$.func(STACK.class, $.val(2), $.val("ID"), d.DEPT_ID, $.val("NAME"), d.DEPT_NAME).as("KEY",
+								"VAL"));
+
+		Select sel1 = $.from(sel.alias("V")) //
+				.select(sel.$("COMP_ID"), sel.$("KEY"));
+
+		return sel1;
+	}
+
 	public static Select makeSelectSelectionAsItem()
 	{
 		DEPT d = null;
@@ -289,7 +292,7 @@ public class TestSelect
 		STAF s = null;
 
 		Select sub = $.from(s = $.table(STAF.class, "s")) //
-				.select(s.STAF_ID.as("id"), //
+				.select($.func(TO_CHAR.class, s.STAF_ID).as("id"), //
 						s.STAF_NAME.as("name") //
 				).as("sub");
 
@@ -321,5 +324,38 @@ public class TestSelect
 		Tools.debug(sel.referItems());
 
 		return sel;
+	}
+
+	public static Select makeSelectWithOrderByUsingColumns()
+	{
+		COMP c = null;
+		DEPT d = null;
+		STAF s = null;
+
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(c = $.table(COMP.class, "c"), c.COMP_ID) //
+				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
+				.select(c.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
+				.where(d.COMP_ID.gt($.val(0))) //
+				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsFirst()) //
+		;
+	}
+
+	public static Select makeSelectUsingColumnsFromSubquery()
+	{
+		COMP c = null;
+		DEPT d = null;
+		STAF s = null;
+
+		Select sel = $.from(c = $.table(COMP.class, "C")) //
+				.select($.func(TO_CHAR.class, c.COMP_ID).as("COMP_ID"), c.COM_NAME);
+
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(sel.alias("E"), sel.$("COMP_ID")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
+				.select(sel.$("COMP_ID"), d.DEPT_NAME, s.STAF_NAME) //
+				.where(d.COMP_ID.gt($.val(0))) //
+				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsFirst()) //
+		;
 	}
 }
