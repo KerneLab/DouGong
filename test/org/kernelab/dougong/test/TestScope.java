@@ -12,7 +12,7 @@ public class TestScope
 {
 	// public static SQL SQL = new SQL(new MariaProvider());
 
-	public static SQL	SQL	= new SQL(new OracleProvider());
+	public static SQL SQL = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
@@ -24,7 +24,7 @@ public class TestScope
 		DEPT d = null;
 		STAF s = null;
 
-		Items list = SQL.list(SQL.expr("1").as("h"), SQL.expr("2"));
+		Items list = SQL.list(SQL.expr("1").as("h"), SQL.expr("2")).as("L");
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //

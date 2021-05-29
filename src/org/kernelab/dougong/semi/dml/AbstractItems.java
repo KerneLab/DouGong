@@ -27,8 +27,26 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 
 	private Expression[]	list;
 
+	private String			alias	= null;
+
 	public AbstractItems()
 	{
+	}
+
+	public String alias()
+	{
+		return alias;
+	}
+
+	public AbstractItems alias(String alias)
+	{
+		this.alias = alias;
+		return this;
+	}
+
+	public AbstractItems as(String alias)
+	{
+		return this.replicate().alias(alias);
 	}
 
 	public Expression[] list()
