@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.Expression;
@@ -47,6 +48,12 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 	public AbstractItems as(String alias)
 	{
 		return this.replicate().alias(alias);
+	}
+
+	@Override
+	public String label()
+	{
+		return alias() != null ? alias() : Tools.substr(this.toStringExpress(new StringBuilder()), 0, 30);
 	}
 
 	public Expression[] list()

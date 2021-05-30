@@ -2,7 +2,7 @@ package org.kernelab.dougong.core.dml;
 
 import org.kernelab.dougong.core.Scope;
 
-public interface Items extends Expression, Scope, Alias
+public interface Items extends Expression, Scope, Item
 {
 	/**
 	 * Get a copy of this Items with the given alias.
