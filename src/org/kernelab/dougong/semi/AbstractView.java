@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
@@ -62,6 +64,11 @@ public abstract class AbstractView extends AbstractProvidable implements View
 	public List<Item> items()
 	{
 		return items;
+	}
+
+	public Pivot pivot(Function... aggs)
+	{
+		return provider().providePivot().pivotOn(this).pivotAggs(aggs);
 	}
 
 	public Reference ref(String refer)

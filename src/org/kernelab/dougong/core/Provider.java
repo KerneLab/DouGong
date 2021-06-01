@@ -23,6 +23,7 @@ import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Merge;
+import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
@@ -320,6 +321,13 @@ public interface Provider extends Castable
 	 * @return
 	 */
 	public String provideParameterExpression(String name);
+
+	/**
+	 * To provide a pivot clause object.
+	 * 
+	 * @return
+	 */
+	public Pivot providePivot();
 
 	public PlusOperator providePlusOperator();
 

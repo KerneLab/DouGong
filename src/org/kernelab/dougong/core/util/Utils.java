@@ -295,12 +295,7 @@ public class Utils
 			}
 		}
 
-		if (expr instanceof Named)
-		{
-			return ((Named) expr).name();
-		}
-
-		return expr.toString();
+		return getNameOfExpression(expr);
 	}
 
 	public static Map<String, Field> getMappingFields(Class<?> cls, Map<String, Field> result)
@@ -416,6 +411,23 @@ public class Utils
 		else
 		{
 			return null;
+		}
+	}
+
+	public static String getNameOfExpression(Expression expr)
+	{
+		if (expr == null)
+		{
+			return null;
+		}
+
+		if (expr instanceof Named)
+		{
+			return ((Named) expr).name();
+		}
+		else
+		{
+			return expr.toString();
 		}
 	}
 

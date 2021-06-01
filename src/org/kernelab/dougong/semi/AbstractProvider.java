@@ -31,6 +31,7 @@ import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Label;
+import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -50,6 +51,7 @@ import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
+import org.kernelab.dougong.semi.dml.AbstractPivot;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
@@ -395,6 +397,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public String provideParameterExpression(String name)
 	{
 		return "?" + name + "?";
+	}
+
+	public Pivot providePivot()
+	{
+		return provideProvider(new AbstractPivot());
 	}
 
 	public AbstractPrimitive providePrimitive()
