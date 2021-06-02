@@ -9,12 +9,14 @@ import java.util.Set;
 
 import org.kernelab.basis.Canal;
 import org.kernelab.basis.Mapper;
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.AbstractView;
@@ -93,6 +95,16 @@ public class AbstractPivot extends AbstractView implements Pivot
 			this.refreshItems();
 		}
 		return items;
+	}
+
+	protected String makeLabelOfPivotItem(Item item, Function func)
+	{
+		String label = item.alias() != null ? item.alias() : item.toStringExpress(new StringBuilder()).toString();
+		if (func.alias() != null)
+		{
+			label += "_" + func.alias();
+		}
+		return label;
 	}
 
 	@Override
@@ -182,11 +194,7 @@ public class AbstractPivot extends AbstractView implements Pivot
 		{
 			for (Function func : this.pivotAggs())
 			{
-				label = item.alias() != null ? item.alias() : item.toStringExpress(new StringBuilder()).toString();
-				if (func.alias() != null)
-				{
-					label += "_" + func.alias();
-				}
+				label = this.makeLabelOfPivotItem(item, func);
 				col = this.provider().provideColumn(this, label, null);
 				this.items.add(col);
 				this.itemsMap.put(label, col);
@@ -208,7 +216,17 @@ public class AbstractPivot extends AbstractView implements Pivot
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		this.pivotOn().toStringViewed(buffer);
+		return toStringPivot(buffer);
+	}
 
+	@Override
+	public StringBuilder toStringDeletable(StringBuilder buffer)
+	{
+		return toStringViewed(buffer);
+	}
+
+	public StringBuilder toStringPivot(StringBuilder buffer)
+	{
 		buffer.append(" PIVOT (");
 		boolean first = true;
 		for (Function func : this.pivotAggs())
@@ -259,19 +277,25 @@ public class AbstractPivot extends AbstractView implements Pivot
 			{
 				buffer.append(',');
 			}
-			item.toStringSelected(buffer);
+			if (item instanceof Items)
+			{
+				buffer.append('(');
+			}
+			item.toStringExpress(buffer);
+			if (item instanceof Items)
+			{
+				buffer.append(')');
+			}
+			if (Tools.notNullOrEmpty(item.alias()))
+			{
+				Utils.outputAlias(provider(), buffer, item);
+			}
 		}
 		buffer.append(')');
 
 		buffer.append(')');
 
 		return buffer;
-	}
-
-	@Override
-	public StringBuilder toStringDeletable(StringBuilder buffer)
-	{
-		return toStringViewed(buffer);
 	}
 
 	@Override

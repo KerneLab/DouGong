@@ -23,4 +23,12 @@ public interface Pivot extends View
 	public View pivotOn();
 
 	public Pivot pivotOn(View view);
+
+	/**
+	 * Get the text of this pivot itself not including the pivot target view.
+	 * 
+	 * @param buffer
+	 * @return
+	 */
+	public StringBuilder toStringPivot(StringBuilder buffer);
 }

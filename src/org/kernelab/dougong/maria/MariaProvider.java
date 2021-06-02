@@ -16,6 +16,7 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
@@ -32,6 +33,7 @@ import org.kernelab.dougong.maria.dml.MariaDelete;
 import org.kernelab.dougong.maria.dml.MariaInsert;
 import org.kernelab.dougong.maria.dml.MariaItems;
 import org.kernelab.dougong.maria.dml.MariaJoin;
+import org.kernelab.dougong.maria.dml.MariaPivot;
 import org.kernelab.dougong.maria.dml.MariaReference;
 import org.kernelab.dougong.maria.dml.MariaSelect;
 import org.kernelab.dougong.maria.dml.MariaStringItem;
@@ -267,6 +269,12 @@ public class MariaProvider extends AbstractProvider
 			}
 		}
 		return buffer;
+	}
+
+	@Override
+	public Pivot providePivot()
+	{
+		return provideProvider(new MariaPivot());
 	}
 
 	public PlusOperator providePlusOperator()
