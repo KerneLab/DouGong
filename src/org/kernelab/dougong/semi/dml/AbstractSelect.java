@@ -12,6 +12,7 @@ import java.util.Set;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
+import org.kernelab.dougong.core.Function;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
@@ -26,6 +27,7 @@ import org.kernelab.dougong.core.dml.Insertable;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Join;
+import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
@@ -58,6 +60,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	private List<View>				froms		= new ArrayList<View>();
 
 	private List<Join>				joins		= new ArrayList<Join>();
+
+	private List<Pivot>				pivots		= new ArrayList<Pivot>();
 
 	private Expression[]			groupBy		= null;
 
@@ -137,6 +141,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		if (this.joins != null)
 		{
 			clone.joins = Utils.copy(this.joins, new ArrayList<Join>());
+		}
+
+		if (this.pivots != null)
+		{
+			clone.pivots = Utils.copy(this.pivots, new ArrayList<Pivot>());
 		}
 
 		if (this.groupBy != null)
@@ -522,6 +531,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public Pivot pivot(Function... aggs)
+	{
+		return this.provider().providePivot().pivotOn(this).pivotAggs(aggs);
+	}
+
 	public Result plus(Expression operand)
 	{
 		return this.providePlusOperator().operate(this, operand);
@@ -651,9 +665,9 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		{
 			this.itemsMap = new LinkedHashMap<String, Item>();
 
-			if (select() != null)
+			if (selects() != null)
 			{
-				for (Expression expr : select())
+				for (Expression expr : selects())
 				{
 					if (expr instanceof AllItems)
 					{ // AllItems
@@ -776,11 +790,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return rows;
 	}
 
-	protected Expression[] select()
-	{
-		return select;
-	}
-
 	public AbstractSelect select(Expression... exprs)
 	{
 		this.select = exprs;
@@ -847,6 +856,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 
 		return this;
+	}
+
+	protected Expression[] selects()
+	{
+		return select;
 	}
 
 	protected List<AbstractSetopr> setopr()

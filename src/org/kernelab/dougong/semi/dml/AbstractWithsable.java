@@ -7,7 +7,7 @@ import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.Withsable;
 import org.kernelab.dougong.semi.AbstractProvidable;
 
-public class AbstractWithsable extends AbstractProvidable implements Withsable
+public abstract class AbstractWithsable extends AbstractProvidable implements Withsable
 {
 	private List<Withable> with = null;
 

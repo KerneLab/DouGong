@@ -7,6 +7,7 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.semi.AbstractView;
+import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class TestPivot
 {
@@ -18,6 +19,23 @@ public class TestPivot
 		Tools.debug(makeSelectWithPivot().toString(new StringBuilder()));
 		Tools.debug(makeSelectWithPivot1().toString(new StringBuilder()));
 		Tools.debug(makeSelectWithPivot2().toString(new StringBuilder()));
+		Tools.debug(makeSelectWithPivotSubquery().toString(new StringBuilder()));
+	}
+
+	public static Select makeSelectWithPivotSubquery()
+	{
+		STAF s = null;
+		Pivot p = null;
+
+		Select sel = $.from(s = $.table(STAF.class, "S")) //
+				.select(s.all());
+
+		return $.from(p = sel.to(AbstractSelect.class) //
+				.pivot($.func(SUM.class, sel.$("STAF_SALARY")).as("N"), //
+						$.func(MAX.class, sel.$("STAF_SALARY")).as("M")) //
+				.pivotFor(sel.$("COMP_ID")) //
+				.pivotIn($.val("1").as("1"), $.val("3").as("3"))) //
+				.select(p.all());
 	}
 
 	public static Select makeSelectWithPivot()
