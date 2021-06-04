@@ -7,12 +7,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -172,7 +172,7 @@ public class EntityMaker
 
 	private String									cs;
 
-	private Set<String>								imports	= new LinkedHashSet<String>();
+	private Set<String>								imports	= new TreeSet<String>();
 
 	private File									template;
 
@@ -529,8 +529,11 @@ public class EntityMaker
 	protected EntityMaker outputImports(DataWriter out)
 	{
 		imports.add(Column.class.getName());
-		imports.add(MemberMeta.class.getName());
 		imports.add(NameMeta.class.getName());
+		if (this.schema() != null)
+		{
+			imports.add(MemberMeta.class.getName());
+		}
 		if (this.isEntity())
 		{
 			imports.add(TypeMeta.class.getName());
@@ -538,9 +541,9 @@ public class EntityMaker
 		}
 		imports.add(sup().getName());
 
-		for (String line : this.imports)
+		for (String cls : this.imports)
 		{
-			out.write("import " + line + ";");
+			out.write("import " + cls + ";");
 		}
 
 		return this;

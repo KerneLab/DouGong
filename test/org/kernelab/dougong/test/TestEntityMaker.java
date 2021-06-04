@@ -18,13 +18,17 @@ public class TestEntityMaker
 		SQL sql = new SQL(provider);
 		SQLKit kit = Config.getSQLKit();
 
-		File base = new File("./src");
+		File base = new File("./test");
 
-		// for (String table : new String[] { "COMP", "DEPT", "STAF" })
-		// {
-		// EntityMaker.makeTable(provider, kit, table,
-		// "org.kernelab.dougong.demo", base, null, null);
-		// }
+		for (String table : new String[] { //
+				"DUAL", //
+				// "COMP", //
+				// "DEPT", //
+				// "STAF", //
+		})
+		{
+			EntityMaker.makeTable(provider, kit, table, "org.kernelab.dougong.demo", base, null, null);
+		}
 
 		EntityMaker.makeView(provider, kit, sql.view(TestView.class), base, null);
 	}
