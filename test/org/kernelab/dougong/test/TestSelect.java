@@ -39,6 +39,7 @@ public class TestSelect
 		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
 		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
+		Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		Tools.debug(makeSelectSubquery().toString(new StringBuilder()));
 		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
 		Tools.debug(makeSelectReferFunction().toString(new StringBuilder()));
@@ -134,8 +135,8 @@ public class TestSelect
 	{
 		DEPT d = null;
 		STAF s = null;
-		return $.from(d = $.view(DEPT.class).as("D")) //
-				.where($.notExists($.from(s = $.view(STAF.class).as("S")) //
+		return $.from(d = $.view(DEPT.class, "D")) //
+				.where($.notExists($.from(s = $.view(STAF.class, "S")) //
 						.where(s.DEPT_ID.eq(d.DEPT_ID)) //
 						.select($.expr("1")))) //
 				.select(d.all()) //

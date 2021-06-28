@@ -603,7 +603,7 @@ public class SQL
 
 	public <T extends Subquery> T subquery(Class<T> cls)
 	{
-		return provider().provideSubquery(cls);
+		return subquery(cls, (String) null);
 	}
 
 	public <T extends Subquery> T subquery(Class<T> cls, Select select)
@@ -611,14 +611,21 @@ public class SQL
 		return provider().provideSubquery(cls, select);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends Subquery> T subquery(Class<T> cls, String alias)
+	{
+		return (T) provider().provideSubquery(cls).alias(alias);
+	}
+
 	public <T extends Table> T table(Class<T> cls)
 	{
 		return table(cls, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T extends Table> T table(Class<T> cls, String alias)
 	{
-		return provider().provideTable(cls).as(alias);
+		return (T) provider().provideTable(cls).alias(alias);
 	}
 
 	public ComposableCondition True()
@@ -638,7 +645,13 @@ public class SQL
 
 	public <T extends View> T view(Class<T> cls)
 	{
-		return provider().provideView(cls);
+		return view(cls, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends View> T view(Class<T> cls, String alias)
+	{
+		return (T) provider().provideView(cls).alias(alias);
 	}
 
 	public Primitive with(Withable... views)
