@@ -29,6 +29,7 @@ import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.EntityKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.Key;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
@@ -1431,6 +1432,22 @@ public abstract class Entitys
 		return selectObject(kit, sql, select, model, params);
 	}
 
+	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, Object... pkvals) throws SQLException
+	{
+		Entity entity = Entitys.getEntityFromModelClass(sql, model);
+
+		PrimaryKey pk = entity.primaryKey();
+
+		Map<String, Object> params = new LinkedHashMap<String, Object>();
+
+		for (int i = 0; i < pk.columns().length; i++)
+		{
+			params.put(Utils.getDataLabelFromField(pk.columns()[i].field()), pkvals[i]);
+		}
+
+		return selectObject(kit, sql, model, params);
+	}
+
 	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
 			throws SQLException
 	{
@@ -1447,6 +1464,28 @@ public abstract class Entitys
 		return setupObject(kit, sql, object, true);
 	}
 
+	public static <T> Canal<?, T> selectObjects(final SQLKit kit, final SQL sql, Select select, Class<T> model,
+			JSON params) throws SQLException
+	{
+		return kit.execute(select.toString(), params) //
+				.getRows(model, Utils.getFieldNameMapByMetaFully(model, null)) //
+				.map(new Mapper<T, T>()
+				{
+					@Override
+					public T map(T el)
+					{
+						try
+						{
+							return setupObject(kit, sql, el, true);
+						}
+						catch (Exception e)
+						{
+							throw new RuntimeException(e);
+						}
+					}
+				});
+	}
+
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
 			Collection<T> coll) throws SQLException
 	{
@@ -1456,16 +1495,30 @@ public abstract class Entitys
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
 			Collection<T> coll, int limit) throws SQLException
 	{
-		coll = kit.execute(select.toString(), params).getRows(coll, model,
-				Utils.getFieldNameMapByMetaFully(model, null), limit);
-		if (coll != null)
-		{
-			for (T t : coll)
-			{
-				setupObject(kit, sql, t, true);
-			}
-		}
-		return coll;
+		return selectObjects(kit, sql, select, model, params).limit(limit)
+				.collect(coll != null ? coll : new LinkedList<T>());
+	}
+
+	public static <T> Canal<?, T> selectObjects(final SQLKit kit, final SQL sql, Select select, Class<T> model,
+			Map<String, Object> params) throws SQLException
+	{
+		return kit.execute(select.toString(), params) //
+				.getRows(model, Utils.getFieldNameMapByMetaFully(model, null)) //
+				.map(new Mapper<T, T>()
+				{
+					@Override
+					public T map(T el)
+					{
+						try
+						{
+							return setupObject(kit, sql, el, true);
+						}
+						catch (Exception e)
+						{
+							throw new RuntimeException(e);
+						}
+					}
+				});
 	}
 
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
@@ -1477,16 +1530,8 @@ public abstract class Entitys
 	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
 			Map<String, Object> params, Collection<T> coll, int limit) throws SQLException
 	{
-		coll = kit.execute(select.toString(), params).getRows(coll, model,
-				Utils.getFieldNameMapByMetaFully(model, null), limit);
-		if (coll != null)
-		{
-			for (T t : coll)
-			{
-				setupObject(kit, sql, t, true);
-			}
-		}
-		return coll;
+		return selectObjects(kit, sql, select, model, params).limit(limit)
+				.collect(coll != null ? coll : new LinkedList<T>());
 	}
 
 	protected static Collection<Object> setCollection(Object object, Field field, Collection<Object> coll)

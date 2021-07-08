@@ -16,7 +16,7 @@ public class DemoSelect
 	{
 		try
 		{
-			demoSelectByClass();
+			demoSelectByPK();
 		}
 		catch (SQLException e)
 		{
@@ -38,6 +38,11 @@ public class DemoSelect
 						s.STAF_SALARY.as("salary") //
 				) //
 				.orderBy(s.STAF_ID);
+	}
+
+	public static void demoSelectByPK() throws SQLException
+	{
+		System.out.println(Entitys.selectObject(Config.getSQLKit(), Config.SQL, Department.class, "1", "12"));
 	}
 
 	public static void demoSelectByClass() throws SQLException

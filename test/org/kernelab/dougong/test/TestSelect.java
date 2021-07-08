@@ -16,24 +16,6 @@ public class TestSelect
 	// public static SQL $ = new SQL(new MariaProvider());
 	public static SQL $ = new SQL(new OracleProvider());
 
-	public static Select maekSelectValuesMaria()
-	{
-		return $.from($.table(DUAL.class)) //
-				.select($.val("hey'").as("a"), //
-						$.val(123.56).as("b"), //
-						$.func(STR_TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
-				);
-	}
-
-	public static Select maekSelectValuesOracle()
-	{
-		return $.from($.table(DUAL.class)) //
-				.select($.val("hey'").as("a"), //
-						$.val(123.56).as("b"), //
-						$.func(TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
-				);
-	}
-
 	public static void main(String[] args)
 	{
 		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
@@ -327,21 +309,6 @@ public class TestSelect
 		return sel;
 	}
 
-	public static Select makeSelectWithOrderByUsingColumns()
-	{
-		COMP c = null;
-		DEPT d = null;
-		STAF s = null;
-
-		return $.from(s = $.table(STAF.class, "s")) //
-				.innerJoin(c = $.table(COMP.class, "c"), c.COMP_ID) //
-				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
-				.select(c.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
-				.where(d.COMP_ID.gt($.val(0))) //
-				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsFirst()) //
-		;
-	}
-
 	public static Select makeSelectUsingColumnsFromSubquery()
 	{
 		COMP c = null;
@@ -355,6 +322,39 @@ public class TestSelect
 				.innerJoin(sel.alias("E"), sel.$("COMP_ID")) //
 				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
 				.select(sel.$("COMP_ID"), d.DEPT_NAME, s.STAF_NAME) //
+				.where(d.COMP_ID.gt($.val(0))) //
+				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsFirst()) //
+		;
+	}
+
+	public static Select makeSelectValuesMaria()
+	{
+		return $.from($.table(DUAL.class)) //
+				.select($.val("hey'").as("a"), //
+						$.val(123.56).as("b"), //
+						$.func(STR_TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
+				);
+	}
+
+	public static Select makeSelectValuesOracle()
+	{
+		return $.from($.table(DUAL.class)) //
+				.select($.val("hey'").as("a"), //
+						$.val(123.56).as("b"), //
+						$.func(TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
+				);
+	}
+
+	public static Select makeSelectWithOrderByUsingColumns()
+	{
+		COMP c = null;
+		DEPT d = null;
+		STAF s = null;
+
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(c = $.table(COMP.class, "c"), c.COMP_ID) //
+				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
+				.select(c.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt($.val(0))) //
 				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsFirst()) //
 		;
