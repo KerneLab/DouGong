@@ -22,6 +22,7 @@ import org.kernelab.basis.JSON;
 import org.kernelab.basis.Mapper;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.sql.SQLKit;
+import org.kernelab.basis.sql.Sequel;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
@@ -1451,16 +1452,18 @@ public abstract class Entitys
 	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
 			throws SQLException
 	{
-		T object = kit.execute(select.toString(), params) //
-				.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+		Sequel s = kit.execute(select.toString(), params);
+		T object = s.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+		s.close();
 		return setupObject(kit, sql, object, true);
 	}
 
 	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, Map<String, Object> params)
 			throws SQLException
 	{
-		T object = kit.execute(select.toString(), params) //
-				.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+		Sequel s = kit.execute(select.toString(), params);
+		T object = s.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+		s.close();
 		return setupObject(kit, sql, object, true);
 	}
 
@@ -1603,9 +1606,10 @@ public abstract class Entitys
 					Select sel = pair.getSelect();
 					Map<String, Object> param = pair.getParams();
 
-					Object another = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
-							: kit.execute(sel.toString(), param)) //
-									.getRow(model, Utils.getFieldNameMapByMeta(model, null));
+					Sequel s = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
+							: kit.execute(sel.toString(), param));
+					Object another = s.getRow(model, Utils.getFieldNameMapByMeta(model, null));
+					s.close();
 					try
 					{
 						Tools.access(object, field, another);
@@ -1704,9 +1708,10 @@ public abstract class Entitys
 			Select sel = pair.getSelect();
 			Map<String, Object> param = pair.getParams();
 
-			Object another = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
-					: kit.execute(sel.toString(), param)) //
-							.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel, null));
+			Sequel s = (param instanceof JSON ? kit.execute(sel.toString(), (JSON) param)
+					: kit.execute(sel.toString(), param));
+			Object another = s.getRow(oneModel, Utils.getFieldNameMapByMeta(oneModel, null));
+			s.close();
 			try
 			{
 				Tools.access(object, field, another);
