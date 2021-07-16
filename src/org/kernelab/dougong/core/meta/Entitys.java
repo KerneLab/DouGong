@@ -321,6 +321,34 @@ public abstract class Entitys
 		}
 	}
 
+	public static <T> boolean existsObject(SQLKit kit, SQL sql, Class<T> model, Object... pkVals) throws SQLException
+	{
+		Entity entity = Entitys.getEntityFromModelClass(sql, model);
+
+		PrimaryKey pk = entity.primaryKey();
+
+		Map<String, Object> params = new LinkedHashMap<String, Object>();
+
+		for (int i = 0; i < pk.columns().length; i++)
+		{
+			params.put(Utils.getDataLabelFromField(pk.columns()[i].field()), pkVals[i]);
+		}
+
+		Select select = sql.from(entity) //
+				.where(pk.queryCondition()) //
+				.select(sql.val(1));
+
+		Sequel seq = kit.execute(select.toString(), params);
+		try
+		{
+			return seq.getRowAsJSON() != null;
+		}
+		finally
+		{
+			seq.close();
+		}
+	}
+
 	protected static Set<Column> getColumns(Entity entity)
 	{
 		Set<Column> columns = new LinkedHashSet<Column>();
@@ -1433,7 +1461,7 @@ public abstract class Entitys
 		return selectObject(kit, sql, select, model, params);
 	}
 
-	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, Object... pkvals) throws SQLException
+	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, Object... pkVals) throws SQLException
 	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, model);
 
@@ -1443,7 +1471,7 @@ public abstract class Entitys
 
 		for (int i = 0; i < pk.columns().length; i++)
 		{
-			params.put(Utils.getDataLabelFromField(pk.columns()[i].field()), pkvals[i]);
+			params.put(Utils.getDataLabelFromField(pk.columns()[i].field()), pkVals[i]);
 		}
 
 		return selectObject(kit, sql, model, params);
