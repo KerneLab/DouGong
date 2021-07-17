@@ -63,43 +63,6 @@ public abstract class Entitys
 		}
 	}
 
-	public static <T> int countObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
-	{
-		if (object == null)
-		{
-			return 0;
-		}
-
-		if (entity == null)
-		{
-			entity = getEntityFromModelObject(sql, object);
-		}
-
-		EntityKey key = getUpdateKey(entity);
-
-		if (key == null)
-		{
-			return 0;
-		}
-
-		Select sel = sql.from(entity) //
-				.where(key.queryCondition()) //
-				.select(sql.expr("COUNT(1)"));
-
-		Map<String, Object> param = mapColumnToLabelByMeta(key.mapValues(object));
-
-		ResultSet rs = kit.query(sel.toString(), param);
-
-		if (rs.next())
-		{
-			return rs.getInt(1);
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
 	public static <T> int deleteObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
 		return deleteObject(kit, sql, object, null);
@@ -140,11 +103,6 @@ public abstract class Entitys
 		}
 
 		EntityKey key = getUpdateKey(entity);
-
-		if (key == null)
-		{
-			return 0;
-		}
 
 		Delete delete = sql.from(entity) //
 				.where(key.queryCondition()) //
@@ -339,6 +297,37 @@ public abstract class Entitys
 				.select(sql.val(1));
 
 		Sequel seq = kit.execute(select.toString(), params);
+		try
+		{
+			return seq.getRowAsJSON() != null;
+		}
+		finally
+		{
+			seq.close();
+		}
+	}
+
+	public static <T> boolean existsObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		if (object == null)
+		{
+			return false;
+		}
+
+		if (entity == null)
+		{
+			entity = getEntityFromModelObject(sql, object);
+		}
+
+		EntityKey key = getUpdateKey(entity);
+
+		Select sel = sql.from(entity) //
+				.where(key.queryCondition()) //
+				.select(sql.val(1));
+
+		Map<String, Object> param = mapColumnToLabelByMeta(key.mapValues(object));
+
+		Sequel seq = kit.execute(sel.toString(), param);
 		try
 		{
 			return seq.getRowAsJSON() != null;
@@ -1164,7 +1153,7 @@ public abstract class Entitys
 		}
 		else if (entity.absoluteKey() != null)
 		{
-			if (countObject(kit, sql, object, entity) == 0)
+			if (!existsObject(kit, sql, object, entity))
 			{
 				insertObjectAlone(kit, sql, object, entity);
 				insertObjectCascade(kit, sql, object, entity);
@@ -1177,7 +1166,7 @@ public abstract class Entitys
 		}
 		else
 		{
-			if (countObject(kit, sql, object, entity) == 0)
+			if (!existsObject(kit, sql, object, entity))
 			{ // New record
 				insertObjectAlone(kit, sql, object, entity);
 			}
@@ -1216,7 +1205,7 @@ public abstract class Entitys
 		}
 		else
 		{
-			if (countObject(kit, sql, object, entity) == 0)
+			if (!existsObject(kit, sql, object, entity))
 			{ // New record
 				insertObjectAlone(kit, sql, object, entity);
 			}

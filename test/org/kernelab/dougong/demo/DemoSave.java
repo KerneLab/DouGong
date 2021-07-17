@@ -60,16 +60,29 @@ public class DemoSave
 
 	public static void main(String[] args)
 	{
+		SQLKit kit = Config.getSQLKit();
+
 		try
 		{
-			SQLKit kit = Config.getSQLKit();
+			kit.setAutoCommit(false);
+
 			SQL sql = Config.SQL;
 
-			demo2(kit, sql);
+			demo3(kit, sql);
+
+			kit.commit();
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
+			try
+			{
+				kit.rollback();
+			}
+			catch (SQLException e1)
+			{
+				e1.printStackTrace();
+			}
 		}
 	}
 }
