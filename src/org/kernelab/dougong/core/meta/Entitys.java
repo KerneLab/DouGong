@@ -307,6 +307,11 @@ public abstract class Entitys
 		}
 	}
 
+	public static <T> boolean existsObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		return existsObject(kit, sql, object, null);
+	}
+
 	public static <T> boolean existsObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
 	{
 		if (object == null)
@@ -385,18 +390,18 @@ public abstract class Entitys
 		return map;
 	}
 
-	protected static Class<? extends Entity> getEntityClassFromModel(Class<?> modelClass)
+	public static Class<? extends Entity> getEntityClassFromModel(Class<?> modelClass)
 	{
 		EntityMeta meta = modelClass.getAnnotation(EntityMeta.class);
 		return meta != null ? meta.entity() : null;
 	}
 
-	protected static <T> Entity getEntityFromModelClass(SQL sql, Class<T> model)
+	public static <T> Entity getEntityFromModelClass(SQL sql, Class<T> model)
 	{
 		return sql.view(getEntityClassFromModel(model));
 	}
 
-	protected static <T> Entity getEntityFromModelObject(SQL sql, T object)
+	public static <T> Entity getEntityFromModelObject(SQL sql, T object)
 	{
 		return object == null ? null : getEntityFromModelClass(sql, object.getClass());
 	}
