@@ -63,6 +63,26 @@ public abstract class Entitys
 		}
 	}
 
+	public static <T> int deleteObject(SQLKit kit, SQL sql, Class<T> model, Object... pkVals) throws SQLException
+	{
+		Entity entity = Entitys.getEntityFromModelClass(sql, model);
+
+		PrimaryKey pk = entity.primaryKey();
+
+		Map<String, Object> params = new LinkedHashMap<String, Object>();
+
+		for (int i = 0; i < pk.columns().length; i++)
+		{
+			params.put(Utils.getDataLabelFromField(pk.columns()[i].field()), pkVals[i]);
+		}
+
+		Delete delete = sql.from(entity) //
+				.where(pk.queryCondition()) //
+				.delete();
+
+		return kit.update(delete.toString(), params);
+	}
+
 	public static <T> int deleteObject(SQLKit kit, SQL sql, T object) throws SQLException
 	{
 		return deleteObject(kit, sql, object, null);
