@@ -191,7 +191,8 @@ public interface Provider extends Castable
 
 	/**
 	 * Get the name text.<br />
-	 * Usually the text might be surrounding with boundary characters.
+	 * Usually the text might be surrounding with boundary characters.<br />
+	 * Boundary character in the name should also be escaped.
 	 * 
 	 * @param name
 	 *            The name String without boundary characters.

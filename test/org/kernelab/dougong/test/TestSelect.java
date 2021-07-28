@@ -7,6 +7,7 @@ import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.DUAL;
 import org.kernelab.dougong.demo.STAF;
+import org.kernelab.dougong.maria.MariaProvider;
 import org.kernelab.dougong.orcl.OracleColumn;
 import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
@@ -25,10 +26,18 @@ public class TestSelect
 		Tools.debug(makeSelectSubquery().toString(new StringBuilder()));
 		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
 		Tools.debug(makeSelectReferFunction().toString(new StringBuilder()));
-		Tools.debug(makeSelectUsingColumnsFromSubquery().toString(new StringBuilder()));
+		if ($.provider() instanceof OracleProvider)
+		{
+			Tools.debug(makeSelectUsingColumnsFromSubquery().toString(new StringBuilder()));
+			// Tools.debug(maekSelectValuesOracle().toString(new
+			// StringBuilder()));
+		}
+		if ($.provider() instanceof MariaProvider)
+		{
+			// Tools.debug(maekSelectValuesMaria().toString(new
+			// StringBuilder()));
+		}
 		// Tools.debug(makeSelectSetopr().toString(new StringBuilder()));
-		// Tools.debug(maekSelectValuesMaria().toString(new StringBuilder()));
-		// Tools.debug(maekSelectValuesOracle().toString(new StringBuilder()));
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -274,14 +283,14 @@ public class TestSelect
 	{
 		STAF s = null;
 
-		Select sub = $.from(s = $.table(STAF.class, "s")) //
+		Select sub = $.from(s = $.table(STAF.class, "s`")) //
 				.select($.func(TO_CHAR.class, s.STAF_ID).as("id"), //
-						s.STAF_NAME.as("name") //
+						s.STAF_NAME.as("nam`e") //
 				).as("sub");
 
 		return $.from(sub) //
 				.select(sub.$("id"), //
-						sub.$("name") //
+						sub.$("nam`e") //
 				) //
 		;
 	}

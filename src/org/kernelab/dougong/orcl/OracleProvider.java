@@ -61,6 +61,10 @@ public class OracleProvider extends AbstractProvider
 {
 	public static final char	TEXT_BOUNDARY_CHAR	= '"';
 
+	public static final String	TEXT_BOUNDARY_MARK	= "\"";
+
+	public static final String	TEXT_BOUNDARY_ESC	= TEXT_BOUNDARY_MARK + TEXT_BOUNDARY_MARK;
+
 	public static final String	RETURN_VAR_PREFIX	= ":ret_";
 
 	public OraclePriorExpression prior(Expression expr)
@@ -233,7 +237,7 @@ public class OracleProvider extends AbstractProvider
 	{
 		if (name != null)
 		{
-			return TEXT_BOUNDARY_CHAR + name + TEXT_BOUNDARY_CHAR;
+			return TEXT_BOUNDARY_CHAR + name.replace(TEXT_BOUNDARY_MARK, TEXT_BOUNDARY_ESC) + TEXT_BOUNDARY_CHAR;
 		}
 		else
 		{
