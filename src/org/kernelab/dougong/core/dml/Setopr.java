@@ -17,5 +17,9 @@ public interface Setopr extends Relation
 
 	public static final String[]	OPRS		= new String[] { "UNION ALL", "UNION", "INTERSECT", "MINUS" };
 
+	public Select select();
+
 	public Setopr setopr(byte type, Select select);
+
+	public byte type();
 }

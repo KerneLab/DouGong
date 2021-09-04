@@ -9,6 +9,7 @@ import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -351,7 +352,7 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	{
 		if (this.withName() != null)
 		{
-			return this.provider().provideOutputWithSubqueryAliased(buffer, this);
+			return this.provider().provideOutputWithableAliased(buffer, this);
 		}
 		else
 		{
@@ -384,6 +385,10 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	public AbstractSubquery withName(String name)
 	{
 		this.withName = name;
+		if (this.select() instanceof Withable)
+		{
+			((Withable) this.select()).withName(name);
+		}
 		return this;
 	}
 }

@@ -40,6 +40,7 @@ import org.kernelab.dougong.core.dml.param.Param;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
+import org.kernelab.dougong.semi.dml.ViewSelf;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 
 public class SQL
@@ -601,6 +602,11 @@ public class SQL
 		return expr(provider().provideAliasLabel(key));
 	}
 
+	public View self()
+	{
+		return ViewSelf.SELF;
+	}
+
 	public <T extends Subquery> T subquery(Class<T> cls)
 	{
 		return subquery(cls, (String) null);
@@ -654,8 +660,8 @@ public class SQL
 		return (T) provider().provideView(cls).alias(alias);
 	}
 
-	public Primitive with(Withable... views)
+	public Primitive with(Withable... withs)
 	{
-		return provider().providePrimitive().with(views);
+		return provider().providePrimitive().with(withs);
 	}
 }

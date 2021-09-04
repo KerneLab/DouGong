@@ -111,9 +111,9 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 	}
 
 	@Override
-	public AbstractPrimitive with(Withable... views)
+	public AbstractPrimitive with(Withable... withs)
 	{
-		super.with(views);
+		super.with(withs);
 		return this;
 	}
 }

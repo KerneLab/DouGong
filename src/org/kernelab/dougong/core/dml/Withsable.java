@@ -8,5 +8,5 @@ public interface Withsable
 
 	public Withsable with(List<Withable> views);
 
-	public Withsable with(Withable... views);
+	public Withsable with(Withable... withs);
 }

@@ -155,5 +155,5 @@ public interface Primitive extends Filterable, Withsable
 
 	public Primitive where(Condition cond);
 
-	public Primitive with(Withable... views);
+	public Primitive with(Withable... withs);
 }

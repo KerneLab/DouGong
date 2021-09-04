@@ -81,6 +81,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private String					hint		= null;
 
+	private String					withName	= null;
+
 	public Reference $(String refer)
 	{
 		return ref(refer);
@@ -107,9 +109,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		try
 		{
 			AbstractSelect select = this.clone();
-
 			select.alias(alias);
-
 			return Tools.cast(select);
 		}
 		catch (CloneNotSupportedException e)
@@ -1148,10 +1148,17 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public StringBuilder toStringViewed(StringBuilder buffer)
 	{
-		buffer.append('(');
-		this.toString(buffer);
-		buffer.append(')');
-		return this.provider().provideOutputAlias(buffer, this);
+		if (this.withName() != null)
+		{
+			return this.provider().provideOutputWithableAliased(buffer, this);
+		}
+		else
+		{
+			buffer.append('(');
+			this.toString(buffer);
+			buffer.append(')');
+			return this.provider().provideOutputAlias(buffer, this);
+		}
 	}
 
 	public StringBuilder toStringWith(StringBuilder buffer)
@@ -1191,6 +1198,17 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public AbstractSelect with(List<Withable> with)
 	{
 		super.with(with);
+		return this;
+	}
+
+	public String withName()
+	{
+		return withName;
+	}
+
+	public AbstractSelect withName(String name)
+	{
+		this.withName = name;
 		return this;
 	}
 }

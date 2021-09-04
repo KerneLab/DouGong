@@ -51,15 +51,14 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 		return this;
 	}
 
-	public AbstractWithsable with(Withable... views)
+	public AbstractWithsable with(Withable... withs)
 	{
 		this.with = new LinkedList<Withable>();
 
-		for (Withable view : views)
+		for (Withable with : withs)
 		{
-			view.withName(view.alias());
-			view.alias(null);
-			this.with.add(view);
+			with.alias(null);
+			this.with.add(with);
 		}
 
 		return this;

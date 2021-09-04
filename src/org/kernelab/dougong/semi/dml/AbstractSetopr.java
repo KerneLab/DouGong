@@ -9,6 +9,12 @@ public class AbstractSetopr implements Setopr
 
 	private Select	select;
 
+	@Override
+	public Select select()
+	{
+		return select;
+	}
+
 	public AbstractSetopr setopr(byte type, Select select)
 	{
 		this.type = type;
@@ -19,9 +25,15 @@ public class AbstractSetopr implements Setopr
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		buffer.append(' ');
-		buffer.append(OPRS[type]);
+		buffer.append(OPRS[type()]);
 		buffer.append(' ');
-		select.toStringScoped(buffer);
+		select().toStringScoped(buffer);
 		return buffer;
+	}
+
+	@Override
+	public byte type()
+	{
+		return type;
 	}
 }

@@ -35,6 +35,7 @@ import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.dml.param.ByteParam;
 import org.kernelab.dougong.core.dml.param.DateParam;
@@ -324,12 +325,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
-	public StringBuilder provideOutputWithSubqueryAliased(StringBuilder buffer, Subquery query)
+	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable witable)
 	{
-		if (buffer != null && query != null)
+		if (buffer != null && witable != null)
 		{
-			buffer.append(this.provideAliasLabel(query.withName()));
-			this.provideOutputAlias(buffer, query);
+			buffer.append(this.provideAliasLabel(witable.withName()));
+			this.provideOutputAlias(buffer, witable);
 		}
 		return buffer;
 	}
