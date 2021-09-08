@@ -40,6 +40,10 @@ public class Utils
 
 	public static <E> E[] copy(E[] source)
 	{
+		if (source == null)
+		{
+			return null;
+		}
 		return Arrays.copyOf(source, source.length);
 	}
 

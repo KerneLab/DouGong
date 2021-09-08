@@ -83,6 +83,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private String					withName	= null;
 
+	private String[]				withCols	= null;
+
 	public Reference $(String refer)
 	{
 		return ref(refer);
@@ -110,10 +112,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		{
 			AbstractSelect select = this.clone();
 			select.alias(alias);
-			return Tools.cast(select);
+			return select;
 		}
 		catch (CloneNotSupportedException e)
 		{
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -171,6 +174,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		if (this.itemsMap != null)
 		{
 			clone.itemsMap = Utils.copy(this.itemsMap, new LinkedHashMap<String, Item>());
+		}
+
+		if (this.withCols != null)
+		{
+			clone.withCols = Utils.copy(this.withCols);
 		}
 
 		return clone;
@@ -235,6 +243,10 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		if (view != null)
 		{
 			froms().add(view);
+			if (view instanceof ViewSelf)
+			{
+				((ViewSelf) view).self(this);
+			}
 		}
 		return this;
 	}
@@ -743,18 +755,32 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 		for (View view : froms())
 		{
-			for (Item item : view.items())
+			if (view instanceof Withable)
 			{
-				items.add(provider().provideReference(view, item.label()));
+				items.addAll(AbstractWithsable.resolveAllItems(view));
+			}
+			else
+			{
+				for (Item item : view.items())
+				{
+					items.add(provider().provideReference(view, item.label()));
+				}
 			}
 		}
 
 		for (Join join : joins())
 		{
 			View view = join.view();
-			for (Item item : view.items())
+			if (view instanceof Withable)
 			{
-				items.add(provider().provideReference(view, item.label()));
+				items.addAll(AbstractWithsable.resolveAllItems(view));
+			}
+			else
+			{
+				for (Item item : view.items())
+				{
+					items.add(provider().provideReference(view, item.label()));
+				}
 			}
 		}
 
@@ -1201,14 +1227,20 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
+	public AbstractSelect with(String name, String... cols)
+	{
+		this.withName = name;
+		this.withCols = cols;
+		return this;
+	}
+
+	public String[] withCols()
+	{
+		return withCols;
+	}
+
 	public String withName()
 	{
 		return withName;
-	}
-
-	public AbstractSelect withName(String name)
-	{
-		this.withName = name;
-		return this;
 	}
 }

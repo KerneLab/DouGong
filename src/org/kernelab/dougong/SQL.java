@@ -602,9 +602,9 @@ public class SQL
 		return expr(provider().provideAliasLabel(key));
 	}
 
-	public View self()
+	public ViewSelf self()
 	{
-		return ViewSelf.SELF;
+		return provider().provideView(ViewSelf.class);
 	}
 
 	public <T extends Subquery> T subquery(Class<T> cls)

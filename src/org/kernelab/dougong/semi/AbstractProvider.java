@@ -325,12 +325,21 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
-	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable witable)
+	public StringBuilder provideOutputWithable(StringBuilder buffer, Withable with)
 	{
-		if (buffer != null && witable != null)
+		if (buffer != null && with != null)
 		{
-			buffer.append(this.provideAliasLabel(witable.withName()));
-			this.provideOutputAlias(buffer, witable);
+			buffer.append(this.provideAliasLabel(with.withName()));
+		}
+		return buffer;
+	}
+
+	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable with)
+	{
+		if (buffer != null && with != null)
+		{
+			this.provideOutputWithable(buffer, with);
+			this.provideOutputAlias(buffer, with);
 		}
 		return buffer;
 	}

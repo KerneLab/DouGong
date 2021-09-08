@@ -290,7 +290,9 @@ public interface Provider extends Castable
 
 	public StringBuilder provideOutputTablePartitionClause(StringBuilder buffer, Partitioned part);
 
-	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable withable);
+	public StringBuilder provideOutputWithable(StringBuilder buffer, Withable with);
+
+	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable with);
 
 	public StringItem provideParameter(String name);
 

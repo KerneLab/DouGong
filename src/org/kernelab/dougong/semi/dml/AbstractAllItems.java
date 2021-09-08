@@ -2,11 +2,13 @@ package org.kernelab.dougong.semi.dml;
 
 import java.util.List;
 
+import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -21,6 +23,11 @@ public abstract class AbstractAllItems implements AllItems
 	public AbstractAllItems(View view)
 	{
 		this.view = view;
+	}
+
+	protected Provider provider()
+	{
+		return view().provider();
 	}
 
 	public RangeCondition between(Expression from, Expression to)
@@ -150,7 +157,11 @@ public abstract class AbstractAllItems implements AllItems
 
 	public List<Item> resolveItems()
 	{
-		return view.items();
+		if (view() instanceof Withable)
+		{
+			return AbstractWithsable.resolveAllItems(view());
+		}
+		return view().items();
 	}
 
 	@Override

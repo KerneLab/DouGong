@@ -3,12 +3,32 @@ package org.kernelab.dougong.semi.dml;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.Withsable;
 import org.kernelab.dougong.semi.AbstractProvidable;
 
 public abstract class AbstractWithsable extends AbstractProvidable implements Withsable
 {
+	protected static List<Item> resolveAllItems(View view)
+	{
+		if (view instanceof Withable)
+		{
+			String[] cols = ((Withable) view).withCols();
+			if (cols != null && cols.length > 0)
+			{
+				List<Item> items = new LinkedList<Item>();
+				for (String col : cols)
+				{
+					items.add(view.provider().provideReference(view, col));
+				}
+				return items;
+			}
+		}
+		return view.items();
+	}
+
 	private List<Withable> with = null;
 
 	protected void textOfWith(StringBuilder buffer)
@@ -32,6 +52,20 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 					buffer.append(',');
 				}
 				buffer.append(this.provider().provideAliasLabel(view.withName()));
+				if (view.withCols() != null && view.withCols().length > 0)
+				{
+					String[] cols = view.withCols();
+					buffer.append(" (");
+					for (int i = 0; i < cols.length; i++)
+					{
+						if (i > 0)
+						{
+							buffer.append(',');
+						}
+						buffer.append(this.provider().provideAliasLabel(cols[i]));
+					}
+					buffer.append(')');
+				}
 				buffer.append(" AS ");
 				view.toStringWith(buffer);
 			}

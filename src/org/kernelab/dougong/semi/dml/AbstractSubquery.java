@@ -26,9 +26,11 @@ import org.kernelab.dougong.semi.AbstractEntity;
 
 public class AbstractSubquery extends AbstractEntity implements Subquery
 {
-	private Select	select;
+	private Select		select;
 
-	private String	withName;
+	private String		withName;
+
+	private String[]	withCols;
 
 	public AbstractSubquery()
 	{
@@ -71,7 +73,7 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		{
 			sq = this.getClass().newInstance();
 			sq.select(this.select().as(null));
-			sq.withName(this.withName());
+			sq.with(this.withName(), Utils.copy(this.withCols()));
 			sq.provider(this.provider());
 		}
 		catch (Exception e)
@@ -377,18 +379,24 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return provideToUpperCase(this);
 	}
 
+	public AbstractSubquery with(String name, String... cols)
+	{
+		this.withName = name;
+		this.withCols = cols;
+		if (this.select() instanceof Withable)
+		{
+			((Withable) this.select()).with(name, cols);
+		}
+		return this;
+	}
+
+	public String[] withCols()
+	{
+		return withCols;
+	}
+
 	public String withName()
 	{
 		return withName;
-	}
-
-	public AbstractSubquery withName(String name)
-	{
-		this.withName = name;
-		if (this.select() instanceof Withable)
-		{
-			((Withable) this.select()).withName(name);
-		}
-		return this;
 	}
 }
