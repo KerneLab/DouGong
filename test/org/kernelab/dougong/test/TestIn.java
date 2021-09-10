@@ -6,13 +6,13 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.maria.MariaProvider;
+import org.kernelab.dougong.orcl.OracleProvider;
 
 public class TestIn
 {
-	public static SQL	SQL	= new SQL(new MariaProvider());
+	// public static SQL SQL = new SQL(new MariaProvider());
 
-	// public static SQL SQL = new SQL(new OracleProvider());
+	public static SQL SQL = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{

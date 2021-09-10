@@ -19,9 +19,9 @@ public class TestSelect
 
 	public static void main(String[] args)
 	{
-		// Tools.debug(makeSelectHint().toString(new StringBuilder()));
-		// Tools.debug(makeSelectExists().toString(new StringBuilder()));
-		// Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
+		Tools.debug(makeSelectHint().toString(new StringBuilder()));
+		Tools.debug(makeSelectExists().toString(new StringBuilder()));
+		Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
 		Tools.debug(makeSelectExists().toString(new StringBuilder()));
 		Tools.debug(makeSelectSubquery().toString(new StringBuilder()));
 		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
@@ -29,15 +29,13 @@ public class TestSelect
 		if ($.provider() instanceof OracleProvider)
 		{
 			Tools.debug(makeSelectUsingColumnsFromSubquery().toString(new StringBuilder()));
-			// Tools.debug(maekSelectValuesOracle().toString(new
-			// StringBuilder()));
+			Tools.debug(makeSelectValuesOracle().toString(new StringBuilder()));
 		}
 		if ($.provider() instanceof MariaProvider)
 		{
-			// Tools.debug(maekSelectValuesMaria().toString(new
-			// StringBuilder()));
+			Tools.debug(makeSelectValuesMaria().toString(new StringBuilder()));
 		}
-		// Tools.debug(makeSelectSetopr().toString(new StringBuilder()));
+		Tools.debug(makeSelectSetopr().toString(new StringBuilder()));
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -202,7 +200,7 @@ public class TestSelect
 	public static Select makeSelectPartitioned()
 	{
 		DEPT d = null;
-		return $.from(d = $.table(DEPT.class).partition("ff")) //
+		return $.from(d = $.table(DEPT.class).partition("ff").as("t")) //
 				.where(d.COMP_ID.ge($.expr("1"))) //
 				.select(d.COMP_ID);
 	}

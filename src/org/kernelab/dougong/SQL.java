@@ -54,6 +54,11 @@ public class SQL
 		this.provider = provider;
 	}
 
+	public StringItem $(String name)
+	{
+		return ref(name);
+	}
+
 	public AllItems all()
 	{
 		return provider().provideTotalItems();
@@ -590,16 +595,16 @@ public class SQL
 	}
 
 	/**
-	 * Make a StringItem <b>"key"</b> which refer to a single item according to
-	 * the given key.
+	 * Make a StringItem <b>"name"</b> which refer to a single item according to
+	 * the given name.
 	 * 
-	 * @param key
+	 * @param name
 	 *            The reference name.
 	 * @return
 	 */
-	public StringItem ref(String key)
+	public StringItem ref(String name)
 	{
-		return expr(provider().provideAliasLabel(key));
+		return expr(provider().provideAliasLabel(name));
 	}
 
 	public ViewSelf self()

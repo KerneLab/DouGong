@@ -1,8 +1,11 @@
 package org.kernelab.dougong.semi.dml;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
@@ -95,6 +98,13 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	public ComparisonCondition ge(Expression expr)
 	{
 		return this.provideComparisonCondition().eq(this, expr);
+	}
+
+	@Override
+	protected Column getColumnByField(Field field)
+	{
+		String name = Utils.getNameFromField(field);
+		return provider().provideColumn(this, name, field);
 	}
 
 	public ComparisonCondition gt(Expression expr)
@@ -287,6 +297,12 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return this.provider().provideToUpperCase(expr);
 	}
 
+	@Override
+	public Map<String, Item> referItems()
+	{
+		return select().referItems();
+	}
+
 	public List<Item> resolveItems()
 	{
 		return this.select().resolveItems();
@@ -382,7 +398,7 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	public AbstractSubquery with(String name, String... cols)
 	{
 		this.withName = name;
-		this.withCols = cols;
+		this.withCols = cols == null || cols.length == 0 ? null : cols;
 		if (this.select() instanceof Withable)
 		{
 			((Withable) this.select()).with(name, cols);

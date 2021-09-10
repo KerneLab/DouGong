@@ -16,10 +16,10 @@ public class TestWith
 		View q = null;
 
 		Select sel = Config.SQL.with( //
-				va = sql.from(sql.view(COMP.class)).select(sql.all()).with("va"), //
+				va = sql.from(sql.view(COMP.class).as("T")).select(sql.all()).with("va"), //
 				vb = sql.from(va = va.as("a")).select(va.all()).with("vb") //
 		).from(q = vb.as("c")) //
-				.select(q.all());
+				.select(q.all(), sql.all());
 
 		Tools.debug(sel.toString());
 	}
@@ -33,7 +33,21 @@ public class TestWith
 		Select sel = Config.SQL.with( //
 				va = sql.from(vc = sql.self().as("z")).select().select(vc.$("ff").as("gg")).with("va", "hh") //
 		).from(q = va.as("c")) //
-				.select(q.all(), sql.all());
+				.select(q.$("hh"), q.all(), sql.all());
+
+		Tools.debug(sel.toString());
+	}
+
+	public static void demoWithSelectRecursive1(SQL sql)
+	{
+		Select va;
+		View vc;
+		View q = null;
+
+		Select sel = Config.SQL.with( //
+				va = sql.from(vc = sql.self().as("z")).select().select(vc.$("ff").as("gg")).with("va") //
+		).from(q = va.as("c")) //
+				.select(q.$("gg"), q.all(), sql.all());
 
 		Tools.debug(sel.toString());
 	}
@@ -45,10 +59,13 @@ public class TestWith
 		View q = null;
 
 		Select sel = Config.SQL.with( //
-				va = sql.from(sql.view(COMP.class)).select(sql.all()).to(AbstractSubquery.class).with("va"), //
-				vb = sql.from(va).select(va.all()).to(AbstractSubquery.class).with("vb") //
+				va = sql.from(sql.view(COMP.class).as("T")) //
+						.select(sql.all()).to(AbstractSubquery.class).with("va"),
+				vb = sql.from(va).select(va.$("COMP_ID")) //
+						.to(AbstractSubquery.class).with("vb")
+		//
 		).from(q = vb.as("c")) //
-				.select(q.all());
+				.select(q.$("COMP_ID"), q.all(), sql.all());
 
 		Tools.debug(sel.toString());
 	}
@@ -57,8 +74,9 @@ public class TestWith
 	{
 		SQL sql = Config.SQL;
 
-		// demoWithSubquery(sql);
-		// demoWithSelect(sql);
+		demoWithSubquery(sql);
+		demoWithSelect(sql);
 		demoWithSelectRecursive(sql);
+		demoWithSelectRecursive1(sql);
 	}
 }

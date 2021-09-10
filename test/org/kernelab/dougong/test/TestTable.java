@@ -109,6 +109,6 @@ public class TestTable extends AbstractTable
 		;
 	}
 
-	@NameMeta(name = "fdsafe")
+	@NameMeta(name = "TEST_COL")
 	public Column TEST_COLUMN;
 }

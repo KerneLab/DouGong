@@ -16,8 +16,7 @@ public class TestJoin
 
 	public static void main(String[] args)
 	{
-		// Tools.debug(makeSelectWithJoinOnCondition().toString(new
-		// StringBuilder()));
+		Tools.debug(makeSelectWithJoinOnCondition().toString(new StringBuilder()));
 		Tools.debug(makeSelectWithJoinUsingColumns().toString(new StringBuilder()));
 	}
 

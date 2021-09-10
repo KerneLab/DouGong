@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Withable;
@@ -16,12 +17,13 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 		if (view instanceof Withable)
 		{
 			String[] cols = ((Withable) view).withCols();
-			if (cols != null && cols.length > 0)
+			if (cols != null)
 			{
+				Provider p = view.provider();
 				List<Item> items = new LinkedList<Item>();
 				for (String col : cols)
 				{
-					items.add(view.provider().provideReference(view, col));
+					items.add(p.provideReference(view, col));
 				}
 				return items;
 			}
@@ -52,7 +54,7 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 					buffer.append(',');
 				}
 				buffer.append(this.provider().provideAliasLabel(view.withName()));
-				if (view.withCols() != null && view.withCols().length > 0)
+				if (view.withCols() != null)
 				{
 					String[] cols = view.withCols();
 					buffer.append(" (");

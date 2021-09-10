@@ -85,6 +85,8 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	private String[]				withCols	= null;
 
+	private Map<String, Integer>	withColsMap	= null;
+
 	public Reference $(String refer)
 	{
 		return ref(refer);
@@ -644,6 +646,18 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 
 	public Reference ref(String refer)
 	{
+		if (this.withCols() != null)
+		{
+			if (this.withColsMap.get(refer) != null)
+			{
+				return provideReference(this, refer);
+			}
+			else
+			{
+				return null;
+			}
+		}
+
 		Item item = item(refer);
 		if (item instanceof Reference)
 		{
@@ -757,7 +771,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		{
 			if (view instanceof Withable)
 			{
-				items.addAll(AbstractWithsable.resolveAllItems(view));
+				items.addAll(refer(view, AbstractWithsable.resolveAllItems(view)));
 			}
 			else
 			{
@@ -773,7 +787,7 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 			View view = join.view();
 			if (view instanceof Withable)
 			{
-				items.addAll(AbstractWithsable.resolveAllItems(view));
+				items.addAll(refer(view, AbstractWithsable.resolveAllItems(view)));
 			}
 			else
 			{
@@ -1230,7 +1244,19 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 	public AbstractSelect with(String name, String... cols)
 	{
 		this.withName = name;
-		this.withCols = cols;
+		this.withCols = cols == null || cols.length == 0 ? null : cols;
+		if (this.withCols == null)
+		{
+			this.withColsMap = null;
+		}
+		else
+		{
+			this.withColsMap = new LinkedHashMap<String, Integer>();
+			for (int i = 0; i < cols.length; i++)
+			{
+				this.withColsMap.put(cols[i], i);
+			}
+		}
 		return this;
 	}
 
