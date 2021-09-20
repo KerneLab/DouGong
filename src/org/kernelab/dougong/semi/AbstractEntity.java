@@ -1,10 +1,12 @@
 package org.kernelab.dougong.semi;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,22 +43,48 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 	}
 
-	public static Set<Column> getColumns(Entity entity)
+	public static Column getColumn(Entity entity, Field field)
+			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException
 	{
-		Set<Column> columns = new HashSet<Column>();
+		return Tools.access(entity, field);
+	}
 
-		for (Field field : entity.getClass().getFields())
+	public static List<Field> getColumnFields(Entity entity)
+	{
+		Map<String, Field> fields = new LinkedHashMap<String, Field>();
+
+		for (Field field : entity.getClass().getDeclaredFields())
 		{
 			if (isColumn(field))
 			{
-				try
-				{
-					columns.add((Column) Tools.access(entity, field));
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
+				fields.put(field.getName(), field);
+			}
+		}
+
+		for (Field field : entity.getClass().getFields())
+		{
+			if (!fields.containsKey(field.getName()) && isColumn(field))
+			{
+				fields.put(field.getName(), field);
+			}
+		}
+
+		return new LinkedList<Field>(fields.values());
+	}
+
+	public static Set<Column> getColumns(Entity entity)
+	{
+		Set<Column> columns = new LinkedHashSet<Column>();
+
+		for (Field field : getColumnFields(entity))
+		{
+			try
+			{
+				columns.add(getColumn(entity, field));
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
 			}
 		}
 
@@ -72,14 +100,13 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	public static boolean isColumn(Field field)
 	{
 		int mod = field.getModifiers();
-
 		try
 		{
-			if (Tools.isSubClass(field.getType(), Column.class) //
-					&& Modifier.isPublic(mod) //
-					&& !Modifier.isStatic(mod) //
+			if (!Modifier.isStatic(mod) //
 					&& !Modifier.isFinal(mod) //
-			)
+					&& Tools.isSubClass(field.getType(), Column.class) //
+					&& (Modifier.isPublic(mod)
+							|| (Tools.accessor(field) != null && Tools.accessor(field, null) != null)))
 			{
 				return true;
 			}
@@ -94,15 +121,13 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	public static boolean isForeignKey(Method method)
 	{
 		int mod = method.getModifiers();
-
 		try
 		{
-			if (Tools.isSubClass(method.getReturnType(), ForeignKey.class) //
-					&& Modifier.isPublic(mod) //
+			if (Modifier.isPublic(mod) //
 					&& !Modifier.isStatic(mod) //
 					&& method.getAnnotation(ForeignKeyMeta.class) != null //
 					&& method.getParameterTypes().length == 1 //
-			) //
+					&& Tools.isSubClass(method.getReturnType(), ForeignKey.class)) //
 			{
 				return true;
 			}
@@ -237,17 +262,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 	protected List<Field> getColumnFields()
 	{
-		List<Field> fields = new LinkedList<Field>();
-
-		for (Field field : this.getClass().getFields())
-		{
-			if (isColumn(field))
-			{
-				fields.add(field);
-			}
-		}
-
-		return fields;
+		return getColumnFields(this);
 	}
 
 	protected void initColumns()
@@ -258,10 +273,10 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		{
 			try
 			{
-				if (field.get(this) == null)
+				if (getColumn(this, field) == null)
 				{
 					col = this.getColumnByField(field);
-					field.set(this, col);
+					Tools.access(this, field, col);
 					items().add(col);
 					referItems().put(col.name(), col);
 				}
