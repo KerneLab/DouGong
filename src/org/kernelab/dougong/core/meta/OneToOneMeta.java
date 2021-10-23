@@ -24,5 +24,13 @@ public @interface OneToOneMeta
 	 */
 	public boolean referred();
 
+	/**
+	 * Indicate the range of scenes need to setup this field. Empty scenes means
+	 * all scenes as default.
+	 * 
+	 * @return Empty by default.
+	 */
+	public String[] scenes() default {};
+
 	public boolean serialize() default true;
 }

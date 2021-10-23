@@ -234,7 +234,7 @@ public abstract class Entitys
 			params.put(absname, absKeyVals);
 		}
 
-		for (R miss : selectObjects(kit, sql, select, referrerModel, new JSON().attrAll(params), new LinkedList<R>()))
+		for (R miss : selectObjects(kit, sql, select, referrerModel, (String) null, new JSON().attrAll(params)))
 		{
 			deleteObject(kit, sql, miss, referrerEntity);
 		}
@@ -898,6 +898,21 @@ public abstract class Entitys
 		return field.getAnnotation(ManyToOneMeta.class) != null;
 	}
 
+	protected static boolean isNeedSetup(ManyToOneMeta meta, String scene)
+	{
+		return meta != null && isUnderScene(scene, meta.scenes());
+	}
+
+	protected static boolean isNeedSetup(OneToManyMeta meta, String scene)
+	{
+		return meta != null && isUnderScene(scene, meta.scenes());
+	}
+
+	protected static boolean isNeedSetup(OneToOneMeta meta, String scene)
+	{
+		return meta != null && isUnderScene(scene, meta.scenes());
+	}
+
 	protected static boolean isOneToMany(Field field)
 	{
 		return field.getAnnotation(OneToManyMeta.class) != null;
@@ -916,6 +931,22 @@ public abstract class Entitys
 		{
 			return false;
 		}
+	}
+
+	protected static boolean isUnderScene(String target, String[] scenes)
+	{
+		if (target == null || scenes == null || scenes.length == 0)
+		{
+			return true;
+		}
+		for (String s : scenes)
+		{
+			if (target.equals(s))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static <T> Map<String, Object> makeParams(SQL sql, T object)
@@ -1120,8 +1151,13 @@ public abstract class Entitys
 		return refreshObject(kit, sql, object, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T refreshObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		return refreshObject(kit, sql, object, entity, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T refreshObject(SQLKit kit, SQL sql, T object, Entity entity, String scene) throws SQLException
 	{
 		if (object == null)
 		{
@@ -1143,7 +1179,7 @@ public abstract class Entitys
 		if (key != null)
 		{
 			select.where(key.queryCondition());
-			return selectObject(kit, sql, select, (Class<T>) object.getClass(),
+			return selectObject(kit, sql, select, (Class<T>) object.getClass(), scene,
 					mapColumnToLabelByMeta(key.mapValues(object)));
 		}
 		else
@@ -1454,16 +1490,32 @@ public abstract class Entitys
 
 	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
 	{
+		return selectObject(kit, sql, model, (String) null, params);
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, Map<String, Object> params)
+			throws SQLException
+	{
+		return selectObject(kit, sql, model, (String) null, params);
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, Object... pkVals) throws SQLException
+	{
+		return selectObject(kit, sql, (String) null, model, pkVals);
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, String scene, JSON params) throws SQLException
+	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, model);
 		Select select = sql.from(entity) //
 				.where(entity.primaryKey().queryCondition()) //
 				.select(entity.all()) //
 				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
-		return selectObject(kit, sql, select, model, params);
+		return selectObject(kit, sql, select, model, scene, params);
 	}
 
-	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, Map<String, Object> params)
+	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, String scene, Map<String, Object> params)
 			throws SQLException
 	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, model);
@@ -1472,10 +1524,41 @@ public abstract class Entitys
 				.select(entity.all()) //
 				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
-		return selectObject(kit, sql, select, model, params);
+		return selectObject(kit, sql, select, model, scene, params);
 	}
 
-	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, Object... pkVals) throws SQLException
+	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
+			throws SQLException
+	{
+		return selectObject(kit, sql, select, model, (String) null, params);
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, Map<String, Object> params)
+			throws SQLException
+	{
+		return selectObject(kit, sql, select, model, (String) null, params);
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, String scene, JSON params)
+			throws SQLException
+	{
+		Sequel s = kit.execute(select.toString(), params);
+		T object = s.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+		s.close();
+		return setupObject(kit, sql, object, scene, true);
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, String scene,
+			Map<String, Object> params) throws SQLException
+	{
+		Sequel s = kit.execute(select.toString(), params);
+		T object = s.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+		s.close();
+		return setupObject(kit, sql, object, scene, true);
+	}
+
+	public static <T> T selectObject(SQLKit kit, SQL sql, String scene, Class<T> model, Object... pkVals)
+			throws SQLException
 	{
 		Entity entity = Entitys.getEntityFromModelClass(sql, model);
 
@@ -1488,29 +1571,23 @@ public abstract class Entitys
 			params.put(Utils.getDataLabelFromField(pk.columns()[i].field()), pkVals[i]);
 		}
 
-		return selectObject(kit, sql, model, params);
+		return selectObject(kit, sql, model, scene, params);
 	}
 
-	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
+	public static <T> Canal<?, T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
 			throws SQLException
 	{
-		Sequel s = kit.execute(select.toString(), params);
-		T object = s.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
-		s.close();
-		return setupObject(kit, sql, object, true);
+		return selectObjects(kit, sql, select, model, (String) null, params);
 	}
 
-	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, Map<String, Object> params)
-			throws SQLException
+	public static <T> Canal<?, T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
+			Map<String, Object> params) throws SQLException
 	{
-		Sequel s = kit.execute(select.toString(), params);
-		T object = s.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
-		s.close();
-		return setupObject(kit, sql, object, true);
+		return selectObjects(kit, sql, select, model, (String) null, params);
 	}
 
 	public static <T> Canal<?, T> selectObjects(final SQLKit kit, final SQL sql, Select select, Class<T> model,
-			JSON params) throws SQLException
+			final String scene, JSON params) throws SQLException
 	{
 		return kit.execute(select.toString(), params) //
 				.getRows(model, Utils.getFieldNameMapByMetaFully(model, null)) //
@@ -1521,7 +1598,7 @@ public abstract class Entitys
 					{
 						try
 						{
-							return setupObject(kit, sql, el, true);
+							return setupObject(kit, sql, el, scene, true);
 						}
 						catch (Exception e)
 						{
@@ -1531,21 +1608,15 @@ public abstract class Entitys
 				});
 	}
 
-	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
-			Collection<T> coll) throws SQLException
+	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, String scene,
+			JSON params, Collection<T> coll, int limit) throws SQLException
 	{
-		return selectObjects(kit, sql, select, model, params, coll, -1);
-	}
-
-	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params,
-			Collection<T> coll, int limit) throws SQLException
-	{
-		return selectObjects(kit, sql, select, model, params).limit(limit)
+		return selectObjects(kit, sql, select, model, scene, params).limit(limit)
 				.collect(coll != null ? coll : new LinkedList<T>());
 	}
 
 	public static <T> Canal<?, T> selectObjects(final SQLKit kit, final SQL sql, Select select, Class<T> model,
-			Map<String, Object> params) throws SQLException
+			final String scene, Map<String, Object> params) throws SQLException
 	{
 		return kit.execute(select.toString(), params) //
 				.getRows(model, Utils.getFieldNameMapByMetaFully(model, null)) //
@@ -1556,7 +1627,7 @@ public abstract class Entitys
 					{
 						try
 						{
-							return setupObject(kit, sql, el, true);
+							return setupObject(kit, sql, el, scene, true);
 						}
 						catch (Exception e)
 						{
@@ -1566,16 +1637,10 @@ public abstract class Entitys
 				});
 	}
 
-	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
-			Map<String, Object> params, Collection<T> coll) throws SQLException
-	{
-		return selectObjects(kit, sql, select, model, params, coll, -1);
-	}
-
-	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
+	public static <T> Collection<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, String scene,
 			Map<String, Object> params, Collection<T> coll, int limit) throws SQLException
 	{
-		return selectObjects(kit, sql, select, model, params).limit(limit)
+		return selectObjects(kit, sql, select, model, scene, params).limit(limit)
 				.collect(coll != null ? coll : new LinkedList<T>());
 	}
 
@@ -1612,8 +1677,8 @@ public abstract class Entitys
 		}
 	}
 
-	protected static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
-			throws SQLException
+	protected static <T> void setManyToOneMembers(SQLKit kit, SQL sql, T object, Field field, String scene,
+			boolean fully) throws SQLException
 	{
 		boolean setable = false;
 		try
@@ -1661,14 +1726,14 @@ public abstract class Entitys
 						throw new RuntimeException(e);
 					}
 
-					setupObject(kit, sql, another, fully && meta.fully());
+					setupObject(kit, sql, another, scene, fully && meta.fully());
 				}
 			}
 		}
 	}
 
-	protected static <T> void setOneToManyMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
-			throws SQLException
+	protected static <T> void setOneToManyMembers(SQLKit kit, SQL sql, T object, Field field, String scene,
+			boolean fully) throws SQLException
 	{
 		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
 
@@ -1717,14 +1782,14 @@ public abstract class Entitys
 							throw new RuntimeException(e);
 						}
 					}
-					setupObject(kit, sql, obj, fully);
+					setupObject(kit, sql, obj, scene, fully);
 				}
 			}
 		}
 	}
 
-	protected static <T> void setOneToOneMembers(SQLKit kit, SQL sql, T object, Field field, boolean fully)
-			throws SQLException
+	protected static <T> void setOneToOneMembers(SQLKit kit, SQL sql, T object, Field field, String scene,
+			boolean fully) throws SQLException
 	{
 		OneToOneMeta meta = field.getAnnotation(OneToOneMeta.class);
 
@@ -1777,11 +1842,11 @@ public abstract class Entitys
 				}
 			}
 
-			setupObject(kit, sql, another, fully);
+			setupObject(kit, sql, another, scene, fully);
 		}
 	}
 
-	public static <T> T setupObject(SQLKit kit, SQL sql, T object, boolean fully) throws SQLException
+	public static <T> T setupObject(SQLKit kit, SQL sql, T object, String scene, boolean fully) throws SQLException
 	{
 		if (object == null)
 		{
@@ -1792,17 +1857,17 @@ public abstract class Entitys
 
 		for (Field field : fields)
 		{
-			if (field.getAnnotation(ManyToOneMeta.class) != null)
+			if (isNeedSetup(field.getAnnotation(ManyToOneMeta.class), scene))
 			{
-				setManyToOneMembers(kit, sql, object, field, fully);
+				setManyToOneMembers(kit, sql, object, field, scene, fully);
 			}
 		}
 
 		for (Field field : fields)
 		{
-			if (field.getAnnotation(OneToOneMeta.class) != null)
+			if (isNeedSetup(field.getAnnotation(OneToOneMeta.class), scene))
 			{
-				setOneToOneMembers(kit, sql, object, field, fully);
+				setOneToOneMembers(kit, sql, object, field, scene, fully);
 			}
 		}
 
@@ -1810,9 +1875,9 @@ public abstract class Entitys
 		{
 			for (Field field : fields)
 			{
-				if (field.getAnnotation(OneToManyMeta.class) != null)
+				if (isNeedSetup(field.getAnnotation(OneToManyMeta.class), scene))
 				{
-					setOneToManyMembers(kit, sql, object, field, fully);
+					setOneToManyMembers(kit, sql, object, field, scene, fully);
 				}
 			}
 		}
