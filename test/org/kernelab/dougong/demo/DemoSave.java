@@ -47,6 +47,9 @@ public class DemoSave
 	{
 		Company comp = Entitys.selectObject(kit, sql, Company.class, new JSON().attr("compId", "3"));
 
+		Tools.debug(comp.toString());
+		Tools.debug("=================");
+
 		comp.getDepartments().get(0).getStaffs().remove(0);
 		comp.getDepartments().get(0).getStaffs().get(0).setName("jack");
 		comp.getDepartments().get(0).getStaffs().add(new Staff(comp.getDepartments().get(0), "tony", 2132.0, null));

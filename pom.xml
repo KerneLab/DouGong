@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.kernelab</groupId>
 	<artifactId>dougong</artifactId>
-	<version>0.0.25-RELEASE</version>
+	<version>0.0.26-RELEASE</version>
 	<name>DouGong</name>
 	<description>DouGong Framework</description>
 	<url>https://github.com/KerneLab/DouGong</url>
@@ -17,13 +17,13 @@
 		<dependency>
 			<groupId>org.kernelab</groupId>
 			<artifactId>basis</artifactId>
-			<version>0.0.13-RELEASE</version>
+			<version>0.0.14-RELEASE</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0</version>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 
 	<build>
