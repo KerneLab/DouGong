@@ -241,19 +241,22 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 
 	public StringBuilder provideOutputColumnExpress(StringBuilder buffer, Column column)
 	{
-		String alias = this.provideAliasLabel(column.view().alias());
+		String alias = this.provideAliasLabel(this.provideViewAlias(column.view()));
+
 		if (alias != null)
 		{
 			buffer.append(alias);
 			buffer.append('.');
 		}
+
 		this.provideOutputNameText(buffer, column.name());
+
 		return buffer;
 	}
 
 	public StringBuilder provideOutputColumnReference(StringBuilder buffer, Column column)
 	{
-		String alias = this.provideAliasLabel(column.view().alias());
+		String alias = this.provideAliasLabel(this.provideViewAlias(column.view()));
 		if (alias != null)
 		{
 			buffer.append(alias);
@@ -597,5 +600,20 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		{
 			return null;
 		}
+	}
+
+	public String provideViewAlias(View view)
+	{
+		String alias = view.alias();
+
+		if (alias == null)
+		{
+			if (view instanceof Withable)
+			{
+				alias = ((Withable) view).withName();
+			}
+		}
+
+		return alias;
 	}
 }

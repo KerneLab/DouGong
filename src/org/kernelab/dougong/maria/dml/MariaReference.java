@@ -16,15 +16,19 @@ public class MariaReference extends AbstractReference
 		return new MariaReference(view(), name());
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		String alias = this.view().provider().provideAliasLabel(view().alias());
+		String alias = this.view().provider().provideAliasLabel(view().provider().provideViewAlias(view()));
+
 		if (alias != null)
 		{
 			buffer.append(alias);
 			buffer.append('.');
 		}
+
 		this.view().provider().provideOutputNameText(buffer, name());
+
 		return buffer;
 	}
 }

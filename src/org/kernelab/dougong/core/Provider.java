@@ -424,4 +424,6 @@ public interface Provider extends Castable
 	public Update provideUpdate();
 
 	public <T extends View> T provideView(Class<T> cls);
+
+	public String provideViewAlias(View view);
 }

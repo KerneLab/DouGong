@@ -24,6 +24,19 @@ public class TestWith
 		Tools.debug(sel.toString());
 	}
 
+	public static void demoWithSelectNoAlias(SQL sql)
+	{
+		Select va, vb;
+
+		Select sel = Config.SQL.with( //
+				va = sql.from(sql.view(COMP.class).as("T")).select(sql.all()).with("va"), //
+				vb = sql.from(va = va.as("a")).select(va.all()).with("vb") //
+		).from(vb) //
+				.select(vb.all());
+
+		Tools.debug(sel.toString());
+	}
+
 	public static void demoWithSelectRecursive(SQL sql)
 	{
 		Select va;
@@ -76,6 +89,7 @@ public class TestWith
 
 		demoWithSubquery(sql);
 		demoWithSelect(sql);
+		demoWithSelectNoAlias(sql);
 		demoWithSelectRecursive(sql);
 		demoWithSelectRecursive1(sql);
 	}

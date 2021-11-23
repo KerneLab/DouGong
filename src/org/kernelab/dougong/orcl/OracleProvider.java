@@ -255,7 +255,7 @@ public class OracleProvider extends AbstractProvider
 	{
 		if (!column.isUsingByJoin())
 		{
-			String alias = column.view().provider().provideAliasLabel(column.view().alias());
+			String alias = column.view().provider().provideAliasLabel(this.provideViewAlias(column.view()));
 			if (alias != null)
 			{
 				buffer.append(alias);

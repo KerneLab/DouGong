@@ -14,7 +14,7 @@ public class OracleAllItems extends AbstractAllItems
 	{
 		if (this.view() != null)
 		{
-			String alias = this.view().provider().provideAliasLabel(view().alias());
+			String alias = this.view().provider().provideAliasLabel(view().provider().provideViewAlias(view()));
 			if (alias != null)
 			{
 				buffer.append(alias);
