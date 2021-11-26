@@ -85,7 +85,7 @@ public class AbstractFunction extends AbstractSortable implements Function
 		this.name(Utils.getNameFromNamed(this));
 	}
 
-	public boolean isPseudoColumn()
+	public boolean isPseudo()
 	{
 		return false;
 	}

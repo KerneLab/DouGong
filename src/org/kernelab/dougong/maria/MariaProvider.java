@@ -229,28 +229,31 @@ public class MariaProvider extends AbstractProvider
 
 		Expression[] args = function.args();
 
-		if (!function.isPseudoColumn())
+		if (!function.isPseudo() || (args != null && args.length > 0))
 		{
 			buffer.append('(');
+		}
 
-			if (args != null && args.length > 0)
+		if (args != null && args.length > 0)
+		{
+			boolean first = true;
+
+			for (Expression expr : function.args())
 			{
-				boolean first = true;
-
-				for (Expression expr : function.args())
+				if (first)
 				{
-					if (first)
-					{
-						first = false;
-					}
-					else
-					{
-						buffer.append(',');
-					}
-					Utils.outputExpr(buffer, expr);
+					first = false;
 				}
+				else
+				{
+					buffer.append(',');
+				}
+				Utils.outputExpr(buffer, expr);
 			}
+		}
 
+		if (!function.isPseudo() || (args != null && args.length > 0))
+		{
 			buffer.append(')');
 		}
 

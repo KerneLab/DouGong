@@ -2,16 +2,13 @@ package org.kernelab.dougong.demo;
 
 import org.kernelab.basis.JSON;
 import org.kernelab.dougong.SQL;
-import org.kernelab.dougong.core.dml.Select;
-import org.kernelab.dougong.demo.COMP;
-import org.kernelab.dougong.demo.DEPT;
-import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.semi.dml.PredefinedView;
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
 import org.kernelab.dougong.core.meta.TypeMeta;
-import org.kernelab.dougong.core.meta.DataMeta;
+import org.kernelab.dougong.semi.dml.PredefinedView;
 
 @MemberMeta(follow = true)
 @NameMeta(name = "TestView")

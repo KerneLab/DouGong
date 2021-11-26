@@ -28,11 +28,11 @@ public interface Function extends Named, Item, Aliases, Sortable, Member, Provid
 	public Function call(Expression... args);
 
 	/**
-	 * To indicate whether this function is a pseudo column or not. Generally,
-	 * the name of pseudo column must NOT be surrounded with quotes. Empty
-	 * brackets should NOT appear after the function name.
+	 * To indicate whether this function is a pseudo or not. Generally, the name
+	 * of pseudo function must NOT be surrounded with quotes. Empty brackets
+	 * should NOT appear after the function name.
 	 * 
 	 * @return
 	 */
-	public boolean isPseudoColumn();
+	public boolean isPseudo();
 }

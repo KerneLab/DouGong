@@ -267,7 +267,7 @@ public class OracleProvider extends AbstractProvider
 
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
 	{
-		if (!function.isPseudoColumn())
+		if (!function.isPseudo())
 		{
 			this.provideOutputMember(buffer, function);
 		}
@@ -283,28 +283,31 @@ public class OracleProvider extends AbstractProvider
 
 		Expression[] args = function.args();
 
-		if (!function.isPseudoColumn())
+		if (!function.isPseudo() || (args != null && args.length > 0))
 		{
 			buffer.append('(');
+		}
 
-			if (args != null && args.length > 0)
+		if (args != null && args.length > 0)
+		{
+			boolean first = true;
+
+			for (Expression expr : args)
 			{
-				boolean first = true;
-
-				for (Expression expr : args)
+				if (first)
 				{
-					if (first)
-					{
-						first = false;
-					}
-					else
-					{
-						buffer.append(',');
-					}
-					Utils.outputExpr(buffer, expr);
+					first = false;
 				}
+				else
+				{
+					buffer.append(',');
+				}
+				Utils.outputExpr(buffer, expr);
 			}
+		}
 
+		if (!function.isPseudo() || (args != null && args.length > 0))
+		{
 			buffer.append(')');
 		}
 
