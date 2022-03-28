@@ -7,15 +7,17 @@ import org.kernelab.basis.Relation;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.util.AccessGather;
-import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.core.util.AccessGather.Access;
+import org.kernelab.dougong.core.util.Utils;
 
-public class AbstractUpdate extends AbstractFilterable implements Update
+public class AbstractUpdate extends AbstractJoinable implements Update
 {
 	private List<Relation<Column, Expression>>	sets	= new LinkedList<Relation<Column, Expression>>();
 
@@ -26,6 +28,27 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	{
 		super.from(view);
 		return this;
+	}
+
+	@Override
+	public AbstractUpdate fullJoin(View view, Column... using)
+	{
+		super.fullJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate fullJoin(View view, Condition on)
+	{
+		super.fullJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate fullJoin(View view, ForeignKey rels)
+	{
+		return fullJoin(view, rels.joinCondition());
 	}
 
 	protected String hint()
@@ -40,10 +63,79 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	}
 
 	@Override
+	public AbstractUpdate innerJoin(View view, Column... using)
+	{
+		super.innerJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate innerJoin(View view, Condition on)
+	{
+		super.innerJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate innerJoin(View view, ForeignKey rels)
+	{
+		return innerJoin(view, rels.joinCondition());
+	}
+
+	public AbstractUpdate joins(List<Join> joins)
+	{
+		super.joins(joins);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate leftJoin(View view, Column... using)
+	{
+		super.leftJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate leftJoin(View view, Condition on)
+	{
+		super.leftJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate leftJoin(View view, ForeignKey rels)
+	{
+		return leftJoin(view, rels.joinCondition());
+	}
+
+	@Override
 	public AbstractUpdate provider(Provider provider)
 	{
 		super.provider(provider);
 		return this;
+	}
+
+	@Override
+	public AbstractUpdate rightJoin(View view, Column... using)
+	{
+		super.rightJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate rightJoin(View view, Condition on)
+	{
+		super.rightJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate rightJoin(View view, ForeignKey rels)
+	{
+		return rightJoin(view, rels.joinCondition());
 	}
 
 	public AbstractUpdate set(Column column, Expression value)
@@ -78,8 +170,21 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 	@Override
 	protected void textOfFrom(StringBuilder buffer)
 	{
-		buffer.append(' ');
-		from().toStringUpdatable(buffer);
+		boolean first = true;
+
+		for (View fr : froms())
+		{
+			if (first)
+			{
+				buffer.append(' ');
+				first = false;
+			}
+			else
+			{
+				buffer.append(',');
+			}
+			fr.toStringUpdatable(buffer);
+		}
 	}
 
 	protected void textOfHead(StringBuilder buffer)
@@ -128,6 +233,7 @@ public class AbstractUpdate extends AbstractFilterable implements Update
 		this.textOfHead(buffer);
 		this.textOfHint(buffer);
 		this.textOfFrom(buffer);
+		this.textOfJoin(buffer);
 		this.textOfSets(buffer);
 		this.textOfWhere(buffer);
 		return buffer;

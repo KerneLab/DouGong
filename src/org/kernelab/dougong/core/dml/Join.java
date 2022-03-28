@@ -18,7 +18,13 @@ public interface Join extends Relation
 
 	public Join join(View leading, Join former, byte type, View view, String alias);
 
+	public Condition on();
+
 	public Join on(Condition condition);
+
+	public byte type();
+
+	public Column[] using();
 
 	public Join using(Column... columns);
 

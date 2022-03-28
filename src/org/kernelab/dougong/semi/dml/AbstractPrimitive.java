@@ -1,6 +1,7 @@
 package org.kernelab.dougong.semi.dml;
 
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
@@ -11,11 +12,13 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.Withable;
 
-public class AbstractPrimitive extends AbstractFilterable implements Primitive
+public class AbstractPrimitive extends AbstractJoinable implements Primitive
 {
-	public Delete delete()
+	public Delete delete(Table... targets)
 	{
-		return this.provider().provideDelete().with(this.with()).from(this.from()).where(this.where());
+		return this.provider().provideDelete().with(this.with()) //
+				.from(this.from()).joins(this.joins()).where(this.where()) //
+				.delete(targets);
 	}
 
 	@Override
@@ -25,82 +28,98 @@ public class AbstractPrimitive extends AbstractFilterable implements Primitive
 		return this;
 	}
 
-	public Select fullJoin(View view, Column... using)
+	@Override
+	public AbstractPrimitive fullJoin(View view, Column... using)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).fullJoin(view,
-				using);
+		super.fullJoin(view, using);
+		return this;
 	}
 
-	public Select fullJoin(View view, Condition cond)
+	@Override
+	public AbstractPrimitive fullJoin(View view, Condition on)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).fullJoin(view,
-				cond);
+		super.fullJoin(view, on);
+		return this;
 	}
 
-	public Select fullJoin(View view, ForeignKey rels)
+	@Override
+	public AbstractPrimitive fullJoin(View view, ForeignKey rels)
 	{
 		return fullJoin(view, rels.joinCondition());
 	}
 
-	public Select innerJoin(View view, Column... using)
+	@Override
+	public AbstractPrimitive innerJoin(View view, Column... using)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).innerJoin(view,
-				using);
+		super.innerJoin(view, using);
+		return this;
 	}
 
-	public Select innerJoin(View view, Condition cond)
+	@Override
+	public AbstractPrimitive innerJoin(View view, Condition on)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).innerJoin(view,
-				cond);
+		super.innerJoin(view, on);
+		return this;
 	}
 
-	public Select innerJoin(View view, ForeignKey rels)
+	@Override
+	public AbstractPrimitive innerJoin(View view, ForeignKey rels)
 	{
 		return innerJoin(view, rels.joinCondition());
 	}
 
-	public Select leftJoin(View view, Column... using)
+	@Override
+	public AbstractPrimitive leftJoin(View view, Column... using)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).leftJoin(view,
-				using);
+		super.leftJoin(view, using);
+		return this;
 	}
 
-	public Select leftJoin(View view, Condition cond)
+	@Override
+	public AbstractPrimitive leftJoin(View view, Condition on)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).leftJoin(view,
-				cond);
+		super.leftJoin(view, on);
+		return this;
 	}
 
-	public Select leftJoin(View view, ForeignKey rels)
+	@Override
+	public AbstractPrimitive leftJoin(View view, ForeignKey rels)
 	{
 		return leftJoin(view, rels.joinCondition());
 	}
 
-	public Select rightJoin(View view, Column... using)
+	@Override
+	public AbstractPrimitive rightJoin(View view, Column... using)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).rightJoin(view,
-				using);
+
+		super.rightJoin(view, using);
+		return this;
 	}
 
-	public Select rightJoin(View view, Condition cond)
+	@Override
+	public AbstractPrimitive rightJoin(View view, Condition on)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).rightJoin(view,
-				cond);
+		super.rightJoin(view, on);
+		return this;
 	}
 
-	public Select rightJoin(View view, ForeignKey rels)
+	@Override
+	public AbstractPrimitive rightJoin(View view, ForeignKey rels)
 	{
 		return rightJoin(view, rels.joinCondition());
 	}
 
 	public Select select(Expression... exprs)
 	{
-		return this.provider().provideSelect().with(this.with()).from(this.from()).where(this.where()).select(exprs);
+		return this.provider().provideSelect().with(this.with()) //
+				.from(this.from()).joins(this.joins()).where(this.where()) //
+				.select(exprs);
 	}
 
 	public Update update()
 	{
-		return this.provider().provideUpdate().with(this.with()).from(this.from()).where(this.where());
+		return this.provider().provideUpdate().with(this.with()) //
+				.from(this.from()).joins(this.joins()).where(this.where());
 	}
 
 	@Override

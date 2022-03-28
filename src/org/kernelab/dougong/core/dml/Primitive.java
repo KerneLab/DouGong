@@ -1,140 +1,132 @@
 package org.kernelab.dougong.core.dml;
 
 import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 
-public interface Primitive extends Filterable, Withsable
+public interface Primitive extends Filterable, Joinable, Withsable
 {
 	/**
 	 * Create a Delete using from and where information according to this
 	 * object.
 	 * 
+	 * @param targets
+	 *            The target tables which would be used when deleting
+	 *            multi-tables.
 	 * @return
 	 */
-	public Delete delete();
+	public Delete delete(Table... targets);
 
 	public Primitive from(View view);
 
 	/**
-	 * Create a Select which full-joining the given view with the using columns
-	 * using from and where information according to this object.
+	 * Add full-join to this object.
 	 * 
 	 * @param view
 	 * @param using
 	 * @return
 	 */
-	public Select fullJoin(View view, Column... using);
+	public Primitive fullJoin(View view, Column... using);
 
 	/**
-	 * Create a Select which full-joining the given view with the condition
-	 * using from and where information according to this object.
+	 * Add full-join to this object.
 	 * 
 	 * @param view
 	 * @param cond
 	 * @return
 	 */
-	public Select fullJoin(View view, Condition cond);
+	public Primitive fullJoin(View view, Condition cond);
 
 	/**
-	 * Create a Select which full-joining the given view with the foreign key
-	 * using from and where information according to this object.
+	 * Add full-join to this object.
 	 * 
 	 * @param view
 	 * @param rels
 	 * @return
 	 */
-	public Select fullJoin(View view, ForeignKey rels);
+	public Primitive fullJoin(View view, ForeignKey rels);
 
 	/**
-	 * Create a Select which inner-joining the given view with the using columns
-	 * using from and where information according to this object.
+	 * Add inner-join to this object.
 	 * 
 	 * @param view
 	 * @param using
 	 * @return
 	 */
-	public Select innerJoin(View view, Column... using);
+	public Primitive innerJoin(View view, Column... using);
 
 	/**
-	 * Create a Select which inner-joining the given view with the condition
-	 * using from and where information according to this object.
+	 * Add inner-join to this object.
 	 * 
 	 * @param view
 	 * @param cond
 	 * @return
 	 */
-	public Select innerJoin(View view, Condition cond);
+	public Primitive innerJoin(View view, Condition cond);
 
 	/**
-	 * Create a Select which inner-joining the given view with the foreign key
-	 * using from and where information according to this object.
+	 * Add inner-join to this object.
 	 * 
 	 * @param view
 	 * @param rels
 	 * @return
 	 */
-	public Select innerJoin(View view, ForeignKey rels);
+	public Primitive innerJoin(View view, ForeignKey rels);
 
 	/**
-	 * Create a Select which left-joining the given view with the using columns
-	 * using from and where information according to this object.
+	 * Add left-join to this object.
 	 * 
 	 * @param view
 	 * @param using
 	 * @return
 	 */
-	public Select leftJoin(View view, Column... using);
+	public Primitive leftJoin(View view, Column... using);
 
 	/**
-	 * Create a Select which left-joining the given view with the condition
-	 * using from and where information according to this object.
+	 * Add left-join to this object.
 	 * 
 	 * @param view
 	 * @param cond
 	 * @return
 	 */
-	public Select leftJoin(View view, Condition cond);
+	public Primitive leftJoin(View view, Condition cond);
 
 	/**
-	 * Create a Select which left-joining the given view with the foreign key
-	 * using from and where information according to this object.
+	 * Add left-join to this object.
 	 * 
 	 * @param view
 	 * @param rels
 	 * @return
 	 */
-	public Select leftJoin(View view, ForeignKey rels);
+	public Primitive leftJoin(View view, ForeignKey rels);
 
 	/**
-	 * Create a Select which right-joining the given view with the using columns
-	 * using from and where information according to this object.
+	 * Add right-join to this object.
 	 * 
 	 * @param view
 	 * @param using
 	 * @return
 	 */
-	public Select rightJoin(View view, Column... using);
+	public Primitive rightJoin(View view, Column... using);
 
 	/**
-	 * Create a Select which right-joining the given view with the condition
-	 * using from and where information according to this object.
+	 * Add right-join to this object.
 	 * 
 	 * @param view
 	 * @param cond
 	 * @return
 	 */
-	public Select rightJoin(View view, Condition cond);
+	public Primitive rightJoin(View view, Condition cond);
 
 	/**
-	 * Create a Select which right-joining the given view with the foreign key
-	 * using from and where information according to this object.
+	 * Add right-join to this object.
 	 * 
 	 * @param view
 	 * @param rels
 	 * @return
 	 */
-	public Select rightJoin(View view, ForeignKey rels);
+	public Primitive rightJoin(View view, ForeignKey rels);
 
 	/**
 	 * Create a Select which selecting the give expressions using from and where

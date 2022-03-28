@@ -49,17 +49,13 @@ import org.kernelab.dougong.core.util.AccessGather;
 import org.kernelab.dougong.core.util.AccessGather.Access;
 import org.kernelab.dougong.core.util.Utils;
 
-public abstract class AbstractSelect extends AbstractFilterable implements Select
+public abstract class AbstractSelect extends AbstractJoinable implements Select
 {
 	private String					alias		= null;
 
 	private boolean					distinct	= false;
 
 	private Expression[]			select		= null;
-
-	private List<View>				froms		= new ArrayList<View>();
-
-	private List<Join>				joins		= new ArrayList<Join>();
 
 	private List<Pivot>				pivots		= new ArrayList<Pivot>();
 
@@ -138,16 +134,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 			clone.select = Utils.copy(this.select);
 		}
 
-		if (this.froms != null)
-		{
-			clone.froms = Utils.copy(this.froms, new ArrayList<View>());
-		}
-
-		if (this.joins != null)
-		{
-			clone.joins = Utils.copy(this.joins, new ArrayList<Join>());
-		}
-
 		if (this.pivots != null)
 		{
 			clone.pivots = Utils.copy(this.pivots, new ArrayList<Pivot>());
@@ -222,57 +208,29 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this;
 	}
 
-	/**
-	 * Get the first view specified by from.
-	 * 
-	 * @return
-	 */
-	@Override
-	public View from()
-	{
-		return froms().isEmpty() ? null : froms().get(0);
-	}
-
-	/**
-	 * Add a view to the views' set.
-	 * 
-	 * @param view
-	 * @return
-	 */
 	@Override
 	public AbstractSelect from(View view)
 	{
-		if (view != null)
-		{
-			froms().add(view);
-			if (view instanceof ViewSelf)
-			{
-				((ViewSelf) view).self(this);
-			}
-		}
+		super.from(view);
 		return this;
 	}
 
-	protected List<View> froms()
-	{
-		return froms;
-	}
-
+	@Override
 	public AbstractSelect fullJoin(View view, Column... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.FULL_JOIN, view, view.alias()).using(using));
+		super.fullJoin(view, using);
 		return this;
 	}
 
+	@Override
 	public AbstractSelect fullJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.FULL_JOIN, view, view.alias()).on(on));
+		super.fullJoin(view, on);
 		AccessGather.gather(this, Access.TYPE_JOIN, on);
 		return this;
 	}
 
+	@Override
 	public AbstractSelect fullJoin(View view, ForeignKey rels)
 	{
 		return fullJoin(view, rels.joinCondition());
@@ -346,21 +304,22 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideMembershipCondition().in(this, scope);
 	}
 
+	@Override
 	public AbstractSelect innerJoin(View view, Column... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).using(using));
+		super.innerJoin(view, using);
 		return this;
 	}
 
+	@Override
 	public AbstractSelect innerJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.INNER_JOIN, view, view.alias()).on(on));
+		super.innerJoin(view, on);
 		AccessGather.gather(this, Access.TYPE_JOIN, on);
 		return this;
 	}
 
+	@Override
 	public AbstractSelect innerJoin(View view, ForeignKey rels)
 	{
 		return innerJoin(view, rels.joinCondition());
@@ -411,9 +370,11 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return items;
 	}
 
-	protected List<Join> joins()
+	@Override
+	public Select joins(List<Join> joins)
 	{
-		return joins;
+		super.joins(joins);
+		return this;
 	}
 
 	public Result joint(Expression... operands)
@@ -440,21 +401,22 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return this.provideComparisonCondition().le(this, expr);
 	}
 
+	@Override
 	public AbstractSelect leftJoin(View view, Column... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.LEFT_JOIN, view, view.alias()).using(using));
+		super.leftJoin(view, using);
 		return this;
 	}
 
+	@Override
 	public AbstractSelect leftJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.LEFT_JOIN, view, view.alias()).on(on));
+		super.leftJoin(view, on);
 		AccessGather.gather(this, Access.TYPE_JOIN, on);
 		return this;
 	}
 
+	@Override
 	public AbstractSelect leftJoin(View view, ForeignKey rels)
 	{
 		return leftJoin(view, rels.joinCondition());
@@ -801,21 +763,22 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		return items;
 	}
 
+	@Override
 	public AbstractSelect rightJoin(View view, Column... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.RIGHT_JOIN, view, view.alias()).using(using));
+		super.rightJoin(view, using);
 		return this;
 	}
 
+	@Override
 	public AbstractSelect rightJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), AbstractJoin.RIGHT_JOIN, view, view.alias()).on(on));
+		super.rightJoin(view, on);
 		AccessGather.gather(this, Access.TYPE_JOIN, on);
 		return this;
 	}
 
+	@Override
 	public AbstractSelect rightJoin(View view, ForeignKey rels)
 	{
 		return rightJoin(view, rels.joinCondition());
@@ -929,28 +892,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 		}
 	}
 
-	@Override
-	protected void textOfFrom(StringBuilder buffer)
-	{
-		buffer.append(" FROM");
-
-		boolean first = true;
-
-		for (View fr : froms())
-		{
-			if (first)
-			{
-				buffer.append(' ');
-				first = false;
-			}
-			else
-			{
-				buffer.append(',');
-			}
-			fr.toStringViewed(buffer);
-		}
-	}
-
 	protected void textOfGroup(StringBuilder buffer)
 	{
 		if (groupBy() != null && groupBy().length > 0)
@@ -1017,15 +958,6 @@ public abstract class AbstractSelect extends AbstractFilterable implements Selec
 				}
 				item.toStringSelected(buffer);
 			}
-		}
-	}
-
-	protected void textOfJoin(StringBuilder buffer)
-	{
-		for (Join join : joins())
-		{
-			buffer.append(' ');
-			join.toString(buffer);
 		}
 	}
 

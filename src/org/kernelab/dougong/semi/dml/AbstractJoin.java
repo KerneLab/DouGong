@@ -40,7 +40,7 @@ public abstract class AbstractJoin implements Join
 		return leading;
 	}
 
-	protected Condition on()
+	public Condition on()
 	{
 		return on;
 	}
@@ -80,12 +80,12 @@ public abstract class AbstractJoin implements Join
 
 	protected abstract StringBuilder toStringUsingColumns(StringBuilder buffer);
 
-	protected byte type()
+	public byte type()
 	{
 		return type;
 	}
 
-	protected Column[] using()
+	public Column[] using()
 	{
 		return using;
 	}

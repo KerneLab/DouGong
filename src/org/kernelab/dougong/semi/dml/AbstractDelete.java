@@ -2,23 +2,62 @@ package org.kernelab.dougong.semi.dml;
 
 import java.util.List;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
+import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.util.AccessGather;
 import org.kernelab.dougong.core.util.AccessGather.Access;
 
-public class AbstractDelete extends AbstractFilterable implements Delete
+public class AbstractDelete extends AbstractJoinable implements Delete
 {
-	private String hint;
+	private Table[]	targets;
+
+	private String	hint;
+
+	protected Table[] delete()
+	{
+		return this.targets;
+	}
+
+	@Override
+	public AbstractDelete delete(Table... targets)
+	{
+		this.targets = targets;
+		return this;
+	}
 
 	@Override
 	public AbstractDelete from(View view)
 	{
 		super.from(view);
 		return this;
+	}
+
+	@Override
+	public AbstractDelete fullJoin(View view, Column... using)
+	{
+		super.fullJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete fullJoin(View view, Condition on)
+	{
+		super.fullJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete fullJoin(View view, ForeignKey rels)
+	{
+		return fullJoin(view, rels.joinCondition());
 	}
 
 	protected String hint()
@@ -33,6 +72,54 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 	}
 
 	@Override
+	public AbstractDelete innerJoin(View view, Column... using)
+	{
+		super.innerJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete innerJoin(View view, Condition on)
+	{
+		super.innerJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete innerJoin(View view, ForeignKey rels)
+	{
+		return innerJoin(view, rels.joinCondition());
+	}
+
+	public AbstractDelete joins(List<Join> joins)
+	{
+		super.joins(joins);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete leftJoin(View view, Column... using)
+	{
+		super.leftJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete leftJoin(View view, Condition on)
+	{
+		super.leftJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete leftJoin(View view, ForeignKey rels)
+	{
+		return leftJoin(view, rels.joinCondition());
+	}
+
+	@Override
 	public AbstractDelete provider(Provider provider)
 	{
 		super.provider(provider);
@@ -40,10 +127,24 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 	}
 
 	@Override
-	protected void textOfFrom(StringBuilder buffer)
+	public AbstractDelete rightJoin(View view, Column... using)
 	{
-		buffer.append(" FROM ");
-		from().toStringDeletable(buffer);
+		super.rightJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete rightJoin(View view, Condition on)
+	{
+		super.rightJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete rightJoin(View view, ForeignKey rels)
+	{
+		return rightJoin(view, rels.joinCondition());
 	}
 
 	protected void textOfHead(StringBuilder buffer)
@@ -60,6 +161,30 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 		}
 	}
 
+	protected void textOfTargets(StringBuilder buffer)
+	{
+		if (this.delete() == null || this.delete().length == 0)
+		{
+			return;
+		}
+
+		boolean first = true;
+
+		for (Table target : this.delete())
+		{
+			if (first)
+			{
+				first = false;
+				buffer.append(' ');
+			}
+			else
+			{
+				buffer.append(',');
+			}
+			this.provider().provideOutputNameText(buffer, target.alias() != null ? target.alias() : target.name());
+		}
+	}
+
 	@Override
 	public String toString()
 	{
@@ -70,7 +195,9 @@ public class AbstractDelete extends AbstractFilterable implements Delete
 	{
 		this.textOfHead(buffer);
 		this.textOfHint(buffer);
+		this.textOfTargets(buffer);
 		this.textOfFrom(buffer);
+		this.textOfJoin(buffer);
 		this.textOfWhere(buffer);
 		return buffer;
 	}
