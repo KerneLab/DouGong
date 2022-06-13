@@ -10,7 +10,7 @@ public class AbstractShortParam extends AbstractParam<Short> implements ShortPar
 	}
 
 	@Override
-	protected AbstractParam<Short> replicate()
+	protected AbstractShortParam replicate()
 	{
 		return this.provider().provideProvider(new AbstractShortParam(name(), value()));
 	}

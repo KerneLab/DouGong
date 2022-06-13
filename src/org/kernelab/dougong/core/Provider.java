@@ -9,6 +9,8 @@ import java.sql.Timestamp;
 import java.util.Map;
 
 import org.kernelab.basis.Castable;
+import org.kernelab.basis.JSON;
+import org.kernelab.basis.JSON.JSAN;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.ddl.AbsoluteKey;
@@ -48,13 +50,19 @@ import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.dml.param.ByteParam;
+import org.kernelab.dougong.core.dml.param.CharParam;
 import org.kernelab.dougong.core.dml.param.DateParam;
 import org.kernelab.dougong.core.dml.param.DecimalParam;
 import org.kernelab.dougong.core.dml.param.DoubleParam;
 import org.kernelab.dougong.core.dml.param.FloatParam;
 import org.kernelab.dougong.core.dml.param.IntParam;
 import org.kernelab.dougong.core.dml.param.IterableParam;
+import org.kernelab.dougong.core.dml.param.JSANParam;
+import org.kernelab.dougong.core.dml.param.JSONParam;
 import org.kernelab.dougong.core.dml.param.LongParam;
+import org.kernelab.dougong.core.dml.param.MapParam;
+import org.kernelab.dougong.core.dml.param.ObjectParam;
+import org.kernelab.dougong.core.dml.param.Param;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
@@ -96,6 +104,8 @@ public interface Provider extends Castable
 	public int provideColumnType(Column column);
 
 	public ComparisonCondition provideComparisonCondition();
+
+	public <T> T provideDao(Class<T> cls);
 
 	/**
 	 * Provide date time format according to the given format in
@@ -294,11 +304,15 @@ public interface Provider extends Castable
 
 	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable with);
 
+	public Param<?> provideParameter(Class<? extends Param<?>> type, String name, Object value);
+
 	public StringItem provideParameter(String name);
 
 	public DecimalParam provideParameter(String name, BigDecimal value);
 
 	public ByteParam provideParameter(String name, Byte value);
+
+	public CharParam provideParameter(String name, Character value);
 
 	public DateParam provideParameter(String name, Date value);
 
@@ -310,13 +324,23 @@ public interface Provider extends Castable
 
 	public IterableParam provideParameter(String name, Iterable<?> value);
 
+	public JSANParam provideParameter(String name, JSAN value);
+
+	public JSONParam provideParameter(String name, JSON value);
+
 	public LongParam provideParameter(String name, Long value);
+
+	public <K, V> MapParam<K, V> provideParameter(String name, Map<K, V> value);
 
 	public ShortParam provideParameter(String name, Short value);
 
 	public StringParam provideParameter(String name, String value);
 
+	public <T> ObjectParam<T> provideParameter(String name, T value);
+
 	public TimestampParam provideParameter(String name, Timestamp value);
+
+	public Param<?> provideParameterByValue(String name, Object value);
 
 	/**
 	 * To provide an expression of parameter according to the given name.
@@ -325,6 +349,8 @@ public interface Provider extends Castable
 	 * @return
 	 */
 	public String provideParameterExpression(String name);
+
+	public Class<? extends Param<?>> provideParameterType(Class<?> type);
 
 	/**
 	 * To provide a pivot clause object.

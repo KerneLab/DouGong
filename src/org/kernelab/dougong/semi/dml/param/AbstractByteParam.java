@@ -10,7 +10,7 @@ public class AbstractByteParam extends AbstractParam<Byte> implements ByteParam
 	}
 
 	@Override
-	protected AbstractParam<Byte> replicate()
+	protected AbstractByteParam replicate()
 	{
 		return this.provider().provideProvider(new AbstractByteParam(name(), value()));
 	}

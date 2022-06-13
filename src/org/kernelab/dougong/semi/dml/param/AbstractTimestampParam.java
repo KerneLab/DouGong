@@ -12,7 +12,7 @@ public class AbstractTimestampParam extends AbstractParam<Timestamp> implements 
 	}
 
 	@Override
-	protected AbstractParam<Timestamp> replicate()
+	protected AbstractTimestampParam replicate()
 	{
 		return this.provider().provideProvider(new AbstractTimestampParam(name(), value()));
 	}

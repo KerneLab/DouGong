@@ -10,7 +10,7 @@ public class AbstractIntParam extends AbstractParam<Integer> implements IntParam
 	}
 
 	@Override
-	protected AbstractParam<Integer> replicate()
+	protected AbstractIntParam replicate()
 	{
 		return this.provider().provideProvider(new AbstractIntParam(name(), value()));
 	}

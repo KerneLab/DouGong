@@ -10,7 +10,7 @@ public class AbstractDoubleParam extends AbstractParam<Double> implements Double
 	}
 
 	@Override
-	protected AbstractParam<Double> replicate()
+	protected AbstractDoubleParam replicate()
 	{
 		return this.provider().provideProvider(new AbstractDoubleParam(name(), value()));
 	}

@@ -11,6 +11,10 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Map;
 
+import org.kernelab.basis.Agent;
+import org.kernelab.basis.Agent.AgentFactory;
+import org.kernelab.basis.JSON;
+import org.kernelab.basis.JSON.JSAN;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
@@ -38,16 +42,23 @@ import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.dml.param.ByteParam;
+import org.kernelab.dougong.core.dml.param.CharParam;
 import org.kernelab.dougong.core.dml.param.DateParam;
 import org.kernelab.dougong.core.dml.param.DecimalParam;
 import org.kernelab.dougong.core.dml.param.DoubleParam;
 import org.kernelab.dougong.core.dml.param.FloatParam;
 import org.kernelab.dougong.core.dml.param.IntParam;
 import org.kernelab.dougong.core.dml.param.IterableParam;
+import org.kernelab.dougong.core.dml.param.JSANParam;
+import org.kernelab.dougong.core.dml.param.JSONParam;
 import org.kernelab.dougong.core.dml.param.LongParam;
+import org.kernelab.dougong.core.dml.param.MapParam;
+import org.kernelab.dougong.core.dml.param.ObjectParam;
+import org.kernelab.dougong.core.dml.param.Param;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
+import org.kernelab.dougong.core.meta.AgentMeta;
 import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.core.util.Utils;
@@ -55,16 +66,22 @@ import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
 import org.kernelab.dougong.semi.dml.AbstractPivot;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
+import org.kernelab.dougong.semi.dml.DaoAgent;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 import org.kernelab.dougong.semi.dml.opr.AbstractStringExpressionResult;
 import org.kernelab.dougong.semi.dml.param.AbstractByteParam;
+import org.kernelab.dougong.semi.dml.param.AbstractCharParam;
 import org.kernelab.dougong.semi.dml.param.AbstractDateParam;
 import org.kernelab.dougong.semi.dml.param.AbstractDecimalParam;
 import org.kernelab.dougong.semi.dml.param.AbstractDoubleParam;
 import org.kernelab.dougong.semi.dml.param.AbstractFloatParam;
 import org.kernelab.dougong.semi.dml.param.AbstractIntParam;
 import org.kernelab.dougong.semi.dml.param.AbstractIterableParam;
+import org.kernelab.dougong.semi.dml.param.AbstractJSANParam;
+import org.kernelab.dougong.semi.dml.param.AbstractJSONParam;
 import org.kernelab.dougong.semi.dml.param.AbstractLongParam;
+import org.kernelab.dougong.semi.dml.param.AbstractMapParam;
+import org.kernelab.dougong.semi.dml.param.AbstractObjectParam;
 import org.kernelab.dougong.semi.dml.param.AbstractShortParam;
 import org.kernelab.dougong.semi.dml.param.AbstractStringParam;
 import org.kernelab.dougong.semi.dml.param.AbstractTimestampParam;
@@ -107,6 +124,43 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 
 		return Types.OTHER;
+	}
+
+	public <T> T provideDao(Class<T> cls)
+	{
+		if (!cls.isInterface())
+		{
+			try
+			{
+				return (T) cls.newInstance();
+			}
+			catch (Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+
+		AgentMeta meta = cls.getAnnotation(AgentMeta.class);
+		if (meta == null)
+		{
+			return null;
+		}
+
+		try
+		{
+			return (T) Agent.newInstance(cls, new AgentFactory()
+			{
+				@Override
+				public <E> Agent newAgent(Class<E> face, Object real)
+				{
+					return provideProvider(new DaoAgent(provideProvider(real)));
+				}
+			}, meta.value().newInstance());
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
@@ -347,6 +401,74 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	public Param<?> provideParameter(Class<? extends Param<?>> type, String name, Object value)
+	{
+		if (StringParam.class.equals(type))
+		{
+			return this.provideParameter(name, (String) value);
+		}
+		else if (IntParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Integer) value);
+		}
+		else if (DoubleParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Double) value);
+		}
+		else if (DateParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Date) value);
+		}
+		else if (TimestampParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Timestamp) value);
+		}
+		else if (DecimalParam.class.equals(type))
+		{
+			return this.provideParameter(name, (BigDecimal) value);
+		}
+		else if (ShortParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Short) value);
+		}
+		else if (FloatParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Float) value);
+		}
+		else if (ByteParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Byte) value);
+		}
+		else if (LongParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Long) value);
+		}
+		else if (CharParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Character) value);
+		}
+		else if (JSANParam.class.equals(type))
+		{
+			return this.provideParameter(name, (JSAN) value);
+		}
+		else if (JSONParam.class.equals(type))
+		{
+			return this.provideParameter(name, (JSON) value);
+		}
+		else if (MapParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Map<?, ?>) value);
+		}
+		else if (IterableParam.class.equals(type))
+		{
+			return this.provideParameter(name, (Iterable<?>) value);
+		}
+		else
+		{
+			return this.provideParameter(name, (Object) value);
+		}
+	}
+
 	public StringItem provideParameter(String name)
 	{
 		return provideStringItem("?" + name + "?");
@@ -360,6 +482,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public ByteParam provideParameter(String name, Byte value)
 	{
 		return provideProvider(new AbstractByteParam(name, value));
+	}
+
+	public CharParam provideParameter(String name, Character value)
+	{
+		return provideProvider(new AbstractCharParam(name, value));
 	}
 
 	public DateParam provideParameter(String name, Date value)
@@ -387,9 +514,24 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return provideProvider(new AbstractIterableParam(name, value));
 	}
 
+	public JSANParam provideParameter(String name, JSAN value)
+	{
+		return provideProvider(new AbstractJSANParam(name, value));
+	}
+
+	public JSONParam provideParameter(String name, JSON value)
+	{
+		return provideProvider(new AbstractJSONParam(name, value));
+	}
+
 	public LongParam provideParameter(String name, Long value)
 	{
 		return provideProvider(new AbstractLongParam(name, value));
+	}
+
+	public <K, V> MapParam<K, V> provideParameter(String name, Map<K, V> value)
+	{
+		return provideProvider(new AbstractMapParam<K, V>(name, value));
 	}
 
 	public ShortParam provideParameter(String name, Short value)
@@ -402,14 +544,97 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return provideProvider(new AbstractStringParam(name, value));
 	}
 
+	public <T> ObjectParam<T> provideParameter(String name, T value)
+	{
+		return provideProvider(new AbstractObjectParam<T>(name, value));
+	}
+
 	public TimestampParam provideParameter(String name, Timestamp value)
 	{
 		return provideProvider(new AbstractTimestampParam(name, value));
 	}
 
+	public Param<?> provideParameterByValue(String name, Object value)
+	{
+		if (value == null)
+		{
+			return provideParameter(name, (Object) null);
+		}
+		return provideParameter(provideParameterType(value.getClass()), name, value);
+	}
+
 	public String provideParameterExpression(String name)
 	{
 		return "?" + name + "?";
+	}
+
+	@SuppressWarnings("unchecked")
+	public Class<? extends Param<?>> provideParameterType(Class<?> type)
+	{
+		if (String.class.equals(type))
+		{
+			return StringParam.class;
+		}
+		else if (Integer.TYPE.equals(type) || Integer.class.equals(type))
+		{
+			return IntParam.class;
+		}
+		else if (Double.TYPE.equals(type) || Double.class.equals(type))
+		{
+			return DoubleParam.class;
+		}
+		else if (Date.class.equals(type))
+		{
+			return DateParam.class;
+		}
+		else if (Timestamp.class.equals(type))
+		{
+			return TimestampParam.class;
+		}
+		else if (BigDecimal.class.equals(type))
+		{
+			return DecimalParam.class;
+		}
+		else if (Short.TYPE.equals(type) || Short.class.equals(type))
+		{
+			return ShortParam.class;
+		}
+		else if (Float.TYPE.equals(type) || Float.class.equals(type))
+		{
+			return FloatParam.class;
+		}
+		else if (Byte.TYPE.equals(type) || Byte.class.equals(type))
+		{
+			return ByteParam.class;
+		}
+		else if (Long.TYPE.equals(type) || Long.class.equals(type))
+		{
+			return LongParam.class;
+		}
+		else if (Character.TYPE.equals(type) || Character.class.equals(type))
+		{
+			return CharParam.class;
+		}
+		else if (JSAN.class.equals(type))
+		{
+			return JSANParam.class;
+		}
+		else if (JSON.class.equals(type))
+		{
+			return JSONParam.class;
+		}
+		else if (Map.class.equals(type))
+		{
+			return (Class<? extends Param<?>>) MapParam.class;
+		}
+		else if (Iterable.class.equals(type))
+		{
+			return IterableParam.class;
+		}
+		else
+		{
+			return (Class<? extends Param<?>>) ObjectParam.class;
+		}
 	}
 
 	public Pivot providePivot()

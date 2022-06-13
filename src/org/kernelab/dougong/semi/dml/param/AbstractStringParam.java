@@ -16,7 +16,7 @@ public class AbstractStringParam extends AbstractParam<String> implements String
 	}
 
 	@Override
-	protected AbstractParam<String> replicate()
+	protected AbstractStringParam replicate()
 	{
 		return this.provider().provideProvider(new AbstractStringParam(name(), value()));
 	}

@@ -12,7 +12,7 @@ public class AbstractDateParam extends AbstractParam<Date> implements DateParam
 	}
 
 	@Override
-	protected AbstractParam<Date> replicate()
+	protected AbstractDateParam replicate()
 	{
 		return this.provider().provideProvider(new AbstractDateParam(name(), value()));
 	}
