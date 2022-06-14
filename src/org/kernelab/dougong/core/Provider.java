@@ -107,6 +107,8 @@ public interface Provider extends Castable
 
 	public <T> T provideDao(Class<T> cls);
 
+	public <T> T provideDao(Class<T> face, Object real);
+
 	/**
 	 * Provide date time format according to the given format in
 	 * {@link java.text.SimpleDateFormat}. Only numeric component will appear in

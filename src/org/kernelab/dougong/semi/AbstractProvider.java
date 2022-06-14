@@ -148,19 +148,23 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 
 		try
 		{
-			return (T) Agent.newInstance(cls, new AgentFactory()
-			{
-				@Override
-				public <E> Agent newAgent(Class<E> face, Object real)
-				{
-					return provideProvider(new DaoAgent(provideProvider(real)));
-				}
-			}, meta.value().newInstance());
+			return provideDao(cls, meta.value().newInstance());
 		}
 		catch (Exception e)
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	public <T> T provideDao(Class<T> face, Object real)
+	{
+		return (T) Agent.newInstance(face, new AgentFactory()
+		{
+			public <E> Agent newAgent(Class<E> face, Object real)
+			{
+				return provideProvider(new DaoAgent(provideProvider(real)));
+			}
+		}, real);
 	}
 
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,

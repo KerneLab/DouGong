@@ -84,5 +84,4 @@ public class DemoDaoAgent
 		demo.selectObject(new HashMap<String, Object>());
 		demo.selectObject(new JSON().attr("a", 1));
 	}
-
 }
