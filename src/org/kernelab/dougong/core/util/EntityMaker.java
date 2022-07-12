@@ -380,7 +380,7 @@ public class EntityMaker
 	{
 		Map<String, Integer> pk = this.getPrimaryKey();
 
-		out.write("@NameMeta(name = \"" + JSON.EscapeString(name()) + "\")");
+		out.write("@NameMeta(name = \"" + Tools.escape(name()) + "\")");
 		out.write("public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name() + " extends "
 				+ sup().getSimpleName());
 		out.write("{");
@@ -409,7 +409,7 @@ public class EntityMaker
 				out.write();
 			}
 			column = meta().getColumnLabel(i);
-			name = JSON.EscapeString(column);
+			name = Tools.escape(column);
 			out.write("\t@NameMeta(name = \"" + name + "\")");
 
 			if (this.isEntity())
@@ -418,7 +418,7 @@ public class EntityMaker
 				scale = meta().getScale(i);
 				nullable = meta().isNullable(i);
 				out.print("\t@TypeMeta(");
-				out.print("type = \"" + JSON.EscapeString(meta().getColumnTypeName(i)) + "\"");
+				out.print("type = \"" + Tools.escape(meta().getColumnTypeName(i)) + "\"");
 				if (precision != 0)
 				{
 					out.print(", precision = " + precision);
@@ -473,7 +473,7 @@ public class EntityMaker
 	protected void outputForeignKeyField(DataWriter out, String name)
 	{
 		out.write("\t@ForeignKeyMeta");
-		out.write("\tpublic static final String\t" + wash(name) + "\t= \"" + JSON.EscapeString(wash(name)) + "\";");
+		out.write("\tpublic static final String\t" + wash(name) + "\t= \"" + Tools.escape(wash(name)) + "\";");
 	}
 
 	protected void outputForeignKeyMethod(DataWriter out, String table, String name, List<String> columns)
@@ -517,7 +517,7 @@ public class EntityMaker
 			}
 			else
 			{
-				out.print("schema = \"" + JSON.EscapeString(schema()) + "\"");
+				out.print("schema = \"" + Tools.escape(schema()) + "\"");
 			}
 
 			out.write(")");
