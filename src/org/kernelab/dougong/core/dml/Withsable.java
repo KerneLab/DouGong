@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface Withsable
 {
-	public List<Withable> with();
+	public List<WithDefinition> withs();
 
-	public Withsable with(List<Withable> views);
+	public Withsable withs(List<WithDefinition> views);
 
-	public Withsable with(Withable... withs);
+	public Withsable withs(WithDefinition... withs);
 }

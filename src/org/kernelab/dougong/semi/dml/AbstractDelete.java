@@ -10,7 +10,7 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Join;
-import org.kernelab.dougong.core.dml.Withable;
+import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.util.AccessGather;
 import org.kernelab.dougong.core.util.AccessGather.Access;
 
@@ -211,9 +211,9 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 	}
 
 	@Override
-	public AbstractDelete with(List<Withable> with)
+	public AbstractDelete withs(List<WithDefinition> withs)
 	{
-		super.with(with);
+		super.withs(withs);
 		return this;
 	}
 }

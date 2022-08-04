@@ -33,6 +33,7 @@ import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.Update;
+import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.ExistsCondition;
@@ -302,9 +303,9 @@ public interface Provider extends Castable
 
 	public StringBuilder provideOutputTablePartitionClause(StringBuilder buffer, Partitioned part);
 
-	public StringBuilder provideOutputWithable(StringBuilder buffer, Withable with);
-
 	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable with);
+
+	public StringBuilder provideOutputWithDefinition(StringBuilder buffer, WithDefinition with);
 
 	public Param<?> provideParameter(Class<? extends Param<?>> type, String name, Object value);
 
@@ -454,4 +455,6 @@ public interface Provider extends Castable
 	public <T extends View> T provideView(Class<T> cls);
 
 	public String provideViewAlias(View view);
+
+	public WithDefinition provideWithDefinition(String name, String... columns);
 }

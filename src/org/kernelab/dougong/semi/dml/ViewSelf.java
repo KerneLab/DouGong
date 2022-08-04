@@ -92,7 +92,7 @@ public class ViewSelf extends AbstractView
 	{
 		if (self() instanceof Withable)
 		{
-			this.provider().provideOutputWithable(buffer, (Withable) self());
+			this.provider().provideOutputWithDefinition(buffer, ((Withable) self()).with());
 			this.provider().provideOutputAlias(buffer, this);
 		}
 		else

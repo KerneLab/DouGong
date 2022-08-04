@@ -147,5 +147,5 @@ public interface Primitive extends Filterable, Joinable, Withsable
 
 	public Primitive where(Condition cond);
 
-	public Primitive with(Withable... withs);
+	public Primitive withs(WithDefinition... withs);
 }

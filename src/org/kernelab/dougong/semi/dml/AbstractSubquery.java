@@ -12,7 +12,7 @@ import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Subquery;
-import org.kernelab.dougong.core.dml.Withable;
+import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
@@ -29,11 +29,7 @@ import org.kernelab.dougong.semi.AbstractEntity;
 
 public class AbstractSubquery extends AbstractEntity implements Subquery
 {
-	private Select		select;
-
-	private String		withName;
-
-	private String[]	withCols;
+	private Select select;
 
 	public AbstractSubquery()
 	{
@@ -76,7 +72,6 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		{
 			sq = this.getClass().newInstance();
 			sq.select(this.select().as(null));
-			sq.with(this.withName(), Utils.copy(this.withCols()));
 			sq.provider(this.provider());
 		}
 		catch (Exception e)
@@ -368,7 +363,7 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 
 	public StringBuilder toStringViewed(StringBuilder buffer)
 	{
-		if (this.withName() != null)
+		if (this.with() != null)
 		{
 			return this.provider().provideOutputWithableAliased(buffer, this);
 		}
@@ -395,24 +390,14 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		return provideToUpperCase(this);
 	}
 
-	public AbstractSubquery with(String name, String... cols)
+	public WithDefinition with()
 	{
-		this.withName = name;
-		this.withCols = cols == null || cols.length == 0 ? null : cols;
-		if (this.select() instanceof Withable)
-		{
-			((Withable) this.select()).with(name, cols);
-		}
+		return this.select().with();
+	}
+
+	public AbstractSubquery with(WithDefinition define)
+	{
+		this.select().with(define);
 		return this;
-	}
-
-	public String[] withCols()
-	{
-		return withCols;
-	}
-
-	public String withName()
-	{
-		return withName;
 	}
 }

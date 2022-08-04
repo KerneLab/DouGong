@@ -33,6 +33,7 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Setopr;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
@@ -77,11 +78,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 	private String					hint		= null;
 
-	private String					withName	= null;
-
-	private String[]				withCols	= null;
-
-	private Map<String, Integer>	withColsMap	= null;
+	private WithDefinition			with		= null;
 
 	public Reference $(String refer)
 	{
@@ -162,11 +159,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		if (this.itemsMap != null)
 		{
 			clone.itemsMap = Utils.copy(this.itemsMap, new LinkedHashMap<String, Item>());
-		}
-
-		if (this.withCols != null)
-		{
-			clone.withCols = Utils.copy(this.withCols);
 		}
 
 		return clone;
@@ -608,15 +600,12 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 	public Reference ref(String refer)
 	{
-		if (this.withCols() != null)
+		if (this.with() != null)
 		{
-			if (this.withColsMap.get(refer) != null)
+			Reference ref = this.with().ref(refer);
+			if (ref != null)
 			{
-				return provideReference(this, refer);
-			}
-			else
-			{
-				return null;
+				return ref;
 			}
 		}
 
@@ -1120,7 +1109,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 	public StringBuilder toStringViewed(StringBuilder buffer)
 	{
-		if (this.withName() != null)
+		if (this.with() != null)
 		{
 			return this.provider().provideOutputWithableAliased(buffer, this);
 		}
@@ -1166,39 +1155,21 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
+	public WithDefinition with()
+	{
+		return this.with;
+	}
+
+	public AbstractSelect with(WithDefinition define)
+	{
+		this.with = define;
+		return this;
+	}
+
 	@Override
-	public AbstractSelect with(List<Withable> with)
+	public AbstractSelect withs(List<WithDefinition> withs)
 	{
-		super.with(with);
+		super.withs(withs);
 		return this;
-	}
-
-	public AbstractSelect with(String name, String... cols)
-	{
-		this.withName = name;
-		this.withCols = cols == null || cols.length == 0 ? null : cols;
-		if (this.withCols == null)
-		{
-			this.withColsMap = null;
-		}
-		else
-		{
-			this.withColsMap = new LinkedHashMap<String, Integer>();
-			for (int i = 0; i < cols.length; i++)
-			{
-				this.withColsMap.put(cols[i], i);
-			}
-		}
-		return this;
-	}
-
-	public String[] withCols()
-	{
-		return withCols;
-	}
-
-	public String withName()
-	{
-		return withName;
 	}
 }

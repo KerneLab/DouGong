@@ -39,6 +39,7 @@ import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
+import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.dml.param.ByteParam;
@@ -66,6 +67,7 @@ import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
 import org.kernelab.dougong.semi.dml.AbstractPivot;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
+import org.kernelab.dougong.semi.dml.AbstractWithDefinition;
 import org.kernelab.dougong.semi.dml.DaoAgent;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 import org.kernelab.dougong.semi.dml.opr.AbstractStringExpressionResult;
@@ -386,21 +388,21 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
-	public StringBuilder provideOutputWithable(StringBuilder buffer, Withable with)
-	{
-		if (buffer != null && with != null)
-		{
-			buffer.append(this.provideAliasLabel(with.withName()));
-		}
-		return buffer;
-	}
-
 	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable with)
 	{
 		if (buffer != null && with != null)
 		{
-			this.provideOutputWithable(buffer, with);
+			this.provideOutputWithDefinition(buffer, with.with());
 			this.provideOutputAlias(buffer, with);
+		}
+		return buffer;
+	}
+
+	public StringBuilder provideOutputWithDefinition(StringBuilder buffer, WithDefinition with)
+	{
+		if (buffer != null && with != null)
+		{
+			buffer.append(this.provideAliasLabel(with.name()));
 		}
 		return buffer;
 	}
@@ -837,12 +839,17 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 
 		if (alias == null)
 		{
-			if (view instanceof Withable)
+			if (view instanceof Withable && ((Withable) view).with() != null)
 			{
-				alias = ((Withable) view).withName();
+				alias = ((Withable) view).with().name();
 			}
 		}
 
 		return alias;
+	}
+
+	public WithDefinition provideWithDefinition(String name, String... columns)
+	{
+		return this.provideProvider(new AbstractWithDefinition(name, columns));
 	}
 }

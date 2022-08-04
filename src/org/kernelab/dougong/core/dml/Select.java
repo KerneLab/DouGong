@@ -107,7 +107,5 @@ public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
-	public Select with(List<Withable> with);
-
-	public Select with(String name, String... cols);
+	public Select withs(List<WithDefinition> with);
 }

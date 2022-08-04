@@ -10,13 +10,13 @@ import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
-import org.kernelab.dougong.core.dml.Withable;
+import org.kernelab.dougong.core.dml.WithDefinition;
 
 public class AbstractPrimitive extends AbstractJoinable implements Primitive
 {
 	public Delete delete(Table... targets)
 	{
-		return this.provider().provideDelete().with(this.with()) //
+		return this.provider().provideDelete().withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where()) //
 				.delete(targets);
 	}
@@ -111,14 +111,14 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 
 	public Select select(Expression... exprs)
 	{
-		return this.provider().provideSelect().with(this.with()) //
+		return this.provider().provideSelect().withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where()) //
 				.select(exprs);
 	}
 
 	public Update update()
 	{
-		return this.provider().provideUpdate().with(this.with()) //
+		return this.provider().provideUpdate().withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where());
 	}
 
@@ -130,9 +130,9 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	}
 
 	@Override
-	public AbstractPrimitive with(Withable... withs)
+	public AbstractPrimitive withs(WithDefinition... withs)
 	{
-		super.with(withs);
+		super.withs(withs);
 		return this;
 	}
 }

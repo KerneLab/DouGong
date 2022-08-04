@@ -23,7 +23,7 @@ import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
-import org.kernelab.dougong.core.dml.Withable;
+import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.dml.cond.ExistsCondition;
 import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
@@ -644,6 +644,16 @@ public class SQL
 		return provider().provideLogicalCondition().and(expr("0").eq(expr("0")));
 	}
 
+	public StringItem v(CharSequence text)
+	{
+		return this.val(text);
+	}
+
+	public StringItem v(Number number)
+	{
+		return this.val(number);
+	}
+
 	public StringItem val(CharSequence text)
 	{
 		return expr(provider().provideTextLiteral(text));
@@ -665,8 +675,18 @@ public class SQL
 		return (T) provider().provideView(cls).alias(alias);
 	}
 
-	public Primitive with(Withable... withs)
+	public WithDefinition w(String name, String... columns)
 	{
-		return provider().providePrimitive().with(withs);
+		return this.with(name, columns);
+	}
+
+	public WithDefinition with(String name, String... columns)
+	{
+		return provider().provideWithDefinition(name, columns);
+	}
+
+	public Primitive withs(WithDefinition... withs)
+	{
+		return provider().providePrimitive().withs(withs);
 	}
 }

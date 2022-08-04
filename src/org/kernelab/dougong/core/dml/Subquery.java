@@ -19,6 +19,4 @@ public interface Subquery extends View, Entity, Scope, Withable, Insertable, Sou
 	public Select select();
 
 	public Subquery select(Select select);
-
-	public Subquery with(String name, String... cols);
 }

@@ -4,9 +4,7 @@ public interface Withable extends Alias
 {
 	public StringBuilder toStringWith(StringBuilder buffer);
 
-	public String[] withCols();
+	public WithDefinition with();
 
-	public String withName();
-
-	public Withable with(String name, String... cols);
+	public Withable with(WithDefinition define);
 }

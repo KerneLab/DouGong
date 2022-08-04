@@ -6,6 +6,7 @@ import java.util.List;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.Withsable;
 import org.kernelab.dougong.semi.AbstractProvidable;
@@ -14,9 +15,9 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 {
 	protected static List<Item> resolveAllItems(View view)
 	{
-		if (view instanceof Withable)
+		if (view instanceof Withable && ((Withable) view).with() != null)
 		{
-			String[] cols = ((Withable) view).withCols();
+			String[] cols = ((Withable) view).with().columns();
 			if (cols != null)
 			{
 				Provider p = view.provider();
@@ -31,19 +32,19 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 		return view.items();
 	}
 
-	private List<Withable> with = null;
+	private List<WithDefinition> with = null;
 
 	protected void textOfWith(StringBuilder buffer)
 	{
-		List<Withable> with = this.with();
+		List<WithDefinition> withs = this.withs();
 
-		if (with != null && !with.isEmpty())
+		if (withs != null && !withs.isEmpty())
 		{
 			buffer.append("WITH ");
 
 			boolean first = true;
 
-			for (Withable view : with)
+			for (WithDefinition with : withs)
 			{
 				if (first)
 				{
@@ -53,10 +54,10 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 				{
 					buffer.append(',');
 				}
-				buffer.append(this.provider().provideAliasLabel(view.withName()));
-				if (view.withCols() != null)
+				buffer.append(this.provider().provideAliasLabel(with.name()));
+				if (with.columns() != null)
 				{
-					String[] cols = view.withCols();
+					String[] cols = with.columns();
 					buffer.append(" (");
 					for (int i = 0; i < cols.length; i++)
 					{
@@ -69,31 +70,31 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 					buffer.append(')');
 				}
 				buffer.append(" AS ");
-				view.toStringWith(buffer);
+				with.select().toStringWith(buffer);
 			}
 
 			buffer.append(' ');
 		}
 	}
 
-	public List<Withable> with()
+	public List<WithDefinition> withs()
 	{
 		return with;
 	}
 
-	public AbstractWithsable with(List<Withable> with)
+	public AbstractWithsable withs(List<WithDefinition> with)
 	{
 		this.with = with;
 		return this;
 	}
 
-	public AbstractWithsable with(Withable... withs)
+	public AbstractWithsable withs(WithDefinition... withs)
 	{
-		this.with = new LinkedList<Withable>();
+		this.with = new LinkedList<WithDefinition>();
 
-		for (Withable with : withs)
+		for (WithDefinition with : withs)
 		{
-			with.alias(null);
+			with.select().alias(null);
 			this.with.add(with);
 		}
 

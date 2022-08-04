@@ -10,14 +10,16 @@ import org.kernelab.dougong.semi.dml.AbstractSubquery;
 
 public class TestWith
 {
+	public static SQL $ = Config.SQL;
+
 	public static void demoWithSelect(SQL sql)
 	{
 		Select va, vb;
 		View q = null;
 
-		Select sel = Config.SQL.with( //
-				va = sql.from(sql.view(COMP.class).as("T")).select(sql.all()).with("va"), //
-				vb = sql.from(va = va.as("a")).select(va.all()).with("vb") //
+		Select sel = $.withs( //
+				$.with("va").as(va = sql.from(sql.view(COMP.class).as("T")).select(sql.all())), //
+				$.with("vb").as(vb = sql.from(va = va.as("a")).select(va.all())) //
 		).from(q = vb.as("c")) //
 				.select(q.all(), sql.all());
 
@@ -28,9 +30,9 @@ public class TestWith
 	{
 		Select va, vb;
 
-		Select sel = Config.SQL.with( //
-				va = sql.from(sql.view(COMP.class).as("T")).select(sql.all()).with("va"), //
-				vb = sql.from(va = va.as("a")).select(va.all()).with("vb") //
+		Select sel = $.withs( //
+				$.with("va").as(va = sql.from(sql.view(COMP.class).as("T")).select(sql.all())), //
+				$.with("vb").as(vb = sql.from(va = va.as("a")).select(va.all())) //
 		).from(vb) //
 				.select(vb.all());
 
@@ -43,8 +45,8 @@ public class TestWith
 		View vc;
 		View q = null;
 
-		Select sel = Config.SQL.with( //
-				va = sql.from(vc = sql.self().as("z")).select().select(vc.$("ff").as("gg")).with("va", "hh") //
+		Select sel = $.withs( //
+				$.with("va", "hh").as(va = sql.from(vc = sql.self().as("z")).select().select(vc.$("ff").as("gg"))) //
 		).from(q = va.as("c")) //
 				.select(q.$("hh"), q.all(), sql.all());
 
@@ -57,8 +59,8 @@ public class TestWith
 		View vc;
 		View q = null;
 
-		Select sel = Config.SQL.with( //
-				va = sql.from(vc = sql.self().as("z")).select().select(vc.$("ff").as("gg")).with("va") //
+		Select sel = $.withs( //
+				$.with("va").as(va = sql.from(vc = sql.self().as("z")).select().select(vc.$("ff").as("gg"))) //
 		).from(q = va.as("c")) //
 				.select(q.$("gg"), q.all(), sql.all());
 
@@ -71,12 +73,11 @@ public class TestWith
 		AbstractSubquery vb = null;
 		View q = null;
 
-		Select sel = Config.SQL.with( //
-				va = sql.from(sql.view(COMP.class).as("T")) //
-						.select(sql.all()).to(AbstractSubquery.class).with("va"),
-				vb = sql.from(va).select(va.$("COMP_ID")) //
-						.to(AbstractSubquery.class).with("vb")
-		//
+		Select sel = $.withs( //
+				$.with("va").as(va = sql.from(sql.view(COMP.class).as("T")) //
+						.select(sql.all()).to(AbstractSubquery.class)),
+				$.with("vb").as(vb = sql.from(va).select(va.$("COMP_ID")) //
+						.to(AbstractSubquery.class)) //
 		).from(q = vb.as("c")) //
 				.select(q.$("COMP_ID"), q.all(), sql.all());
 
