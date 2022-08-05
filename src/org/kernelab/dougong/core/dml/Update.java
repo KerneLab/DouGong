@@ -53,5 +53,7 @@ public interface Update extends DML, Providable, Filterable, Joinable, Hintable,
 
 	public Update hint(String hint);
 
+	public Update recursive(boolean recursive);
+
 	public Update withs(List<WithDefinition> with);
 }

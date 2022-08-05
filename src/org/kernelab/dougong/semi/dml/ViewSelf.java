@@ -12,6 +12,19 @@ import org.kernelab.dougong.semi.AbstractView;
 
 public class ViewSelf extends AbstractView
 {
+	public static class NotInstantiatedException extends RuntimeException
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5476557570029857363L;
+
+		public NotInstantiatedException(String message)
+		{
+			super(message);
+		}
+	}
+
 	private View self;
 
 	@Override
@@ -60,6 +73,10 @@ public class ViewSelf extends AbstractView
 
 	public View self()
 	{
+		if (self == null)
+		{
+			throw new NotInstantiatedException(this.alias());
+		}
 		return self;
 	}
 

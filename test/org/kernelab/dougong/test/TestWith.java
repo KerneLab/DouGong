@@ -12,86 +12,86 @@ public class TestWith
 {
 	public static SQL $ = Config.SQL;
 
-	public static void demoWithSelect(SQL sql)
+	public static void demoWithSelect()
 	{
 		Select va, vb;
 		View q = null;
 
-		Select sel = $.withs( //
-				$.with("va").as(va = sql.from(sql.view(COMP.class).as("T")).select(sql.all())), //
-				$.with("vb").as(vb = sql.from(va = va.as("a")).select(va.all())) //
+		Select sel = $.with( //
+				$.with("va").as(va = $.from($.view(COMP.class).as("T")).select($.all())), //
+				$.with("vb").as(vb = $.from(va = va.as("a")).select(va.all())) //
 		).from(q = vb.as("c")) //
-				.select(q.all(), sql.all());
+				.select(q.all(), $.all());
 
 		Tools.debug(sel.toString());
 	}
 
-	public static void demoWithSelectNoAlias(SQL sql)
+	public static void demoWithSelectNoAlias()
 	{
 		Select va, vb;
 
-		Select sel = $.withs( //
-				$.with("va").as(va = sql.from(sql.view(COMP.class).as("T")).select(sql.all())), //
-				$.with("vb").as(vb = sql.from(va = va.as("a")).select(va.all())) //
+		Select sel = $.with( //
+				$.with("va").as(va = $.from($.view(COMP.class).as("T")).select($.all())), //
+				$.with("vb").as(vb = $.from(va = va.as("a")).select(va.all())) //
 		).from(vb) //
 				.select(vb.all());
 
 		Tools.debug(sel.toString());
 	}
 
-	public static void demoWithSelectRecursive(SQL sql)
+	public static void demoWithSelectRecursive()
 	{
 		Select va;
 		View vc;
 		View q = null;
 
-		Select sel = $.withs( //
-				$.with("va", "hh").as(va = sql.from(vc = sql.self().as("z")).select().select(vc.$("ff").as("gg"))) //
+		Select sel = $.withRecursive( //
+				$.with("va", "hh").as(va = $.from(vc = $.self().as("z")).select() //
+						.select(vc.$("ff").as("gg"))) //
 		).from(q = va.as("c")) //
-				.select(q.$("hh"), q.all(), sql.all());
+				.select(q.$("hh"), q.all(), $.all());
 
 		Tools.debug(sel.toString());
 	}
 
-	public static void demoWithSelectRecursive1(SQL sql)
+	public static void demoWithSelectRecursive1()
 	{
 		Select va;
 		View vc;
 		View q = null;
 
-		Select sel = $.withs( //
-				$.with("va").as(va = sql.from(vc = sql.self().as("z")).select().select(vc.$("ff").as("gg"))) //
+		Select sel = $.withRecursive( //
+				$.with("va").as(va = $.from(vc = $.self().as("z")).select() //
+						.select(vc.$("ff").as("gg"))) //
 		).from(q = va.as("c")) //
-				.select(q.$("gg"), q.all(), sql.all());
+				.select(q.$("gg"), q.all(), $.all());
 
 		Tools.debug(sel.toString());
 	}
 
-	public static void demoWithSubquery(SQL sql)
+	public static void demoWithSubquery()
 	{
 		AbstractSubquery va = null;
 		AbstractSubquery vb = null;
 		View q = null;
 
-		Select sel = $.withs( //
-				$.with("va").as(va = sql.from(sql.view(COMP.class).as("T")) //
-						.select(sql.all()).to(AbstractSubquery.class)),
-				$.with("vb").as(vb = sql.from(va).select(va.$("COMP_ID")) //
+		Select sel = $.with( //
+				$.with("va").as(va = $.from($.view(COMP.class).as("T")) //
+						.select($.all()).to(AbstractSubquery.class)),
+				$.with("vb").as(vb = $.from(va).select(va.$("COMP_ID")) //
 						.to(AbstractSubquery.class)) //
 		).from(q = vb.as("c")) //
-				.select(q.$("COMP_ID"), q.all(), sql.all());
+				.select(q.$("COMP_ID"), q.all(), $.all());
 
 		Tools.debug(sel.toString());
 	}
 
 	public static void main(String[] args)
 	{
-		SQL sql = Config.SQL;
-
-		demoWithSubquery(sql);
-		demoWithSelect(sql);
-		demoWithSelectNoAlias(sql);
-		demoWithSelectRecursive(sql);
-		demoWithSelectRecursive1(sql);
+		demoWithSubquery();
+		demoWithSelect();
+		demoWithSelectNoAlias();
+		demoWithSelectRecursive();
+		demoWithSelectRecursive1();
 	}
 }

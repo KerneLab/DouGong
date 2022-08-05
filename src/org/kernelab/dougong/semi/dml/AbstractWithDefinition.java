@@ -15,8 +15,6 @@ public class AbstractWithDefinition extends AbstractProvidable implements WithDe
 
 	private String[]				columns;
 
-	private boolean					recursive	= false;
-
 	private Withable				select;
 
 	private Map<String, Integer>	colmap;
@@ -53,19 +51,6 @@ public class AbstractWithDefinition extends AbstractProvidable implements WithDe
 	public String[] columns()
 	{
 		return columns;
-	}
-
-	@Override
-	public boolean isRecursive()
-	{
-		return recursive;
-	}
-
-	@Override
-	public WithDefinition recursive()
-	{
-		this.recursive = true;
-		return this;
 	}
 
 	@Override

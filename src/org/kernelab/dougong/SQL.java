@@ -685,8 +685,18 @@ public class SQL
 		return provider().provideWithDefinition(name, columns);
 	}
 
-	public Primitive withs(WithDefinition... withs)
+	public Primitive with(WithDefinition... withs)
 	{
-		return provider().providePrimitive().withs(withs);
+		return provider().providePrimitive().withs(false, withs);
+	}
+
+	public Primitive With(WithDefinition... withs)
+	{
+		return this.with(withs);
+	}
+
+	public Primitive withRecursive(WithDefinition... withs)
+	{
+		return provider().providePrimitive().withs(true, withs);
 	}
 }

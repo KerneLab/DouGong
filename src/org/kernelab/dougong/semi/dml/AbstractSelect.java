@@ -598,6 +598,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this.provider().provideToUpperCase(expr);
 	}
 
+	@Override
+	public AbstractSelect recursive(boolean recursive)
+	{
+		super.recursive(recursive);
+		return this;
+	}
+
 	public Reference ref(String refer)
 	{
 		if (this.with() != null)

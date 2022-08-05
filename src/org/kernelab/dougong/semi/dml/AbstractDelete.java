@@ -127,6 +127,13 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 	}
 
 	@Override
+	public AbstractDelete recursive(boolean recursive)
+	{
+		super.recursive(recursive);
+		return this;
+	}
+
+	@Override
 	public AbstractDelete rightJoin(View view, Column... using)
 	{
 		super.rightJoin(view, using);

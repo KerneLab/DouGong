@@ -16,7 +16,8 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 {
 	public Delete delete(Table... targets)
 	{
-		return this.provider().provideDelete().withs(this.withs()) //
+		return this.provider().provideDelete() //
+				.recursive(this.recursive()).withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where()) //
 				.delete(targets);
 	}
@@ -111,14 +112,16 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 
 	public Select select(Expression... exprs)
 	{
-		return this.provider().provideSelect().withs(this.withs()) //
+		return this.provider().provideSelect() //
+				.recursive(this.recursive()).withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where()) //
 				.select(exprs);
 	}
 
 	public Update update()
 	{
-		return this.provider().provideUpdate().withs(this.withs()) //
+		return this.provider().provideUpdate() //
+				.recursive(this.recursive()).withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where());
 	}
 
@@ -130,9 +133,9 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	}
 
 	@Override
-	public AbstractPrimitive withs(WithDefinition... withs)
+	public AbstractPrimitive withs(boolean recursive, WithDefinition... withs)
 	{
-		super.withs(withs);
+		super.recursive(recursive).withs(withs);
 		return this;
 	}
 }

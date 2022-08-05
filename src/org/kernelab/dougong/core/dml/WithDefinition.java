@@ -8,10 +8,6 @@ public interface WithDefinition
 
 	public String[] columns();
 
-	public boolean isRecursive();
-
-	public WithDefinition recursive();
-
 	public Reference ref(String refer);
 
 	public Withable select();

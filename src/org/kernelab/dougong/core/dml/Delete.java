@@ -48,5 +48,7 @@ public interface Delete extends DML, Providable, Filterable, Joinable, Hintable,
 
 	public Delete hint(String hint);
 
+	public Delete recursive(boolean recursive);
+
 	public Delete withs(List<WithDefinition> with);
 }

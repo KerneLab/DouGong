@@ -118,6 +118,13 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 	}
 
 	@Override
+	public AbstractUpdate recursive(boolean recursive)
+	{
+		super.recursive(recursive);
+		return this;
+	}
+
+	@Override
 	public AbstractUpdate rightJoin(View view, Column... using)
 	{
 		super.rightJoin(view, using);

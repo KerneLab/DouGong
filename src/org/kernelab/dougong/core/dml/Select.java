@@ -107,5 +107,7 @@ public interface Select extends DML, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
+	public Select recursive(boolean recursive);
+
 	public Select withs(List<WithDefinition> with);
 }

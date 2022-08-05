@@ -32,7 +32,22 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 		return view.items();
 	}
 
-	private List<WithDefinition> with = null;
+	private boolean					recursive	= false;
+
+	private List<WithDefinition>	with		= null;
+
+	@Override
+	public boolean recursive()
+	{
+		return recursive;
+	}
+
+	@Override
+	public AbstractWithsable recursive(boolean recursive)
+	{
+		this.recursive = recursive;
+		return this;
+	}
 
 	protected void textOfWith(StringBuilder buffer)
 	{
@@ -41,6 +56,11 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 		if (withs != null && !withs.isEmpty())
 		{
 			buffer.append("WITH ");
+
+			if (this.recursive())
+			{
+				buffer.append("RECURSIVE ");
+			}
 
 			boolean first = true;
 
