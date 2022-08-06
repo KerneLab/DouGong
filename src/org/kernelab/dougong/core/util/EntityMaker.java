@@ -1,7 +1,10 @@
 package org.kernelab.dougong.core.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -19,7 +22,6 @@ import java.util.regex.Pattern;
 import org.kernelab.basis.JSON;
 import org.kernelab.basis.Pair;
 import org.kernelab.basis.Tools;
-import org.kernelab.basis.io.DataWriter;
 import org.kernelab.basis.io.TextDataSource;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.core.Column;
@@ -38,6 +40,79 @@ import org.kernelab.dougong.semi.dml.PredefinedView;
 
 public class EntityMaker
 {
+	public static class ColumnInfo
+	{
+		private String	name;
+
+		private String	type;
+
+		private int		precision	= 0;
+
+		private int		scale		= 0;
+
+		private int		nullable	= ResultSetMetaData.columnNullableUnknown;
+
+		public ColumnInfo(String name, String type, int precision, int scale, int nullable)
+		{
+			this.setName(name).setType(type).setPrecision(precision).setScale(scale).setNullable(nullable);
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public int getNullable()
+		{
+			return nullable;
+		}
+
+		public int getPrecision()
+		{
+			return precision;
+		}
+
+		public int getScale()
+		{
+			return scale;
+		}
+
+		public String getType()
+		{
+			return type;
+		}
+
+		public ColumnInfo setName(String name)
+		{
+			this.name = name;
+			return this;
+		}
+
+		public ColumnInfo setNullable(int nullable)
+		{
+			this.nullable = nullable;
+			return this;
+		}
+
+		public ColumnInfo setPrecision(int precision)
+		{
+			this.precision = precision;
+			return this;
+		}
+
+		public ColumnInfo setScale(int scale)
+		{
+			this.scale = scale;
+			return this;
+		}
+
+		public ColumnInfo setType(String type)
+		{
+			this.type = type;
+			return this;
+		}
+	}
+
 	public static final Pattern IMPORT_PATTERN = Pattern.compile("^import\\s+(\\S+)\\s*;$");
 
 	public static String fillParametersWithNull(String sql)
@@ -45,9 +120,9 @@ public class EntityMaker
 		return sql.replaceAll("\\?[^?]+?\\?", "NULL");
 	}
 
-	public static File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
-			String pkg, File base, String schema, boolean innerClass, String charSet, File template)
-			throws FileNotFoundException, SQLException
+	public static File make(Provider provider, SQLKit kit, List<ColumnInfo> meta, String name, Class<?> sup, String pkg,
+			File base, String schema, boolean innerClass, String charSet, File template)
+			throws IOException, SQLException
 	{
 		return new EntityMaker() //
 				.provider(provider) //
@@ -65,8 +140,16 @@ public class EntityMaker
 				.file();
 	}
 
+	public static File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
+			String pkg, File base, String schema, boolean innerClass, String charSet, File template)
+			throws IOException, SQLException
+	{
+		return make(provider, kit, ResultSetMetaToColumnList(meta), name, sup, pkg, base, schema, innerClass, charSet,
+				template);
+	}
+
 	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg, File base,
-			String charSet) throws FileNotFoundException, SQLException
+			String charSet) throws IOException, SQLException
 	{
 		return make(provider, //
 				kit, //
@@ -82,7 +165,7 @@ public class EntityMaker
 	}
 
 	public static File makeSubquery(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, File base,
-			Class<?> inClass, String charSet) throws FileNotFoundException, SQLException
+			Class<?> inClass, String charSet) throws IOException, SQLException
 	{
 		String clsName = inClass.getCanonicalName();
 		if (Tools.isNullOrEmpty(inClass.getSimpleName()) //
@@ -106,7 +189,7 @@ public class EntityMaker
 	}
 
 	public static File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String schema,
-			String charSet) throws FileNotFoundException, SQLException
+			String charSet) throws IOException, SQLException
 	{
 		String tab = (Tools.notNullOrEmpty(schema) ? schema + "." : "") + name;
 		return make(provider, //
@@ -123,7 +206,7 @@ public class EntityMaker
 	}
 
 	public static File makeView(Provider provider, SQLKit kit, PredefinedView view, File base, String charSet)
-			throws FileNotFoundException, SQLException
+			throws IOException, SQLException
 	{
 		Class<?> cls = view.getClass();
 		String name = view.getClass().getSimpleName();
@@ -152,11 +235,26 @@ public class EntityMaker
 						+ ".java"));
 	}
 
+	public static List<ColumnInfo> ResultSetMetaToColumnList(ResultSetMetaData meta) throws SQLException
+	{
+		List<ColumnInfo> list = new LinkedList<ColumnInfo>();
+
+		int columns = meta.getColumnCount();
+
+		for (int i = 1; i <= columns; i++)
+		{
+			list.add(new ColumnInfo(meta.getColumnLabel(i), meta.getColumnTypeName(i), meta.getPrecision(i),
+					meta.getScale(i), meta.isNullable(i)));
+		}
+
+		return list;
+	}
+
 	private Provider								provider;
 
 	private SQLKit									kit;
 
-	private ResultSetMetaData						meta;
+	private List<ColumnInfo>						meta;
 
 	private String									name;
 
@@ -267,11 +365,15 @@ public class EntityMaker
 		{
 			return this.template();
 		}
-		else
+		else if (base() != null)
 		{
 			return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
 					+ pkg().replace('.', File.separatorChar) //
 					+ File.separatorChar + name() + ".java");
+		}
+		else
+		{
+			return null;
 		}
 	}
 
@@ -317,18 +419,30 @@ public class EntityMaker
 		return this;
 	}
 
-	public EntityMaker make() throws FileNotFoundException, SQLException
+	public EntityMaker make() throws IOException, SQLException
 	{
 		File file = file();
 
-		File dir = file.getParentFile();
-
-		if (!dir.isDirectory())
+		if (file != null)
 		{
-			dir.mkdirs();
+			File dir = file.getParentFile();
+
+			if (!dir.isDirectory())
+			{
+				dir.mkdirs();
+			}
 		}
 
-		DataWriter out = new DataWriter().setCharsetName(charSet()).setDataFile(file());
+		Writer out = null;
+
+		if (file != null)
+		{
+			out = new OutputStreamWriter(new FileOutputStream(file, false), charSet());
+		}
+		else
+		{
+			out = new OutputStreamWriter(System.out);
+		}
 
 		KeysFetcher keysFetcher = provider().provideKeysFetcher();
 		this.fetchPrimaryKey(keysFetcher);
@@ -336,21 +450,34 @@ public class EntityMaker
 
 		this.outputHead(out).outputBody(out);
 
-		out.close();
+		if (file != null)
+		{
+			out.close();
+		}
+		else
+		{
+			out.flush();
+		}
 
 		return this;
 	}
 
-	public ResultSetMetaData meta()
+	public List<ColumnInfo> meta()
 	{
 		return meta;
+	}
+
+	public EntityMaker meta(List<ColumnInfo> meta)
+	{
+		this.meta = meta;
+		return this;
 	}
 
 	public EntityMaker meta(ResultSet rs)
 	{
 		try
 		{
-			return meta(rs.getMetaData());
+			return this.meta(rs.getMetaData());
 		}
 		catch (SQLException e)
 		{
@@ -361,7 +488,14 @@ public class EntityMaker
 
 	public EntityMaker meta(ResultSetMetaData meta)
 	{
-		this.meta = meta;
+		try
+		{
+			return this.meta(ResultSetMetaToColumnList(meta));
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
 		return this;
 	}
 
@@ -376,29 +510,33 @@ public class EntityMaker
 		return this;
 	}
 
-	protected EntityMaker outputBody(DataWriter out) throws SQLException
+	protected EntityMaker newLine(Writer out) throws IOException
+	{
+		out.write("\n");
+		return this;
+	}
+
+	protected EntityMaker outputBody(Writer out) throws SQLException, IOException
 	{
 		Map<String, Integer> pk = this.getPrimaryKey();
 
-		out.write("@NameMeta(name = \"" + Tools.escape(name()) + "\")");
-		out.write("public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name() + " extends "
+		println(out, "@NameMeta(name = \"" + Tools.escape(name()) + "\")");
+		println(out, "public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name() + " extends "
 				+ sup().getSimpleName());
-		out.write("{");
+		println(out, "{");
 
 		for (Pair<String, String> pair : this.getForeignKeys().keySet())
 		{
 			outputForeignKeyField(out, pair.value);
-			out.write();
+			newLine(out);
 		}
-
-		int columns = meta().getColumnCount();
 
 		boolean first = true;
 
 		String column = null, name = null;
 		int precision = 0, scale = 0, nullable = 0;
 
-		for (int i = 1; i <= columns; i++)
+		for (ColumnInfo info : meta())
 		{
 			if (first)
 			{
@@ -406,77 +544,78 @@ public class EntityMaker
 			}
 			else
 			{
-				out.write();
+				newLine(out);
 			}
-			column = meta().getColumnLabel(i);
+			column = info.getName();
 			name = Tools.escape(column);
-			out.write("\t@NameMeta(name = \"" + name + "\")");
+			println(out, "\t@NameMeta(name = \"" + name + "\")");
 
 			if (this.isEntity())
 			{
-				precision = meta().getPrecision(i);
-				scale = meta().getScale(i);
-				nullable = meta().isNullable(i);
-				out.print("\t@TypeMeta(");
-				out.print("type = \"" + Tools.escape(meta().getColumnTypeName(i)) + "\"");
+				precision = info.getPrecision();
+				scale = info.getScale();
+				nullable = info.getNullable();
+				out.write("\t@TypeMeta(");
+				out.write("type = \"" + Tools.escape(info.getType()) + "\"");
 				if (precision != 0)
 				{
-					out.print(", precision = " + precision);
+					out.write(", precision = " + precision);
 				}
 				if (scale != 0)
 				{
-					out.print(", scale = " + scale);
+					out.write(", scale = " + scale);
 				}
 				if (nullable != ResultSetMetaData.columnNullableUnknown)
 				{
-					out.print(", nullable = TypeMeta." + (nullable == TypeMeta.NO_NULLS ? "NO_NULLS" : "NULLABLE"));
+					out.write(", nullable = TypeMeta." + (nullable == TypeMeta.NO_NULLS ? "NO_NULLS" : "NULLABLE"));
 				}
-				out.write(")");
+				println(out, ")");
 
-				out.write("\t@DataMeta(alias = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
+				println(out, "\t@DataMeta(alias = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
 
 				if (pk.get(column) != null)
 				{
-					out.write("\t@PrimaryKeyMeta(ordinal = " + pk.get(column) + ")");
+					println(out, "\t@PrimaryKeyMeta(ordinal = " + pk.get(column) + ")");
 				}
 			}
-			out.write("\tpublic Column\t" + wash(column) + ";");
+			println(out, "\tpublic Column\t" + wash(column) + ";");
 		}
 
 		for (Entry<Pair<String, String>, List<String>> entry : this.getForeignKeys().entrySet())
 		{
-			out.write();
+			newLine(out);
 			outputForeignKeyMethod(out, entry.getKey().key, entry.getKey().value, entry.getValue());
 		}
 
 		if (this.isOutputAsInnerClass())
 		{
-			out.write("}");
+			println(out, "}");
 		}
 
 		if (this.templateBody != null)
 		{
-			out.write();
+			newLine(out);
 			for (String line : this.templateBody)
 			{
-				out.write(line);
+				println(out, line);
 			}
 		}
 		else
 		{
-			out.write("}");
+			println(out, "}");
 		}
 
 		return this;
 	}
 
-	protected void outputForeignKeyField(DataWriter out, String name)
+	protected void outputForeignKeyField(Writer out, String name) throws IOException
 	{
-		out.write("\t@ForeignKeyMeta");
-		out.write("\tpublic static final String\t" + wash(name) + "\t= \"" + Tools.escape(wash(name)) + "\";");
+		println(out, "\t@ForeignKeyMeta");
+		println(out, "\tpublic static final String\t" + wash(name) + "\t= \"" + Tools.escape(wash(name)) + "\";");
 	}
 
-	protected void outputForeignKeyMethod(DataWriter out, String table, String name, List<String> columns)
+	protected void outputForeignKeyMethod(Writer out, String table, String name, List<String> columns)
+			throws IOException
 	{
 		StringBuilder buf = new StringBuilder();
 		for (String column : columns)
@@ -485,48 +624,47 @@ public class EntityMaker
 			buf.append(wash(column));
 		}
 
-		out.write("\t@ForeignKeyMeta");
-		out.write("\tpublic ForeignKey " + wash(name) + "(" + table + " ref" + ")");
-		out.write("\t{");
-		out.write("\t\treturn foreignKey(ref" + buf.toString() + ");");
-		out.write("\t}");
+		println(out, "\t@ForeignKeyMeta");
+		println(out, "\tpublic ForeignKey " + wash(name) + "(" + table + " ref" + ")");
+		println(out, "\t{");
+		println(out, "\t\treturn foreignKey(ref" + buf.toString() + ");");
+		println(out, "\t}");
 	}
 
-	protected EntityMaker outputHead(DataWriter out)
+	protected EntityMaker outputHead(Writer out) throws IOException
 	{
-		out.write("package " + pkg() + ";");
-		out.write();
-		this.outputImports(out);
-		out.write();
+		println(out, "package " + pkg() + ";").newLine(out);
+
+		this.outputImports(out).newLine(out);
 
 		if (this.isOutputAsInnerClass())
 		{
 			for (String line : templateHead)
 			{
-				out.write(line);
+				println(out, line);
 			}
 		}
 
 		if (schema() != null)
 		{
-			out.print("@MemberMeta(");
+			out.write("@MemberMeta(");
 
 			if (schema().length() == 0)
 			{
-				out.print("follow = " + true);
+				out.write("follow = " + true);
 			}
 			else
 			{
-				out.print("schema = \"" + Tools.escape(schema()) + "\"");
+				out.write("schema = \"" + Tools.escape(schema()) + "\"");
 			}
 
-			out.write(")");
+			println(out, ")");
 		}
 
 		return this;
 	}
 
-	protected EntityMaker outputImports(DataWriter out)
+	protected EntityMaker outputImports(Writer out) throws IOException
 	{
 		imports.add(Column.class.getName());
 		imports.add(NameMeta.class.getName());
@@ -543,7 +681,7 @@ public class EntityMaker
 
 		for (String cls : this.imports)
 		{
-			out.write("import " + cls + ";");
+			println(out, "import " + cls + ";");
 		}
 
 		return this;
@@ -608,6 +746,13 @@ public class EntityMaker
 	public EntityMaker pkg(String pkg)
 	{
 		this.pkg = pkg;
+		return this;
+	}
+
+	protected EntityMaker println(Writer out, String text) throws IOException
+	{
+		out.write(text);
+		newLine(out);
 		return this;
 	}
 
