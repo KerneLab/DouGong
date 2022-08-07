@@ -306,7 +306,7 @@ public class EntityMaker
 
 	protected EntityMaker fetchForeignKeys(KeysFetcher keysFetcher)
 	{
-		if (keysFetcher != null && this.isEntity())
+		if (kit() != null && keysFetcher != null && this.isEntity())
 		{
 			try
 			{
@@ -334,7 +334,7 @@ public class EntityMaker
 
 	protected EntityMaker fetchPrimaryKey(KeysFetcher keysFetcher)
 	{
-		if (keysFetcher != null && this.isEntity())
+		if (kit() != null && keysFetcher != null && this.isEntity())
 		{
 			try
 			{
