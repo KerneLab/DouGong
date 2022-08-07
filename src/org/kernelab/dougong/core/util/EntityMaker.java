@@ -368,8 +368,8 @@ public class EntityMaker
 		else if (base() != null)
 		{
 			return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
-					+ pkg().replace('.', File.separatorChar) //
-					+ File.separatorChar + name() + ".java");
+					+ (Tools.isNullOrWhite(pkg()) ? "" : (pkg().replace('.', File.separatorChar) + File.separatorChar)) //
+					+ name() + ".java");
 		}
 		else
 		{
@@ -633,7 +633,10 @@ public class EntityMaker
 
 	protected EntityMaker outputHead(Writer out) throws IOException
 	{
-		println(out, "package " + pkg() + ";").newLine(out);
+		if (Tools.notNullOrWhite(pkg()))
+		{
+			println(out, "package " + pkg() + ";").newLine(out);
+		}
 
 		this.outputImports(out).newLine(out);
 
