@@ -113,7 +113,125 @@ public class EntityMaker
 		}
 	}
 
-	public static final Pattern IMPORT_PATTERN = Pattern.compile("^import\\s+(\\S+)\\s*;$");
+	public class JavaStyleMaker implements Maker
+	{
+		@Override
+		public String getClassDeclaration()
+		{
+			return "public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name() + " extends "
+					+ sup().getSimpleName();
+		}
+
+		@Override
+		public String getColumn(String name)
+		{
+			return indent(1) + "public Column\t" + name + ";";
+		}
+
+		@Override
+		public String getForeignKeyField(String name)
+		{
+			return indent(1) + "@ForeignKeyMeta" + nl() //
+					+ indent(1) + "public static final String\t" + name + "\t= \"" + Tools.escape(name) + "\";";
+		}
+
+		@Override
+		public String getForeignKeyMethod(String name, String table, String columns)
+		{
+			String indent = indent(1);
+			return indent + "@ForeignKeyMeta" + nl() //
+					+ indent + "public ForeignKey " + name + "(" + table + " ref" + ")" + nl() //
+					+ indent + "{" + nl() //
+					+ indent + indent + "return foreignKey(ref, " + columns + ");" + nl() //
+					+ indent + "}";
+		}
+
+		@Override
+		public Pattern getImportPattern()
+		{
+			return Pattern.compile("^import\\s+(\\S+)\\s*;$");
+		}
+
+		@Override
+		public String getStatement(String statement)
+		{
+			return statement + ";";
+		}
+
+		@Override
+		public String indent(int num)
+		{
+			return Tools.repeat('\t', num);
+		}
+	}
+
+	public static interface Maker
+	{
+		public String getClassDeclaration();
+
+		public String getColumn(String name);
+
+		public String getForeignKeyField(String name);
+
+		public String getForeignKeyMethod(String name, String table, String columns);
+
+		public Pattern getImportPattern();
+
+		public String getStatement(String statement);
+
+		public String indent(int num);
+	}
+
+	public class ScalaStyleMaker implements Maker
+	{
+		@Override
+		public String getClassDeclaration()
+		{
+			return (isOutputAsInnerClass() ? "object" : "class") + " " + name() + " extends " + sup().getSimpleName();
+		}
+
+		@Override
+		public String getColumn(String name)
+		{
+			return indent(1) + "var " + name + ": Column = null";
+		}
+
+		@Override
+		public String getForeignKeyField(String name)
+		{
+			return indent(1) + "@ForeignKeyMeta" + nl() //
+					+ indent(1) + "val " + name + ": String = \"" + Tools.escape(name) + "\"";
+		}
+
+		@Override
+		public String getForeignKeyMethod(String name, String table, String columns)
+		{
+			return indent(1) + "@ForeignKeyMeta" + nl() //
+					+ indent(1) + "def " + name + "(ref: " + table + "): ForeignKey = foreignKey(ref, " + columns + ")";
+		}
+
+		@Override
+		public Pattern getImportPattern()
+		{
+			return Pattern.compile("^import\\s+(\\S+)\\s*;?\\s*$");
+		}
+
+		@Override
+		public String getStatement(String statement)
+		{
+			return statement;
+		}
+
+		@Override
+		public String indent(int num)
+		{
+			return Tools.repeat("  ", num);
+		}
+	}
+
+	public static final String	JAVA_STYLE	= "java";
+
+	public static final String	SCALA_STYLE	= "scala";
 
 	public static String fillParametersWithNull(String sql)
 	{
@@ -121,7 +239,7 @@ public class EntityMaker
 	}
 
 	public static File make(Provider provider, SQLKit kit, List<ColumnInfo> meta, String name, Class<?> sup, String pkg,
-			File base, String schema, boolean innerClass, String charSet, File template)
+			File base, String schema, boolean innerClass, String charSet, String style, File template)
 			throws IOException, SQLException
 	{
 		return new EntityMaker() //
@@ -135,21 +253,22 @@ public class EntityMaker
 				.schema(schema) //
 				.innerClass(innerClass) //
 				.charSet(charSet) //
+				.style(style) //
 				.template(template) //
 				.make() //
 				.file();
 	}
 
 	public static File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
-			String pkg, File base, String schema, boolean innerClass, String charSet, File template)
+			String pkg, File base, String schema, boolean innerClass, String charSet, String style, File template)
 			throws IOException, SQLException
 	{
 		return make(provider, kit, ResultSetMetaToColumnList(meta), name, sup, pkg, base, schema, innerClass, charSet,
-				template);
+				style, template);
 	}
 
 	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg, File base,
-			String charSet) throws IOException, SQLException
+			String charSet, String style) throws IOException, SQLException
 	{
 		return make(provider, //
 				kit, //
@@ -161,11 +280,12 @@ public class EntityMaker
 				null, //
 				false, //
 				charSet, //
+				style, //
 				null);
 	}
 
 	public static File makeSubquery(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, File base,
-			Class<?> inClass, String charSet) throws IOException, SQLException
+			Class<?> inClass, String charSet, String style) throws IOException, SQLException
 	{
 		String clsName = inClass.getCanonicalName();
 		if (Tools.isNullOrEmpty(inClass.getSimpleName()) //
@@ -184,12 +304,13 @@ public class EntityMaker
 				null, //
 				true, //
 				charSet, //
-				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar)
-						+ ".java"));
+				style, //
+				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar) + "."
+						+ style));
 	}
 
 	public static File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String schema,
-			String charSet) throws IOException, SQLException
+			String charSet, String style) throws IOException, SQLException
 	{
 		String tab = (Tools.notNullOrEmpty(schema) ? schema + "." : "") + name;
 		return make(provider, //
@@ -202,11 +323,12 @@ public class EntityMaker
 				schema, //
 				false, //
 				charSet, //
+				style, //
 				null);
 	}
 
-	public static File makeView(Provider provider, SQLKit kit, PredefinedView view, File base, String charSet)
-			throws IOException, SQLException
+	public static File makeView(Provider provider, SQLKit kit, PredefinedView view, File base, String charSet,
+			String style) throws IOException, SQLException
 	{
 		Class<?> cls = view.getClass();
 		String name = view.getClass().getSimpleName();
@@ -231,8 +353,9 @@ public class EntityMaker
 				null, //
 				false, //
 				charSet, //
-				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar)
-						+ ".java"));
+				style, //
+				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar) + "."
+						+ style));
 	}
 
 	public static List<ColumnInfo> ResultSetMetaToColumnList(ResultSetMetaData meta) throws SQLException
@@ -271,6 +394,10 @@ public class EntityMaker
 	private String									cs;
 
 	private Set<String>								imports	= new TreeSet<String>();
+
+	private String									style;
+
+	private Maker									styler;
 
 	private File									template;
 
@@ -369,7 +496,7 @@ public class EntityMaker
 		{
 			return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
 					+ (Tools.isNullOrWhite(pkg()) ? "" : (pkg().replace('.', File.separatorChar) + File.separatorChar)) //
-					+ name() + ".java");
+					+ name() + "." + style());
 		}
 		else
 		{
@@ -510,9 +637,14 @@ public class EntityMaker
 		return this;
 	}
 
-	protected EntityMaker newLine(Writer out) throws IOException
+	protected String nl()
 	{
-		out.write("\n");
+		return "\n";
+	}
+
+	protected EntityMaker nl(Writer out) throws IOException
+	{
+		out.write(nl());
 		return this;
 	}
 
@@ -521,19 +653,18 @@ public class EntityMaker
 		Map<String, Integer> pk = this.getPrimaryKey();
 
 		println(out, "@NameMeta(name = \"" + Tools.escape(name()) + "\")");
-		println(out, "public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name() + " extends "
-				+ sup().getSimpleName());
+		println(out, styler().getClassDeclaration());
 		println(out, "{");
 
 		for (Pair<String, String> pair : this.getForeignKeys().keySet())
 		{
 			outputForeignKeyField(out, pair.value);
-			newLine(out);
+			nl(out);
 		}
 
 		boolean first = true;
 
-		String column = null, name = null;
+		String column = null, name = null, indent = styler().indent(1);
 		int precision = 0, scale = 0, nullable = 0;
 
 		for (ColumnInfo info : meta())
@@ -544,18 +675,19 @@ public class EntityMaker
 			}
 			else
 			{
-				newLine(out);
+				nl(out);
 			}
 			column = info.getName();
 			name = Tools.escape(column);
-			println(out, "\t@NameMeta(name = \"" + name + "\")");
+
+			println(out, indent + "@NameMeta(name = \"" + name + "\")");
 
 			if (this.isEntity())
 			{
 				precision = info.getPrecision();
 				scale = info.getScale();
 				nullable = info.getNullable();
-				out.write("\t@TypeMeta(");
+				out.write(indent + "@TypeMeta(");
 				out.write("type = \"" + Tools.escape(info.getType()) + "\"");
 				if (precision != 0)
 				{
@@ -571,19 +703,19 @@ public class EntityMaker
 				}
 				println(out, ")");
 
-				println(out, "\t@DataMeta(alias = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
+				println(out, indent + "@DataMeta(alias = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
 
 				if (pk.get(column) != null)
 				{
-					println(out, "\t@PrimaryKeyMeta(ordinal = " + pk.get(column) + ")");
+					println(out, indent + "@PrimaryKeyMeta(ordinal = " + pk.get(column) + ")");
 				}
 			}
-			println(out, "\tpublic Column\t" + wash(column) + ";");
+			println(out, styler().getColumn(wash(column)));
 		}
 
 		for (Entry<Pair<String, String>, List<String>> entry : this.getForeignKeys().entrySet())
 		{
-			newLine(out);
+			nl(out);
 			outputForeignKeyMethod(out, entry.getKey().key, entry.getKey().value, entry.getValue());
 		}
 
@@ -594,7 +726,7 @@ public class EntityMaker
 
 		if (this.templateBody != null)
 		{
-			newLine(out);
+			nl(out);
 			for (String line : this.templateBody)
 			{
 				println(out, line);
@@ -610,8 +742,7 @@ public class EntityMaker
 
 	protected void outputForeignKeyField(Writer out, String name) throws IOException
 	{
-		println(out, "\t@ForeignKeyMeta");
-		println(out, "\tpublic static final String\t" + wash(name) + "\t= \"" + Tools.escape(wash(name)) + "\";");
+		println(out, styler().getForeignKeyField(wash(name)));
 	}
 
 	protected void outputForeignKeyMethod(Writer out, String table, String name, List<String> columns)
@@ -620,25 +751,23 @@ public class EntityMaker
 		StringBuilder buf = new StringBuilder();
 		for (String column : columns)
 		{
-			buf.append(", ");
+			if (buf.length() > 0)
+			{
+				buf.append(", ");
+			}
 			buf.append(wash(column));
 		}
-
-		println(out, "\t@ForeignKeyMeta");
-		println(out, "\tpublic ForeignKey " + wash(name) + "(" + table + " ref" + ")");
-		println(out, "\t{");
-		println(out, "\t\treturn foreignKey(ref" + buf.toString() + ");");
-		println(out, "\t}");
+		println(out, styler().getForeignKeyMethod(wash(name), table, buf.toString()));
 	}
 
 	protected EntityMaker outputHead(Writer out) throws IOException
 	{
 		if (Tools.notNullOrWhite(pkg()))
 		{
-			println(out, "package " + pkg() + ";").newLine(out);
+			println(out, styler().getStatement("package " + pkg())).nl(out);
 		}
 
-		this.outputImports(out).newLine(out);
+		this.outputImports(out).nl(out);
 
 		if (this.isOutputAsInnerClass())
 		{
@@ -684,7 +813,7 @@ public class EntityMaker
 
 		for (String cls : this.imports)
 		{
-			println(out, "import " + cls + ";");
+			println(out, styler().getStatement("import " + cls));
 		}
 
 		return this;
@@ -700,7 +829,7 @@ public class EntityMaker
 			boolean beginBody = false;
 			int idx = -1;
 
-			Matcher importMatcher = IMPORT_PATTERN.matcher("");
+			Matcher importMatcher = styler().getImportPattern().matcher("");
 
 			for (String line : new TextDataSource(this.template(), Charset.forName(this.charSet()), "\n"))
 			{
@@ -755,7 +884,7 @@ public class EntityMaker
 	protected EntityMaker println(Writer out, String text) throws IOException
 	{
 		out.write(text);
-		newLine(out);
+		nl(out);
 		return this;
 	}
 
@@ -779,6 +908,31 @@ public class EntityMaker
 	{
 		this.schema = schema;
 		return this;
+	}
+
+	public String style()
+	{
+		return style;
+	}
+
+	public EntityMaker style(String style)
+	{
+		if (SCALA_STYLE.equalsIgnoreCase(style))
+		{
+			this.style = SCALA_STYLE;
+			this.styler = new ScalaStyleMaker();
+		}
+		else
+		{
+			this.style = JAVA_STYLE;
+			this.styler = new JavaStyleMaker();
+		}
+		return this;
+	}
+
+	public Maker styler()
+	{
+		return styler;
 	}
 
 	public Class<?> sup()

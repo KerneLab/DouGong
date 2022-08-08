@@ -27,10 +27,10 @@ public class TestEntityMaker
 					// "STAF", //
 			})
 			{
-				EntityMaker.makeTable(provider, kit, table, "org.kernelab.dougong.demo", base, null, null);
+				EntityMaker.makeTable(provider, kit, table, "org.kernelab.dougong.demo", base, null, null, "java");
 			}
 
-			EntityMaker.makeView(provider, kit, sql.view(TestView.class), base, null);
+			EntityMaker.makeView(provider, kit, sql.view(TestView.class), base, null, "java");
 		}
 		catch (Exception e)
 		{

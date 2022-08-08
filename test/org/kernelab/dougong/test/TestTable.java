@@ -32,7 +32,7 @@ public class TestTable extends AbstractTable
 		{
 			EntityMaker.makeSubquery(Config.PROVIDER, Config.getSQLKit(),
 					Config.getSQLKit().query(EntityMaker.fillParametersWithNull(select.toString())).getMetaData(),
-					"DEMO_SUBQUERY", new File("E:\\project\\DouGong\\src"), TestTable.class, "UTF-8");
+					"DEMO_SUBQUERY", new File("E:\\project\\DouGong\\src"), TestTable.class, "UTF-8", "java");
 		}
 		catch (Exception e)
 		{
