@@ -214,6 +214,8 @@ public interface Provider extends Castable
 	 */
 	public String provideNameText(String name);
 
+	public <T> T provideNewInstance(Class<T> cls);
+
 	public NullCondition provideNullCondition();
 
 	/**

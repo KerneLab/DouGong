@@ -188,7 +188,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	{
 		try
 		{
-			return this.provideProvider(cls.newInstance());
+			return this.provideProvider(provideNewInstance(cls));
 		}
 		catch (Exception e)
 		{
@@ -245,6 +245,26 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	{
 		Expression wildcard = provideStringItem("'%'");
 		return provideJointOperator().operate(wildcard, this.provideLikePatternEscaped(pattern, escape));
+	}
+
+	public <T> T provideNewInstance(Class<T> cls)
+	{
+		if (cls != null)
+		{
+			try
+			{
+				return cls.newInstance();
+			}
+			catch (InstantiationException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	public Item provideNullItem()
@@ -741,7 +761,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	{
 		try
 		{
-			T s = cls.newInstance();
+			T s = this.provideNewInstance(cls);
 			s.select(select);
 			return this.provideProvider(s);
 		}
@@ -811,26 +831,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 
 	public <T extends View> T provideView(Class<T> cls)
 	{
-		if (cls != null)
-		{
-			try
-			{
-				return this.provideProvider(cls.newInstance());
-			}
-			catch (InstantiationException e)
-			{
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
-			}
-			return null;
-		}
-		else
-		{
-			return null;
-		}
+		return this.provideProvider(provideNewInstance(cls));
 	}
 
 	public String provideViewAlias(View view)
