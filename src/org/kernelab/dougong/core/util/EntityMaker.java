@@ -119,7 +119,7 @@ public class EntityMaker
 		public String getClassDeclaration()
 		{
 			return "public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name() + " extends "
-					+ sup().getSimpleName();
+					+ sup().getSimpleName() + nl() + "{";
 		}
 
 		@Override
@@ -187,13 +187,16 @@ public class EntityMaker
 		@Override
 		public String getClassDeclaration()
 		{
-			return (isOutputAsInnerClass() ? "object" : "class") + " " + name() + " extends " + sup().getSimpleName();
+			return (isOutputAsInnerClass() ? "object" : "class") + " " + name() + " extends " + sup().getSimpleName()
+					+ " {";
 		}
 
 		@Override
 		public String getColumn(String name)
 		{
-			return indent(1) + "var " + name + ": Column = null";
+			return indent(1) + "var " + name + ": Column = null" + nl() //
+					+ indent(1) + "def get" + Tools.capitalize(name) + "(): Column = " + name + nl() //
+					+ indent(1) + "def set" + Tools.capitalize(name) + "(col: Column): Unit = this." + name + " = col";
 		}
 
 		@Override
@@ -654,7 +657,6 @@ public class EntityMaker
 
 		println(out, "@NameMeta(name = \"" + Tools.escape(name()) + "\")");
 		println(out, styler().getClassDeclaration());
-		println(out, "{");
 
 		for (Pair<String, String> pair : this.getForeignKeys().keySet())
 		{
@@ -883,8 +885,11 @@ public class EntityMaker
 
 	protected EntityMaker println(Writer out, String text) throws IOException
 	{
-		out.write(text);
-		nl(out);
+		if (text != null)
+		{
+			out.write(text);
+			nl(out);
+		}
 		return this;
 	}
 
