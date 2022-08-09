@@ -331,6 +331,31 @@ public class EntityMaker
 				style, template);
 	}
 
+	public static File makeSubquery(Provider provider, SQLKit kit, List<ColumnInfo> meta, String name, File base,
+			Class<?> inClass, String charSet, String style) throws IOException, SQLException
+	{
+		String clsName = inClass.getCanonicalName();
+		if (Tools.isNullOrEmpty(inClass.getSimpleName()) //
+				|| clsName == null || clsName.indexOf('$') >= 0 || clsName.indexOf('[') >= 0)
+		{
+			throw new RuntimeException("Invalid class: " + clsName);
+		}
+
+		return make(provider, //
+				kit, //
+				meta, //
+				name, //
+				AbstractSubquery.class, //
+				inClass.getPackage().getName(), //
+				base, //
+				null, //
+				true, //
+				charSet, //
+				style, //
+				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar) + "."
+						+ style));
+	}
+
 	public static File makeSubquery(Provider provider, SQLKit kit, List<ColumnInfo> meta, String name, String pkg,
 			File base, String charSet, String style) throws IOException, SQLException
 	{
@@ -351,26 +376,8 @@ public class EntityMaker
 	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, File base,
 			Class<?> inClass, String charSet, String style) throws IOException, SQLException
 	{
-		String clsName = inClass.getCanonicalName();
-		if (Tools.isNullOrEmpty(inClass.getSimpleName()) //
-				|| clsName == null || clsName.indexOf('$') >= 0 || clsName.indexOf('[') >= 0)
-		{
-			throw new RuntimeException("Invalid PredeclaredView class: " + clsName);
-		}
-
-		return make(provider, //
-				kit, //
-				rs.getMetaData(), //
-				name, //
-				AbstractSubquery.class, //
-				inClass.getPackage().getName(), //
-				base, //
-				null, //
-				true, //
-				charSet, //
-				style, //
-				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar) + "."
-						+ style));
+		return makeSubquery(provider, kit, resultSetMetaToColumnList(rs.getMetaData()), name, base, inClass, charSet,
+				style);
 	}
 
 	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg, File base,
