@@ -147,12 +147,6 @@ public class EntityMaker
 		}
 
 		@Override
-		public Pattern getImportPattern()
-		{
-			return Pattern.compile("^import\\s+(\\S+)\\s*;$");
-		}
-
-		@Override
 		public String getStatement(String statement)
 		{
 			return statement + ";";
@@ -162,6 +156,50 @@ public class EntityMaker
 		public String indent(int num)
 		{
 			return Tools.repeat('\t', num);
+		}
+
+		@Override
+		public void parseTemplate()
+		{
+			boolean beginBody = false;
+			int idx = -1;
+
+			Matcher importMatcher = Pattern.compile("^import\\s+(\\S+)\\s*;$").matcher("");
+
+			for (String line : new TextDataSource(template(), Charset.forName(charSet()), "\n"))
+			{
+				line = line.replaceFirst("(.*)\r$", "$1");
+
+				if (!beginBody)
+				{
+					if (importMatcher.reset(line.trim()).matches())
+					{
+						imports.add(importMatcher.group(1));
+					}
+					else if ((idx = line.indexOf('{')) >= 0)
+					{
+						beginBody = true;
+						String head = line.substring(0, idx + 1);
+						if (head.length() > 0)
+						{
+							templateHead.add(head);
+						}
+						String body = line.substring(idx + 1);
+						if (body.length() > 0)
+						{
+							templateBody.add(body);
+						}
+					}
+					else if (Tools.notNullOrWhite(line) && !line.matches("^package\\s+.+$"))
+					{
+						templateHead.add(line);
+					}
+				}
+				else
+				{
+					templateBody.add(line);
+				}
+			}
 		}
 	}
 
@@ -175,11 +213,11 @@ public class EntityMaker
 
 		public String getForeignKeyMethod(String name, String table, String columns);
 
-		public Pattern getImportPattern();
-
 		public String getStatement(String statement);
 
 		public String indent(int num);
+
+		public void parseTemplate();
 	}
 
 	public class ScalaStyleMaker implements Maker
@@ -187,8 +225,7 @@ public class EntityMaker
 		@Override
 		public String getClassDeclaration()
 		{
-			return (isOutputAsInnerClass() ? "object" : "class") + " " + name() + " extends " + sup().getSimpleName()
-					+ " {";
+			return "class " + name() + " extends " + sup().getSimpleName() + " {";
 		}
 
 		@Override
@@ -214,12 +251,6 @@ public class EntityMaker
 		}
 
 		@Override
-		public Pattern getImportPattern()
-		{
-			return Pattern.compile("^import\\s+(\\S+)\\s*;?\\s*$");
-		}
-
-		@Override
 		public String getStatement(String statement)
 		{
 			return statement;
@@ -229,6 +260,36 @@ public class EntityMaker
 		public String indent(int num)
 		{
 			return Tools.repeat("  ", num);
+		}
+
+		@Override
+		public void parseTemplate()
+		{
+			boolean importEnd = false;
+
+			Matcher importMatcher = Pattern.compile("^import\\s+(\\S+)\\s*;?\\s*$").matcher("");
+
+			for (String line : new TextDataSource(template(), Charset.forName(charSet()), "\n"))
+			{
+				line = line.replaceFirst("(.*)\r$", "$1");
+
+				if (!importEnd)
+				{
+					if (importMatcher.reset(line.trim()).matches())
+					{
+						imports.add(importMatcher.group(1));
+					}
+					else if (Tools.notNullOrWhite(line) && !line.matches("^package\\s+.+$"))
+					{
+						importEnd = true;
+						templateBody.add(line);
+					}
+				}
+				else
+				{
+					templateBody.add(line);
+				}
+			}
 		}
 	}
 
@@ -266,16 +327,16 @@ public class EntityMaker
 			String pkg, File base, String schema, boolean innerClass, String charSet, String style, File template)
 			throws IOException, SQLException
 	{
-		return make(provider, kit, ResultSetMetaToColumnList(meta), name, sup, pkg, base, schema, innerClass, charSet,
+		return make(provider, kit, resultSetMetaToColumnList(meta), name, sup, pkg, base, schema, innerClass, charSet,
 				style, template);
 	}
 
-	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg, File base,
-			String charSet, String style) throws IOException, SQLException
+	public static File makeSubquery(Provider provider, SQLKit kit, List<ColumnInfo> meta, String name, String pkg,
+			File base, String charSet, String style) throws IOException, SQLException
 	{
 		return make(provider, //
 				kit, //
-				rs.getMetaData(), //
+				meta, //
 				name, //
 				AbstractSubquery.class, //
 				pkg, //
@@ -287,7 +348,7 @@ public class EntityMaker
 				null);
 	}
 
-	public static File makeSubquery(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, File base,
+	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, File base,
 			Class<?> inClass, String charSet, String style) throws IOException, SQLException
 	{
 		String clsName = inClass.getCanonicalName();
@@ -299,7 +360,7 @@ public class EntityMaker
 
 		return make(provider, //
 				kit, //
-				meta, //
+				rs.getMetaData(), //
 				name, //
 				AbstractSubquery.class, //
 				inClass.getPackage().getName(), //
@@ -310,6 +371,13 @@ public class EntityMaker
 				style, //
 				new File(Tools.getFolderPath(Tools.getFilePath(base)) + clsName.replace('.', File.separatorChar) + "."
 						+ style));
+	}
+
+	public static File makeSubquery(Provider provider, SQLKit kit, ResultSet rs, String name, String pkg, File base,
+			String charSet, String style) throws IOException, SQLException
+	{
+		return makeSubquery(provider, kit, resultSetMetaToColumnList(rs.getMetaData()), name, pkg, base, charSet,
+				style);
 	}
 
 	public static File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String schema,
@@ -361,7 +429,7 @@ public class EntityMaker
 						+ style));
 	}
 
-	public static List<ColumnInfo> ResultSetMetaToColumnList(ResultSetMetaData meta) throws SQLException
+	public static List<ColumnInfo> resultSetMetaToColumnList(ResultSetMetaData meta) throws SQLException
 	{
 		List<ColumnInfo> list = new LinkedList<ColumnInfo>();
 
@@ -620,7 +688,7 @@ public class EntityMaker
 	{
 		try
 		{
-			return this.meta(ResultSetMetaToColumnList(meta));
+			return this.meta(resultSetMetaToColumnList(meta));
 		}
 		catch (SQLException e)
 		{
@@ -653,10 +721,10 @@ public class EntityMaker
 
 	protected EntityMaker outputBody(Writer out) throws SQLException, IOException
 	{
-		Map<String, Integer> pk = this.getPrimaryKey();
-
 		println(out, "@NameMeta(name = \"" + Tools.escape(name()) + "\")");
 		println(out, styler().getClassDeclaration());
+
+		Map<String, Integer> pk = this.getPrimaryKey();
 
 		for (Pair<String, String> pair : this.getForeignKeys().keySet())
 		{
@@ -827,48 +895,8 @@ public class EntityMaker
 		{
 			templateHead = new LinkedList<String>();
 			templateBody = new LinkedList<String>();
-
-			boolean beginBody = false;
-			int idx = -1;
-
-			Matcher importMatcher = styler().getImportPattern().matcher("");
-
-			for (String line : new TextDataSource(this.template(), Charset.forName(this.charSet()), "\n"))
-			{
-				line = line.replaceFirst("(.*)\r$", "$1");
-
-				if (!beginBody)
-				{
-					if (importMatcher.reset(line.trim()).matches())
-					{
-						imports.add(importMatcher.group(1));
-					}
-					else if ((idx = line.indexOf('{')) >= 0)
-					{
-						beginBody = true;
-						String head = line.substring(0, idx + 1);
-						if (head.length() > 0)
-						{
-							templateHead.add(head);
-						}
-						String body = line.substring(idx + 1);
-						if (body.length() > 0)
-						{
-							templateBody.add(body);
-						}
-					}
-					else if (Tools.notNullOrWhite(line) && !line.matches("^package\\s+.+$"))
-					{
-						templateHead.add(line);
-					}
-				}
-				else
-				{
-					templateBody.add(line);
-				}
-			}
+			styler().parseTemplate();
 		}
-
 		return this;
 	}
 
