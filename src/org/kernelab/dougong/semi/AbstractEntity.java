@@ -49,27 +49,34 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		return Tools.access(entity, field);
 	}
 
-	public static List<Field> getColumnFields(Entity entity)
+	public static Map<String, Field> getColumnFields(Class<?> cls, Map<String, Field> map)
 	{
-		Map<String, Field> fields = new LinkedHashMap<String, Field>();
+		if (cls == null || cls == Object.class || !Tools.isSubClass(cls, Entity.class))
+		{
+			return map;
+		}
 
-		for (Field field : entity.getClass().getDeclaredFields())
+		if (map == null)
+		{
+			map = new LinkedHashMap<String, Field>();
+		}
+
+		map = getColumnFields(cls.getSuperclass(), map);
+
+		for (Field field : cls.getDeclaredFields())
 		{
 			if (isColumn(field))
 			{
-				fields.put(field.getName(), field);
+				map.put(field.getName(), field);
 			}
 		}
 
-		for (Field field : entity.getClass().getFields())
-		{
-			if (!fields.containsKey(field.getName()) && isColumn(field))
-			{
-				fields.put(field.getName(), field);
-			}
-		}
+		return map;
+	}
 
-		return new LinkedList<Field>(fields.values());
+	public static List<Field> getColumnFields(Entity entity)
+	{
+		return new LinkedList<Field>(getColumnFields(entity.getClass(), null).values());
 	}
 
 	public static Set<Column> getColumns(Entity entity)
@@ -150,6 +157,8 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 			return false;
 		}
 	}
+
+	private List<Field> columnFields;
 
 	public AbsoluteKey absoluteKey()
 	{
@@ -262,7 +271,11 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 	protected List<Field> getColumnFields()
 	{
-		return getColumnFields(this);
+		if (this.columnFields == null)
+		{
+			this.columnFields = getColumnFields(this);
+		}
+		return this.columnFields;
 	}
 
 	protected void initColumns()
