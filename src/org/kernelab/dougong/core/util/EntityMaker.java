@@ -153,6 +153,27 @@ public class EntityMaker
 		}
 
 		@Override
+		public String getTypeMeta(ColumnInfo info)
+		{
+			String text = "@TypeMeta(";
+			text += "type = \"" + Tools.escape(info.getType()) + "\"";
+			if (info.getPrecision() != 0)
+			{
+				text += ", precision = " + info.getPrecision();
+			}
+			if (info.getScale() != 0)
+			{
+				text += ", scale = " + info.getScale();
+			}
+			if (info.getNullable() != ResultSetMetaData.columnNullableUnknown)
+			{
+				text += ", nullable = TypeMeta." + (info.getNullable() == TypeMeta.NO_NULLS ? "NO_NULLS" : "NULLABLE");
+			}
+			text += ")";
+			return text;
+		}
+
+		@Override
 		public String indent(int num)
 		{
 			return Tools.repeat('\t', num);
@@ -215,6 +236,8 @@ public class EntityMaker
 
 		public String getStatement(String statement);
 
+		public String getTypeMeta(ColumnInfo info);
+
 		public String indent(int num);
 
 		public void parseTemplate();
@@ -254,6 +277,27 @@ public class EntityMaker
 		public String getStatement(String statement)
 		{
 			return statement;
+		}
+
+		@Override
+		public String getTypeMeta(ColumnInfo info)
+		{
+			String text = "@TypeMeta(";
+			text += "`type` = \"" + Tools.escape(info.getType()) + "\"";
+			if (info.getPrecision() != 0)
+			{
+				text += ", precision = " + info.getPrecision();
+			}
+			if (info.getScale() != 0)
+			{
+				text += ", scale = " + info.getScale();
+			}
+			if (info.getNullable() != ResultSetMetaData.columnNullableUnknown)
+			{
+				text += ", nullable = TypeMeta." + (info.getNullable() == TypeMeta.NO_NULLS ? "NO_NULLS" : "NULLABLE");
+			}
+			text += ")";
+			return text;
 		}
 
 		@Override
@@ -742,7 +786,6 @@ public class EntityMaker
 		boolean first = true;
 
 		String column = null, name = null, indent = styler().indent(1);
-		int precision = 0, scale = 0, nullable = 0;
 
 		for (ColumnInfo info : meta())
 		{
@@ -761,24 +804,7 @@ public class EntityMaker
 
 			if (this.isEntity())
 			{
-				precision = info.getPrecision();
-				scale = info.getScale();
-				nullable = info.getNullable();
-				out.write(indent + "@TypeMeta(");
-				out.write("type = \"" + Tools.escape(info.getType()) + "\"");
-				if (precision != 0)
-				{
-					out.write(", precision = " + precision);
-				}
-				if (scale != 0)
-				{
-					out.write(", scale = " + scale);
-				}
-				if (nullable != ResultSetMetaData.columnNullableUnknown)
-				{
-					out.write(", nullable = TypeMeta." + (nullable == TypeMeta.NO_NULLS ? "NO_NULLS" : "NULLABLE"));
-				}
-				println(out, ")");
+				println(out, indent + styler().getTypeMeta(info));
 
 				println(out, indent + "@DataMeta(alias = \"" + Tools.mapUnderlineNamingToCamelStyle(name) + "\")");
 
