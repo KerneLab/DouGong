@@ -125,7 +125,7 @@ public class EntityMaker
 		@Override
 		public String getColumn(String name)
 		{
-			return indent(1) + "public Column\t" + name + ";";
+			return "public Column\t" + name + ";";
 		}
 
 		@Override
@@ -254,9 +254,7 @@ public class EntityMaker
 		@Override
 		public String getColumn(String name)
 		{
-			return indent(1) + "var " + name + ": Column = null" + nl() //
-					+ indent(1) + "def get" + Tools.capitalize(name) + "(): Column = " + name + nl() //
-					+ indent(1) + "def set" + Tools.capitalize(name) + "(col: Column): Unit = this." + name + " = col";
+			return "lazy val " + name + ": Column = newColumn(\"" + name + "\")";
 		}
 
 		@Override
@@ -813,7 +811,7 @@ public class EntityMaker
 					println(out, indent + "@PrimaryKeyMeta(ordinal = " + pk.get(column) + ")");
 				}
 			}
-			println(out, styler().getColumn(wash(column)));
+			println(out, indent + styler().getColumn(wash(column)));
 		}
 
 		for (Entry<Pair<String, String>, List<String>> entry : this.getForeignKeys().entrySet())

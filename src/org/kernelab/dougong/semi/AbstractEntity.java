@@ -7,8 +7,6 @@ import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -74,16 +72,16 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		return map;
 	}
 
-	public static List<Field> getColumnFields(Entity entity)
+	public static Map<String, Field> getColumnFields(Entity entity)
 	{
-		return new LinkedList<Field>(getColumnFields(entity.getClass(), null).values());
+		return getColumnFields(entity.getClass(), null);
 	}
 
 	public static Set<Column> getColumns(Entity entity)
 	{
 		Set<Column> columns = new LinkedHashSet<Column>();
 
-		for (Field field : getColumnFields(entity))
+		for (Field field : getColumnFields(entity).values())
 		{
 			try
 			{
@@ -112,8 +110,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 			if (!Modifier.isStatic(mod) //
 					&& !Modifier.isFinal(mod) //
 					&& Tools.isSubClass(field.getType(), Column.class) //
-					&& (Modifier.isPublic(mod)
-							|| (Tools.accessor(field) != null && Tools.accessor(field, null) != null)))
+					&& (Modifier.isPublic(mod) || Tools.accessor(field) != null))
 			{
 				return true;
 			}
@@ -158,13 +155,19 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 	}
 
-	private List<Field> columnFields;
+	public static boolean isSettable(Field field)
+	{
+		int mod = field.getModifiers();
+		return (Modifier.isPublic(mod) && !Modifier.isFinal(mod)) || Tools.accessor(field, null) != null;
+	}
+
+	private Map<String, Field> columnFields;
 
 	public AbsoluteKey absoluteKey()
 	{
 		Column column = null;
 
-		for (Field field : this.getColumnFields())
+		for (Field field : this.getColumnFields().values())
 		{
 			if (field.getAnnotation(AbsoluteKeyMeta.class) != null)
 			{
@@ -203,7 +206,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 		if (column == null)
 		{
-			column = provider().provideColumn(this, name, field);
+			column = newColumn(field);
 		}
 
 		return column;
@@ -253,7 +256,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 			}
 		}
 
-		for (Field field : this.getColumnFields())
+		for (Field field : this.getColumnFields().values())
 		{
 			if (!keys.contains(Utils.getNameFromField(field)))
 			{
@@ -269,7 +272,12 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		return meta;
 	}
 
-	protected List<Field> getColumnFields()
+	protected Field getColumnFieldByName(String name)
+	{
+		return getColumnFields().get(name);
+	}
+
+	protected Map<String, Field> getColumnFields()
 	{
 		if (this.columnFields == null)
 		{
@@ -280,32 +288,50 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 	protected void initColumns()
 	{
-		Column col = null;
-
-		for (Field field : this.getColumnFields())
+		for (Field field : this.getColumnFields().values())
 		{
 			try
 			{
-				if (getColumn(this, field) == null)
+				if (getColumn(this, field) == null && isSettable(field))
 				{
-					col = this.getColumnByField(field);
-					Tools.access(this, field, col);
-					items().add(col);
-					referItems().put(col.name(), col);
+					newColumn(field);
 				}
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
 			}
 		}
+	}
+
+	protected Column newColumn(Field field)
+	{
+		String name = Utils.getNameFromField(field);
+		Column column = provider().provideColumn(this, name, field);
+		if (isSettable(field))
+		{
+			try
+			{
+				Tools.access(this, field, column);
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		items().add(column);
+		referItems().put(column.name(), column);
+		return column;
+	}
+
+	protected Column newColumn(String name)
+	{
+		return this.newColumn(this.getColumnFields().get(name));
 	}
 
 	public PrimaryKey primaryKey()
 	{
 		TreeMap<Integer, Column> keys = new TreeMap<Integer, Column>();
 
-		for (Field field : this.getColumnFields())
+		for (Field field : this.getColumnFields().values())
 		{
 			PrimaryKeyMeta meta = field.getAnnotation(PrimaryKeyMeta.class);
 			if (meta != null)
