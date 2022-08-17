@@ -639,6 +639,17 @@ public class SQL
 		return (T) provider().provideTable(cls).alias(alias);
 	}
 
+	public <T extends Table> T table(T table)
+	{
+		return table(table, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends Table> T table(T table, String alias)
+	{
+		return (T) ((T) provider().provideProvider(table)).alias(alias);
+	}
+
 	public ComposableCondition True()
 	{
 		return provider().provideLogicalCondition().and(expr("0").eq(expr("0")));
@@ -673,6 +684,17 @@ public class SQL
 	public <T extends View> T view(Class<T> cls, String alias)
 	{
 		return (T) provider().provideView(cls).alias(alias);
+	}
+
+	public <T extends View> T view(T view)
+	{
+		return view(view, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends View> T view(T view, String alias)
+	{
+		return (T) ((T) provider().provideProvider(view)).alias(alias);
 	}
 
 	public WithDefinition w(String name, String... columns)
