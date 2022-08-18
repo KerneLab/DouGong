@@ -307,9 +307,11 @@ public class EntityMaker
 		@Override
 		public void parseTemplate()
 		{
-			boolean importEnd = false;
+			boolean importEnd = false, classBegin = false;
 
 			Matcher importMatcher = Pattern.compile("^import\\s+(\\S+)\\s*;?\\s*$").matcher("");
+
+			Matcher classMatcher = Pattern.compile("^\\s*class\\b.*$").matcher("");
 
 			for (String line : new TextDataSource(template(), Charset.forName(charSet()), "\n"))
 			{
@@ -321,15 +323,26 @@ public class EntityMaker
 					{
 						imports.add(importMatcher.group(1));
 					}
-					else if (Tools.notNullOrWhite(line) && !line.matches("^package\\s+.+$"))
+					else if (classMatcher.reset(line).matches())
 					{
 						importEnd = true;
-						templateBody.add(line);
+						templateHead.add(line);
 					}
 				}
 				else
 				{
-					templateBody.add(line);
+					if (!classBegin)
+					{
+						templateHead.add(line);
+						if (line.indexOf('{') >= 0)
+						{
+							classBegin = true;
+						}
+					}
+					else
+					{
+						templateBody.add(line);
+					}
 				}
 			}
 		}

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Function;
+import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
@@ -373,6 +374,11 @@ public class SQL
 		return cond;
 	}
 
+	public <T extends Providable> T p(Providable obj)
+	{
+		return provide(obj);
+	}
+
 	/**
 	 * Make a StringItem <b>?</b> which represents a single item holder.
 	 * 
@@ -587,6 +593,11 @@ public class SQL
 	public Expression patnTail(String param)
 	{
 		return patnTail(param(param));
+	}
+
+	public <T extends Providable> T provide(Providable obj)
+	{
+		return provider().provideProvider(obj);
 	}
 
 	public Provider provider()
