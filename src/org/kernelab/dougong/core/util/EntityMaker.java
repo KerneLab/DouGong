@@ -327,6 +327,10 @@ public class EntityMaker
 					{
 						importEnd = true;
 						templateHead.add(line);
+						if (line.indexOf('{') >= 0)
+						{
+							classBegin = true;
+						}
 					}
 				}
 				else
