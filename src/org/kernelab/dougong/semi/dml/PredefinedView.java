@@ -1,6 +1,7 @@
 package org.kernelab.dougong.semi.dml;
 
-import org.kernelab.basis.JSON;
+import java.util.Map;
+
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
 
@@ -11,7 +12,7 @@ public abstract class PredefinedView extends AbstractSubquery
 		super();
 	}
 
-	public abstract JSON parameters();
+	public abstract Map<String, Object> parameters();
 
 	@Override
 	public Select select()

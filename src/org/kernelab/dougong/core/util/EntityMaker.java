@@ -19,7 +19,6 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.kernelab.basis.JSON;
 import org.kernelab.basis.Pair;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.io.TextDataSource;
@@ -478,7 +477,7 @@ public class EntityMaker
 
 		String sql = view.select().toString();
 
-		JSON params = view.parameters();
+		Map<String, Object> params = view.parameters();
 
 		return make(provider, //
 				kit, //

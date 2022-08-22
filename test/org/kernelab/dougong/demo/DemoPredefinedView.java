@@ -1,6 +1,7 @@
 package org.kernelab.dougong.demo;
 
-import org.kernelab.basis.JSON;
+import java.util.Map;
+
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.semi.dml.PredefinedView;
@@ -21,7 +22,7 @@ public class DemoPredefinedView extends PredefinedView
 	public DEPT	d;
 
 	@Override
-	public JSON parameters()
+	public Map<String, Object> parameters()
 	{
 		return null;
 	}

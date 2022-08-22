@@ -7,4 +7,6 @@ public interface Table extends Named, View, Entity, Member, Partitioned, Inserta
 	public Table alias(String alias);
 
 	public <T extends Table> T as(String alias);
+
+	public <T extends Table> T name(String name);
 }

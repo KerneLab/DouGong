@@ -28,6 +28,7 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.AbsoluteKey;
+import org.kernelab.dougong.core.ddl.table.DropTable;
 import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.Aliases;
 import org.kernelab.dougong.core.dml.AllItems;
@@ -64,6 +65,8 @@ import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
+import org.kernelab.dougong.semi.ddl.table.AbstractDropTable;
+import org.kernelab.dougong.semi.dml.AbstractMerge;
 import org.kernelab.dougong.semi.dml.AbstractPivot;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
@@ -184,6 +187,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return ps.getGeneratedKeys();
 	}
 
+	public DropTable provideDropTable()
+	{
+		return this.provideProvider(new AbstractDropTable());
+	}
+
 	public <T extends Function> T provideFunction(Class<T> cls)
 	{
 		try
@@ -245,6 +253,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	{
 		Expression wildcard = provideStringItem("'%'");
 		return provideJointOperator().operate(wildcard, this.provideLikePatternEscaped(pattern, escape));
+	}
+
+	public AbstractMerge provideMerge()
+	{
+		return provideProvider(new AbstractMerge());
 	}
 
 	public <T> T provideNewInstance(Class<T> cls)

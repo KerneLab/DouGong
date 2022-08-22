@@ -81,10 +81,11 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return name;
 	}
 
-	protected AbstractTable name(String name)
+	@SuppressWarnings("unchecked")
+	public <T extends Table> T name(String name)
 	{
-		this.name = name;
-		return this;
+		this.name = name == null ? Utils.getNameFromClass(this.getClass()) : name;
+		return (T) this;
 	}
 
 	public String partition()
@@ -116,7 +117,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		AbstractTable table = null;
 		try
 		{
-			table = this.getClass().newInstance() //
+			table = (AbstractTable) this.getClass().newInstance() //
 					.schema(this.schema()) //
 					.name(this.name()) //
 					.provider(this.provider());

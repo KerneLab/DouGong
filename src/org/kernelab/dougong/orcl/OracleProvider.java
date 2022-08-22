@@ -28,6 +28,8 @@ import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.orcl.ddl.OracleForeignKey;
 import org.kernelab.dougong.orcl.ddl.OraclePrimaryKey;
+import org.kernelab.dougong.orcl.ddl.table.OracleCreateTable;
+import org.kernelab.dougong.orcl.ddl.table.OracleDropTable;
 import org.kernelab.dougong.orcl.dml.OracleAllItems;
 import org.kernelab.dougong.orcl.dml.OracleDelete;
 import org.kernelab.dougong.orcl.dml.OracleInsert;
@@ -52,7 +54,6 @@ import org.kernelab.dougong.orcl.dml.opr.OracleCaseSwitchExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleJointOperator;
 import org.kernelab.dougong.orcl.util.OracleKeysFetcher;
 import org.kernelab.dougong.semi.AbstractProvider;
-import org.kernelab.dougong.semi.dml.AbstractMerge;
 
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
@@ -95,6 +96,12 @@ public class OracleProvider extends AbstractProvider
 	public OracleComparisonCondition provideComparisonCondition()
 	{
 		return this.provideProvider(new OracleComparisonCondition());
+	}
+
+	@Override
+	public OracleCreateTable provideCreateTable()
+	{
+		return this.provideProvider(new OracleCreateTable());
 	}
 
 	@Override
@@ -154,6 +161,11 @@ public class OracleProvider extends AbstractProvider
 		kit.update(ps, params);
 
 		return ps.getReturnResultSet();
+	}
+
+	public OracleDropTable provideDropTable()
+	{
+		return this.provideProvider(new OracleDropTable());
 	}
 
 	public String provideEscapeValueLiterally(Object value)
@@ -216,11 +228,6 @@ public class OracleProvider extends AbstractProvider
 	public OracleMembershipCondition provideMembershipCondition()
 	{
 		return this.provideProvider(new OracleMembershipCondition());
-	}
-
-	public AbstractMerge provideMerge()
-	{
-		return provideProvider(new AbstractMerge());
 	}
 
 	public MinusOperator provideMinusOperator()

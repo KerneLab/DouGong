@@ -16,6 +16,8 @@ import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
+import org.kernelab.dougong.core.ddl.table.CreateTable;
+import org.kernelab.dougong.core.ddl.table.DropTable;
 import org.kernelab.dougong.core.dml.Alias;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Delete;
@@ -106,6 +108,8 @@ public interface Provider extends Castable
 
 	public ComparisonCondition provideComparisonCondition();
 
+	public CreateTable provideCreateTable();
+
 	public <T> T provideDao(Class<T> cls);
 
 	public <T> T provideDao(Class<T> face, Object real);
@@ -154,6 +158,8 @@ public interface Provider extends Castable
 	 */
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
 			GenerateValueColumns generates, Column[] returns) throws SQLException;
+
+	public DropTable provideDropTable();
 
 	public String provideEscapeValueLiterally(Object value);
 

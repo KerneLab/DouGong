@@ -17,7 +17,7 @@ import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 
-public abstract class AbstractView extends AbstractProvidable implements View
+public abstract class AbstractView extends AbstractText implements View
 {
 	private String				alias		= null;
 

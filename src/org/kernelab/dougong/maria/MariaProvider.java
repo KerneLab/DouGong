@@ -28,6 +28,7 @@ import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.maria.ddl.MariaForeignKey;
 import org.kernelab.dougong.maria.ddl.MariaPrimaryKey;
+import org.kernelab.dougong.maria.ddl.table.MariaCreateTable;
 import org.kernelab.dougong.maria.dml.MariaAllItems;
 import org.kernelab.dougong.maria.dml.MariaDelete;
 import org.kernelab.dougong.maria.dml.MariaInsert;
@@ -50,7 +51,6 @@ import org.kernelab.dougong.maria.dml.opr.MariaCaseDecideExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaCaseSwitchExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaJointOperator;
 import org.kernelab.dougong.semi.AbstractProvider;
-import org.kernelab.dougong.semi.dml.AbstractMerge;
 
 public class MariaProvider extends AbstractProvider
 {
@@ -83,6 +83,12 @@ public class MariaProvider extends AbstractProvider
 	public MariaComparisonCondition provideComparisonCondition()
 	{
 		return this.provideProvider(new MariaComparisonCondition());
+	}
+
+	@Override
+	public MariaCreateTable provideCreateTable()
+	{
+		return this.provideProvider(new MariaCreateTable());
 	}
 
 	@Override
@@ -183,12 +189,6 @@ public class MariaProvider extends AbstractProvider
 	public MariaMembershipCondition provideMembershipCondition()
 	{
 		return this.provideProvider(new MariaMembershipCondition());
-	}
-
-	@Override
-	public AbstractMerge provideMerge()
-	{
-		throw new UnsupportedOperationException("Merge statement has not been supported");
 	}
 
 	public MinusOperator provideMinusOperator()

@@ -156,6 +156,13 @@ public class SQL
 		return (T) provider().provideFunction(cls).call(args);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends Function> T func(T func, Expression... args)
+	{
+		provider().provideProvider(func);
+		return (T) func.call(args);
+	}
+
 	public <T extends Insertable> Insert insert(T target, Column... columns)
 	{
 		return provider().provideInsert().into(target).columns(columns);
