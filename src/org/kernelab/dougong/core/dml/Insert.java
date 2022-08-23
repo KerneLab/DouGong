@@ -13,6 +13,8 @@ public interface Insert extends DML, Providable, Hintable
 
 	public Insert pair(Column column, Expression value);
 
+	public Insert pairs(Expression... columnValuePairs);
+
 	public Insert values(Expression... values);
 
 	public Insert values(Source source);

@@ -8,6 +8,7 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
+import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Source;
 import org.kernelab.dougong.core.util.Utils;
 
@@ -64,9 +65,20 @@ public class AbstractInsert extends AbstractHintable implements Insert
 			this.pairs = new LinkedList<Pair<Column, Expression>>();
 			this.columns = null;
 			this.values = null;
-			this.source = null;
 		}
 		this.pairs.add(new Pair<Column, Expression>(column, value));
+		return this;
+	}
+
+	public AbstractInsert pairs(Expression... columnValuePairs)
+	{
+		this.pairs = null;
+
+		for (int i = 0; i < columnValuePairs.length; i += 2)
+		{
+			this.pair((Column) columnValuePairs[i], columnValuePairs[i + 1]);
+		}
+
 		return this;
 	}
 
@@ -102,10 +114,10 @@ public class AbstractInsert extends AbstractHintable implements Insert
 
 	protected void textOfSource(StringBuilder buffer)
 	{
-		if (source != null)
+		if (this.source != null)
 		{
 			buffer.append(' ');
-			source.toStringSource(buffer);
+			this.source.toStringSource(buffer);
 		}
 	}
 
@@ -156,7 +168,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		{
 			this.textOfValues(buffer);
 		}
-		else if (source != null)
+		else if (this.source != null)
 		{
 			this.textOfSource(buffer);
 		}
@@ -167,12 +179,21 @@ public class AbstractInsert extends AbstractHintable implements Insert
 	{
 		if (this.values == null && this.pairs != null)
 		{
-			this.values = new Expression[this.pairs.size()];
+			Expression[] values = new Expression[this.pairs.size()];
 			int i = 0;
 			for (Pair<Column, Expression> pair : this.pairs)
 			{
-				this.values[i++] = pair.value;
+				values[i++] = pair.value;
 			}
+			if (this.source == null)
+			{
+				this.values = values;
+			}
+			else if (this.source instanceof Select)
+			{
+				((Select) this.source).select(values);
+			}
+			this.pairs = null;
 		}
 		return this.values;
 	}

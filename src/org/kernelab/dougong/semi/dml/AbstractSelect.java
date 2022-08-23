@@ -60,6 +60,12 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 	private List<Pivot>				pivots		= new ArrayList<Pivot>();
 
+	private Condition				startWith	= null;
+
+	private Condition				connectBy	= null;
+
+	private boolean					nocycle		= false;
+
 	private Expression[]			groupBy		= null;
 
 	private Condition				having		= null;
@@ -162,6 +168,17 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		}
 
 		return clone;
+	}
+
+	protected Condition connectBy()
+	{
+		return connectBy;
+	}
+
+	public AbstractSelect connectBy(Condition connectBy)
+	{
+		this.connectBy = connectBy;
+		return this;
 	}
 
 	protected boolean distinct()
@@ -317,23 +334,9 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return innerJoin(view, rels.joinCondition());
 	}
 
-	public <T extends Insertable> Insert insert(T target, Expression... columnValuePairs)
+	public <T extends Insertable> Insert insert(T target)
 	{
-		if (columnValuePairs == null || columnValuePairs.length == 0)
-		{
-			return this.provider().provideInsert().into(target).values(this);
-		}
-
-		Column[] columns = new Column[columnValuePairs.length / 2];
-		Expression[] values = new Expression[columns.length];
-		for (int i = 0, j = 0; i < columnValuePairs.length; i += 2)
-		{
-			columns[j] = (Column) columnValuePairs[i];
-			values[j] = columnValuePairs[i + 1];
-			j++;
-		}
-		return this.provider().provideInsert().into(target) //
-				.columns(columns).values(this.select(values));
+		return this.provider().provideInsert().into(target).values(this);
 	}
 
 	public AbstractSelect intersect(Select select)
@@ -455,6 +458,17 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public ComparisonCondition ne(Expression expr)
 	{
 		return this.provideComparisonCondition().ne(this, expr);
+	}
+
+	protected boolean nocycle()
+	{
+		return nocycle;
+	}
+
+	public AbstractSelect nocycle(boolean nocycle)
+	{
+		this.nocycle = nocycle;
+		return this;
 	}
 
 	public RangeCondition notBetween(Expression from, Expression to)
@@ -877,6 +891,17 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return skip;
 	}
 
+	protected Condition startWith()
+	{
+		return startWith;
+	}
+
+	public AbstractSelect startWith(Condition startWith)
+	{
+		this.startWith = startWith;
+		return this;
+	}
+
 	protected void textOfAbstractSetopr(StringBuilder buffer)
 	{
 		for (AbstractSetopr opr : setopr())
@@ -885,6 +910,28 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 			{
 				opr.toString(buffer);
 			}
+		}
+	}
+
+	protected void textOfConnectBy(StringBuilder buffer)
+	{
+		if (connectBy() != null)
+		{
+			if (startWith() != null)
+			{
+				buffer.append(" START WITH ");
+
+				startWith().toString(buffer);
+			}
+
+			buffer.append(" CONNECT BY ");
+
+			if (nocycle())
+			{
+				buffer.append("NOCYCLE ");
+			}
+
+			connectBy().toString(buffer);
 		}
 	}
 
@@ -1034,6 +1081,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		select.textOfFrom(buffer);
 		select.textOfJoin(buffer);
 		select.textOfWhere(buffer);
+		select.textOfConnectBy(buffer);
 		select.textOfGroup(buffer);
 		select.textOfHaving(buffer);
 		select.textOfAbstractSetopr(buffer);
@@ -1082,6 +1130,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		select.textOfFrom(buffer);
 		select.textOfJoin(buffer);
 		select.textOfWhere(buffer);
+		select.textOfConnectBy(buffer);
 		select.textOfGroup(buffer);
 		select.textOfHaving(buffer);
 		select.textOfAbstractSetopr(buffer);

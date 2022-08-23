@@ -56,6 +56,14 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
+	public Select startWith(Condition startWith);
+
+	public Select connectBy(Condition connectBy);
+
+	public Select nocycle(boolean nocycle);
+
+	// //////////////////////////////////////////////////////
+
 	public Select groupBy(Expression... exprs);
 
 	// //////////////////////////////////////////////////////
@@ -78,7 +86,7 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
-	public <T extends Insertable> Insert insert(T target, Expression... columnValuePairs);
+	public <T extends Insertable> Insert insert(T target);
 
 	// //////////////////////////////////////////////////////
 
