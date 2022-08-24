@@ -14,4 +14,10 @@ public class AbstractFloatParam extends AbstractParam<Float> implements FloatPar
 	{
 		return this.provider().provideProvider(new AbstractFloatParam(name(), value()));
 	}
+
+	@Override
+	public AbstractFloatParam set(Float value)
+	{
+		return this.replicate().value(value);
+	}
 }

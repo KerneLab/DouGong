@@ -21,16 +21,16 @@ public interface Param<E> extends Item, Named, Testable
 	public boolean got();
 
 	/**
+	 * Clone a new Param object and set the value.
+	 * 
+	 * @param value
+	 */
+	public Param<E> set(E value);
+
+	/**
 	 * Get the value of the parameter.
 	 * 
 	 * @return
 	 */
 	public E value();
-
-	/**
-	 * Set the value of the parameter.
-	 * 
-	 * @param value
-	 */
-	public void value(E value);
 }

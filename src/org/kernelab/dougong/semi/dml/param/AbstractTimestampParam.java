@@ -16,4 +16,10 @@ public class AbstractTimestampParam extends AbstractParam<Timestamp> implements 
 	{
 		return this.provider().provideProvider(new AbstractTimestampParam(name(), value()));
 	}
+
+	@Override
+	public AbstractTimestampParam set(Timestamp value)
+	{
+		return this.replicate().value(value);
+	}
 }

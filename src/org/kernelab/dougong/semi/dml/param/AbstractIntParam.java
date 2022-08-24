@@ -14,4 +14,10 @@ public class AbstractIntParam extends AbstractParam<Integer> implements IntParam
 	{
 		return this.provider().provideProvider(new AbstractIntParam(name(), value()));
 	}
+
+	@Override
+	public AbstractIntParam set(Integer value)
+	{
+		return this.replicate().value(value);
+	}
 }

@@ -14,4 +14,10 @@ public class AbstractByteParam extends AbstractParam<Byte> implements ByteParam
 	{
 		return this.provider().provideProvider(new AbstractByteParam(name(), value()));
 	}
+
+	@Override
+	public AbstractByteParam set(Byte value)
+	{
+		return this.replicate().value(value);
+	}
 }

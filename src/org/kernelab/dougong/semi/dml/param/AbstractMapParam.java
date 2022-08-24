@@ -24,4 +24,10 @@ public class AbstractMapParam<K, V> extends AbstractParam<Map<K, V>> implements 
 	{
 		return this.provider().provideProvider(new AbstractMapParam<K, V>(name(), value()));
 	}
+
+	@Override
+	public AbstractMapParam<K, V> set(Map<K, V> value)
+	{
+		return this.replicate().value(value);
+	}
 }

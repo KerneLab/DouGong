@@ -21,4 +21,10 @@ public class AbstractIterableParam extends AbstractParam<Iterable<?>> implements
 	{
 		return this.provider().provideProvider(new AbstractIterableParam(name(), value()));
 	}
+
+	@Override
+	public AbstractIterableParam set(Iterable<?> value)
+	{
+		return this.replicate().value(value);
+	}
 }

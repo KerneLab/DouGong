@@ -23,4 +23,10 @@ public class AbstractJSANParam extends AbstractParam<JSAN> implements JSANParam
 	{
 		return this.provider().provideProvider(new AbstractJSANParam(name(), value()));
 	}
+
+	@Override
+	public AbstractJSANParam set(JSAN value)
+	{
+		return this.replicate().value(value);
+	}
 }

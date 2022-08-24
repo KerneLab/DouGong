@@ -14,4 +14,10 @@ public class AbstractDoubleParam extends AbstractParam<Double> implements Double
 	{
 		return this.provider().provideProvider(new AbstractDoubleParam(name(), value()));
 	}
+	
+	@Override
+	public AbstractDoubleParam set(Double value)
+	{
+		return this.replicate().value(value);
+	}
 }

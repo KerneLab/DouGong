@@ -36,4 +36,10 @@ public class AbstractObjectParam<E> extends AbstractParam<E> implements ObjectPa
 	{
 		return this.provider().provideProvider(new AbstractObjectParam<E>(name(), value()));
 	}
+
+	@Override
+	public AbstractObjectParam<E> set(E value)
+	{
+		return this.replicate().value(value);
+	}
 }

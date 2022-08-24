@@ -14,4 +14,10 @@ public class AbstractShortParam extends AbstractParam<Short> implements ShortPar
 	{
 		return this.provider().provideProvider(new AbstractShortParam(name(), value()));
 	}
+
+	@Override
+	public AbstractShortParam set(Short value)
+	{
+		return this.replicate().value(value);
+	}
 }

@@ -20,4 +20,10 @@ public class AbstractStringParam extends AbstractParam<String> implements String
 	{
 		return this.provider().provideProvider(new AbstractStringParam(name(), value()));
 	}
+
+	@Override
+	public AbstractStringParam set(String value)
+	{
+		return this.replicate().value(value);
+	}
 }

@@ -14,4 +14,10 @@ public class AbstractCharParam extends AbstractParam<Character> implements CharP
 	{
 		return this.provider().provideProvider(new AbstractCharParam(name(), value()));
 	}
+
+	@Override
+	public AbstractCharParam set(Character value)
+	{
+		return this.replicate().value(value);
+	}
 }

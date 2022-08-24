@@ -23,4 +23,10 @@ public class AbstractJSONParam extends AbstractParam<JSON> implements JSONParam
 	{
 		return this.provider().provideProvider(new AbstractJSONParam(name(), value()));
 	}
+
+	@Override
+	public AbstractJSONParam set(JSON value)
+	{
+		return this.replicate().value(value);
+	}
 }
