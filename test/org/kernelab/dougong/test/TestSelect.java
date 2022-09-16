@@ -352,9 +352,9 @@ public class TestSelect
 				.where(s.STAF_ID.isNotNull()) //
 				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
 
-		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id")));
+		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id"), sel.ref("STAF_NAME")));
 
-		return $.from(sel = sel.as("R")).select(sel.$("id"));
+		return $.from(sel = sel.as("R")).select(sel.$("id"), sel.$("STAF_NAME"));
 	}
 
 	public static Select makeSelectValuesOracle()
