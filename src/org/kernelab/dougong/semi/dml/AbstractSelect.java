@@ -162,10 +162,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 			clone.items = Utils.copy(this.items, new LinkedList<Item>());
 		}
 
-		if (this.itemsMap != null)
-		{
-			clone.itemsMap = Utils.copy(this.itemsMap, new LinkedHashMap<String, Item>());
-		}
+		clone.itemsMap = null;
 
 		return clone;
 	}

@@ -19,23 +19,24 @@ public class TestSelect
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelectHint().toString(new StringBuilder()));
-		Tools.debug(makeSelectExists().toString(new StringBuilder()));
-		Tools.debug(makeSelectPartitioned().toString(new StringBuilder()));
-		Tools.debug(makeSelectExists().toString(new StringBuilder()));
-		Tools.debug(makeSelectSubquery().toString(new StringBuilder()));
-		Tools.debug(makeSelectReferece().toString(new StringBuilder()));
-		Tools.debug(makeSelectReferFunction().toString(new StringBuilder()));
+		Tools.debug(makeSelectAliased());
+		Tools.debug(makeSelectHint());
+		Tools.debug(makeSelectExists());
+		Tools.debug(makeSelectPartitioned());
+		Tools.debug(makeSelectExists());
+		Tools.debug(makeSelectSubquery());
+		Tools.debug(makeSelectReferece());
+		Tools.debug(makeSelectReferFunction());
 		if ($.provider() instanceof OracleProvider)
 		{
-			Tools.debug(makeSelectUsingColumnsFromSubquery().toString(new StringBuilder()));
-			Tools.debug(makeSelectValuesOracle().toString(new StringBuilder()));
+			Tools.debug(makeSelectUsingColumnsFromSubquery());
+			Tools.debug(makeSelectValuesOracle());
 		}
 		if ($.provider() instanceof MariaProvider)
 		{
-			Tools.debug(makeSelectValuesMaria().toString(new StringBuilder()));
+			Tools.debug(makeSelectValuesMaria());
 		}
-		Tools.debug(makeSelectSetopr().toString(new StringBuilder()));
+		Tools.debug(makeSelectSetopr());
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -341,6 +342,19 @@ public class TestSelect
 						$.val(123.56).as("b"), //
 						$.func(STR_TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
 				);
+	}
+
+	public static Select makeSelectAliased()
+	{
+		STAF s;
+
+		Select sel = $.from(s = $.table(STAF.class)) //
+				.where(s.STAF_ID.isNotNull()) //
+				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
+
+		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id")));
+
+		return $.from(sel = sel.as("R")).select(sel.$("id"));
 	}
 
 	public static Select makeSelectValuesOracle()
