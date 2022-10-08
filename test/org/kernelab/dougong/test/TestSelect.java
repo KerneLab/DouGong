@@ -20,6 +20,7 @@ public class TestSelect
 	public static void main(String[] args)
 	{
 		Tools.debug(makeSelectAliased());
+		Tools.debug(makeSelectAliased1());
 		Tools.debug(makeSelectHint());
 		Tools.debug(makeSelectExists());
 		Tools.debug(makeSelectPartitioned());
@@ -355,6 +356,21 @@ public class TestSelect
 		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id"), sel.ref("STAF_NAME")));
 
 		return $.from(sel = sel.as("R")).select(sel.$("id"), sel.$("STAF_NAME"));
+	}
+
+	public static Select makeSelectAliased1()
+	{
+		STAF s = $.table(STAF.class, "S");
+
+		Select sel = $.from(s) //
+				.where(s.STAF_ID.isNotNull()) //
+				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
+
+		Tools.debug(sel);
+
+		return $.from(s = s.as("T")) //
+				.where(s.STAF_ID.isNotNull()) //
+				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
 	}
 
 	public static Select makeSelectValuesOracle()
