@@ -758,6 +758,7 @@ public abstract class Entitys
 		// Set generate values
 		if (returnSet != null)
 		{
+			Set<Column> restGens = new LinkedHashSet<Column>(insertMeta.keySet());
 			if (returnSet.next())
 			{
 				Object val = null;
@@ -773,6 +774,11 @@ public abstract class Entitys
 					{
 						throw new RuntimeException(e);
 					}
+					restGens.remove(returns[i]);
+				}
+				if (!restGens.isEmpty())
+				{
+					refreshObjectAlone(kit, sql, object, entity, generates, restGens);
 				}
 			}
 		}
@@ -1194,6 +1200,59 @@ public abstract class Entitys
 		else
 		{
 			return object;
+		}
+	}
+
+	protected static <T> void refreshObjectAlone(SQLKit kit, SQL sql, T object, Entity entity,
+			GenerateValueColumns generates, Set<Column> restCols) throws SQLException
+	{
+		Select sel = sql.from(entity) //
+				.select(restCols.toArray(new Column[0])) //
+				.to(AbstractSelect.class) //
+				.fillAliasByMeta();
+
+		EntityKey key = null;
+
+		if (entity.absoluteKey() != null)
+		{
+			key = entity.absoluteKey();
+		}
+		else if (generates.abscols != null && generates.abscols.length > 0)
+		{
+			key = sql.provider().provideAbsoluteKey(entity, generates.abscols);
+		}
+		else if (entity.primaryKey() != null)
+		{
+			key = entity.primaryKey();
+		}
+
+		if (key == null)
+		{
+			return;
+		}
+
+		sel = sel.where(key.queryCondition());
+
+		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
+
+		Sequel sq = kit.execute(sel.toString(), params);
+		try
+		{
+			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			String label = null;
+			for (Column c : restCols)
+			{
+				label = getLabelFromColumnByMeta(c);
+				map.put(label, label);
+			}
+			sq.mapRow(map, object);
+		}
+		finally
+		{
+			if (sq != null)
+			{
+				sq.close();
+			}
 		}
 	}
 
