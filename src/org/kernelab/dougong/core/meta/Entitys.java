@@ -35,6 +35,7 @@ import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.util.Utils;
@@ -709,7 +710,8 @@ public abstract class Entitys
 
 		AbstractTable table = entity.to(AbstractTable.class);
 		Map<Column, Expression> insertMeta = table.getColumnDefaultExpressions(null);
-		insertMeta = overwriteColumnDefaults(sql, object, insertMeta);
+		Map<Column, Expression> valueMeta = table.getColumnValueExpressions(null);
+		insertMeta = overwriteColumnDefaults(sql, object, insertMeta, valueMeta);
 
 		Map<String, Object> params = Entitys.mapObjectByMeta(object);
 		Insert insert = null;
@@ -758,7 +760,7 @@ public abstract class Entitys
 		// Set generate values
 		if (returnSet != null)
 		{
-			Set<Column> restGens = new LinkedHashSet<Column>(insertMeta.keySet());
+			Set<Column> restGens = new LinkedHashSet<Column>(valueMeta.keySet());
 			if (returnSet.next())
 			{
 				Object val = null;
@@ -778,7 +780,7 @@ public abstract class Entitys
 				}
 				if (!restGens.isEmpty())
 				{
-					refreshObjectAlone(kit, sql, object, entity, generates, restGens);
+					refreshObject(kit, sql, object, entity, generates, restGens);
 				}
 			}
 		}
@@ -992,7 +994,7 @@ public abstract class Entitys
 
 		if (object != null)
 		{
-			meta = overwriteColumnDefaults(sql, object, meta);
+			meta = overwriteColumnDefaults(sql, object, meta, null);
 		}
 
 		return table.updateByMetaMap(meta);
@@ -1145,34 +1147,131 @@ public abstract class Entitys
 		return map;
 	}
 
+	/**
+	 * Override the default meta map with parameters' placeholder if the value
+	 * in object is not null.<br />
+	 * Remove the expression map (which defined by DataMeta(value)) on
+	 * overriding, so that the these column will not be retrieved.
+	 * 
+	 * @param sql
+	 * @param object
+	 * @param meta
+	 * @param exprs
+	 * @return
+	 */
 	protected static <T> Map<Column, Expression> overwriteColumnDefaults(SQL sql, T object,
-			Map<Column, Expression> meta)
+			Map<Column, Expression> meta, Map<Column, Expression> exprs)
 	{
 		Map<Column, Object> data = mapObjectToEntity(object, meta.keySet());
 
 		for (Entry<Column, Object> entry : data.entrySet())
 		{
-			if (entry.getValue() != null && meta.containsKey(entry.getKey()))
+			if (entry.getValue() != null)
 			{
-				meta.put(entry.getKey(), Utils.getDataParameterFromField(sql, entry.getKey().field()));
+				if (meta.containsKey(entry.getKey()))
+				{
+					meta.put(entry.getKey(), Utils.getDataParameterFromField(sql, entry.getKey().field()));
+				}
+				if (exprs != null)
+				{
+					exprs.remove(entry.getKey());
+				}
 			}
 		}
 
 		return meta;
 	}
 
-	public static <T> T refreshObject(SQLKit kit, SQL sql, T object) throws SQLException
+	protected static <T> T refreshObject(SQLKit kit, SQL sql, T object, Entity entity, EntityKey key,
+			Set<Column> columns) throws SQLException
 	{
-		return refreshObject(kit, sql, object, null);
+		if (object == null || key == null)
+		{
+			return object;
+		}
+
+		if (entity == null)
+		{
+			entity = getEntityFromModelObject(sql, object);
+		}
+
+		if (columns == null)
+		{
+			columns = new LinkedHashSet<Column>();
+			for (Item i : entity.items())
+			{
+				columns.add((Column) i);
+			}
+		}
+
+		if (columns.isEmpty())
+		{
+			return object;
+		}
+
+		for (Column c : key.columns())
+		{
+			columns.remove(c);
+		}
+
+		Select sel = sql.from(entity) //
+				.select(columns.toArray(new Column[0])) //
+				.to(AbstractSelect.class) //
+				.fillAliasByMeta();
+
+		sel = sel.where(key.queryCondition());
+
+		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
+
+		Sequel sq = kit.execute(sel.toString(), params);
+		try
+		{
+			Set<String> labels = new LinkedHashSet<String>();
+			for (Column c : columns)
+			{
+				labels.add(getLabelFromColumnByMeta(c));
+			}
+			sq.mapRow(Utils.getFieldNameMapByMeta(object.getClass(), null, labels), object);
+		}
+		finally
+		{
+			if (sq != null)
+			{
+				sq.close();
+			}
+		}
+		return object;
 	}
 
-	public static <T> T refreshObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	protected static <T> T refreshObject(SQLKit kit, SQL sql, T object, Entity entity, GenerateValueColumns generates,
+			Set<Column> columns) throws SQLException
 	{
-		return refreshObject(kit, sql, object, entity, null);
+		EntityKey key = null;
+
+		if (generates != null && generates.abscols != null && generates.abscols.length > 0)
+		{
+			key = sql.provider().provideAbsoluteKey(entity, generates.abscols);
+		}
+		else
+		{
+			key = getUpdateKey(entity);
+		}
+
+		return refreshObject(kit, sql, object, entity, key, columns);
+	}
+
+	public static <T> T reloadObject(SQLKit kit, SQL sql, T object) throws SQLException
+	{
+		return reloadObject(kit, sql, object, null);
+	}
+
+	public static <T> T reloadObject(SQLKit kit, SQL sql, T object, Entity entity) throws SQLException
+	{
+		return reloadObject(kit, sql, object, entity, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T refreshObject(SQLKit kit, SQL sql, T object, Entity entity, String scene) throws SQLException
+	public static <T> T reloadObject(SQLKit kit, SQL sql, T object, Entity entity, String scene) throws SQLException
 	{
 		if (object == null)
 		{
@@ -1200,59 +1299,6 @@ public abstract class Entitys
 		else
 		{
 			return object;
-		}
-	}
-
-	protected static <T> void refreshObjectAlone(SQLKit kit, SQL sql, T object, Entity entity,
-			GenerateValueColumns generates, Set<Column> restCols) throws SQLException
-	{
-		Select sel = sql.from(entity) //
-				.select(restCols.toArray(new Column[0])) //
-				.to(AbstractSelect.class) //
-				.fillAliasByMeta();
-
-		EntityKey key = null;
-
-		if (entity.absoluteKey() != null)
-		{
-			key = entity.absoluteKey();
-		}
-		else if (generates.abscols != null && generates.abscols.length > 0)
-		{
-			key = sql.provider().provideAbsoluteKey(entity, generates.abscols);
-		}
-		else if (entity.primaryKey() != null)
-		{
-			key = entity.primaryKey();
-		}
-
-		if (key == null)
-		{
-			return;
-		}
-
-		sel = sel.where(key.queryCondition());
-
-		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
-
-		Sequel sq = kit.execute(sel.toString(), params);
-		try
-		{
-			Map<String, Object> map = new LinkedHashMap<String, Object>();
-			String label = null;
-			for (Column c : restCols)
-			{
-				label = getLabelFromColumnByMeta(c);
-				map.put(label, label);
-			}
-			sq.mapRow(map, object);
-		}
-		finally
-		{
-			if (sq != null)
-			{
-				sq.close();
-			}
 		}
 	}
 

@@ -162,26 +162,91 @@ public class Utils
 		}
 	}
 
+	public static Expression getDataValueExpressionFromField(SQL sql, Field field)
+	{
+		if (field != null)
+		{
+			DataMeta meta = field.getAnnotation(DataMeta.class);
+
+			if (meta != null && meta.raw())
+			{
+				if (Tools.notNullOrEmpty(meta.value()))
+				{
+					if (Tools.notNullOrWhite(meta.value()))
+					{
+						return sql.expr(meta.value());
+					}
+					else
+					{
+						return null;
+					}
+				}
+				else
+				{
+					return null;
+				}
+			}
+			else
+			{
+				return null;
+			}
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	public static Map<String, Object> getFieldNameMapByMeta(Class<?> cls, Map<String, Object> map)
 	{
-		if (cls != null)
+		if (cls == null || cls == Object.class)
 		{
-			if (map == null)
+			return map;
+		}
+
+		if (map == null)
+		{
+			map = new LinkedHashMap<String, Object>();
+		}
+
+		map = getFieldNameMapByMeta(cls.getSuperclass(), map);
+
+		DataMeta meta = null;
+
+		for (Field field : cls.getDeclaredFields())
+		{
+			if ((meta = field.getAnnotation(DataMeta.class)) != null //
+					&& meta.raw())
 			{
-				map = new HashMap<String, Object>();
+				map.put(field.getName(), getDataLabelFromField(field));
 			}
+		}
 
-			map = getFieldNameMapByMeta(cls.getSuperclass(), map);
+		return map;
+	}
 
-			DataMeta meta = null;
+	public static Map<String, Object> getFieldNameMapByMeta(Class<?> cls, Map<String, Object> map, Set<String> labels)
+	{
+		if (cls == null || cls == Object.class || labels == null || labels.size() == 0)
+		{
+			return map;
+		}
 
-			for (Field field : cls.getDeclaredFields())
+		if (map == null)
+		{
+			map = new LinkedHashMap<String, Object>();
+		}
+
+		map = getFieldNameMapByMeta(cls.getSuperclass(), map, labels);
+
+		DataMeta meta = null;
+
+		for (Field field : cls.getDeclaredFields())
+		{
+			if ((meta = field.getAnnotation(DataMeta.class)) != null //
+					&& labels.contains(meta.alias()))
 			{
-				if ((meta = field.getAnnotation(DataMeta.class)) != null //
-						&& meta.raw())
-				{
-					map.put(field.getName(), getDataLabelFromField(field));
-				}
+				map.put(field.getName(), getDataLabelFromField(field));
 			}
 		}
 
@@ -190,21 +255,23 @@ public class Utils
 
 	public static Map<String, Object> getFieldNameMapByMetaFully(Class<?> cls, Map<String, Object> map)
 	{
-		if (cls != null)
+		if (cls == null || cls == Object.class)
 		{
-			if (map == null)
-			{
-				map = new HashMap<String, Object>();
-			}
+			return map;
+		}
 
-			map = getFieldNameMapByMetaFully(cls.getSuperclass(), map);
+		if (map == null)
+		{
+			map = new LinkedHashMap<String, Object>();
+		}
 
-			for (Field field : cls.getDeclaredFields())
+		map = getFieldNameMapByMetaFully(cls.getSuperclass(), map);
+
+		for (Field field : cls.getDeclaredFields())
+		{
+			if (field.getAnnotation(DataMeta.class) != null)
 			{
-				if (field.getAnnotation(DataMeta.class) != null)
-				{
-					map.put(field.getName(), getDataLabelFromField(field));
-				}
+				map.put(field.getName(), getDataLabelFromField(field));
 			}
 		}
 
