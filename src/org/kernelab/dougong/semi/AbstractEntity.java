@@ -23,6 +23,7 @@ import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.meta.AbsoluteKeyMeta;
 import org.kernelab.dougong.core.meta.ForeignKeyMeta;
+import org.kernelab.dougong.core.meta.GenerateValueMeta;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
 import org.kernelab.dougong.core.util.Utils;
 
@@ -100,6 +101,26 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	{
 		Set<Column> columns = getColumns(entity);
 		return columns.toArray(new Column[columns.size()]);
+	}
+
+	public static Column getIdentityColumn(Entity entity)
+	{
+		GenerateValueMeta meta = null;
+		for (Field field : getColumnFields(entity).values())
+		{
+			if ((meta = field.getAnnotation(GenerateValueMeta.class)) != null
+					&& meta.strategy() == GenerateValueMeta.IDENTITY)
+			{
+				try
+				{
+					return getColumn(entity, field);
+				}
+				catch (Exception e)
+				{
+				}
+			}
+		}
+		return null;
 	}
 
 	public static boolean isColumn(Field field)
@@ -247,6 +268,15 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		{
 			keys.add(abs.columns()[0].name());
 		}
+		else
+		{
+			Column i = getIdentityColumn(this);
+			if (i != null)
+			{
+				keys.add(i.name());
+				key = null;
+			}
+		}
 
 		if (key != null)
 		{
@@ -320,6 +350,15 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		if (abs != null)
 		{
 			keys.add(abs.columns()[0].name());
+		}
+		else
+		{
+			Column i = getIdentityColumn(this);
+			if (i != null)
+			{
+				keys.add(i.name());
+				key = null;
+			}
 		}
 
 		if (key != null)

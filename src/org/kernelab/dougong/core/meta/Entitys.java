@@ -123,7 +123,7 @@ public abstract class Entitys
 			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
 
-		EntityKey key = getUpdateKey(entity);
+		EntityKey key = getUpdateKey(entity, object);
 
 		Delete delete = sql.from(entity) //
 				.where(key.queryCondition()) //
@@ -345,7 +345,12 @@ public abstract class Entitys
 			entity = getEntityFromModelObject(sql, object);
 		}
 
-		EntityKey key = getUpdateKey(entity);
+		EntityKey key = getUpdateKey(entity, object);
+
+		if (key == null)
+		{
+			return false;
+		}
 
 		Select sel = sql.from(entity) //
 				.where(key.queryCondition()) //
@@ -580,17 +585,29 @@ public abstract class Entitys
 		}
 	}
 
-	public static EntityKey getUpdateKey(Entity entity)
+	public static <T> EntityKey getUpdateKey(Entity entity, T object)
 	{
-		EntityKey key = null;
+		EntityKey ak = null, pk = null;
 
-		if ((key = entity.absoluteKey()) != null)
+		if ((ak = entity.absoluteKey()) != null && (object == null || !hasNullValue(ak.mapValues(object))))
 		{
-			return key;
+			return ak;
+		}
+		else if ((pk = entity.primaryKey()) != null && (object == null || !hasNullValue(pk.mapValues(object))))
+		{
+			return pk;
+		}
+		else if (ak != null)
+		{
+			return ak;
+		}
+		else if (pk != null)
+		{
+			return pk;
 		}
 		else
 		{
-			return entity.primaryKey();
+			return null;
 		}
 	}
 
@@ -629,7 +646,9 @@ public abstract class Entitys
 			kit.update(insert.toString(), params);
 			return null;
 		}
-		else if (generates.strategy == GenerateValueMeta.IDENTITY)
+		else if (generates.strategy == GenerateValueMeta.IDENTITY //
+				|| (generates.strategy == GenerateValueMeta.AUTO && generates.gencols.length == 0
+						&& generates.abscols.length > 0))
 		{
 			PreparedStatement ps = kit.prepareStatement(insert.toString(), params, true);
 			kit.update(ps, params);
@@ -721,7 +740,9 @@ public abstract class Entitys
 		{
 			insert = table.insertByMetaMap(insertMeta);
 		}
-		else if (generates.strategy == GenerateValueMeta.IDENTITY)
+		else if (generates.strategy == GenerateValueMeta.IDENTITY //
+				|| (generates.strategy == GenerateValueMeta.AUTO && generates.gencols.length == 0
+						&& generates.abscols.length > 0))
 		{
 			for (Column column : gencols)
 			{
@@ -1254,7 +1275,7 @@ public abstract class Entitys
 		}
 		else
 		{
-			key = getUpdateKey(entity);
+			key = getUpdateKey(entity, object);
 		}
 
 		return refreshObject(kit, sql, object, entity, key, columns);
@@ -1288,7 +1309,7 @@ public abstract class Entitys
 				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
 
-		EntityKey key = getUpdateKey(entity);
+		EntityKey key = getUpdateKey(entity, object);
 
 		if (key != null)
 		{
@@ -1319,14 +1340,7 @@ public abstract class Entitys
 			entity = getEntityFromModelObject(sql, object);
 		}
 
-		GenerateValueColumns generates = Entitys.getGenerateValueColumns(entity);
-
-		if (generates != null && hasNullValue(object, entity, generates.columns))
-		{ // Missing values in generated columns
-			insertObjectAlone(kit, sql, object, entity);
-			insertObjectCascade(kit, sql, object, entity);
-		}
-		else if (entity.absoluteKey() != null)
+		if (entity.absoluteKey() != null)
 		{
 			if (!existsObject(kit, sql, object, entity))
 			{
@@ -1372,22 +1386,13 @@ public abstract class Entitys
 			entity = getEntityFromModelObject(sql, object);
 		}
 
-		GenerateValueColumns generates = Entitys.getGenerateValueColumns(entity);
-
-		if (generates != null && hasNullValue(object, entity, generates.columns))
-		{ // Missing values in generated columns
+		if (!existsObject(kit, sql, object, entity))
+		{ // New record
 			insertObjectAlone(kit, sql, object, entity);
 		}
 		else
 		{
-			if (!existsObject(kit, sql, object, entity))
-			{ // New record
-				insertObjectAlone(kit, sql, object, entity);
-			}
-			else
-			{
-				updateObject(kit, sql, object, entity);
-			}
+			updateObject(kit, sql, object, entity);
 		}
 
 		return object;
@@ -2042,7 +2047,7 @@ public abstract class Entitys
 			entity = Entitys.getEntityFromModelObject(sql, object);
 		}
 
-		Key key = getUpdateKey(entity);
+		Key key = getUpdateKey(entity, object);
 
 		Update update = makeUpdate(sql, entity, object, key) //
 				.where(key.queryCondition());
