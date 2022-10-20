@@ -69,6 +69,7 @@ import org.kernelab.dougong.semi.ddl.table.AbstractDropTable;
 import org.kernelab.dougong.semi.dml.AbstractMerge;
 import org.kernelab.dougong.semi.dml.AbstractPivot;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
+import org.kernelab.dougong.semi.dml.AbstractPriorExpression;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
 import org.kernelab.dougong.semi.dml.AbstractWithDefinition;
 import org.kernelab.dougong.semi.dml.DaoAgent;
@@ -684,6 +685,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public AbstractPrimitive providePrimitive()
 	{
 		return this.provideProvider(new AbstractPrimitive());
+	}
+
+	public AbstractPriorExpression providePriorExpression(Expression expr)
+	{
+		return provideProvider(new AbstractPriorExpression(expr));
 	}
 
 	@SuppressWarnings("unchecked")

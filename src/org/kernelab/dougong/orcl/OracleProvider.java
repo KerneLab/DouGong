@@ -35,7 +35,6 @@ import org.kernelab.dougong.orcl.dml.OracleDelete;
 import org.kernelab.dougong.orcl.dml.OracleInsert;
 import org.kernelab.dougong.orcl.dml.OracleItems;
 import org.kernelab.dougong.orcl.dml.OracleJoin;
-import org.kernelab.dougong.orcl.dml.OraclePriorExpression;
 import org.kernelab.dougong.orcl.dml.OracleReference;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
 import org.kernelab.dougong.orcl.dml.OracleSortable;
@@ -67,11 +66,6 @@ public class OracleProvider extends AbstractProvider
 	public static final String	TEXT_BOUNDARY_ESC	= TEXT_BOUNDARY_MARK + TEXT_BOUNDARY_MARK;
 
 	public static final String	RETURN_VAR_PREFIX	= ":ret_";
-
-	public OraclePriorExpression prior(Expression expr)
-	{
-		return providePriorExpression(expr);
-	}
 
 	public OracleAllItems provideAllItems(View view)
 	{
@@ -389,11 +383,6 @@ public class OracleProvider extends AbstractProvider
 	public PrimaryKey providePrimaryKey(Entity entity, Column... columns)
 	{
 		return provideProvider(new OraclePrimaryKey(entity, columns));
-	}
-
-	public OraclePriorExpression providePriorExpression(Expression expr)
-	{
-		return new OraclePriorExpression(this, expr);
 	}
 
 	public OracleRangeCondition provideRangeCondition()

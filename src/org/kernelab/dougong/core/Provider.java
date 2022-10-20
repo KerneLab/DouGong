@@ -376,6 +376,8 @@ public interface Provider extends Castable
 
 	public Primitive providePrimitive();
 
+	public Expression providePriorExpression(Expression expr);
+
 	public <T extends Providable> T provideProvider(Providable providable);
 
 	public RangeCondition provideRangeCondition();

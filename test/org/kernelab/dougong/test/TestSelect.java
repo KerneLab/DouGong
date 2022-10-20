@@ -10,10 +10,15 @@ import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.maria.MariaProvider;
 import org.kernelab.dougong.orcl.OracleColumn;
 import org.kernelab.dougong.orcl.OracleProvider;
+import org.kernelab.dougong.semi.AbstractWindowFunction;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class TestSelect
 {
+	public static class SUM extends AbstractWindowFunction
+	{
+	}
+
 	// public static SQL $ = new SQL(new MariaProvider());
 	public static SQL $ = new SQL(new OracleProvider());
 
@@ -28,6 +33,7 @@ public class TestSelect
 		Tools.debug(makeSelectSubquery());
 		Tools.debug(makeSelectReferece());
 		Tools.debug(makeSelectReferFunction());
+		Tools.debug(makeSelectHierarchy());
 		if ($.provider() instanceof OracleProvider)
 		{
 			Tools.debug(makeSelectUsingColumnsFromSubquery());
@@ -56,6 +62,34 @@ public class TestSelect
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
+	}
+
+	public static Select makeSelectAliased()
+	{
+		STAF s;
+
+		Select sel = $.from(s = $.table(STAF.class)) //
+				.where(s.STAF_ID.isNotNull()) //
+				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
+
+		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id"), sel.ref("STAF_NAME")));
+
+		return $.from(sel = sel.as("R")).select(sel.$("id"), sel.$("STAF_NAME"));
+	}
+
+	public static Select makeSelectAliased1()
+	{
+		STAF s = $.table(STAF.class, "S");
+
+		Select sel = $.from(s) //
+				.where(s.STAF_ID.isNotNull()) //
+				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
+
+		Tools.debug(sel);
+
+		return $.from(s = s.as("T")) //
+				.where(s.STAF_ID.isNotNull()) //
+				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
 	}
 
 	public static Select makeSelectAllAliasByMeta()
@@ -140,6 +174,29 @@ public class TestSelect
 		return $.from(d = $.table(DEPT.class)) //
 				.where(d.COMP_ID.ge($.expr("1"))) //
 				.select(d.COMP_ID);
+	}
+
+	public static Select makeSelectHierarchy()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		Select select = $.from(d = $.table(DEPT.class, "d")) //
+				.innerJoin(s = $.table(STAF.class, "s"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.COMP_ID.as("comp"), //
+						s.DEPT_ID.as("dept"), //
+						s.STAF_ID.as("staf"), //
+						s.STAF_SALARY.multiply($.expr("0.1")).as("tax"), //
+						$.func(SUM.class, d.COMP_ID).partitionBy(d.COMP_ID).orderBy(s.STAF_ID)
+								.range(d.COMP_ID, d.DEPT_NAME).as("s_") //
+				) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
+				.orderBy(s.STAF_ID);
+
+		select.startWith(d.COMP_ID.eq($.expr("1"))) //
+				.connectBy($.prior(d.COMP_ID).eq(s.COMP_ID));
+
+		return select;
 	}
 
 	public static Select makeSelectHint()
@@ -343,34 +400,6 @@ public class TestSelect
 						$.val(123.56).as("b"), //
 						$.func(STR_TO_DATE.class, $.val("20211231"), $.formatDT("yyyyMMdd")).as("c") //
 				);
-	}
-
-	public static Select makeSelectAliased()
-	{
-		STAF s;
-
-		Select sel = $.from(s = $.table(STAF.class)) //
-				.where(s.STAF_ID.isNotNull()) //
-				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
-
-		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id"), sel.ref("STAF_NAME")));
-
-		return $.from(sel = sel.as("R")).select(sel.$("id"), sel.$("STAF_NAME"));
-	}
-
-	public static Select makeSelectAliased1()
-	{
-		STAF s = $.table(STAF.class, "S");
-
-		Select sel = $.from(s) //
-				.where(s.STAF_ID.isNotNull()) //
-				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
-
-		Tools.debug(sel);
-
-		return $.from(s = s.as("T")) //
-				.where(s.STAF_ID.isNotNull()) //
-				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
 	}
 
 	public static Select makeSelectValuesOracle()

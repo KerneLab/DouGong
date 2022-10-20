@@ -784,14 +784,16 @@ public abstract class Entitys
 			Set<Column> restGens = new LinkedHashSet<Column>(valueMeta.keySet());
 			if (returnSet.next())
 			{
-				Object val = null;
+				Field field = null;
+				Object value = null;
 				Map<String, Field> fields = Utils.getLabelFieldMapByMeta(object.getClass(), null);
 				for (int i = 0; i < returns.length; i++)
 				{
-					val = returnSet.getObject(i + 1);
+					field = fields.get(Utils.getDataLabelFromField(returns[i].field()));
+					value = returnSet.getObject(i + 1);
 					try
 					{
-						Tools.access(object, fields.get(Utils.getDataLabelFromField(returns[i].field())), val);
+						Tools.access(object, field, Tools.castTo(value, field.getType()));
 					}
 					catch (Exception e)
 					{

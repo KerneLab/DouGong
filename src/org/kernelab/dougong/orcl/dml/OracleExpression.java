@@ -15,7 +15,7 @@ import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.semi.dml.AbstractExpression;
 
-public abstract class OracleExpression extends AbstractExpression implements Expression
+public abstract class OracleExpression extends AbstractExpression
 {
 	private OracleProvider provider;
 

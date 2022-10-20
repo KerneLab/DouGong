@@ -602,6 +602,11 @@ public class SQL
 		return patnTail(param(param));
 	}
 
+	public Expression prior(Expression expr)
+	{
+		return provider().providePriorExpression(expr);
+	}
+
 	public <T extends Providable> T provide(Providable obj)
 	{
 		return provider().provideProvider(obj);
