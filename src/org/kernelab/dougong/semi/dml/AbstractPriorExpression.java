@@ -3,21 +3,21 @@ package org.kernelab.dougong.semi.dml;
 import org.kernelab.dougong.core.Providable;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.PriorExpression;
 import org.kernelab.dougong.core.util.Utils;
 
-public class AbstractPriorExpression extends AbstractItem implements Providable
+public class AbstractPriorExpression extends AbstractItem implements Providable, PriorExpression
 {
-	public static final String	PRIOR	= "PRIOR";
+	private Provider	provider;
 
-	private Provider			provider;
-
-	private Expression			expression;
+	private Expression	expression;
 
 	public AbstractPriorExpression(Expression expression)
 	{
 		this.expression(expression);
 	}
 
+	@Override
 	public Expression expression()
 	{
 		return expression;

@@ -27,6 +27,7 @@ import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.dml.cond.ExistsCondition;
+import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
 import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
 import org.kernelab.dougong.core.dml.param.ByteParam;
@@ -293,6 +294,11 @@ public class SQL
 	public Merge merge(View target)
 	{
 		return provider().provideMerge().into(target);
+	}
+
+	public LogicalCondition not(Condition cond)
+	{
+		return provider().provideLogicalCondition().not(cond);
 	}
 
 	public ExistsCondition notExists(Select select)

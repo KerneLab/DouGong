@@ -10,19 +10,21 @@ public abstract class AbstractLogicalCondition extends AbstractCondition impleme
 {
 	protected List<Object> conds = new LinkedList<Object>();
 
+	@Override
 	public AbstractLogicalCondition and(boolean when, Condition cond)
 	{
 		if (when && cond != null)
 		{
-			if (!conds.isEmpty())
+			if (!this.conds.isEmpty())
 			{
-				conds.add(AND);
+				this.conds.add(AND);
 			}
-			conds.add(cond);
+			this.conds.add(cond);
 		}
 		return this;
 	}
 
+	@Override
 	public AbstractLogicalCondition and(Condition cond)
 	{
 		return and(true, cond);
@@ -30,50 +32,62 @@ public abstract class AbstractLogicalCondition extends AbstractCondition impleme
 
 	public List<Object> getConditions()
 	{
-		return conds;
+		return this.conds;
 	}
 
+	@Override
 	public boolean isEmpty()
 	{
-		return conds.isEmpty();
+		return this.conds.isEmpty();
 	}
 
+	@Override
 	public AbstractLogicalCondition not(boolean when, Condition cond)
 	{
 		if (when && cond != null)
 		{
-			conds.add(NOT);
-			conds.add(cond);
+			this.conds.add(NOT);
+			this.conds.add(cond);
 		}
 		return this;
 	}
 
+	@Override
 	public AbstractLogicalCondition not(Condition cond)
 	{
 		return not(true, cond);
 	}
 
+	@Override
 	public AbstractLogicalCondition or(boolean when, Condition cond)
 	{
 		if (when && cond != null)
 		{
-			if (!conds.isEmpty())
+			if (!this.conds.isEmpty())
 			{
-				conds.add(OR);
+				this.conds.add(OR);
 			}
-			conds.add(cond);
+			this.conds.add(cond);
 		}
 		return this;
 	}
 
+	@Override
 	public AbstractLogicalCondition or(Condition cond)
 	{
 		return or(true, cond);
 	}
 
+	@Override
+	public List<Object> reflects()
+	{
+		return this.conds;
+	}
+
+	@Override
 	public AbstractLogicalCondition set(Condition cond)
 	{
-		conds.clear();
+		this.conds.clear();
 		return this.and(true, cond);
 	}
 }

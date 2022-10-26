@@ -29,6 +29,7 @@ import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Merge;
 import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Primitive;
+import org.kernelab.dougong.core.dml.PriorExpression;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Sortable;
@@ -376,7 +377,7 @@ public interface Provider extends Castable
 
 	public Primitive providePrimitive();
 
-	public Expression providePriorExpression(Expression expr);
+	public PriorExpression providePriorExpression(Expression expr);
 
 	public <T extends Providable> T provideProvider(Providable providable);
 

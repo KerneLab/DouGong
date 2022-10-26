@@ -4,10 +4,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,9 +23,14 @@ import org.kernelab.dougong.core.Named;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.dml.Alias;
+import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Items;
 import org.kernelab.dougong.core.dml.Label;
+import org.kernelab.dougong.core.dml.cond.AtomicCondition;
+import org.kernelab.dougong.core.dml.cond.ComposableCondition;
+import org.kernelab.dougong.core.dml.cond.LogicalCondition;
+import org.kernelab.dougong.core.dml.cond.ReflectiveCondition;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.MappingMeta;
@@ -32,6 +39,11 @@ import org.kernelab.dougong.core.meta.NameMeta;
 
 public class Utils
 {
+	public static <E> List<E> arrayList(E... array)
+	{
+		return Tools.listOfArray(new ArrayList<E>(), array);
+	}
+
 	public static <E> Collection<E> copy(Collection<E> source, Collection<E> target)
 	{
 		target.addAll(source);
@@ -739,5 +751,114 @@ public class Utils
 			buf.append(')');
 		}
 		return buf;
+	}
+
+	public static List<Object> reflectConditions(List<Object> reflects, Condition cond)
+	{
+		if (!(cond instanceof ReflectiveCondition))
+		{
+			return reflects;
+		}
+
+		if (reflects == null)
+		{
+			reflects = new LinkedList<Object>();
+		}
+
+		if (cond instanceof AtomicCondition)
+		{
+			reflects.add(cond);
+		}
+		else if (cond instanceof LogicalCondition)
+		{
+			List<Object> refls = ((LogicalCondition) cond).reflects();
+
+			if (refls != null)
+			{
+				for (Object ref : refls)
+				{
+					if (ref instanceof AtomicCondition)
+					{
+						reflects.add(ref);
+					}
+					else if (ref instanceof ComposableCondition)
+					{
+						reflects.add(reflectConditions(new LinkedList<Object>(), (ComposableCondition) ref));
+					}
+					else
+					{
+						reflects.add(ref);
+					}
+				}
+			}
+		}
+
+		return reflects;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Condition restoreConditions(Provider p, List<Object> conds)
+	{
+		Condition c = null, d = null;
+
+		String logic = null;
+
+		for (Object o : conds)
+		{
+			if (o == null)
+			{
+				continue;
+			}
+			else if (o instanceof String)
+			{
+				logic = (String) o;
+			}
+			else if (logic != null)
+			{
+				if (o instanceof Condition)
+				{
+					d = (Condition) o;
+				}
+				else if (o instanceof List)
+				{
+					d = restoreConditions(p, (List<Object>) o);
+				}
+				else
+				{
+					d = null;
+				}
+
+				if (d != null)
+				{
+					if (c != null)
+					{
+						if (LogicalCondition.AND.equalsIgnoreCase(logic))
+						{
+							c = ((ComposableCondition) c).and(d);
+						}
+						else if (LogicalCondition.OR.equalsIgnoreCase(logic))
+						{
+							c = ((ComposableCondition) c).or(d);
+						}
+					}
+					else if (LogicalCondition.NOT.equalsIgnoreCase(logic))
+					{
+						c = p.provideLogicalCondition().not(d);
+					}
+					else
+					{
+						c = d;
+					}
+				}
+
+				logic = null;
+			}
+			else if (c == null)
+			{
+				c = (ComposableCondition) o;
+			}
+		}
+
+		return c;
 	}
 }

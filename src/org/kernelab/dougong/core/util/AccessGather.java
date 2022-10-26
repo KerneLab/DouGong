@@ -10,9 +10,10 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.DML;
+import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.cond.AtomicCondition;
 import org.kernelab.dougong.core.dml.cond.BinaryCondition;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
-import org.kernelab.dougong.core.dml.cond.TernaryCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractLogicalCondition;
 
 public class AccessGather
@@ -79,9 +80,9 @@ public class AccessGather
 
 		Map<String, Table> dict = new HashMap<String, Table>();
 
-		if (cond instanceof BinaryCondition)
+		if (cond instanceof AtomicCondition)
 		{
-			gather(map, dict, (BinaryCondition) cond);
+			gather(map, dict, (AtomicCondition) cond);
 		}
 		else
 		{
@@ -112,18 +113,13 @@ public class AccessGather
 		}
 	}
 
-	protected static void gather(Map<String, List<Column>> gather, Map<String, Table> dict, BinaryCondition cond)
+	protected static void gather(Map<String, List<Column>> gather, Map<String, Table> dict, AtomicCondition cond)
 	{
-		if (cond.$_1() instanceof Column)
+		for (Expression expr : cond.operands())
 		{
-			gather(gather, dict, (Column) cond.$_1());
-		}
-
-		if (!(cond instanceof TernaryCondition))
-		{
-			if (cond.$_2() instanceof Column)
+			if (expr instanceof Column)
 			{
-				gather(gather, dict, (Column) cond.$_2());
+				gather(gather, dict, (Column) expr);
 			}
 		}
 	}

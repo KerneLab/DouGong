@@ -1,8 +1,5 @@
 package org.kernelab.dougong.core.dml.cond;
 
-import org.kernelab.dougong.core.dml.Expression;
-
-public interface UnaryCondition
+public interface UnaryCondition extends AtomicCondition
 {
-	public Expression $_1();
 }
