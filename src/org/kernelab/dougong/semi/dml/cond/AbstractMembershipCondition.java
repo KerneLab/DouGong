@@ -1,7 +1,5 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import java.util.List;
-
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
@@ -52,9 +50,9 @@ public abstract class AbstractMembershipCondition extends AbstractNegatableCondi
 	}
 
 	@Override
-	public List<Expression> operands()
+	public int operands()
 	{
-		return Utils.arrayList((Expression) this.expr);
+		return 2;
 	}
 
 	public AbstractMembershipCondition set(Expression expr, Scope scope)

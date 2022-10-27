@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,11 +38,6 @@ import org.kernelab.dougong.core.meta.NameMeta;
 
 public class Utils
 {
-	public static <E> List<E> arrayList(E... array)
-	{
-		return Tools.listOfArray(new ArrayList<E>(), array);
-	}
-
 	public static <E> Collection<E> copy(Collection<E> source, Collection<E> target)
 	{
 		target.addAll(source);

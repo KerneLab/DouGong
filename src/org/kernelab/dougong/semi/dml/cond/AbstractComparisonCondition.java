@@ -1,10 +1,7 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import java.util.List;
-
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
-import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractComparisonCondition extends AbstractComposableCondition implements ComparisonCondition
 {
@@ -104,9 +101,9 @@ public abstract class AbstractComparisonCondition extends AbstractComposableCond
 	}
 
 	@Override
-	public List<Expression> operands()
+	public int operands()
 	{
-		return Utils.arrayList(this.leftExpr, this.rightExpr);
+		return 2;
 	}
 
 	public AbstractComparisonCondition set(Expression x, Expression y)

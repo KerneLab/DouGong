@@ -1,10 +1,7 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import java.util.List;
-
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
-import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractNullCondition extends AbstractNegatableCondition implements NullCondition
 {
@@ -27,9 +24,9 @@ public abstract class AbstractNullCondition extends AbstractNegatableCondition i
 	}
 
 	@Override
-	public List<Expression> operands()
+	public int operands()
 	{
-		return Utils.arrayList((Expression) this.expr);
+		return 1;
 	}
 
 	public AbstractNullCondition isNull(Expression expr)

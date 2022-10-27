@@ -115,8 +115,10 @@ public class AccessGather
 
 	protected static void gather(Map<String, List<Column>> gather, Map<String, Table> dict, AtomicCondition cond)
 	{
-		for (Expression expr : cond.operands())
+		Expression expr = null;
+		for (int i = 0; i < cond.operands(); i++)
 		{
+			expr = cond.operand(i);
 			if (expr instanceof Column)
 			{
 				gather(gather, dict, (Column) expr);

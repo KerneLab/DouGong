@@ -1,13 +1,11 @@
 package org.kernelab.dougong.core.dml.cond;
 
-import java.util.List;
-
 import org.kernelab.dougong.core.dml.Expression;
 
 public interface AtomicCondition extends ComposableCondition, ReflectiveCondition
 {
 	/**
-	 * Get an operand in this condition at the certain position.
+	 * Get an operand in this condition at the certain (zero-based) position.
 	 * 
 	 * @param pos
 	 * @return
@@ -15,7 +13,7 @@ public interface AtomicCondition extends ComposableCondition, ReflectiveConditio
 	public Expression operand(int pos);
 
 	/**
-	 * Set the operand to this condition at the certain position.
+	 * Set the operand to this condition at the certain (zero-based) position.
 	 * 
 	 * @param pos
 	 * @param opr
@@ -23,9 +21,9 @@ public interface AtomicCondition extends ComposableCondition, ReflectiveConditio
 	public ReflectiveCondition operand(int pos, Expression opr);
 
 	/**
-	 * Get operands in this condition excluding any operator.
+	 * Get operands number in this condition excluding any operator.
 	 * 
 	 * @return
 	 */
-	public List<Expression> operands();
+	public int operands();
 }

@@ -1,10 +1,7 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import java.util.List;
-
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
-import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractRangeCondition extends AbstractNegatableCondition implements RangeCondition
 {
@@ -60,8 +57,8 @@ public abstract class AbstractRangeCondition extends AbstractNegatableCondition 
 	}
 
 	@Override
-	public List<Expression> operands()
+	public int operands()
 	{
-		return Utils.arrayList(this.expr, this.from, this.to);
+		return 3;
 	}
 }

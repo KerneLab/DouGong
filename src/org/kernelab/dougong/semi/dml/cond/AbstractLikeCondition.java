@@ -1,11 +1,8 @@
 package org.kernelab.dougong.semi.dml.cond;
 
-import java.util.List;
-
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
-import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractLikeCondition extends AbstractNegatableCondition implements LikeCondition
 {
@@ -60,9 +57,9 @@ public abstract class AbstractLikeCondition extends AbstractNegatableCondition i
 	}
 
 	@Override
-	public List<Expression> operands()
+	public int operands()
 	{
-		return Utils.arrayList(this.expr, this.pattern, this.escape);
+		return 3;
 	}
 
 	public AbstractLikeCondition set(Expression expr, Expression pattern, Expression escape)
