@@ -42,6 +42,7 @@ import org.kernelab.dougong.core.dml.param.Param;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
+import org.kernelab.dougong.core.util.Recursor;
 import org.kernelab.dougong.semi.dml.ViewSelf;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 
@@ -621,6 +622,11 @@ public class SQL
 	public Provider provider()
 	{
 		return provider;
+	}
+
+	public Recursor recursor(Primitive view)
+	{
+		return provider().provideRecursor(view);
 	}
 
 	/**

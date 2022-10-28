@@ -37,6 +37,7 @@ import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Label;
 import org.kernelab.dougong.core.dml.Pivot;
+import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -63,6 +64,7 @@ import org.kernelab.dougong.core.dml.param.TimestampParam;
 import org.kernelab.dougong.core.meta.AgentMeta;
 import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.TypeMeta;
+import org.kernelab.dougong.core.util.Recursor;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
 import org.kernelab.dougong.semi.ddl.table.AbstractDropTable;
@@ -100,16 +102,19 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 
 	private SQL					sql;
 
+	@Override
 	public AbsoluteKey provideAbsoluteKey(Entity entity, Column... columns)
 	{
 		return provideProvider(new AbstractAbsoluteKey(entity, columns));
 	}
 
+	@Override
 	public String provideAliasLabel(String alias)
 	{
 		return Tools.notNullOrEmpty(alias) ? provideNameText(alias) : null;
 	}
 
+	@Override
 	public int provideColumnType(Column column)
 	{
 		if (column == null)
@@ -132,6 +137,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return Types.OTHER;
 	}
 
+	@Override
 	public <T> T provideDao(Class<T> cls)
 	{
 		if (!cls.isInterface())
@@ -162,10 +168,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	@Override
 	public <T> T provideDao(Class<T> face, Object real)
 	{
 		return (T) Agent.newInstance(face, new AgentFactory()
 		{
+			@Override
 			public <E> Agent newAgent(Class<E> face, Object real)
 			{
 				return provideProvider(new DaoAgent(provideProvider(real)));
@@ -173,6 +181,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}, real);
 	}
 
+	@Override
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
 			Column[] returns) throws SQLException
 	{
@@ -188,11 +197,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return ps.getGeneratedKeys();
 	}
 
+	@Override
 	public DropTable provideDropTable()
 	{
 		return this.provideProvider(new AbstractDropTable());
 	}
 
+	@Override
 	public <T extends Function> T provideFunction(Class<T> cls)
 	{
 		try
@@ -206,6 +217,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	@Override
 	public String provideHint(String hint)
 	{
 		if (Tools.isNullOrWhite(hint))
@@ -232,11 +244,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return provideJointOperator().operate(this.provideLikePatternEscaped(pattern, escape), wildcard);
 	}
 
+	@Override
 	public Expression provideLikePatternDefaultEscape()
 	{
 		return provideStringItem("'" + provideEscapeValueLiterally(AbstractLikeCondition.ESCAPE) + "'");
 	}
 
+	@Override
 	public Expression provideLikePatternEscaped(Expression pattern, String escape)
 	{
 		if (Tools.isNullOrEmpty(escape))
@@ -256,11 +270,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return provideJointOperator().operate(wildcard, this.provideLikePatternEscaped(pattern, escape));
 	}
 
+	@Override
 	public AbstractMerge provideMerge()
 	{
 		return provideProvider(new AbstractMerge());
 	}
 
+	@Override
 	public <T> T provideNewInstance(Class<T> cls)
 	{
 		if (cls != null)
@@ -281,11 +297,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return null;
 	}
 
+	@Override
 	public Item provideNullItem()
 	{
 		return this.provideStringItem(SQL.NULL);
 	}
 
+	@Override
 	public String provideNumberLiteral(Number number)
 	{
 		if (number == null)
@@ -298,6 +316,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	@Override
 	public StringBuilder provideOutputAlias(StringBuilder buffer, Alias alias)
 	{
 		if (buffer != null && alias != null)
@@ -333,6 +352,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputColumnExpress(StringBuilder buffer, Column column)
 	{
 		String alias = this.provideAliasLabel(this.provideViewAlias(column.view()));
@@ -348,6 +368,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputColumnReference(StringBuilder buffer, Column column)
 	{
 		String alias = this.provideAliasLabel(this.provideViewAlias(column.view()));
@@ -359,6 +380,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return this.provideOutputNameText(buffer, column.name());
 	}
 
+	@Override
 	public StringBuilder provideOutputColumnSelect(StringBuilder buffer, Column column)
 	{
 		String select = Entitys.getColumnSelectExpression(column);
@@ -373,6 +395,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return Utils.outputAlias(this, buffer, column);
 	}
 
+	@Override
 	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)
 	{
 		if (buffer != null)
@@ -387,6 +410,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputNameText(StringBuilder buffer, String name)
 	{
 		if (buffer != null)
@@ -396,12 +420,14 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table)
 	{
 		this.provideOutputMember(buffer, table);
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table)
 	{
 		this.provideOutputTableName(buffer, table);
@@ -410,6 +436,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputTablePartitionClause(StringBuilder buffer, Partitioned part)
 	{
 		String name = part.partition();
@@ -422,6 +449,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputWithableAliased(StringBuilder buffer, Withable with)
 	{
 		if (buffer != null && with != null)
@@ -432,6 +460,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputWithDefinition(StringBuilder buffer, WithDefinition with)
 	{
 		if (buffer != null && with != null)
@@ -441,6 +470,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return buffer;
 	}
 
+	@Override
 	public Param<?> provideParameter(Class<? extends Param<?>> type, String name, Object value)
 	{
 		if (StringParam.class.equals(type))
@@ -509,91 +539,109 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	@Override
 	public StringItem provideParameter(String name)
 	{
 		return provideStringItem("?" + name + "?");
 	}
 
+	@Override
 	public DecimalParam provideParameter(String name, BigDecimal value)
 	{
 		return provideProvider(new AbstractDecimalParam(name, value));
 	}
 
+	@Override
 	public ByteParam provideParameter(String name, Byte value)
 	{
 		return provideProvider(new AbstractByteParam(name, value));
 	}
 
+	@Override
 	public CharParam provideParameter(String name, Character value)
 	{
 		return provideProvider(new AbstractCharParam(name, value));
 	}
 
+	@Override
 	public DateParam provideParameter(String name, Date value)
 	{
 		return provideProvider(new AbstractDateParam(name, value));
 	}
 
+	@Override
 	public DoubleParam provideParameter(String name, Double value)
 	{
 		return provideProvider(new AbstractDoubleParam(name, value));
 	}
 
+	@Override
 	public FloatParam provideParameter(String name, Float value)
 	{
 		return provideProvider(new AbstractFloatParam(name, value));
 	}
 
+	@Override
 	public IntParam provideParameter(String name, Integer value)
 	{
 		return provideProvider(new AbstractIntParam(name, value));
 	}
 
+	@Override
 	public IterableParam provideParameter(String name, Iterable<?> value)
 	{
 		return provideProvider(new AbstractIterableParam(name, value));
 	}
 
+	@Override
 	public JSANParam provideParameter(String name, JSAN value)
 	{
 		return provideProvider(new AbstractJSANParam(name, value));
 	}
 
+	@Override
 	public JSONParam provideParameter(String name, JSON value)
 	{
 		return provideProvider(new AbstractJSONParam(name, value));
 	}
 
+	@Override
 	public LongParam provideParameter(String name, Long value)
 	{
 		return provideProvider(new AbstractLongParam(name, value));
 	}
 
+	@Override
 	public <K, V> MapParam<K, V> provideParameter(String name, Map<K, V> value)
 	{
 		return provideProvider(new AbstractMapParam<K, V>(name, value));
 	}
 
+	@Override
 	public ShortParam provideParameter(String name, Short value)
 	{
 		return provideProvider(new AbstractShortParam(name, value));
 	}
 
+	@Override
 	public StringParam provideParameter(String name, String value)
 	{
 		return provideProvider(new AbstractStringParam(name, value));
 	}
 
+	@Override
 	public <T> ObjectParam<T> provideParameter(String name, T value)
 	{
 		return provideProvider(new AbstractObjectParam<T>(name, value));
 	}
 
+	@Override
 	public TimestampParam provideParameter(String name, Timestamp value)
 	{
 		return provideProvider(new AbstractTimestampParam(name, value));
 	}
 
+	@Override
 	public Param<?> provideParameterByValue(String name, Object value)
 	{
 		if (value == null)
@@ -603,11 +651,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return provideParameter(provideParameterType(value.getClass()), name, value);
 	}
 
+	@Override
 	public String provideParameterExpression(String name)
 	{
 		return "?" + name + "?";
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Class<? extends Param<?>> provideParameterType(Class<?> type)
 	{
@@ -677,22 +727,26 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	@Override
 	public Pivot providePivot()
 	{
 		return provideProvider(new AbstractPivot());
 	}
 
+	@Override
 	public AbstractPrimitive providePrimitive()
 	{
 		return this.provideProvider(new AbstractPrimitive());
 	}
 
+	@Override
 	public AbstractPriorExpression providePriorExpression(Expression expr)
 	{
 		return provideProvider(new AbstractPriorExpression(expr));
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public <T extends Providable> T provideProvider(Providable providable)
 	{
 		if (providable != null)
@@ -711,6 +765,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return object;
 	}
 
+	@Override
+	public Recursor provideRecursor(Primitive view)
+	{
+		return new Recursor().provider(this).view(view);
+	}
+
+	@Override
 	public String provideReferName(Expression expr)
 	{
 		if (expr instanceof Label)
@@ -740,11 +801,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return refer;
 	}
 
+	@Override
 	public Result provideResult(String expression)
 	{
 		return provideProvider(new AbstractStringExpressionResult(expression));
 	}
 
+	@Override
 	public SQL provideSQL()
 	{
 		if (this.sql == null)
@@ -754,6 +817,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return this.sql;
 	}
 
+	@Override
 	public String provideStandardTypeName(String name)
 	{
 		if (name == null)
@@ -771,11 +835,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return name.substring(0, end).trim().toUpperCase();
 	}
 
+	@Override
 	public <T extends Subquery> T provideSubquery(Class<T> cls)
 	{
 		return provideView(cls);
 	}
 
+	@Override
 	public <T extends Subquery> T provideSubquery(Class<T> cls, Select select)
 	{
 		try
@@ -791,11 +857,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	@Override
 	public <T extends Table> T provideTable(Class<T> cls)
 	{
 		return provideView(cls);
 	}
 
+	@Override
 	public String provideTextLiteral(CharSequence text)
 	{
 		if (text == null)
@@ -808,21 +876,25 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 	}
 
+	@Override
 	public Result provideToLowerCase(Expression expr)
 	{
 		return provideResult("LOWER(" + expr.toStringExpress(new StringBuilder()) + ")");
 	}
 
+	@Override
 	public AllItems provideTotalItems()
 	{
 		return new AbstractTotalItems();
 	}
 
+	@Override
 	public Result provideToUpperCase(Expression expr)
 	{
 		return provideResult("UPPER(" + expr.toStringExpress(new StringBuilder()) + ")");
 	}
 
+	@Override
 	public Integer provideTypeByName(String name)
 	{
 		name = provideStandardTypeName(name);
@@ -848,11 +920,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return null;
 	}
 
+	@Override
 	public <T extends View> T provideView(Class<T> cls)
 	{
 		return this.provideProvider(provideNewInstance(cls));
 	}
 
+	@Override
 	public String provideViewAlias(View view)
 	{
 		String alias = view.alias();
@@ -868,6 +942,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return alias;
 	}
 
+	@Override
 	public WithDefinition provideWithDefinition(String name, String... columns)
 	{
 		return this.provideProvider(new AbstractWithDefinition(name, columns));

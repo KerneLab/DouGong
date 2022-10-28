@@ -72,6 +72,7 @@ import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
+import org.kernelab.dougong.core.util.Recursor;
 
 public interface Provider extends Castable
 {
@@ -382,6 +383,8 @@ public interface Provider extends Castable
 	public <T extends Providable> T provideProvider(Providable providable);
 
 	public RangeCondition provideRangeCondition();
+
+	public Recursor provideRecursor(Primitive view);
 
 	/**
 	 * Provide a Reference which refers to the given expression within the given
