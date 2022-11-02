@@ -4,7 +4,7 @@ import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 
-public abstract class AbstractLikeCondition extends AbstractNegatableCondition implements LikeCondition
+public class AbstractLikeCondition extends AbstractNegatableCondition implements LikeCondition
 {
 	public static final String	ESCAPE	= "\\";
 

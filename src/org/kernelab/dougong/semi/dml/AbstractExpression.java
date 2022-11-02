@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
@@ -11,66 +12,74 @@ import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
-import org.kernelab.dougong.core.dml.opr.DivideOperator;
-import org.kernelab.dougong.core.dml.opr.JointOperator;
-import org.kernelab.dougong.core.dml.opr.MinusOperator;
-import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
-import org.kernelab.dougong.core.dml.opr.PlusOperator;
+import org.kernelab.dougong.core.dml.cond.RegexpLikeCondition;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.semi.AbstractCastable;
 
 public abstract class AbstractExpression extends AbstractCastable implements Expression
 {
+	@Override
 	public RangeCondition between(Expression from, Expression to)
 	{
-		return this.provideRangeCondition().between(this, from, to);
+		return provider().provideRangeCondition().between(this, from, to);
 	}
 
+	@Override
 	public Result divide(Expression operand)
 	{
-		return this.provideDivideOperator().operate(this, operand);
+		return provider().provideDivideOperator().operate(this, operand);
 	}
 
+	@Override
 	public ComparisonCondition eq(Expression expr)
 	{
-		return this.provideComparisonCondition().eq(this, expr);
+		return provider().provideComparisonCondition().eq(this, expr);
 	}
 
+	@Override
 	public ComparisonCondition ge(Expression expr)
 	{
-		return this.provideComparisonCondition().ge(this, expr);
+		return provider().provideComparisonCondition().ge(this, expr);
 	}
 
+	@Override
 	public ComparisonCondition gt(Expression expr)
 	{
-		return this.provideComparisonCondition().gt(this, expr);
+		return provider().provideComparisonCondition().gt(this, expr);
 	}
 
+	@Override
 	public LikeCondition iLike(Expression pattern)
 	{
 		return iLike(pattern, null);
 	}
 
+	@Override
 	public LikeCondition iLike(Expression pattern, Expression escape)
 	{
-		return this.provideLikeCondition().like(provideToUpperCase(this), provideToUpperCase(pattern), escape);
+		return provider().provideLikeCondition().like(provider().provideToUpperCase(this),
+				provider().provideToUpperCase(pattern), escape);
 	}
 
+	@Override
 	public MembershipCondition in(Scope scope)
 	{
-		return this.provideMembershipCondition().in(this, scope);
+		return provider().provideMembershipCondition().in(this, scope);
 	}
 
+	@Override
 	public NullCondition isNotNull()
 	{
-		return (NullCondition) this.provideNullCondition().isNull(this).not();
+		return (NullCondition) provider().provideNullCondition().isNull(this).not();
 	}
 
+	@Override
 	public NullCondition isNull()
 	{
-		return this.provideNullCondition().isNull(this);
+		return provider().provideNullCondition().isNull(this);
 	}
 
+	@Override
 	public Result joint(Expression... operands)
 	{
 		Expression[] exprs = new Expression[1 + (operands == null ? 0 : operands.length)];
@@ -82,22 +91,25 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 			System.arraycopy(operands, 0, exprs, 1, operands.length);
 		}
 
-		return this.provideJointOperator().operate(exprs);
+		return provider().provideJointOperator().operate(exprs);
 	}
 
+	@Override
 	public ComparisonCondition le(Expression expr)
 	{
-		return this.provideComparisonCondition().le(this, expr);
+		return provider().provideComparisonCondition().le(this, expr);
 	}
 
+	@Override
 	public LikeCondition like(Expression pattern)
 	{
 		return like(pattern, null);
 	}
 
+	@Override
 	public LikeCondition like(Expression pattern, Expression escape)
 	{
-		return this.provideLikeCondition().like(this, pattern, escape);
+		return provider().provideLikeCondition().like(this, pattern, escape);
 	}
 
 	protected <T> List<T> listOf(T... es)
@@ -105,95 +117,98 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 		return Tools.listOfArray(new ArrayList<T>(es.length), es);
 	}
 
+	@Override
 	public ComparisonCondition lt(Expression expr)
 	{
-		return this.provideComparisonCondition().lt(this, expr);
+		return provider().provideComparisonCondition().lt(this, expr);
 	}
 
+	@Override
 	public Result minus(Expression operand)
 	{
-		return this.provideMinusOperator().operate(this, operand);
+		return provider().provideMinusOperator().operate(this, operand);
 	}
 
+	@Override
 	public Result multiply(Expression operand)
 	{
-		return this.provideMultiplyOperator().operate(this, operand);
+		return provider().provideMultiplyOperator().operate(this, operand);
 	}
 
+	@Override
 	public ComparisonCondition ne(Expression expr)
 	{
-		return this.provideComparisonCondition().ne(this, expr);
+		return provider().provideComparisonCondition().ne(this, expr);
 	}
 
+	@Override
 	public RangeCondition notBetween(Expression from, Expression to)
 	{
-		return (RangeCondition) this.provideRangeCondition().between(this, from, to).not();
+		return (RangeCondition) provider().provideRangeCondition().between(this, from, to).not();
 	}
 
+	@Override
 	public LikeCondition notILike(Expression pattern)
 	{
 		return notILike(pattern, null);
 	}
 
+	@Override
 	public LikeCondition notILike(Expression pattern, Expression escape)
 	{
-		return (LikeCondition) this.provideLikeCondition()
-				.like(provideToUpperCase(this), provideToUpperCase(pattern), escape).not();
+		return (LikeCondition) provider().provideLikeCondition()
+				.like(provider().provideToUpperCase(this), provider().provideToUpperCase(pattern), escape).not();
 	}
 
+	@Override
 	public MembershipCondition notIn(Scope scope)
 	{
-		return (MembershipCondition) this.provideMembershipCondition().in(this, scope).not();
+		return (MembershipCondition) provider().provideMembershipCondition().in(this, scope).not();
 	}
 
+	@Override
 	public LikeCondition notLike(Expression pattern)
 	{
 		return notLike(pattern, null);
 	}
 
+	@Override
 	public LikeCondition notLike(Expression pattern, Expression escape)
 	{
-		return (LikeCondition) this.provideLikeCondition().like(this, pattern, escape).not();
+		return (LikeCondition) provider().provideLikeCondition().like(this, pattern, escape).not();
 	}
 
+	@Override
+	public RegexpLikeCondition notRLike(Expression pattern)
+	{
+		return (RegexpLikeCondition) provider().provideRegexpCondition().rLike(this, pattern).not();
+	}
+
+	@Override
 	public Result plus(Expression operand)
 	{
-		return this.providePlusOperator().operate(this, operand);
+		return provider().providePlusOperator().operate(this, operand);
 	}
 
-	protected abstract ComparisonCondition provideComparisonCondition();
-
-	protected abstract DivideOperator provideDivideOperator();
-
-	protected abstract JointOperator provideJointOperator();
-
-	protected abstract LikeCondition provideLikeCondition();
-
-	protected abstract MembershipCondition provideMembershipCondition();
-
-	protected abstract MinusOperator provideMinusOperator();
-
-	protected abstract MultiplyOperator provideMultiplyOperator();
-
-	protected abstract NullCondition provideNullCondition();
-
-	protected abstract PlusOperator providePlusOperator();
-
-	protected abstract RangeCondition provideRangeCondition();
-
-	protected abstract Result provideToLowerCase(Expression expr);
-
-	protected abstract Result provideToUpperCase(Expression expr);
+	protected abstract Provider provider();
 
 	protected abstract AbstractExpression replicate();
 
-	public Result toLower()
+	@Override
+	public RegexpLikeCondition rLike(Expression pattern)
 	{
-		return provideToLowerCase(this);
+		return provider().provideRegexpCondition().rLike(this, pattern);
 	}
 
+	@Override
+	public Result toLower()
+	{
+		return provider().provideToLowerCase(this);
+	}
+
+	@Override
 	public Result toUpper()
 	{
-		return provideToUpperCase(this);
+		return provider().provideToUpperCase(this);
 	}
 }

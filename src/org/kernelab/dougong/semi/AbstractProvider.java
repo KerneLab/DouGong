@@ -75,7 +75,9 @@ import org.kernelab.dougong.semi.dml.AbstractPriorExpression;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
 import org.kernelab.dougong.semi.dml.AbstractWithDefinition;
 import org.kernelab.dougong.semi.dml.DaoAgent;
+import org.kernelab.dougong.semi.dml.cond.AbstractExistsCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
+import org.kernelab.dougong.semi.dml.cond.AbstractMembershipCondition;
 import org.kernelab.dougong.semi.dml.opr.AbstractStringExpressionResult;
 import org.kernelab.dougong.semi.dml.param.AbstractByteParam;
 import org.kernelab.dougong.semi.dml.param.AbstractCharParam;
@@ -203,6 +205,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return this.provideProvider(new AbstractDropTable());
 	}
 
+	public AbstractExistsCondition provideExistsCondition()
+	{
+		return this.provideProvider(new AbstractExistsCondition());
+	}
+
 	@Override
 	public <T extends Function> T provideFunction(Class<T> cls)
 	{
@@ -238,6 +245,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	}
 
 	@Override
+	public AbstractLikeCondition provideLikeCondition()
+	{
+		return this.provideProvider(new AbstractLikeCondition());
+	}
+
+	@Override
 	public Expression provideLikeHeadPattern(Expression pattern, String escape)
 	{
 		Expression wildcard = provideStringItem("'%'");
@@ -268,6 +281,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	{
 		Expression wildcard = provideStringItem("'%'");
 		return provideJointOperator().operate(wildcard, this.provideLikePatternEscaped(pattern, escape));
+	}
+
+	public AbstractMembershipCondition provideMembershipCondition()
+	{
+		return this.provideProvider(new AbstractMembershipCondition());
 	}
 
 	@Override

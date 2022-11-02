@@ -62,6 +62,8 @@ public class Recursor
 
 	private Resulter			resulter;
 
+	private Select				union;
+
 	protected Condition connectBy()
 	{
 		return connectBy;
@@ -128,7 +130,7 @@ public class Recursor
 		Row node = null, result = null;
 		for (Row row : rows)
 		{
-			node = row.get(priors);
+			node = row.gets(priors);
 
 			if (nodes.contains(node))
 			{
@@ -182,11 +184,28 @@ public class Recursor
 
 		Collection<Row> res = kit.execute(init.toString(), param).getRows(new LinkedList<Row>(), Row.class);
 
-		List<Row> result = new LinkedList<Row>();
+		List<Row> recurs = new LinkedList<Row>();
 
-		query(kit, res, new LinkedList<Row>(), recur.toString(), priors, new HashSet<Row>(), result);
+		query(kit, res, new LinkedList<Row>(), recur.toString(), priors, new HashSet<Row>(), recurs);
 
-		return Canal.of(result);
+		Canal<?, Row> result = Canal.of(recurs);
+
+		if (this.union() == null)
+		{
+			return result;
+		}
+
+		int i = 0;
+		for (Item item : this.union().items())
+		{
+			if (item.alias() == null)
+			{
+				item.alias(Utils.getLabelOfExpression(selects[i]));
+			}
+			i++;
+		}
+		return result
+				.union(Canal.of(kit.execute(this.union().toString(), param).getRows(new LinkedList<Row>(), Row.class)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -273,6 +292,17 @@ public class Recursor
 	public Recursor startWith(Condition startWith)
 	{
 		this.startWith = startWith;
+		return this;
+	}
+
+	protected Select union()
+	{
+		return union;
+	}
+
+	public Recursor union(Select union)
+	{
+		this.union = union;
 		return this;
 	}
 

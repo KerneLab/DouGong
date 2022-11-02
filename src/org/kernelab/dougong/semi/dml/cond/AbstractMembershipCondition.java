@@ -6,7 +6,7 @@ import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.util.Utils;
 
-public abstract class AbstractMembershipCondition extends AbstractNegatableCondition implements MembershipCondition
+public class AbstractMembershipCondition extends AbstractNegatableCondition implements MembershipCondition
 {
 	protected Expression	expr;
 

@@ -1,11 +1,11 @@
 package org.kernelab.dougong.maria.dml.cond;
 
 import org.kernelab.dougong.core.dml.Items;
-import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractComparisonCondition;
 
 public class MariaComparisonCondition extends AbstractComparisonCondition
 {
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		if (this.leftExpr instanceof Items)
@@ -34,11 +34,5 @@ public class MariaComparisonCondition extends AbstractComparisonCondition
 			buffer.append(')');
 		}
 		return buffer;
-	}
-
-	@Override
-	protected LogicalCondition provideLogicalCondition()
-	{
-		return new MariaLogicalCondition();
 	}
 }

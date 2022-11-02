@@ -2,6 +2,7 @@ package org.kernelab.dougong.core.dml.test;
 
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
+import org.kernelab.dougong.core.dml.cond.RegexpLikeCondition;
 
 public interface LikeTestable
 {
@@ -20,4 +21,8 @@ public interface LikeTestable
 	public LikeCondition notLike(Expression pattern);
 
 	public LikeCondition notLike(Expression pattern, Expression escape);
+
+	public RegexpLikeCondition notRLike(Expression pattern);
+
+	public RegexpLikeCondition rLike(Expression pattern);
 }

@@ -5,7 +5,7 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.cond.ExistsCondition;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 
-public abstract class AbstractExistsCondition extends AbstractNegatableCondition implements ExistsCondition
+public class AbstractExistsCondition extends AbstractNegatableCondition implements ExistsCondition
 {
 	protected Select select;
 

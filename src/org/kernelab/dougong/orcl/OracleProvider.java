@@ -41,12 +41,10 @@ import org.kernelab.dougong.orcl.dml.OracleSortable;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
 import org.kernelab.dougong.orcl.dml.cond.OracleComparisonCondition;
-import org.kernelab.dougong.orcl.dml.cond.OracleExistsCondition;
-import org.kernelab.dougong.orcl.dml.cond.OracleLikeCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleLogicalCondition;
-import org.kernelab.dougong.orcl.dml.cond.OracleMembershipCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleNullCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleRangeCondition;
+import org.kernelab.dougong.orcl.dml.cond.OracleRegexpLikeCondition;
 import org.kernelab.dougong.orcl.dml.opr.OracleArithmeticOperator;
 import org.kernelab.dougong.orcl.dml.opr.OracleCaseDecideExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleCaseSwitchExpression;
@@ -67,26 +65,31 @@ public class OracleProvider extends AbstractProvider
 
 	public static final String	RETURN_VAR_PREFIX	= ":ret_";
 
+	@Override
 	public OracleAllItems provideAllItems(View view)
 	{
 		return new OracleAllItems(view);
 	}
 
+	@Override
 	public OracleCaseDecideExpression provideCaseExpression()
 	{
 		return new OracleCaseDecideExpression(this);
 	}
 
+	@Override
 	public OracleCaseSwitchExpression provideCaseExpression(Expression value)
 	{
 		return (OracleCaseSwitchExpression) new OracleCaseSwitchExpression(this).caseValue(value);
 	}
 
+	@Override
 	public OracleColumn provideColumn(View view, String name, Field field)
 	{
 		return new OracleColumn(view, name, field);
 	}
 
+	@Override
 	public OracleComparisonCondition provideComparisonCondition()
 	{
 		return this.provideProvider(new OracleComparisonCondition());
@@ -116,11 +119,13 @@ public class OracleProvider extends AbstractProvider
 		;
 	}
 
+	@Override
 	public OracleDelete provideDelete()
 	{
 		return this.provideProvider(new OracleDelete());
 	}
 
+	@Override
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
@@ -157,11 +162,13 @@ public class OracleProvider extends AbstractProvider
 		return ps.getReturnResultSet();
 	}
 
+	@Override
 	public OracleDropTable provideDropTable()
 	{
 		return this.provideProvider(new OracleDropTable());
 	}
 
+	@Override
 	public String provideEscapeValueLiterally(Object value)
 	{
 		if (value == null)
@@ -174,66 +181,61 @@ public class OracleProvider extends AbstractProvider
 		}
 	}
 
-	public OracleExistsCondition provideExistsCondition()
-	{
-		return this.provideProvider(new OracleExistsCondition());
-	}
-
+	@Override
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
 		return provideProvider(new OracleForeignKey(reference, entity, columns));
 	}
 
+	@Override
 	public OracleInsert provideInsert()
 	{
 		return provideProvider(new OracleInsert());
 	}
 
+	@Override
 	public OracleItems provideItems()
 	{
 		return provideProvider(new OracleItems());
 	}
 
+	@Override
 	public OracleJoin provideJoin()
 	{
 		return new OracleJoin();
 	}
 
+	@Override
 	public OracleJointOperator provideJointOperator()
 	{
 		return provideProvider(new OracleJointOperator());
 	}
 
+	@Override
 	public KeysFetcher provideKeysFetcher()
 	{
 		return new OracleKeysFetcher();
 	}
 
-	public OracleLikeCondition provideLikeCondition()
-	{
-		return this.provideProvider(new OracleLikeCondition());
-	}
-
+	@Override
 	public OracleLogicalCondition provideLogicalCondition()
 	{
 		return this.provideProvider(new OracleLogicalCondition());
 	}
 
-	public OracleMembershipCondition provideMembershipCondition()
-	{
-		return this.provideProvider(new OracleMembershipCondition());
-	}
-
+	@Override
 	public MinusOperator provideMinusOperator()
 	{
 		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MINUS));
 	}
 
+	@Override
 	public MultiplyOperator provideMultiplyOperator()
 	{
 		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MULTIPLY));
 	}
 
+	@Override
 	public String provideNameText(String name)
 	{
 		if (name != null)
@@ -246,6 +248,7 @@ public class OracleProvider extends AbstractProvider
 		}
 	}
 
+	@Override
 	public OracleNullCondition provideNullCondition()
 	{
 		return this.provideProvider(new OracleNullCondition());
@@ -266,6 +269,7 @@ public class OracleProvider extends AbstractProvider
 		return this.provideOutputNameText(buffer, column.name());
 	}
 
+	@Override
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
 	{
 		if (!function.isPseudo())
@@ -315,6 +319,7 @@ public class OracleProvider extends AbstractProvider
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort)
 	{
 		if (buffer != null && sort != null)
@@ -375,26 +380,37 @@ public class OracleProvider extends AbstractProvider
 		return buffer;
 	}
 
+	@Override
 	public PlusOperator providePlusOperator()
 	{
 		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
+	@Override
 	public PrimaryKey providePrimaryKey(Entity entity, Column... columns)
 	{
 		return provideProvider(new OraclePrimaryKey(entity, columns));
 	}
 
+	@Override
 	public OracleRangeCondition provideRangeCondition()
 	{
 		return this.provideProvider(new OracleRangeCondition());
 	}
 
+	@Override
 	public OracleReference provideReference(View view, String name)
 	{
 		return provideProvider(new OracleReference(view, name));
 	}
 
+	@Override
+	public OracleRegexpLikeCondition provideRegexpCondition()
+	{
+		return this.provideProvider(new OracleRegexpLikeCondition());
+	}
+
+	@Override
 	public OracleSelect provideSelect()
 	{
 		return this.provideProvider(new OracleSelect());
@@ -433,16 +449,19 @@ public class OracleProvider extends AbstractProvider
 		}
 	}
 
+	@Override
 	public OracleStringItem provideStringItem(String item)
 	{
 		return (OracleStringItem) provideProvider(new OracleStringItem(this).setString(item));
 	}
 
+	@Override
 	public String provideTextContent(CharSequence text)
 	{
 		return text.toString().replace("'", "''");
 	}
 
+	@Override
 	public OracleUpdate provideUpdate()
 	{
 		return this.provideProvider(new OracleUpdate());

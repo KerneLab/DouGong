@@ -40,12 +40,10 @@ import org.kernelab.dougong.maria.dml.MariaSelect;
 import org.kernelab.dougong.maria.dml.MariaStringItem;
 import org.kernelab.dougong.maria.dml.MariaUpdate;
 import org.kernelab.dougong.maria.dml.cond.MariaComparisonCondition;
-import org.kernelab.dougong.maria.dml.cond.MariaExistsCondition;
-import org.kernelab.dougong.maria.dml.cond.MariaLikeCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaLogicalCondition;
-import org.kernelab.dougong.maria.dml.cond.MariaMembershipCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaNullCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaRangeCondition;
+import org.kernelab.dougong.maria.dml.cond.MariaRegexpLikeCondition;
 import org.kernelab.dougong.maria.dml.opr.MariaArithmeticOperator;
 import org.kernelab.dougong.maria.dml.opr.MariaCaseDecideExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaCaseSwitchExpression;
@@ -60,26 +58,31 @@ public class MariaProvider extends AbstractProvider
 
 	public static final String	TEXT_BOUNDARY_ESC	= TEXT_BOUNDARY_MARK + TEXT_BOUNDARY_MARK;
 
+	@Override
 	public MariaAllItems provideAllItems(View view)
 	{
 		return new MariaAllItems(view);
 	}
 
+	@Override
 	public MariaCaseDecideExpression provideCaseExpression()
 	{
 		return new MariaCaseDecideExpression(this);
 	}
 
+	@Override
 	public MariaCaseSwitchExpression provideCaseExpression(Expression value)
 	{
 		return (MariaCaseSwitchExpression) new MariaCaseSwitchExpression(this).caseValue(value);
 	}
 
+	@Override
 	public MariaColumn provideColumn(View view, String name, Field field)
 	{
 		return new MariaColumn(view, name, field);
 	}
 
+	@Override
 	public MariaComparisonCondition provideComparisonCondition()
 	{
 		return this.provideProvider(new MariaComparisonCondition());
@@ -110,11 +113,13 @@ public class MariaProvider extends AbstractProvider
 		;
 	}
 
+	@Override
 	public MariaDelete provideDelete()
 	{
 		return new MariaDelete().provider(this);
 	}
 
+	@Override
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
@@ -127,6 +132,7 @@ public class MariaProvider extends AbstractProvider
 		throw new SQLException("Insert and return AbsoluteKey with GenerateValues is not supported.");
 	}
 
+	@Override
 	public String provideEscapeValueLiterally(Object value)
 	{
 		if (value == null)
@@ -140,67 +146,61 @@ public class MariaProvider extends AbstractProvider
 	}
 
 	@Override
-	public MariaExistsCondition provideExistsCondition()
-	{
-		return this.provideProvider(new MariaExistsCondition());
-	}
-
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
 		return provideProvider(new MariaForeignKey(reference, entity, columns));
 	}
 
+	@Override
 	public MariaInsert provideInsert()
 	{
 		return new MariaInsert().provider(this);
 	}
 
+	@Override
 	public MariaItems provideItems()
 	{
 		return (MariaItems) new MariaItems().provider(this);
 	}
 
+	@Override
 	public MariaJoin provideJoin()
 	{
 		return new MariaJoin();
 	}
 
+	@Override
 	public MariaJointOperator provideJointOperator()
 	{
 		return this.provideProvider(new MariaJointOperator());
 	}
 
+	@Override
 	public KeysFetcher provideKeysFetcher()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public MariaLikeCondition provideLikeCondition()
-	{
-		return this.provideProvider(new MariaLikeCondition());
-	}
-
+	@Override
 	public MariaLogicalCondition provideLogicalCondition()
 	{
 		return this.provideProvider(new MariaLogicalCondition());
 	}
 
-	public MariaMembershipCondition provideMembershipCondition()
-	{
-		return this.provideProvider(new MariaMembershipCondition());
-	}
-
+	@Override
 	public MinusOperator provideMinusOperator()
 	{
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.MINUS));
 	}
 
+	@Override
 	public MultiplyOperator provideMultiplyOperator()
 	{
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.MULTIPLY));
 	}
 
+	@Override
 	public String provideNameText(String name)
 	{
 		if (name != null)
@@ -213,11 +213,13 @@ public class MariaProvider extends AbstractProvider
 		}
 	}
 
+	@Override
 	public MariaNullCondition provideNullCondition()
 	{
 		return this.provideProvider(new MariaNullCondition());
 	}
 
+	@Override
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
 	{
 		if (Tools.notNullOrEmpty(function.schema()))
@@ -260,6 +262,7 @@ public class MariaProvider extends AbstractProvider
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort)
 	{
 		if (buffer != null && sort != null)
@@ -284,26 +287,37 @@ public class MariaProvider extends AbstractProvider
 		return provideProvider(new MariaPivot());
 	}
 
+	@Override
 	public PlusOperator providePlusOperator()
 	{
 		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
+	@Override
 	public PrimaryKey providePrimaryKey(Entity entity, Column... columns)
 	{
 		return provideProvider(new MariaPrimaryKey(entity, columns));
 	}
 
+	@Override
 	public MariaRangeCondition provideRangeCondition()
 	{
 		return this.provideProvider(new MariaRangeCondition());
 	}
 
+	@Override
 	public MariaReference provideReference(View view, String name)
 	{
 		return provideProvider(new MariaReference(view, name));
 	}
 
+	@Override
+	public MariaRegexpLikeCondition provideRegexpCondition()
+	{
+		return this.provideProvider(new MariaRegexpLikeCondition());
+	}
+
+	@Override
 	public MariaSelect provideSelect()
 	{
 		return new MariaSelect().provider(this);
@@ -354,11 +368,13 @@ public class MariaProvider extends AbstractProvider
 		}
 	}
 
+	@Override
 	public MariaStringItem provideStringItem(String item)
 	{
 		return (MariaStringItem) provideProvider(new MariaStringItem(this).setString(item));
 	}
 
+	@Override
 	public String provideTextContent(CharSequence text)
 	{
 		return text.toString() //
@@ -368,6 +384,7 @@ public class MariaProvider extends AbstractProvider
 				.replace(String.valueOf((char) 26), "\\Z");
 	}
 
+	@Override
 	public MariaUpdate provideUpdate()
 	{
 		return new MariaUpdate().provider(this);

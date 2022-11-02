@@ -45,6 +45,7 @@ import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.core.dml.cond.MembershipCondition;
 import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
+import org.kernelab.dougong.core.dml.cond.RegexpLikeCondition;
 import org.kernelab.dougong.core.dml.opr.CaseDecideExpression;
 import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
@@ -402,6 +403,8 @@ public interface Provider extends Castable
 	 * boundary characters.
 	 */
 	public String provideReferName(Expression expr);
+
+	public RegexpLikeCondition provideRegexpCondition();
 
 	public Result provideResult(String expression);
 

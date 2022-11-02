@@ -6,7 +6,6 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.maria.MariaProvider;
-import org.kernelab.dougong.orcl.dml.cond.OracleLikeCondition;
 
 public class TestLike
 {
@@ -36,7 +35,7 @@ public class TestLike
 								.as("c") //
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0")) //
-						.and(((OracleLikeCondition) d.COMP_ID.like(SQL.expr("'sfd%'"), SQL.expr("'\\'"))))) //
+						.and(d.COMP_ID.like(SQL.expr("'sfd%'"), SQL.expr("'\\'")))) //
 				.orderBy(d.COMP_ID) //
 		;
 	}

@@ -2,7 +2,6 @@ package org.kernelab.dougong.semi.dml.cond;
 
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
-import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 
 public abstract class AbstractComposableCondition extends AbstractCondition implements ComposableCondition
 {
@@ -10,7 +9,7 @@ public abstract class AbstractComposableCondition extends AbstractCondition impl
 	{
 		if (when)
 		{
-			return this.provideLogicalCondition().set(this).and(true, cond);
+			return provider().provideLogicalCondition().set(this).and(true, cond);
 		}
 		else
 		{
@@ -32,7 +31,7 @@ public abstract class AbstractComposableCondition extends AbstractCondition impl
 	{
 		if (when)
 		{
-			return this.provideLogicalCondition().set(this).or(true, cond);
+			return provider().provideLogicalCondition().set(this).or(true, cond);
 		}
 		else
 		{
@@ -44,6 +43,4 @@ public abstract class AbstractComposableCondition extends AbstractCondition impl
 	{
 		return or(true, cond);
 	}
-
-	protected abstract LogicalCondition provideLogicalCondition();
 }
