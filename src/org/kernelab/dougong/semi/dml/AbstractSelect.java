@@ -351,7 +351,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	@Override
 	public <T extends Insertable> Insert insert(T target)
 	{
-		return this.provider().provideInsert().into(target).values(this);
+		return this.provider().provideInsert().into(target).select(this);
 	}
 
 	@Override

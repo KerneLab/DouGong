@@ -7,6 +7,7 @@ public interface Insert extends DML, Providable, Hintable
 {
 	public Insert columns(Column... columns);
 
+	@Override
 	public Insert hint(String hint);
 
 	public Insert into(Insertable target);
@@ -15,7 +16,7 @@ public interface Insert extends DML, Providable, Hintable
 
 	public Insert pairs(Expression... columnValuePairs);
 
-	public Insert values(Expression... values);
+	public Insert select(Source source);
 
-	public Insert values(Source source);
+	public Insert values(Expression... values);
 }

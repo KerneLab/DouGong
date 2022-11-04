@@ -22,6 +22,7 @@ public class TestInsert
 		Tools.debug(makeInsertByPairs().toString(new StringBuilder()));
 		Tools.debug(makeInsertByMetaMap().toString(new StringBuilder()));
 		Tools.debug(makeSelect().toString(new StringBuilder()));
+		Tools.debug(makeSelect1().toString(new StringBuilder()));
 		Tools.debug(makeSelectPairs().toString(new StringBuilder()));
 		Tools.debug(makeSelectPairs2().toString(new StringBuilder()));
 		Tools.debug(makeSelectWithReturn().toString(new StringBuilder()));
@@ -60,6 +61,23 @@ public class TestInsert
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
+				.select(d.DEPT_ID, c.COMP_ID) //
+				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.orderBy(d.COMP_ID.descend()) //
+				.insert(s) //
+				.columns(s.DEPT_ID, s.COMP_ID) //
+		;
+	}
+
+	public static Insert makeSelect1()
+	{
+		COMP c = null;
+		DEPT d = null;
+		STAF s = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "s")) //
+				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID.eq(s.COMP_ID)) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID.eq(s.DEPT_ID)) //
 				.select(d.DEPT_ID, c.COMP_ID) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(d.COMP_ID.descend()) //
