@@ -211,8 +211,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 			}
 			else if (this.source instanceof Subquery)
 			{
-				Select sel = ((Subquery) this.source).select();
-				this.source = sel.as(sel.alias()).select(values);
+				this.source = provider().provideSelect().from((Subquery) this.source).select(values);
 			}
 			this.pairs = null;
 		}
