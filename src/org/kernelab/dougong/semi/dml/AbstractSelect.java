@@ -349,9 +349,9 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
-	public <T extends Insertable> Insert insert(T target)
+	public <T extends Insertable> Insert insert(T target, Column... columns)
 	{
-		return this.provider().provideInsert().into(target).select(this);
+		return this.provider().provideInsert().into(target).columns(columns).select(this);
 	}
 
 	@Override
@@ -1049,6 +1049,14 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 			}
 		}
 		return super.to(cls);
+	}
+
+	@Override
+	public <T extends Subquery> T to(T subquery)
+	{
+		provider().provideProvider(subquery);
+		subquery.select(this);
+		return subquery;
 	}
 
 	@Override

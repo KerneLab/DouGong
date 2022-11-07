@@ -33,4 +33,6 @@ public interface ComparisonCondition extends GroupCondition, BinaryCondition
 	public ComparisonCondition ne(Expression a, Expression b);
 
 	public ComparisonCondition some();
+
+	public String type();
 }

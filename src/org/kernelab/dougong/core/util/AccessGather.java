@@ -13,7 +13,9 @@ import org.kernelab.dougong.core.dml.DML;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.AtomicCondition;
 import org.kernelab.dougong.core.dml.cond.BinaryCondition;
+import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
+import org.kernelab.dougong.core.dml.cond.TernaryCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractLogicalCondition;
 
 public class AccessGather
@@ -115,13 +117,21 @@ public class AccessGather
 
 	protected static void gather(Map<String, List<Column>> gather, Map<String, Table> dict, AtomicCondition cond)
 	{
-		Expression expr = null;
-		for (int i = 0; i < cond.operands(); i++)
+		if (cond instanceof BinaryCondition || cond instanceof TernaryCondition)
 		{
-			expr = cond.operand(i);
+			Expression expr = cond.operand(0);
 			if (expr instanceof Column)
 			{
 				gather(gather, dict, (Column) expr);
+			}
+
+			if (cond instanceof ComparisonCondition)
+			{
+				expr = cond.operand(1);
+				if (expr instanceof Column)
+				{
+					gather(gather, dict, (Column) expr);
+				}
 			}
 		}
 	}

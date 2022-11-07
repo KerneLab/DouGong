@@ -20,38 +20,53 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
+	@Override
 	public Select from(View view);
 
 	// //////////////////////////////////////////////////////
 
+	@Override
 	public Select joins(List<Join> joins);
 
+	@Override
 	public Select innerJoin(View view, Condition cond);
 
+	@Override
 	public Select leftJoin(View view, Condition cond);
 
+	@Override
 	public Select rightJoin(View view, Condition cond);
 
+	@Override
 	public Select fullJoin(View view, Condition cond);
 
+	@Override
 	public Select innerJoin(View view, Column... using);
 
+	@Override
 	public Select leftJoin(View view, Column... using);
 
+	@Override
 	public Select rightJoin(View view, Column... using);
 
+	@Override
 	public Select fullJoin(View view, Column... using);
 
+	@Override
 	public Select innerJoin(View view, ForeignKey rels);
 
+	@Override
 	public Select leftJoin(View view, ForeignKey rels);
 
+	@Override
 	public Select rightJoin(View view, ForeignKey rels);
 
+	@Override
 	public Select fullJoin(View view, ForeignKey rels);
 
 	// //////////////////////////////////////////////////////
 
+	@Override
 	public Select where(Condition cond);
 
 	// //////////////////////////////////////////////////////
@@ -86,7 +101,7 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
-	public <T extends Insertable> Insert insert(T target);
+	public <T extends Insertable> Insert insert(T target, Column... columns);
 
 	// //////////////////////////////////////////////////////
 
@@ -105,17 +120,26 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
+	@Override
 	public Select alias(String alias);
 
+	@Override
 	public Select as(String alias);
 
 	// //////////////////////////////////////////////////////
 
+	@Override
 	public Select hint(String hint);
 
 	// //////////////////////////////////////////////////////
 
+	@Override
 	public Select recursive(boolean recursive);
 
+	@Override
 	public Select withs(List<WithDefinition> with);
+
+	// //////////////////////////////////////////////////////
+
+	public <T extends Subquery> T to(T subquery);
 }

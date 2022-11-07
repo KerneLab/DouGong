@@ -119,4 +119,10 @@ public abstract class AbstractComparisonCondition extends AbstractComposableCond
 		this.groupQual = SOME;
 		return this;
 	}
+
+	@Override
+	public String type()
+	{
+		return compType;
+	}
 }
