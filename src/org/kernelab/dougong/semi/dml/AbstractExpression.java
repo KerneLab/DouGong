@@ -142,6 +142,12 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 	}
 
 	@Override
+	public Result negative()
+	{
+		return provider().provideNegativeOperator().operate(this);
+	}
+
+	@Override
 	public RangeCondition notBetween(Expression from, Expression to)
 	{
 		return (RangeCondition) provider().provideRangeCondition().between(this, from, to).not();

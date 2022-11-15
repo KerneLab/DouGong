@@ -5,7 +5,7 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.util.Utils;
 
-public abstract class AbstractBinaryResult extends AbstractResult implements Providable
+public class AbstractBinaryResult extends AbstractResult implements Providable
 {
 	private Provider	provider;
 
@@ -37,17 +37,26 @@ public abstract class AbstractBinaryResult extends AbstractResult implements Pro
 		return operator;
 	}
 
+	@Override
 	public Provider provider()
 	{
 		return provider;
 	}
 
+	@Override
 	public AbstractBinaryResult provider(Provider provider)
 	{
 		this.provider = provider;
 		return this;
 	}
 
+	@Override
+	protected AbstractBinaryResult replicate()
+	{
+		return new AbstractBinaryResult(operator(), operand1(), operand2()).provider(provider());
+	}
+
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		Utils.outputExpr(buffer, operand1());

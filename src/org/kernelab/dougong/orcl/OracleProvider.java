@@ -17,11 +17,6 @@ import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Sortable;
-import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
-import org.kernelab.dougong.core.dml.opr.DivideOperator;
-import org.kernelab.dougong.core.dml.opr.MinusOperator;
-import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
-import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
@@ -45,7 +40,6 @@ import org.kernelab.dougong.orcl.dml.cond.OracleLogicalCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleNullCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleRangeCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleRegexpLikeCondition;
-import org.kernelab.dougong.orcl.dml.opr.OracleArithmeticOperator;
 import org.kernelab.dougong.orcl.dml.opr.OracleCaseDecideExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleCaseSwitchExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleJointOperator;
@@ -123,12 +117,6 @@ public class OracleProvider extends AbstractProvider
 	public OracleDelete provideDelete()
 	{
 		return this.provideProvider(new OracleDelete());
-	}
-
-	@Override
-	public DivideOperator provideDivideOperator()
-	{
-		return this.provideProvider(new OracleArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
 	@Override
@@ -221,18 +209,6 @@ public class OracleProvider extends AbstractProvider
 	public OracleLogicalCondition provideLogicalCondition()
 	{
 		return this.provideProvider(new OracleLogicalCondition());
-	}
-
-	@Override
-	public MinusOperator provideMinusOperator()
-	{
-		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MINUS));
-	}
-
-	@Override
-	public MultiplyOperator provideMultiplyOperator()
-	{
-		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.MULTIPLY));
 	}
 
 	@Override
@@ -378,12 +354,6 @@ public class OracleProvider extends AbstractProvider
 		}
 
 		return buffer;
-	}
-
-	@Override
-	public PlusOperator providePlusOperator()
-	{
-		return provideProvider(new OracleArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
 	@Override

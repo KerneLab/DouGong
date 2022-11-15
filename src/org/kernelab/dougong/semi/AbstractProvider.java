@@ -43,6 +43,12 @@ import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.Withable;
+import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
+import org.kernelab.dougong.core.dml.opr.DivideOperator;
+import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
+import org.kernelab.dougong.core.dml.opr.NegativeOperator;
+import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.dml.param.ByteParam;
 import org.kernelab.dougong.core.dml.param.CharParam;
@@ -78,6 +84,7 @@ import org.kernelab.dougong.semi.dml.DaoAgent;
 import org.kernelab.dougong.semi.dml.cond.AbstractExistsCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractMembershipCondition;
+import org.kernelab.dougong.semi.dml.opr.AbstractArithmeticOperator;
 import org.kernelab.dougong.semi.dml.opr.AbstractStringExpressionResult;
 import org.kernelab.dougong.semi.dml.param.AbstractByteParam;
 import org.kernelab.dougong.semi.dml.param.AbstractCharParam;
@@ -181,6 +188,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 				return provideProvider(new DaoAgent(provideProvider(real)));
 			}
 		}, real);
+	}
+
+	@Override
+	public DivideOperator provideDivideOperator()
+	{
+		return this.provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.DIVIDE));
 	}
 
 	@Override
@@ -292,6 +305,24 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public AbstractMerge provideMerge()
 	{
 		return provideProvider(new AbstractMerge());
+	}
+
+	@Override
+	public MinusOperator provideMinusOperator()
+	{
+		return provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.MINUS));
+	}
+
+	@Override
+	public MultiplyOperator provideMultiplyOperator()
+	{
+		return provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.MULTIPLY));
+	}
+
+	@Override
+	public NegativeOperator provideNegativeOperator()
+	{
+		return provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.MINUS));
 	}
 
 	@Override
@@ -749,6 +780,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public Pivot providePivot()
 	{
 		return provideProvider(new AbstractPivot());
+	}
+
+	@Override
+	public PlusOperator providePlusOperator()
+	{
+		return provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
 	@Override

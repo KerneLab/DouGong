@@ -52,6 +52,7 @@ import org.kernelab.dougong.core.dml.opr.DivideOperator;
 import org.kernelab.dougong.core.dml.opr.JointOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
+import org.kernelab.dougong.core.dml.opr.NegativeOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.dml.param.ByteParam;
@@ -222,6 +223,8 @@ public interface Provider extends Castable
 	 * @return The text or SQL.NULL if the name is null.
 	 */
 	public String provideNameText(String name);
+
+	public NegativeOperator provideNegativeOperator();
 
 	public <T> T provideNewInstance(Class<T> cls);
 

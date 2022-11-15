@@ -491,6 +491,12 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return provider().provideComparisonCondition().ne(this, expr);
 	}
 
+	@Override
+	public Result negative()
+	{
+		return provider().provideNegativeOperator().operate(this);
+	}
+
 	protected boolean nocycle()
 	{
 		return nocycle;

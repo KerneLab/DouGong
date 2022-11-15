@@ -18,11 +18,6 @@ import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Sortable;
-import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
-import org.kernelab.dougong.core.dml.opr.DivideOperator;
-import org.kernelab.dougong.core.dml.opr.MinusOperator;
-import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
-import org.kernelab.dougong.core.dml.opr.PlusOperator;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
@@ -44,7 +39,6 @@ import org.kernelab.dougong.maria.dml.cond.MariaLogicalCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaNullCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaRangeCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaRegexpLikeCondition;
-import org.kernelab.dougong.maria.dml.opr.MariaArithmeticOperator;
 import org.kernelab.dougong.maria.dml.opr.MariaCaseDecideExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaCaseSwitchExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaJointOperator;
@@ -120,12 +114,6 @@ public class MariaProvider extends AbstractProvider
 	}
 
 	@Override
-	public DivideOperator provideDivideOperator()
-	{
-		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.DIVIDE));
-	}
-
-	@Override
 	public ResultSet provideDoInsertAndReturnGenerates(SQLKit kit, SQL sql, Insert insert, Map<String, Object> params,
 			GenerateValueColumns generates, Column[] returns) throws SQLException
 	{
@@ -186,18 +174,6 @@ public class MariaProvider extends AbstractProvider
 	public MariaLogicalCondition provideLogicalCondition()
 	{
 		return this.provideProvider(new MariaLogicalCondition());
-	}
-
-	@Override
-	public MinusOperator provideMinusOperator()
-	{
-		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.MINUS));
-	}
-
-	@Override
-	public MultiplyOperator provideMultiplyOperator()
-	{
-		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.MULTIPLY));
 	}
 
 	@Override
@@ -285,12 +261,6 @@ public class MariaProvider extends AbstractProvider
 	public Pivot providePivot()
 	{
 		return provideProvider(new MariaPivot());
-	}
-
-	@Override
-	public PlusOperator providePlusOperator()
-	{
-		return this.provideProvider(new MariaArithmeticOperator(ArithmeticOperable.PLUS));
 	}
 
 	@Override

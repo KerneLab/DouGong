@@ -135,6 +135,12 @@ public abstract class AbstractAllItems implements AllItems
 	}
 
 	@Override
+	public Result negative()
+	{
+		return null;
+	}
+
+	@Override
 	public RangeCondition notBetween(Expression from, Expression to)
 	{
 		return null;

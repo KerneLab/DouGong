@@ -19,8 +19,8 @@ public class TestSelect
 	{
 	}
 
-	// public static SQL $ = new SQL(new MariaProvider());
-	public static SQL $ = new SQL(new OracleProvider());
+	public static SQL $ = new SQL(new MariaProvider());
+	// public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
@@ -70,7 +70,7 @@ public class TestSelect
 
 		Select sel = $.from(s = $.table(STAF.class)) //
 				.where(s.STAF_ID.isNotNull()) //
-				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
+				.select(s.STAF_ID.as("id"), s.STAF_NAME, (s.STAF_SALARY.plus($.v(100))).negative());
 
 		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id"), sel.ref("STAF_NAME")));
 

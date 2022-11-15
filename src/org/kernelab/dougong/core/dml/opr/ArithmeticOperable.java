@@ -1,6 +1,7 @@
 package org.kernelab.dougong.core.dml.opr;
 
-public interface ArithmeticOperable extends PlusOperable, MinusOperable, MultiplyOperable, DivideOperable
+public interface ArithmeticOperable
+		extends PlusOperable, MinusOperable, NegativeOperable, MultiplyOperable, DivideOperable
 {
 	public static final String	PLUS		= "+";
 
