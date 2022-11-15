@@ -70,7 +70,8 @@ public class TestSelect
 
 		Select sel = $.from(s = $.table(STAF.class)) //
 				.where(s.STAF_ID.isNotNull()) //
-				.select(s.STAF_ID.as("id"), s.STAF_NAME, (s.STAF_SALARY.plus($.v(100))).negative());
+				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY.negative().negative().as("nn"),
+						(s.STAF_SALARY.multiply($.v(100))).negative().as("n2"));
 
 		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id"), sel.ref("STAF_NAME")));
 

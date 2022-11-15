@@ -52,9 +52,7 @@ public class AbstractUnaryResult extends AbstractResult implements Providable
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		buffer.append(operator());
-		buffer.append('(');
 		Utils.outputExpr(buffer, operand());
-		buffer.append(')');
 		return buffer;
 	}
 }
