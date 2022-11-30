@@ -137,6 +137,16 @@ public class SQL
 		return provider().provideStringItem(expr);
 	}
 
+	public <T extends Function> T f(Class<T> cls, Expression... args)
+	{
+		return func(cls, args);
+	}
+
+	public <T extends Function> T f(T func, Expression... args)
+	{
+		return func(func, args);
+	}
+
 	public ComposableCondition False()
 	{
 		return provider().provideLogicalCondition().and(expr("0").eq(expr("1")));
