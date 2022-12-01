@@ -7,9 +7,16 @@ import org.kernelab.dougong.core.dml.Sortable;
 
 public interface Function extends Named, Item, Aliases, Sortable, Member, Providable
 {
+	@Override
+	public Function alias(String alias);
+
+	@Override
 	public Function aliases(String... aliases);
 
 	public Expression[] args();
+
+	@Override
+	public Function as(String alias);
 
 	/**
 	 * Get a copy of this Function with the given alias.
