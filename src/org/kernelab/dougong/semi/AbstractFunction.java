@@ -14,6 +14,8 @@ public class AbstractFunction extends AbstractSortable implements Function
 
 	private Expression[]	arguments;
 
+	private String			catalog	= null;
+
 	private String			schema	= null;
 
 	private String[]		aliases	= null;
@@ -24,6 +26,7 @@ public class AbstractFunction extends AbstractSortable implements Function
 		return (AbstractFunction) super.alias(alias);
 	}
 
+	@Override
 	public String[] aliases()
 	{
 		return this.aliases;
@@ -51,6 +54,7 @@ public class AbstractFunction extends AbstractSortable implements Function
 		return this;
 	}
 
+	@Override
 	public Expression[] args()
 	{
 		return arguments;
@@ -74,22 +78,38 @@ public class AbstractFunction extends AbstractSortable implements Function
 		return this.replicate().aliases(alias);
 	}
 
+	@Override
 	public AbstractFunction call(Expression... arguments)
 	{
 		return this.replicate().args(arguments);
 	}
 
+	@Override
+	public String catalog()
+	{
+		return catalog;
+	}
+
+	protected AbstractFunction catalog(String catalog)
+	{
+		this.catalog = catalog;
+		return this;
+	}
+
 	protected void initFunction()
 	{
+		this.catalog(Utils.getCatalogFromMember(this));
 		this.schema(Utils.getSchemaFromMember(this));
 		this.name(Utils.getNameFromNamed(this));
 	}
 
+	@Override
 	public boolean isPseudo()
 	{
 		return false;
 	}
 
+	@Override
 	public String name()
 	{
 		return name;
@@ -113,11 +133,13 @@ public class AbstractFunction extends AbstractSortable implements Function
 		}
 	}
 
+	@Override
 	public Provider provider()
 	{
 		return provider;
 	}
 
+	@Override
 	public AbstractFunction provider(Provider provider)
 	{
 		this.provider = provider;
@@ -129,6 +151,7 @@ public class AbstractFunction extends AbstractSortable implements Function
 	protected AbstractFunction replicate()
 	{
 		return (AbstractFunction) this.newInstance() //
+				.catalog(this.catalog()) //
 				.schema(this.schema()) //
 				.name(this.name()) //
 				.args(this.args()) //
@@ -137,6 +160,7 @@ public class AbstractFunction extends AbstractSortable implements Function
 		;
 	}
 
+	@Override
 	public String schema()
 	{
 		return schema;
@@ -148,16 +172,19 @@ public class AbstractFunction extends AbstractSortable implements Function
 		return this;
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		return provider().provideOutputFunction(buffer, this);
 	}
 
+	@Override
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}
 
+	@Override
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return Utils.outputAlias(this.provider(), toString(buffer), this);

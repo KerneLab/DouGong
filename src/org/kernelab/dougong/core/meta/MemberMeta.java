@@ -14,6 +14,13 @@ import java.lang.annotation.Target;
 public @interface MemberMeta
 {
 	/**
+	 * The catalog name which would leading this schema name.<br />
+	 * Empty means the catalog name not specified by this attribution.<br />
+	 * Default is empty.
+	 */
+	public String catalog() default "";
+
+	/**
 	 * The schema name which would leading this member name.<br />
 	 * Empty means the schema name not specified by this attribution.<br />
 	 * Default is empty.
@@ -22,9 +29,9 @@ public @interface MemberMeta
 
 	/**
 	 * Indicate whether this member class follows its package which would be the
-	 * schema name leading the member name.<br />
-	 * This attribution would be taken effect only when none schema name has
-	 * been specified explicitly.<br />
+	 * catalog and schema name leading the member name.<br />
+	 * This attribution would be taken effect only when none catalog or schema
+	 * name had been specified explicitly.<br />
 	 * Default is false.
 	 */
 	public boolean follow() default false;

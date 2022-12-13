@@ -71,6 +71,56 @@ public class Utils
 		return target;
 	}
 
+	public static String getCatalogFromMember(Member member)
+	{
+		if (member != null)
+		{
+			String catalog = member.catalog();
+
+			if (Tools.isNullOrEmpty(catalog))
+			{
+				MemberMeta meta = member.getClass().getAnnotation(MemberMeta.class);
+
+				if (meta != null)
+				{
+					catalog = meta.catalog();
+
+					if (catalog.length() == 0 && meta.follow())
+					{
+						catalog = Utils.getCatalogFromPackage(member.getClass());
+					}
+
+					catalog = Tools.isNullOrEmpty(catalog) ? null : catalog;
+				}
+			}
+
+			return catalog;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public static String getCatalogFromPackage(Class<?> cls)
+	{
+		if (cls != null)
+		{
+			String pkg = cls.getPackage().getName();
+			int idx = pkg.lastIndexOf('.');
+			if (idx < 0)
+			{
+				return "";
+			}
+			pkg = pkg.substring(0, idx);
+			return pkg.substring(pkg.lastIndexOf('.') + 1);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	public static String getDataAliasFromField(Field field)
 	{
 		if (field != null)

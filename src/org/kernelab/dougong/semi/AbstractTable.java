@@ -14,6 +14,8 @@ import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractTable extends AbstractEntity implements Table
 {
+	private String	catalog	= null;
+
 	private String	schema	= null;
 
 	private String	name;
@@ -32,12 +34,14 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return this;
 	}
 
+	@Override
 	public AllItems all()
 	{
 		return this.provider().provideAllItems(this);
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public <T extends Table> T as(String alias)
 	{
 		AbstractTable table = this.replicate();
@@ -49,8 +53,27 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return (T) table;
 	}
 
+	@Override
+	public String catalog()
+	{
+		return catalog;
+	}
+
+	protected AbstractTable catalog(String catalog)
+	{
+		this.catalog = catalog;
+		return this;
+	}
+
+	@Override
+	public String getFullName()
+	{
+		return this.provider().provideOutputTableName(new StringBuilder(), this).toString();
+	}
+
 	protected void initTable()
 	{
+		this.catalog(Utils.getCatalogFromMember(this));
 		this.schema(Utils.getSchemaFromMember(this));
 		this.name(Utils.getNameFromNamed(this));
 	}
@@ -76,18 +99,21 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return this.provider().provideInsert().into(this).columns(columns).values(values);
 	}
 
+	@Override
 	public String name()
 	{
 		return name;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public <T extends Table> T name(String name)
 	{
 		this.name = name == null ? Utils.getNameFromClass(this.getClass()) : name;
 		return (T) this;
 	}
 
+	@Override
 	public String partition()
 	{
 		return partition;
@@ -118,6 +144,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		try
 		{
 			table = (AbstractTable) this.getClass().newInstance() //
+					.catalog(this.catalog()) //
 					.schema(this.schema()) //
 					.name(this.name()) //
 					.provider(this.provider());
@@ -128,6 +155,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return table;
 	}
 
+	@Override
 	public String schema()
 	{
 		return schema;
@@ -139,26 +167,31 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return this;
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		return this.provider().provideOutputTableName(buffer, this);
 	}
 
+	@Override
 	public StringBuilder toStringDeletable(StringBuilder buffer)
 	{
 		return this.provider().provideOutputTableNameAliased(buffer, this);
 	}
 
+	@Override
 	public StringBuilder toStringInsertable(StringBuilder buffer)
 	{
 		return this.provider().provideOutputTableNameAliased(buffer, this);
 	}
 
+	@Override
 	public StringBuilder toStringUpdatable(StringBuilder buffer)
 	{
 		return this.provider().provideOutputTableNameAliased(buffer, this);
 	}
 
+	@Override
 	public StringBuilder toStringViewed(StringBuilder buffer)
 	{
 		return this.provider().provideOutputTableNameAliased(buffer, this);

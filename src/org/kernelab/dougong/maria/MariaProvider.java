@@ -200,6 +200,11 @@ public class MariaProvider extends AbstractProvider
 	{
 		if (Tools.notNullOrEmpty(function.schema()))
 		{
+			if (Tools.notNullOrEmpty(function.catalog()))
+			{
+				this.provideOutputNameText(buffer, function.catalog());
+				buffer.append(OBJECT_SEPARATOR_CHAR);
+			}
 			this.provideOutputNameText(buffer, function.schema());
 			buffer.append(OBJECT_SEPARATOR_CHAR);
 		}

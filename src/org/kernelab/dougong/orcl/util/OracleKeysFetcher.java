@@ -20,7 +20,9 @@ public class OracleKeysFetcher implements KeysFetcher
 		Tools.debug(new OracleKeysFetcher().SQL_QUERY_KEY_WITHOUT_SCHEMA());
 	}
 
-	public Map<Pair<String, String>, List<String>> foreignKeys(SQLKit kit, String table, String schema) throws Exception
+	@Override
+	public Map<Pair<String, String>, List<String>> foreignKeys(SQLKit kit, String table, String schema, String catalog)
+			throws Exception
 	{
 		String sql = Tools.isNullOrEmpty(schema) ? SQL_QUERY_KEY_WITHOUT_SCHEMA() : SQL_QUERY_KEY_WITH_SCHEMA();
 
@@ -47,7 +49,8 @@ public class OracleKeysFetcher implements KeysFetcher
 		return keys;
 	}
 
-	public Map<String, Integer> primaryKey(SQLKit kit, String table, String schema) throws Exception
+	@Override
+	public Map<String, Integer> primaryKey(SQLKit kit, String table, String schema, String catalog) throws Exception
 	{
 		String sql = Tools.isNullOrEmpty(schema) ? SQL_QUERY_KEY_WITHOUT_SCHEMA() : SQL_QUERY_KEY_WITH_SCHEMA();
 

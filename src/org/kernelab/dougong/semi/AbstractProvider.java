@@ -451,6 +451,11 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		{
 			if (Tools.notNullOrEmpty(member.schema()))
 			{
+				if (Tools.notNullOrEmpty(member.catalog()))
+				{
+					this.provideOutputNameText(buffer, member.catalog());
+					buffer.append(OBJECT_SEPARATOR_CHAR);
+				}
 				this.provideOutputNameText(buffer, member.schema());
 				buffer.append(OBJECT_SEPARATOR_CHAR);
 			}

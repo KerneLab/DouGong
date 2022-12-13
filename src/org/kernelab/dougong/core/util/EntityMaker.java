@@ -361,7 +361,7 @@ public class EntityMaker
 	}
 
 	public static File make(Provider provider, SQLKit kit, List<ColumnInfo> meta, String name, Class<?> sup, String pkg,
-			File base, String schema, boolean innerClass, String charSet, String style, File template)
+			File base, String catalog, String schema, boolean innerClass, String charSet, String style, File template)
 			throws IOException, SQLException
 	{
 		return new EntityMaker() //
@@ -372,6 +372,7 @@ public class EntityMaker
 				.sup(sup) //
 				.pkg(pkg) //
 				.base(base) //
+				.catalog(catalog) //
 				.schema(schema) //
 				.innerClass(innerClass) //
 				.charSet(charSet) //
@@ -382,11 +383,11 @@ public class EntityMaker
 	}
 
 	public static File make(Provider provider, SQLKit kit, ResultSetMetaData meta, String name, Class<?> sup,
-			String pkg, File base, String schema, boolean innerClass, String charSet, String style, File template)
-			throws IOException, SQLException
+			String pkg, File base, String catalog, String schema, boolean innerClass, String charSet, String style,
+			File template) throws IOException, SQLException
 	{
-		return make(provider, kit, resultSetMetaToColumnList(meta), name, sup, pkg, base, schema, innerClass, charSet,
-				style, template);
+		return make(provider, kit, resultSetMetaToColumnList(meta), name, sup, pkg, base, catalog, schema, innerClass,
+				charSet, style, template);
 	}
 
 	public static File makeSubquery(Provider provider, SQLKit kit, List<ColumnInfo> meta, String name, File base,
@@ -407,6 +408,7 @@ public class EntityMaker
 				inClass.getPackage().getName(), //
 				base, //
 				null, //
+				null, //
 				true, //
 				charSet, //
 				style, //
@@ -424,6 +426,7 @@ public class EntityMaker
 				AbstractSubquery.class, //
 				pkg, //
 				base, //
+				null, //
 				null, //
 				false, //
 				charSet, //
@@ -445,8 +448,8 @@ public class EntityMaker
 				style);
 	}
 
-	public static File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String schema,
-			String charSet, String style) throws IOException, SQLException
+	public static File makeTable(Provider provider, SQLKit kit, String name, String pkg, File base, String catalog,
+			String schema, String charSet, String style) throws IOException, SQLException
 	{
 		String tab = (Tools.notNullOrEmpty(schema) ? schema + "." : "") + name;
 		return make(provider, //
@@ -456,6 +459,7 @@ public class EntityMaker
 				AbstractTable.class, //
 				pkg, //
 				base, //
+				catalog, //
 				schema, //
 				false, //
 				charSet, //
@@ -486,6 +490,7 @@ public class EntityMaker
 				PredefinedView.class, //
 				cls.getPackage().getName(), //
 				base, //
+				null, //
 				null, //
 				false, //
 				charSet, //
@@ -525,7 +530,13 @@ public class EntityMaker
 
 	private boolean									innerClass;
 
+	private String									catalog;
+
+	private String									catalogExpr;
+
 	private String									schema;
+
+	private String									schemaExpr;
 
 	private String									cs;
 
@@ -545,6 +556,21 @@ public class EntityMaker
 
 	private Map<Pair<String, String>, List<String>>	foreignKeys;
 
+	public EntityMaker addImport(Class<?> cls)
+	{
+		imports.add(cls.getName());
+		return this;
+	}
+
+	public EntityMaker addImports(Iterable<Class<?>> classes)
+	{
+		for (Class<?> cls : classes)
+		{
+			imports.add(cls.getName());
+		}
+		return this;
+	}
+
 	public File base()
 	{
 		return base;
@@ -553,6 +579,28 @@ public class EntityMaker
 	public EntityMaker base(File base)
 	{
 		this.base = base;
+		return this;
+	}
+
+	public String catalog()
+	{
+		return catalog;
+	}
+
+	public EntityMaker catalog(String catalog)
+	{
+		this.catalog = catalog;
+		return this;
+	}
+
+	public String catalogExpr()
+	{
+		return catalogExpr;
+	}
+
+	public EntityMaker catalogExpr(String catalogExpr)
+	{
+		this.catalogExpr = catalogExpr;
 		return this;
 	}
 
@@ -573,7 +621,7 @@ public class EntityMaker
 		{
 			try
 			{
-				this.foreignKeys = keysFetcher.foreignKeys(kit(), name(), schema());
+				this.foreignKeys = keysFetcher.foreignKeys(kit(), name(), schema(), catalog());
 			}
 			catch (Exception e)
 			{
@@ -601,7 +649,7 @@ public class EntityMaker
 		{
 			try
 			{
-				this.primaryKey = keysFetcher.primaryKey(kit(), name(), schema());
+				this.primaryKey = keysFetcher.primaryKey(kit(), name(), schema(), catalog());
 			}
 			catch (Exception e)
 			{
@@ -894,17 +942,38 @@ public class EntityMaker
 			}
 		}
 
-		if (schema() != null)
+		String schema = schema(), catalog = catalog();
+
+		if (schema != null)
 		{
 			out.write("@MemberMeta(");
 
-			if (schema().length() == 0)
+			if (schema.length() == 0 && catalog != null && catalog.length() == 0)
 			{
 				out.write("follow = " + true);
 			}
 			else
 			{
-				out.write("schema = \"" + Tools.escape(schema()) + "\"");
+				if (catalog != null)
+				{
+					if (catalogExpr() != null)
+					{ // Refer some expressions
+						out.write("catalog = " + catalogExpr());
+					}
+					else
+					{
+						out.write("catalog = \"" + Tools.escape(catalog) + "\"");
+					}
+					out.write(", ");
+				}
+				if (schemaExpr() != null)
+				{ // Refer some expression
+					out.write("schema = " + schemaExpr());
+				}
+				else
+				{
+					out.write("schema = \"" + Tools.escape(schema) + "\"");
+				}
 			}
 
 			println(out, ")");
@@ -987,6 +1056,17 @@ public class EntityMaker
 	public EntityMaker schema(String schema)
 	{
 		this.schema = schema;
+		return this;
+	}
+
+	public String schemaExpr()
+	{
+		return schemaExpr;
+	}
+
+	public EntityMaker schemaExpr(String schemaExpr)
+	{
+		this.schemaExpr = schemaExpr;
 		return this;
 	}
 

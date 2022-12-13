@@ -14,11 +14,12 @@ public interface KeysFetcher
 	 * @param kit
 	 * @param table
 	 * @param schema
+	 * @param catalog
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<Pair<String, String>, List<String>> foreignKeys(SQLKit kit, String table, String schema)
+	public Map<Pair<String, String>, List<String>> foreignKeys(SQLKit kit, String table, String schema, String catalog)
 			throws Exception;
 
-	public Map<String, Integer> primaryKey(SQLKit kit, String table, String schema) throws Exception;
+	public Map<String, Integer> primaryKey(SQLKit kit, String table, String schema, String catalog) throws Exception;
 }
