@@ -65,12 +65,6 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return this;
 	}
 
-	@Override
-	public String getFullName()
-	{
-		return this.provider().provideOutputTableName(new StringBuilder(), this).toString();
-	}
-
 	protected void initTable()
 	{
 		this.catalog(Utils.getCatalogFromMember(this));
@@ -165,6 +159,12 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	{
 		this.schema = schema;
 		return this;
+	}
+
+	@Override
+	public String toString()
+	{
+		return this.toString(new StringBuilder()).toString();
 	}
 
 	@Override
