@@ -9,7 +9,11 @@ public interface Table extends Named, View, Entity, Member, Partitioned, Inserta
 
 	public <T extends Table> T as(String alias);
 
+	public <T extends Table> T catalog(String catalog);
+
 	public <T extends Table> T name(String name);
+
+	public <T extends Table> T schema(String schema);
 
 	/**
 	 * Get the formal table name including catalog and schema with boundary

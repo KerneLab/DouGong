@@ -59,10 +59,16 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return catalog;
 	}
 
-	protected AbstractTable catalog(String catalog)
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Table> T catalog(String catalog)
 	{
 		this.catalog = catalog;
-		return this;
+		if (catalog == null)
+		{
+			this.catalog = Utils.getCatalogFromMember(this);
+		}
+		return (T) this;
 	}
 
 	protected void initTable()
@@ -103,7 +109,11 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	@Override
 	public <T extends Table> T name(String name)
 	{
-		this.name = name == null ? Utils.getNameFromClass(this.getClass()) : name;
+		this.name = name;
+		if (name == null)
+		{
+			this.name = Utils.getNameFromNamed(this);
+		}
 		return (T) this;
 	}
 
@@ -155,10 +165,16 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return schema;
 	}
 
-	protected AbstractTable schema(String schema)
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Table> T schema(String schema)
 	{
 		this.schema = schema;
-		return this;
+		if (schema == null)
+		{
+			this.schema = Utils.getSchemaFromMember(this);
+		}
+		return (T) this;
 	}
 
 	@Override
