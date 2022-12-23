@@ -4,6 +4,21 @@ import org.kernelab.dougong.core.dml.Expression;
 
 public interface WindowFunction extends Function
 {
+	@Override
+	public WindowFunction alias(String alias);
+
+	@Override
+	public WindowFunction aliases(String... aliases);
+
+	@Override
+	public WindowFunction as(String alias);
+
+	@Override
+	public WindowFunction as(String... aliases);
+
+	@Override
+	public WindowFunction call(Expression... args);
+
 	public Expression[] orderBy();
 
 	public WindowFunction orderBy(Expression... orderBy);

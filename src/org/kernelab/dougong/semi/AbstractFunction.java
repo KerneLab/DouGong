@@ -73,9 +73,9 @@ public class AbstractFunction extends AbstractSortable implements Function
 	}
 
 	@Override
-	public AbstractFunction as(String... alias)
+	public AbstractFunction as(String... aliases)
 	{
-		return this.replicate().aliases(alias);
+		return this.replicate().aliases(aliases);
 	}
 
 	@Override

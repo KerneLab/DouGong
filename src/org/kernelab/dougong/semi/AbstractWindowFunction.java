@@ -15,6 +15,30 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 
 	private Object[]		between;
 
+	@Override
+	public AbstractWindowFunction alias(String alias)
+	{
+		return (AbstractWindowFunction) super.alias(alias);
+	}
+
+	@Override
+	public AbstractWindowFunction aliases(String... aliases)
+	{
+		return (AbstractWindowFunction) super.aliases(aliases);
+	}
+
+	@Override
+	public AbstractWindowFunction as(String alias)
+	{
+		return (AbstractWindowFunction) super.as(alias);
+	}
+
+	@Override
+	public AbstractWindowFunction as(String... aliases)
+	{
+		return (AbstractWindowFunction) super.as(aliases);
+	}
+
 	public Object[] between()
 	{
 		return between;
@@ -24,6 +48,12 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 	{
 		this.between = between;
 		return this;
+	}
+
+	@Override
+	public AbstractWindowFunction call(Expression... args)
+	{
+		return (AbstractWindowFunction) super.call(args);
 	}
 
 	protected boolean isRows()
@@ -38,22 +68,26 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 				|| (between() != null && between().length > 0);
 	}
 
+	@Override
 	public Expression[] orderBy()
 	{
 		return orderBy;
 	}
 
+	@Override
 	public AbstractWindowFunction orderBy(Expression... exprs)
 	{
 		this.orderBy = exprs;
 		return this;
 	}
 
+	@Override
 	public Expression[] partitionBy()
 	{
 		return partitionBy;
 	}
 
+	@Override
 	public AbstractWindowFunction partitionBy(Expression... exprs)
 	{
 		this.partitionBy = exprs;
@@ -66,6 +100,7 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 		return this;
 	}
 
+	@Override
 	public AbstractWindowFunction range(Object... between)
 	{
 		this.rows = false;
@@ -84,6 +119,7 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 				.between(between());
 	}
 
+	@Override
 	public boolean rows()
 	{
 		return rows;
@@ -95,6 +131,7 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 		return this;
 	}
 
+	@Override
 	public AbstractWindowFunction rows(Object... between)
 	{
 		this.rows = true;
