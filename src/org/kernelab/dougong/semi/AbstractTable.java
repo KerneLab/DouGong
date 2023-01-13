@@ -148,10 +148,11 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		try
 		{
 			table = (AbstractTable) this.getClass().newInstance() //
+					.provider(this.provider()) //
 					.catalog(this.catalog()) //
 					.schema(this.schema()) //
 					.name(this.name()) //
-					.provider(this.provider());
+			;
 		}
 		catch (Exception e)
 		{
