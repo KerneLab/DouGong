@@ -68,12 +68,13 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		AbstractSubquery sq = null;
 		try
 		{
-			sq = this.getClass().newInstance();
+			sq = (AbstractSubquery) this.newInstance();
 			sq.select(this.select().as(null));
 			sq.provider(this.provider());
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 		}
 		return sq;
 	}

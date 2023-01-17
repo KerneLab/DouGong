@@ -146,6 +146,12 @@ public class EntityMaker
 		}
 
 		@Override
+		public String getNewInstanceMethod()
+		{
+			return null;
+		}
+
+		@Override
 		public String getStatement(String statement)
 		{
 			return statement + ";";
@@ -233,6 +239,8 @@ public class EntityMaker
 
 		public String getForeignKeyMethod(String name, String table, String columns);
 
+		public String getNewInstanceMethod();
+
 		public String getStatement(String statement);
 
 		public String getTypeMeta(ColumnInfo info);
@@ -268,6 +276,12 @@ public class EntityMaker
 		{
 			return indent(1) + "@ForeignKeyMeta" + nl() //
 					+ indent(1) + "def " + name + "(ref: " + table + "): ForeignKey = foreignKey(ref, " + columns + ")";
+		}
+
+		@Override
+		public String getNewInstanceMethod()
+		{
+			return "protected override def newInstance() = new " + name() + "()";
 		}
 
 		@Override
@@ -876,6 +890,13 @@ public class EntityMaker
 				}
 			}
 			println(out, indent + styler().getColumn(wash(column)));
+		}
+
+		String newIns = styler().getNewInstanceMethod();
+		if (newIns != null)
+		{
+			nl(out);
+			println(out, indent + newIns);
 		}
 
 		for (Entry<Pair<String, String>, List<String>> entry : this.getForeignKeys().entrySet())

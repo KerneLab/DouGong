@@ -44,7 +44,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	@Override
 	public <T extends Table> T as(String alias)
 	{
-		AbstractTable table = this.replicate();
+		AbstractTable table = this.clone();
 		if (table != null)
 		{
 			table.alias(alias);
@@ -69,6 +69,26 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 			this.catalog = Utils.getCatalogFromMember(this);
 		}
 		return (T) this;
+	}
+
+	@Override
+	protected AbstractTable clone()
+	{
+		AbstractTable table = null;
+		try
+		{
+			table = ((AbstractTable) this.newInstance()) //
+					.provider(this.provider()) //
+					.catalog(this.catalog()) //
+					.schema(this.schema()) //
+					.name(this.name()) //
+			;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return table;
 	}
 
 	protected void initTable()
@@ -126,7 +146,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	@SuppressWarnings("unchecked")
 	public <T extends Table> T partition(String partName)
 	{
-		AbstractTable table = this.replicate();
+		AbstractTable table = this.clone();
 		if (table != null)
 		{
 			table.partition = partName;
@@ -140,24 +160,6 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		super.provider(provider);
 		this.initTable();
 		return this;
-	}
-
-	protected AbstractTable replicate()
-	{
-		AbstractTable table = null;
-		try
-		{
-			table = (AbstractTable) this.getClass().newInstance() //
-					.provider(this.provider()) //
-					.catalog(this.catalog()) //
-					.schema(this.schema()) //
-					.name(this.name()) //
-			;
-		}
-		catch (Exception e)
-		{
-		}
-		return table;
 	}
 
 	@Override

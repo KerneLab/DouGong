@@ -426,6 +426,11 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		return this.newColumn(this.getColumnFields().get(name));
 	}
 
+	protected AbstractEntity newInstance() throws Exception
+	{
+		return this.getClass().newInstance();
+	}
+
 	public PrimaryKey primaryKey()
 	{
 		TreeMap<Integer, Column> keys = new TreeMap<Integer, Column>();
