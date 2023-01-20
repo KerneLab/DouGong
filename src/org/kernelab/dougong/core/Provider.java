@@ -1,5 +1,6 @@
 package org.kernelab.dougong.core;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -76,7 +77,7 @@ import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Recursor;
 
-public interface Provider extends Castable
+public interface Provider extends Castable, Serializable
 {
 	public AbsoluteKey provideAbsoluteKey(Entity entity, Column... columns);
 

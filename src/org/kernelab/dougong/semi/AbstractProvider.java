@@ -105,6 +105,11 @@ import org.kernelab.dougong.semi.dml.param.AbstractTimestampParam;
 
 public abstract class AbstractProvider extends AbstractCastable implements Provider
 {
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID		= 3634389915965491293L;
+
 	public static final char	OBJECT_SEPARATOR_CHAR	= '.';
 
 	public static final char	STRING_QUOTE_BOUNDARY	= '\'';

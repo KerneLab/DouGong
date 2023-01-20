@@ -281,7 +281,7 @@ public class EntityMaker
 		@Override
 		public String getNewInstanceMethod()
 		{
-			return "protected override def newInstance() = new " + name() + "()";
+			return !innerClass() ? null : "protected override def newInstance() = new " + name() + "()";
 		}
 
 		@Override

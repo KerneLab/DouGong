@@ -46,6 +46,11 @@ import org.kernelab.dougong.semi.AbstractProvider;
 
 public class MariaProvider extends AbstractProvider
 {
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 4291892762576972483L;
+
 	public static final char	TEXT_BOUNDARY_CHAR	= '`';
 
 	public static final String	TEXT_BOUNDARY_MARK	= "`";

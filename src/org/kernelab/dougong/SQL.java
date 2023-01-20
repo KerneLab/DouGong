@@ -1,5 +1,6 @@
 package org.kernelab.dougong;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -46,11 +47,16 @@ import org.kernelab.dougong.core.util.Recursor;
 import org.kernelab.dougong.semi.dml.ViewSelf;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
 
-public class SQL
+public class SQL implements Serializable
 {
-	public static final String	NULL	= "NULL";
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 4657293054310219395L;
 
-	private final Provider		provider;
+	public static final String	NULL				= "NULL";
+
+	protected final Provider	provider;
 
 	public SQL(Provider provider)
 	{

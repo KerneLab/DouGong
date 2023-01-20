@@ -51,6 +51,11 @@ import oracle.jdbc.OraclePreparedStatement;
 
 public class OracleProvider extends AbstractProvider
 {
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= -3963780549845482491L;
+
 	public static final char	TEXT_BOUNDARY_CHAR	= '"';
 
 	public static final String	TEXT_BOUNDARY_MARK	= "\"";
