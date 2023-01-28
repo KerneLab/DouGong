@@ -186,10 +186,20 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return this.toString(new StringBuilder()).toString();
 	}
 
+	public String toString(int level)
+	{
+		return this.toString(new StringBuilder(), level).toString();
+	}
+
 	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		return this.provider().provideOutputTableName(buffer, this);
+		return this.toString(buffer, -1);
+	}
+
+	public StringBuilder toString(StringBuilder buffer, int level)
+	{
+		return this.provider().provideOutputTableName(buffer, this, level);
 	}
 
 	@Override

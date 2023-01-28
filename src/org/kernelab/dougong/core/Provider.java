@@ -288,9 +288,10 @@ public interface Provider extends Castable, Serializable
 	 * 
 	 * @param buffer
 	 * @param member
+	 * @param level
 	 * @return The given buffer.
 	 */
-	public StringBuilder provideOutputMember(StringBuilder buffer, Member member);
+	public StringBuilder provideOutputMember(StringBuilder buffer, Member member, int level);
 
 	/**
 	 * Output the name text to the buffer.
@@ -312,7 +313,7 @@ public interface Provider extends Castable, Serializable
 	 */
 	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort);
 
-	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table);
+	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table, int level);
 
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table);
 

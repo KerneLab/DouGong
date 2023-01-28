@@ -450,13 +450,13 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	}
 
 	@Override
-	public StringBuilder provideOutputMember(StringBuilder buffer, Member member)
+	public StringBuilder provideOutputMember(StringBuilder buffer, Member member, int level)
 	{
 		if (buffer != null)
 		{
-			if (Tools.notNullOrEmpty(member.schema()))
+			if (Tools.notNullOrEmpty(member.schema()) && (level < 0 || level >= 1))
 			{
-				if (Tools.notNullOrEmpty(member.catalog()))
+				if (Tools.notNullOrEmpty(member.catalog()) && (level < 0 || level >= 2))
 				{
 					this.provideOutputNameText(buffer, member.catalog());
 					buffer.append(OBJECT_SEPARATOR_CHAR);
@@ -480,16 +480,16 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	}
 
 	@Override
-	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table)
+	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table, int level)
 	{
-		this.provideOutputMember(buffer, table);
+		this.provideOutputMember(buffer, table, level);
 		return buffer;
 	}
 
 	@Override
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table)
 	{
-		this.provideOutputTableName(buffer, table);
+		this.provideOutputTableName(buffer, table, -1);
 		this.provideOutputTablePartitionClause(buffer, table);
 		this.provideOutputAlias(buffer, table);
 		return buffer;

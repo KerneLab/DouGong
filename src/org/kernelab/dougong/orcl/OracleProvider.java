@@ -255,7 +255,7 @@ public class OracleProvider extends AbstractProvider
 	{
 		if (!function.isPseudo())
 		{
-			this.provideOutputMember(buffer, function);
+			this.provideOutputMember(buffer, function, -1);
 		}
 		else
 		{

@@ -173,9 +173,29 @@ public class AbstractFunction extends AbstractSortable implements Function
 	}
 
 	@Override
+	public String toString()
+	{
+		return toString(new StringBuilder()).toString();
+	}
+
+	@Deprecated
+	@Override
+	public String toString(int level)
+	{
+		return toString();
+	}
+
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		return provider().provideOutputFunction(buffer, this);
+	}
+
+	@Deprecated
+	@Override
+	public StringBuilder toString(StringBuilder buffer, int level)
+	{
+		return toString(buffer);
 	}
 
 	@Override
