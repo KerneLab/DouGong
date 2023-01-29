@@ -161,7 +161,7 @@ public class AbstractMerge extends AbstractHintable implements Merge
 			{
 				buffer.append(',');
 			}
-			this.provider().provideOutputColumnReference(buffer, column);
+			this.provider().provideOutputColumnInsert(buffer, column);
 		}
 
 		buffer.append(") VALUES (");

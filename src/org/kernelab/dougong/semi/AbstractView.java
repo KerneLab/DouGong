@@ -30,16 +30,19 @@ public abstract class AbstractView extends AbstractText implements View
 		super();
 	}
 
+	@Override
 	public Reference $(String refer)
 	{
 		return ref(refer);
 	}
 
+	@Override
 	public String alias()
 	{
 		return alias;
 	}
 
+	@Override
 	public AbstractView alias(String alias)
 	{
 		this.alias = Tools.notNullOrWhite(alias) ? alias : null;
@@ -56,11 +59,13 @@ public abstract class AbstractView extends AbstractText implements View
 		return this.provider().provideInsert().into((Insertable) this);
 	}
 
+	@Override
 	public Item item(String name)
 	{
 		return referItems().get(name);
 	}
 
+	@Override
 	public List<Item> items()
 	{
 		return items;
@@ -71,6 +76,7 @@ public abstract class AbstractView extends AbstractText implements View
 		return provider().providePivot().pivotOn(this).pivotAggs(aggs);
 	}
 
+	@Override
 	public Reference ref(String refer)
 	{
 		Item item = item(refer);
@@ -85,6 +91,7 @@ public abstract class AbstractView extends AbstractText implements View
 		}
 	}
 
+	@Override
 	public Map<String, Item> referItems()
 	{
 		return itemsMap;

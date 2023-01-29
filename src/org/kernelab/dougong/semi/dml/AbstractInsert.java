@@ -114,7 +114,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 				{
 					buffer.append(',');
 				}
-				this.provider().provideOutputColumnReference(buffer, column);
+				this.provider().provideOutputColumnInsert(buffer, column);
 			}
 
 			buffer.append(')');

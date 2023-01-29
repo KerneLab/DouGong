@@ -7,6 +7,7 @@ package org.kernelab.dougong.core.dml;
  */
 public interface Item extends Expression, Alias, Label
 {
+	@Override
 	public Item alias(String alias);
 
 	/**

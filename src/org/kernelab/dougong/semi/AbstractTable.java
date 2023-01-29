@@ -186,6 +186,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return this.toString(new StringBuilder()).toString();
 	}
 
+	@Override
 	public String toString(int level)
 	{
 		return this.toString(new StringBuilder(), level).toString();
@@ -197,6 +198,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 		return this.toString(buffer, -1);
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer, int level)
 	{
 		return this.provider().provideOutputTableName(buffer, this, level);
@@ -211,7 +213,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	@Override
 	public StringBuilder toStringInsertable(StringBuilder buffer)
 	{
-		return this.provider().provideOutputTableNameAliased(buffer, this);
+		return this.provider().provideOutputTableNameInsert(buffer, this);
 	}
 
 	@Override

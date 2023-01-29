@@ -12,17 +12,20 @@ public class OracleStringItem extends AbstractStringItem implements OracleSortab
 		super(provider);
 	}
 
+	@Override
 	public byte getNullsPosition()
 	{
 		return nulls;
 	}
 
+	@Override
 	public OracleSortable nullsFirst()
 	{
 		this.nulls = OracleSortable.NULLS_FIRST;
 		return this;
 	}
 
+	@Override
 	public OracleSortable nullsLast()
 	{
 		this.nulls = OracleSortable.NULLS_LAST;

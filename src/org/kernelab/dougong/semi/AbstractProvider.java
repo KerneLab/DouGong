@@ -423,6 +423,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	}
 
 	@Override
+	public StringBuilder provideOutputColumnInsert(StringBuilder buffer, Column column)
+	{
+		return provideOutputColumnReference(buffer, column);
+	}
+
+	@Override
 	public StringBuilder provideOutputColumnReference(StringBuilder buffer, Column column)
 	{
 		String alias = this.provideAliasLabel(this.provideViewAlias(column.view()));
@@ -493,6 +499,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		this.provideOutputTablePartitionClause(buffer, table);
 		this.provideOutputAlias(buffer, table);
 		return buffer;
+	}
+
+	@Override
+	public StringBuilder provideOutputTableNameInsert(StringBuilder buffer, Table table)
+	{
+		return provideOutputTableNameAliased(buffer, table);
 	}
 
 	@Override

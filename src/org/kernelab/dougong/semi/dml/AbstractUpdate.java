@@ -56,6 +56,7 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 		return hint;
 	}
 
+	@Override
 	public AbstractUpdate hint(String hint)
 	{
 		this.hint = hint;
@@ -83,6 +84,7 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 		return innerJoin(view, rels.joinCondition());
 	}
 
+	@Override
 	public AbstractUpdate joins(List<Join> joins)
 	{
 		super.joins(joins);
@@ -145,9 +147,10 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 		return rightJoin(view, rels.joinCondition());
 	}
 
+	@Override
 	public AbstractUpdate set(Column column, Expression value)
 	{
-		sets.add(new Relation<Column, Expression>(column, value));
+		sets().add(new Relation<Column, Expression>(column, value));
 		return this;
 	}
 

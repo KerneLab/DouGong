@@ -11,6 +11,7 @@ import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.Function;
+import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
@@ -201,6 +202,12 @@ public class MariaProvider extends AbstractProvider
 	}
 
 	@Override
+	public StringBuilder provideOutputColumnInsert(StringBuilder buffer, Column column)
+	{
+		return this.provideOutputNameText(buffer, column.name());
+	}
+
+	@Override
 	public StringBuilder provideOutputFunction(StringBuilder buffer, Function function)
 	{
 		if (Tools.notNullOrEmpty(function.schema()))
@@ -264,6 +271,14 @@ public class MariaProvider extends AbstractProvider
 				buffer.append("DESC");
 			}
 		}
+		return buffer;
+	}
+
+	@Override
+	public StringBuilder provideOutputTableNameInsert(StringBuilder buffer, Table table)
+	{
+		this.provideOutputTableName(buffer, table, -1);
+		this.provideOutputTablePartitionClause(buffer, table);
 		return buffer;
 	}
 
