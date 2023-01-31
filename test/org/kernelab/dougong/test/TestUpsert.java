@@ -3,6 +3,7 @@ package org.kernelab.dougong.test;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.dml.Insert;
+import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.maria.MariaProvider;
 import org.kernelab.dougong.maria.dml.MariaInsert;
@@ -15,6 +16,8 @@ public class TestUpsert
 	{
 		Tools.debug(makeInsertUpdateSet());
 		Tools.debug(makeInsertUpdatesByValues());
+		Tools.debug(makeInsertSelectUpdatesByValues());
+		Tools.debug(makeInsertSelectUpdatesByColumns());
 	}
 
 	public static Insert makeInsertUpdateSet()
@@ -35,5 +38,27 @@ public class TestUpsert
 				.values($.param("comp"), $.param("dept"), $.param("name")) //
 				.to(MariaInsert.class) //
 				.updatesByValues();
+	}
+
+	public static Insert makeInsertSelectUpdatesByValues()
+	{
+		DEPT d = null;
+		Select s = $.from($.table(DEPT.class, "R")).select($.all());
+		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEPT_NAME) //
+				.select(s) //
+				.pairs(d.COMP_ID, s.$("COMP_ID"), d.DEPT_ID, s.$("DEPT_ID"), d.DEPT_NAME, s.$("DEPT_NAME")) //
+				.to(MariaInsert.class) //
+				.updatesByValues();
+	}
+
+	public static Insert makeInsertSelectUpdatesByColumns()
+	{
+		DEPT d = null;
+		Select s = $.from($.table(DEPT.class, "R")).select($.all());
+		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEPT_NAME) //
+				.select(s) //
+				.pairs(d.COMP_ID, s.$("COMP_ID"), d.DEPT_ID, s.$("DEPT_ID"), d.DEPT_NAME, s.$("DEPT_NAME")) //
+				.to(MariaInsert.class) //
+				.updatesByColumns(d.DEPT_NAME, d.DEPT_ID);
 	}
 }

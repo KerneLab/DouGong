@@ -85,6 +85,24 @@ public class MariaInsert extends AbstractInsert
 		return this;
 	}
 
+	public MariaInsert updatesByColumns(Column... columns)
+	{
+		if (columns == null || columns.length == 0)
+		{
+			return this.updatesByValues();
+		}
+
+		this.updates().clear();
+
+		for (Item col : columns)
+		{
+			this.update((Column) col,
+					provider().provideStringItem("VALUES(" + provider().provideNameText(((Column) col).name()) + ")"));
+		}
+
+		return this;
+	}
+
 	public MariaInsert updatesByValues()
 	{
 		Table table = Tools.as(this.target, Table.class);
