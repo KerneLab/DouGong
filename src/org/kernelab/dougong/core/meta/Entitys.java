@@ -26,6 +26,7 @@ import org.kernelab.basis.sql.Sequel;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
+import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.EntityKey;
 import org.kernelab.dougong.core.ddl.ForeignKey;
@@ -300,9 +301,11 @@ public abstract class Entitys
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> boolean existsObject(SQLKit kit, SQL sql, Class<T> model, Object... pkVals) throws SQLException
 	{
-		Entity entity = Entitys.getEntityFromModelClass(sql, model);
+		Entity entity = (Entity) (Tools.isSubClass(model, Entity.class) ? sql.view((Class<View>) model)
+				: Entitys.getEntityFromModelClass(sql, model));
 
 		PrimaryKey pk = entity.primaryKey();
 

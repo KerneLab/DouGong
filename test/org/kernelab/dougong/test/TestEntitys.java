@@ -6,6 +6,7 @@ import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.demo.Config;
+import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.Department;
 import org.kernelab.dougong.orcl.OracleProvider;
 
@@ -20,6 +21,7 @@ public class TestEntitys
 		try
 		{
 			Tools.debug(Entitys.existsObject(Config.getSQLKit(), SQL, Department.class, "1", "12"));
+			Tools.debug(Entitys.existsObject(Config.getSQLKit(), SQL, DEPT.class, "1", "12"));
 		}
 		catch (SQLException e)
 		{
