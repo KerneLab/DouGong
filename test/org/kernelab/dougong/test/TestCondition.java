@@ -35,6 +35,7 @@ public class TestCondition
 
 		ComposableCondition c = $.isEmpty(s.STAF_ID);
 		c = c.and($.not($.isNotEmpty(s.STAF_NAME)));
+		c = c.and($.isEmpty(s.STAF_NAME));
 		c = c.or(s.DEPT_ID.isNotNull().or(s.COMP_ID.isNotNull()));
 
 		return $.from(s) //
@@ -48,6 +49,7 @@ public class TestCondition
 
 		ComposableCondition c = $.not(s.STAF_ID.isNull());
 		c = c.and($.not($.isNotEmpty(s.STAF_NAME)));
+		c = c.and($.isEmpty(s.STAF_NAME));
 		c = c.or(s.DEPT_ID.isNotNull().or(s.COMP_ID.isNotNull()));
 
 		return $.from(s) //

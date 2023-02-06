@@ -305,12 +305,12 @@ public class SQL implements Serializable
 
 	public ComposableCondition isEmpty(Expression expr)
 	{
-		return this.or(expr.isNull(), expr.eq(val("")));
+		return provider().provideIsEmptyCondition(expr);
 	}
 
 	public ComposableCondition isNotEmpty(Expression expr)
 	{
-		return this.and(expr.isNotNull(), expr.ne(val("")));
+		return provider().provideIsNotEmptyCondition(expr);
 	}
 
 	public Items list(Expression... exprs)

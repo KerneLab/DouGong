@@ -17,6 +17,7 @@ import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Sortable;
+import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
@@ -183,6 +184,22 @@ public class OracleProvider extends AbstractProvider
 	public OracleInsert provideInsert()
 	{
 		return provideProvider(new OracleInsert());
+	}
+
+	@Override
+	public ComposableCondition provideIsEmptyCondition(Expression expr)
+	{
+		return provideLogicalCondition()
+				.and(expr.isNull().or(provideStringItem("NVL(LENGTH(" + expr.toString(new StringBuilder()) + "),0)")
+						.eq(provideStringItem("0"))));
+	}
+
+	@Override
+	public ComposableCondition provideIsNotEmptyCondition(Expression expr)
+	{
+		return provideLogicalCondition()
+				.and(expr.isNotNull().and(provideStringItem("NVL(LENGTH(" + expr.toString(new StringBuilder()) + "),0)")
+						.ne(provideStringItem("0"))));
 	}
 
 	@Override

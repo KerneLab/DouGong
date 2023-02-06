@@ -40,6 +40,7 @@ import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.cond.ComparisonCondition;
+import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.dml.cond.ExistsCondition;
 import org.kernelab.dougong.core.dml.cond.LikeCondition;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
@@ -183,6 +184,10 @@ public interface Provider extends Castable, Serializable
 	public String provideHint(String hint);
 
 	public Insert provideInsert();
+
+	public ComposableCondition provideIsEmptyCondition(Expression expr);
+
+	public ComposableCondition provideIsNotEmptyCondition(Expression expr);
 
 	public Items provideItems();
 

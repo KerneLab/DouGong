@@ -19,6 +19,7 @@ import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Sortable;
+import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Utils;
@@ -148,6 +149,19 @@ public class MariaProvider extends AbstractProvider
 	public MariaInsert provideInsert()
 	{
 		return new MariaInsert().provider(this);
+	}
+
+	@Override
+	public ComposableCondition provideIsEmptyCondition(Expression expr)
+	{
+		return this.provideLogicalCondition().and(expr.isNull().or(expr.eq(provideStringItem(provideTextLiteral("")))));
+	}
+
+	@Override
+	public ComposableCondition provideIsNotEmptyCondition(Expression expr)
+	{
+		return this.provideLogicalCondition()
+				.and(expr.isNotNull().and(expr.ne(provideStringItem(provideTextLiteral("")))));
 	}
 
 	@Override
