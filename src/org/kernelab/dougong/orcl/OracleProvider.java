@@ -36,7 +36,6 @@ import org.kernelab.dougong.orcl.dml.OracleSortable;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
 import org.kernelab.dougong.orcl.dml.cond.OracleComparisonCondition;
-import org.kernelab.dougong.orcl.dml.cond.OracleLogicalCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleNullCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleRangeCondition;
 import org.kernelab.dougong.orcl.dml.cond.OracleRegexpLikeCondition;
@@ -208,12 +207,6 @@ public class OracleProvider extends AbstractProvider
 	public KeysFetcher provideKeysFetcher()
 	{
 		return new OracleKeysFetcher();
-	}
-
-	@Override
-	public OracleLogicalCondition provideLogicalCondition()
-	{
-		return this.provideProvider(new OracleLogicalCondition());
 	}
 
 	@Override

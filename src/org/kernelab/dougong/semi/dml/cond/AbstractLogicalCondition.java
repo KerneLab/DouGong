@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
+import org.kernelab.dougong.core.util.Utils;
 
-public abstract class AbstractLogicalCondition extends AbstractCondition implements LogicalCondition
+public class AbstractLogicalCondition extends AbstractCondition implements LogicalCondition
 {
 	protected List<Object> conds = new LinkedList<Object>();
 
@@ -89,5 +90,33 @@ public abstract class AbstractLogicalCondition extends AbstractCondition impleme
 	{
 		this.conds.clear();
 		return this.and(true, cond);
+	}
+
+	@Override
+	public StringBuilder toString(StringBuilder buffer)
+	{
+		boolean more = this.conds.size() > 1;
+		boolean first = true;
+		for (Object o : this.conds)
+		{
+			if (first)
+			{
+				first = false;
+			}
+			else
+			{
+				buffer.append(' ');
+			}
+			if (more && o instanceof LogicalCondition)
+			{
+				buffer.append('(');
+			}
+			Utils.outputExpr(buffer, o);
+			if (more && o instanceof LogicalCondition)
+			{
+				buffer.append(')');
+			}
+		}
+		return buffer;
 	}
 }

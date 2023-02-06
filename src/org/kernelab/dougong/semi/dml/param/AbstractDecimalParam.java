@@ -6,6 +6,11 @@ import org.kernelab.dougong.core.dml.param.DecimalParam;
 
 public class AbstractDecimalParam extends AbstractParam<BigDecimal> implements DecimalParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractDecimalParam(String name, BigDecimal value)
 	{
 		super(name, value);

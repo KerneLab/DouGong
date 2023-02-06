@@ -5,6 +5,7 @@ import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 
 public abstract class AbstractComposableCondition extends AbstractCondition implements ComposableCondition
 {
+	@Override
 	public ComposableCondition and(boolean when, Condition cond)
 	{
 		if (when)
@@ -17,16 +18,19 @@ public abstract class AbstractComposableCondition extends AbstractCondition impl
 		}
 	}
 
+	@Override
 	public ComposableCondition and(Condition cond)
 	{
 		return and(true, cond);
 	}
 
+	@Override
 	public boolean isEmpty()
 	{
 		return false;
 	}
 
+	@Override
 	public ComposableCondition or(boolean when, Condition cond)
 	{
 		if (when)
@@ -39,6 +43,7 @@ public abstract class AbstractComposableCondition extends AbstractCondition impl
 		}
 	}
 
+	@Override
 	public ComposableCondition or(Condition cond)
 	{
 		return or(true, cond);

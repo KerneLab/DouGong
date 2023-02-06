@@ -5,6 +5,11 @@ import org.kernelab.dougong.core.dml.param.IterableParam;
 
 public class AbstractIterableParam extends AbstractParam<Iterable<?>> implements IterableParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractIterableParam(String name, Iterable<?> value)
 	{
 		super(name, value);

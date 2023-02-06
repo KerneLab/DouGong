@@ -83,6 +83,7 @@ import org.kernelab.dougong.semi.dml.AbstractWithDefinition;
 import org.kernelab.dougong.semi.dml.DaoAgent;
 import org.kernelab.dougong.semi.dml.cond.AbstractExistsCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
+import org.kernelab.dougong.semi.dml.cond.AbstractLogicalCondition;
 import org.kernelab.dougong.semi.dml.cond.AbstractMembershipCondition;
 import org.kernelab.dougong.semi.dml.opr.AbstractArithmeticOperator;
 import org.kernelab.dougong.semi.dml.opr.AbstractStringExpressionResult;
@@ -299,6 +300,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	{
 		Expression wildcard = provideStringItem("'%'");
 		return provideJointOperator().operate(wildcard, this.provideLikePatternEscaped(pattern, escape));
+	}
+
+	@Override
+	public AbstractLogicalCondition provideLogicalCondition()
+	{
+		return provideProvider(new AbstractLogicalCondition());
 	}
 
 	public AbstractMembershipCondition provideMembershipCondition()

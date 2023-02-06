@@ -4,6 +4,11 @@ import org.kernelab.dougong.core.dml.param.LongParam;
 
 public class AbstractLongParam extends AbstractParam<Long> implements LongParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractLongParam(String name, Long value)
 	{
 		super(name, value);

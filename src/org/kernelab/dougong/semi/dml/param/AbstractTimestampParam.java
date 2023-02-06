@@ -6,6 +6,11 @@ import org.kernelab.dougong.core.dml.param.TimestampParam;
 
 public class AbstractTimestampParam extends AbstractParam<Timestamp> implements TimestampParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractTimestampParam(String name, Timestamp value)
 	{
 		super(name, value);

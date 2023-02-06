@@ -4,6 +4,11 @@ import org.kernelab.dougong.core.dml.param.DoubleParam;
 
 public class AbstractDoubleParam extends AbstractParam<Double> implements DoubleParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractDoubleParam(String name, Double value)
 	{
 		super(name, value);

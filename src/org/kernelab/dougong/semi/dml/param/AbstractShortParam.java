@@ -4,6 +4,11 @@ import org.kernelab.dougong.core.dml.param.ShortParam;
 
 public class AbstractShortParam extends AbstractParam<Short> implements ShortParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractShortParam(String name, Short value)
 	{
 		super(name, value);

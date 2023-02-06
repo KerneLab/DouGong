@@ -6,6 +6,11 @@ import org.kernelab.dougong.core.dml.param.DateParam;
 
 public class AbstractDateParam extends AbstractParam<Date> implements DateParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractDateParam(String name, Date value)
 	{
 		super(name, value);

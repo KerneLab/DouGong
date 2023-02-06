@@ -9,6 +9,11 @@ import org.kernelab.dougong.semi.dml.AbstractItem;
 
 public abstract class AbstractParam<E> extends AbstractItem implements Param<E>, Providable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Provider	provider;
 
 	private String		name;

@@ -4,6 +4,11 @@ import org.kernelab.dougong.core.dml.param.FloatParam;
 
 public class AbstractFloatParam extends AbstractParam<Float> implements FloatParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractFloatParam(String name, Float value)
 	{
 		super(name, value);

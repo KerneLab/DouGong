@@ -1,10 +1,12 @@
 package org.kernelab.dougong.core.dml.param;
 
+import java.io.Serializable;
+
 import org.kernelab.dougong.core.Named;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.test.Testable;
 
-public interface Param<E> extends Item, Named, Testable
+public interface Param<E> extends Item, Named, Testable, Serializable
 {
 	/**
 	 * To test whether the value of this parameter is neither null nor empty.

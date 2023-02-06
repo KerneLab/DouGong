@@ -4,6 +4,11 @@ import org.kernelab.dougong.core.dml.param.CharParam;
 
 public class AbstractCharParam extends AbstractParam<Character> implements CharParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractCharParam(String name, Character value)
 	{
 		super(name, value);

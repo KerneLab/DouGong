@@ -6,6 +6,11 @@ import org.kernelab.dougong.core.dml.param.Param;
 
 public class AbstractObjectParam<E> extends AbstractParam<E> implements ObjectParam<E>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractObjectParam(String name, E value)
 	{
 		super(name, value);

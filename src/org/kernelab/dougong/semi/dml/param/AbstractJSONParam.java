@@ -6,6 +6,11 @@ import org.kernelab.dougong.core.dml.param.Param;
 
 public class AbstractJSONParam extends AbstractParam<JSON> implements JSONParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractJSONParam(String name, JSON value)
 	{
 		super(name, value);

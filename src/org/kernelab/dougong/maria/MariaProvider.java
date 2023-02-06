@@ -36,7 +36,6 @@ import org.kernelab.dougong.maria.dml.MariaSelect;
 import org.kernelab.dougong.maria.dml.MariaStringItem;
 import org.kernelab.dougong.maria.dml.MariaUpdate;
 import org.kernelab.dougong.maria.dml.cond.MariaComparisonCondition;
-import org.kernelab.dougong.maria.dml.cond.MariaLogicalCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaNullCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaRangeCondition;
 import org.kernelab.dougong.maria.dml.cond.MariaRegexpLikeCondition;
@@ -174,12 +173,6 @@ public class MariaProvider extends AbstractProvider
 	{
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public MariaLogicalCondition provideLogicalCondition()
-	{
-		return this.provideProvider(new MariaLogicalCondition());
 	}
 
 	@Override

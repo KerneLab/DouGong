@@ -4,6 +4,11 @@ import org.kernelab.dougong.core.dml.param.ByteParam;
 
 public class AbstractByteParam extends AbstractParam<Byte> implements ByteParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractByteParam(String name, Byte value)
 	{
 		super(name, value);

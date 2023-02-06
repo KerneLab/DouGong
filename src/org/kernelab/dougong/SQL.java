@@ -98,7 +98,7 @@ public class SQL implements Serializable
 			}
 		}
 
-		return cond;
+		return this.cond(cond);
 	}
 
 	public CaseDecideExpression Case()
@@ -303,6 +303,16 @@ public class SQL implements Serializable
 		return iPatnTail(param(param));
 	}
 
+	public ComposableCondition isEmpty(Expression expr)
+	{
+		return this.or(expr.isNull(), expr.eq(val("")));
+	}
+
+	public ComposableCondition isNotEmpty(Expression expr)
+	{
+		return this.and(expr.isNotNull(), expr.ne(val("")));
+	}
+
 	public Items list(Expression... exprs)
 	{
 		return provider().provideItems().list(exprs);
@@ -401,7 +411,7 @@ public class SQL implements Serializable
 			}
 		}
 
-		return cond;
+		return this.cond(cond);
 	}
 
 	public <T extends Providable> T p(Providable obj)

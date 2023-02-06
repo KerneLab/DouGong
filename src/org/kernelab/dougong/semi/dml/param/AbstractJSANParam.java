@@ -6,6 +6,11 @@ import org.kernelab.dougong.core.dml.param.Param;
 
 public class AbstractJSANParam extends AbstractParam<JSAN> implements JSANParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractJSANParam(String name, JSAN value)
 	{
 		super(name, value);

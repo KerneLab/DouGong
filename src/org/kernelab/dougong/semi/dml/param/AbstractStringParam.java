@@ -4,6 +4,11 @@ import org.kernelab.dougong.core.dml.param.StringParam;
 
 public class AbstractStringParam extends AbstractParam<String> implements StringParam
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractStringParam(String name, String value)
 	{
 		super(name, value);

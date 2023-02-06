@@ -7,6 +7,11 @@ import org.kernelab.dougong.core.dml.param.Param;
 
 public class AbstractMapParam<K, V> extends AbstractParam<Map<K, V>> implements MapParam<K, V>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractMapParam(String name, Map<K, V> value)
 	{
 		super(name, value);
