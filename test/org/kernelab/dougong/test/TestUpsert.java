@@ -59,6 +59,6 @@ public class TestUpsert
 				.select(s) //
 				.pairs(d.COMP_ID, s.$("COMP_ID"), d.DEPT_ID, s.$("DEPT_ID"), d.DEPT_NAME, s.$("DEPT_NAME")) //
 				.to(MariaInsert.class) //
-				.updatesByColumns(d.DEPT_NAME, d.DEPT_ID);
+				.updatesOfColumns(d.DEPT_NAME, d.DEPT_ID);
 	}
 }

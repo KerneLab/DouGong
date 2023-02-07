@@ -85,7 +85,7 @@ public class MariaInsert extends AbstractInsert
 		return this;
 	}
 
-	public MariaInsert updatesByColumns(Column... columns)
+	public MariaInsert updatesOfColumns(Column... columns)
 	{
 		if (columns == null || columns.length == 0)
 		{
