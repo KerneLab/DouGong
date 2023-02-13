@@ -6,6 +6,7 @@ import org.kernelab.dougong.semi.dml.opr.AbstractOperator;
 
 public class OracleJointOperator extends AbstractOperator implements JointOperator
 {
+	@Override
 	public OracleJointResult operate(Expression... operands)
 	{
 		return (OracleJointResult) new OracleJointResult("||", operands).provider(provider());

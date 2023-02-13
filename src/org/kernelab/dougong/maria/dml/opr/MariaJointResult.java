@@ -19,7 +19,7 @@ public class MariaJointResult extends AbstractVarinaryResult
 	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
-		buffer.append("CONCAT(");
+		buffer.append("CONCAT_WS('',");
 		super.toString(buffer);
 		return buffer.append(')');
 	}

@@ -36,12 +36,14 @@ public abstract class AbstractVarinaryResult extends AbstractResult implements P
 		return provider;
 	}
 
+	@Override
 	public Providable provider(Provider provider)
 	{
 		this.provider = provider;
 		return this;
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		if (operands() != null && operands().length > 0)
