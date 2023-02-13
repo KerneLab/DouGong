@@ -33,6 +33,7 @@ public class TestSelect
 		Tools.debug(makeSelectSubquery());
 		Tools.debug(makeSelectReferece());
 		Tools.debug(makeSelectReferFunction());
+		Tools.debug(makeSelectAllColumns());
 		Tools.debug(makeSelectHierarchy());
 		if ($.provider() instanceof OracleProvider)
 		{
