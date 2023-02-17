@@ -1,6 +1,6 @@
 package org.kernelab.dougong.orcl.dml;
 
-import org.kernelab.dougong.core.Column;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.semi.dml.AbstractJoin;
 
 public class OracleJoin extends AbstractJoin
@@ -18,7 +18,7 @@ public class OracleJoin extends AbstractJoin
 	{
 		buffer.append(" USING (");
 		boolean first = true;
-		for (Column c : this.using())
+		for (Item c : this.using())
 		{
 			if (first)
 			{
@@ -28,18 +28,9 @@ public class OracleJoin extends AbstractJoin
 			{
 				buffer.append(',');
 			}
-			c.view().provider().provideOutputNameText(buffer, c.name());
+			this.view().provider().provideOutputNameText(buffer, c.label());
 		}
 		buffer.append(')');
-		return buffer;
-	}
-
-	@Override
-	protected StringBuilder toStringJoinTable(StringBuilder buffer)
-	{
-		buffer.append(JOINS[type()]);
-		buffer.append(" JOIN ");
-		super.view().toStringViewed(buffer);
 		return buffer;
 	}
 }

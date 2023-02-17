@@ -1,12 +1,12 @@
 package org.kernelab.dougong.semi.dml;
 
-import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
@@ -14,6 +14,46 @@ import org.kernelab.dougong.core.dml.WithDefinition;
 
 public class AbstractPrimitive extends AbstractJoinable implements Primitive
 {
+	@Override
+	public AbstractPrimitive antiJoin(View view, Condition on)
+	{
+		super.antiJoin(view, on);
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive antiJoin(View view, ForeignKey rels)
+	{
+		return antiJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractPrimitive antiJoin(View view, Item... using)
+	{
+		super.antiJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive crossJoin(View view, Condition on)
+	{
+		super.crossJoin(view, on);
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive crossJoin(View view, ForeignKey rels)
+	{
+		return crossJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractPrimitive crossJoin(View view, Item... using)
+	{
+		super.crossJoin(view, using);
+		return this;
+	}
+
 	public Delete delete(Table... targets)
 	{
 		return this.provider().provideDelete() //
@@ -26,13 +66,6 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	public AbstractPrimitive from(View view)
 	{
 		super.from(view);
-		return this;
-	}
-
-	@Override
-	public AbstractPrimitive fullJoin(View view, Column... using)
-	{
-		super.fullJoin(view, using);
 		return this;
 	}
 
@@ -50,9 +83,9 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	}
 
 	@Override
-	public AbstractPrimitive innerJoin(View view, Column... using)
+	public AbstractPrimitive fullJoin(View view, Item... using)
 	{
-		super.innerJoin(view, using);
+		super.fullJoin(view, using);
 		return this;
 	}
 
@@ -70,9 +103,9 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	}
 
 	@Override
-	public AbstractPrimitive leftJoin(View view, Column... using)
+	public AbstractPrimitive innerJoin(View view, Item... using)
 	{
-		super.leftJoin(view, using);
+		super.innerJoin(view, using);
 		return this;
 	}
 
@@ -90,10 +123,16 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	}
 
 	@Override
-	public AbstractPrimitive rightJoin(View view, Column... using)
+	public AbstractPrimitive leftJoin(View view, Item... using)
 	{
+		super.leftJoin(view, using);
+		return this;
+	}
 
-		super.rightJoin(view, using);
+	@Override
+	public AbstractPrimitive natural()
+	{
+		super.natural();
 		return this;
 	}
 
@@ -110,12 +149,40 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 		return rightJoin(view, rels.joinCondition());
 	}
 
+	@Override
+	public AbstractPrimitive rightJoin(View view, Item... using)
+	{
+
+		super.rightJoin(view, using);
+		return this;
+	}
+
 	public Select select(Expression... exprs)
 	{
 		return this.provider().provideSelect() //
 				.recursive(this.recursive()).withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where()) //
 				.select(exprs);
+	}
+
+	@Override
+	public AbstractPrimitive semiJoin(View view, Condition on)
+	{
+		super.semiJoin(view, on);
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive semiJoin(View view, ForeignKey rels)
+	{
+		return semiJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractPrimitive semiJoin(View view, Item... using)
+	{
+		super.semiJoin(view, using);
+		return this;
 	}
 
 	public Update update()

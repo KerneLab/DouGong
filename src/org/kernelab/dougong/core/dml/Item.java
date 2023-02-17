@@ -17,4 +17,21 @@ public interface Item extends Expression, Alias, Label
 	 * @return
 	 */
 	public Item as(String alias);
+
+	/**
+	 * Determine whether this column is using by a join. The Default value is
+	 * false.
+	 * 
+	 * @return
+	 */
+	public boolean isUsingByJoin();
+
+	/**
+	 * Specify whether this item is using by a join or not. The Default value is
+	 * false.
+	 * 
+	 * @param using
+	 * @return The item object itself.
+	 */
+	public Item usingByJoin(boolean using);
 }

@@ -23,20 +23,29 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 	{
 	}
 
+	@Override
 	public String alias()
 	{
 		return alias;
 	}
 
+	@Override
 	public AbstractItems alias(String alias)
 	{
 		this.alias = alias;
 		return this;
 	}
 
+	@Override
 	public AbstractItems as(String alias)
 	{
 		return this.replicate().alias(alias);
+	}
+
+	@Override
+	public boolean isUsingByJoin()
+	{
+		return false;
 	}
 
 	@Override
@@ -45,30 +54,36 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 		return alias() != null ? alias() : Tools.substr(this.toStringExpress(new StringBuilder()), 0, 30);
 	}
 
+	@Override
 	public Expression[] list()
 	{
 		return list;
 	}
 
+	@Override
 	public AbstractItems list(Expression... expr)
 	{
 		this.list = expr;
 		return this;
 	}
 
+	@Override
 	public Provider provider()
 	{
 		return provider;
 	}
 
+	@Override
 	public AbstractItems provider(Provider provider)
 	{
 		this.provider = provider;
 		return this;
 	}
 
+	@Override
 	protected abstract AbstractItems replicate();
 
+	@Override
 	public List<Item> resolveItems()
 	{
 		List<Item> list = new LinkedList<Item>();
@@ -81,6 +96,7 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 		return list;
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		if (list() != null)
@@ -104,11 +120,13 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}
 
+	@Override
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		if (list() != null)
@@ -131,6 +149,7 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		if (list() != null)
@@ -153,5 +172,11 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 		}
 
 		return buffer;
+	}
+
+	@Override
+	public Item usingByJoin(boolean using)
+	{
+		return this;
 	}
 }

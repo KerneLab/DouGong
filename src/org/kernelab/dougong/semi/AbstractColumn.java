@@ -17,15 +17,12 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 
 	private Field	field;
 
-	private boolean	using;
-
 	public AbstractColumn(View view, String name, Field field)
 	{
 		this.view = view;
 		this.name = name;
 		this.field = field;
 		this.alias = null;
-		this.using = false;
 	}
 
 	@Override
@@ -44,22 +41,18 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 	@Override
 	public AbstractColumn as(String alias)
 	{
-		return (AbstractColumn) this.replicate() //
+		AbstractColumn col = (AbstractColumn) this.replicate() //
 				.name(this.name()) //
-				.alias(alias) //
-				.usingByJoin(this.isUsingByJoin()) //
-				.ascend(this.ascending()) //
-		;
+				.alias(alias);
+		col.usingByJoin(this.isUsingByJoin());
+		col.ascend(this.ascending());
+		return col;
 	}
 
+	@Override
 	public Field field()
 	{
 		return field;
-	}
-
-	public boolean isUsingByJoin()
-	{
-		return using;
 	}
 
 	@Override
@@ -68,6 +61,7 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 		return alias() != null ? alias() : name();
 	}
 
+	@Override
 	public String name()
 	{
 		return name;
@@ -79,11 +73,13 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 		return this;
 	}
 
+	@Override
 	protected Provider provider()
 	{
 		return view().provider();
 	}
 
+	@Override
 	protected abstract AbstractColumn replicate();
 
 	@Override
@@ -92,27 +88,25 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 		return toString(new StringBuilder()).toString();
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		return this.toStringExpress(buffer);
 	}
 
+	@Override
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return this.provider().provideOutputColumnExpress(buffer, this);
 	}
 
+	@Override
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return this.provider().provideOutputColumnSelect(buffer, this);
 	}
 
-	public AbstractColumn usingByJoin(boolean using)
-	{
-		this.using = using;
-		return this;
-	}
-
+	@Override
 	public View view()
 	{
 		return view;

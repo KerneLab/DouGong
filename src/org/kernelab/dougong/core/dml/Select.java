@@ -29,6 +29,9 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 	public Select joins(List<Join> joins);
 
 	@Override
+	public Select natural();
+
+	@Override
 	public Select innerJoin(View view, Condition cond);
 
 	@Override
@@ -41,16 +44,34 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 	public Select fullJoin(View view, Condition cond);
 
 	@Override
-	public Select innerJoin(View view, Column... using);
+	public Select crossJoin(View view, Condition cond);
 
 	@Override
-	public Select leftJoin(View view, Column... using);
+	public Select semiJoin(View view, Condition cond);
 
 	@Override
-	public Select rightJoin(View view, Column... using);
+	public Select antiJoin(View view, Condition cond);
 
 	@Override
-	public Select fullJoin(View view, Column... using);
+	public Select innerJoin(View view, Item... using);
+
+	@Override
+	public Select leftJoin(View view, Item... using);
+
+	@Override
+	public Select rightJoin(View view, Item... using);
+
+	@Override
+	public Select fullJoin(View view, Item... using);
+
+	@Override
+	public Select crossJoin(View view, Item... using);
+
+	@Override
+	public Select semiJoin(View view, Item... using);
+
+	@Override
+	public Select antiJoin(View view, Item... using);
 
 	@Override
 	public Select innerJoin(View view, ForeignKey rels);
@@ -63,6 +84,15 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 
 	@Override
 	public Select fullJoin(View view, ForeignKey rels);
+
+	@Override
+	public Select crossJoin(View view, ForeignKey rels);
+
+	@Override
+	public Select semiJoin(View view, ForeignKey rels);
+
+	@Override
+	public Select antiJoin(View view, ForeignKey rels);
 
 	// //////////////////////////////////////////////////////
 

@@ -108,6 +108,27 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public AbstractSelect antiJoin(View view, Condition on)
+	{
+		super.antiJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractSelect antiJoin(View view, ForeignKey rels)
+	{
+		return antiJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractSelect antiJoin(View view, Item... using)
+	{
+		super.antiJoin(view, using);
+		return this;
+	}
+
+	@Override
 	public AbstractSelect as(String alias)
 	{
 		try
@@ -181,6 +202,27 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
+	@Override
+	public AbstractSelect crossJoin(View view, Condition on)
+	{
+		super.crossJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractSelect crossJoin(View view, ForeignKey rels)
+	{
+		return crossJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractSelect crossJoin(View view, Item... using)
+	{
+		super.crossJoin(view, using);
+		return this;
+	}
+
 	protected boolean distinct()
 	{
 		return distinct;
@@ -228,13 +270,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
-	public AbstractSelect fullJoin(View view, Column... using)
-	{
-		super.fullJoin(view, using);
-		return this;
-	}
-
-	@Override
 	public AbstractSelect fullJoin(View view, Condition on)
 	{
 		super.fullJoin(view, on);
@@ -246,6 +281,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect fullJoin(View view, ForeignKey rels)
 	{
 		return fullJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractSelect fullJoin(View view, Item... using)
+	{
+		super.fullJoin(view, using);
+		return this;
 	}
 
 	@Override
@@ -328,13 +370,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
-	public AbstractSelect innerJoin(View view, Column... using)
-	{
-		super.innerJoin(view, using);
-		return this;
-	}
-
-	@Override
 	public AbstractSelect innerJoin(View view, Condition on)
 	{
 		super.innerJoin(view, on);
@@ -346,6 +381,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect innerJoin(View view, ForeignKey rels)
 	{
 		return innerJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractSelect innerJoin(View view, Item... using)
+	{
+		super.innerJoin(view, using);
+		return this;
 	}
 
 	@Override
@@ -371,6 +413,12 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public NullCondition isNull()
 	{
 		return provider().provideNullCondition().isNull(this);
+	}
+
+	@Override
+	public boolean isUsingByJoin()
+	{
+		return false;
 	}
 
 	@Override
@@ -420,13 +468,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
-	public AbstractSelect leftJoin(View view, Column... using)
-	{
-		super.leftJoin(view, using);
-		return this;
-	}
-
-	@Override
 	public AbstractSelect leftJoin(View view, Condition on)
 	{
 		super.leftJoin(view, on);
@@ -438,6 +479,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect leftJoin(View view, ForeignKey rels)
 	{
 		return leftJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractSelect leftJoin(View view, Item... using)
+	{
+		super.leftJoin(view, using);
+		return this;
 	}
 
 	@Override
@@ -483,6 +531,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public Result multiply(Expression operand)
 	{
 		return provider().provideMultiplyOperator().operate(this, operand);
+	}
+
+	@Override
+	public AbstractSelect natural()
+	{
+		super.natural();
+		return this;
 	}
 
 	@Override
@@ -764,13 +819,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
-	public AbstractSelect rightJoin(View view, Column... using)
-	{
-		super.rightJoin(view, using);
-		return this;
-	}
-
-	@Override
 	public AbstractSelect rightJoin(View view, Condition on)
 	{
 		super.rightJoin(view, on);
@@ -782,6 +830,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect rightJoin(View view, ForeignKey rels)
 	{
 		return rightJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractSelect rightJoin(View view, Item... using)
+	{
+		super.rightJoin(view, using);
+		return this;
 	}
 
 	@Override
@@ -871,6 +926,27 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	protected Expression[] selects()
 	{
 		return select;
+	}
+
+	@Override
+	public AbstractSelect semiJoin(View view, Condition on)
+	{
+		super.semiJoin(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractSelect semiJoin(View view, ForeignKey rels)
+	{
+		return semiJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractSelect semiJoin(View view, Item... using)
+	{
+		super.semiJoin(view, using);
+		return this;
 	}
 
 	protected List<AbstractSetopr> setopr()
@@ -1220,6 +1296,12 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect unionAll(Select select)
 	{
 		setopr().add(new AbstractSetopr().setopr(Setopr.UNION_ALL, select));
+		return this;
+	}
+
+	@Override
+	public Item usingByJoin(boolean using)
+	{
 		return this;
 	}
 
