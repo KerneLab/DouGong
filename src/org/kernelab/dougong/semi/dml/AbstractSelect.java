@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,8 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	private String					hint		= null;
 
 	private WithDefinition			with		= null;
+
+	private Set<String>				usingLabels	= null;
 
 	@Override
 	public Reference $(String refer)
@@ -186,6 +189,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		}
 
 		clone.itemsMap = null;
+		clone.usingLabels = null;
 
 		return clone;
 	}
@@ -404,6 +408,12 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public boolean isJoinUsing(String label)
+	{
+		return this.usingLabels != null && this.usingLabels.contains(label);
+	}
+
+	@Override
 	public NullCondition isNotNull()
 	{
 		return (NullCondition) provider().provideNullCondition().isNull(this).not();
@@ -453,6 +463,19 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		}
 
 		return provider().provideJointOperator().operate(exprs);
+	}
+
+	@Override
+	public void joinUsing(String... labels)
+	{
+		if (labels == null || labels.length == 0)
+		{
+			this.usingLabels = null;
+		}
+		else
+		{
+			this.usingLabels = Tools.setOfArray(new LinkedHashSet<String>(), labels);
+		}
 	}
 
 	@Override
@@ -727,10 +750,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 							}
 							for (Join join : joins())
 							{
-								for (Entry<String, Item> entry : join.view().referItems().entrySet())
+								if (join.viewSelectable())
 								{
-									this.itemsMap.put(entry.getKey(),
-											provider().provideReference(this, entry.getValue().label()));
+									for (Entry<String, Item> entry : join.view().referItems().entrySet())
+									{
+										this.itemsMap.put(entry.getKey(),
+												provider().provideReference(this, entry.getValue().label()));
+									}
 								}
 							}
 						}
@@ -784,7 +810,9 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	{
 		List<Item> items = new LinkedList<Item>();
 
-		for (View view : froms())
+		Set<String> usingLabels = new HashSet<String>();
+
+		for (View view : this.froms())
 		{
 			if (view instanceof Withable)
 			{
@@ -794,23 +822,62 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 			{
 				for (Item item : view.items())
 				{
+					if (item instanceof Column)
+					{
+						if (((Column) item).isPseudo())
+						{
+							continue;
+						}
+					}
+
+					if (usingLabels.contains(item.label()))
+					{
+						continue;
+					}
+
 					items.add(provider().provideReference(view, item.label()));
+
+					if (item.isUsingByJoin())
+					{
+						usingLabels.add(item.label());
+					}
 				}
 			}
 		}
 
 		for (Join join : joins())
 		{
-			View view = join.view();
-			if (view instanceof Withable)
+			if (join.viewSelectable())
 			{
-				items.addAll(refer(view, AbstractWithsable.resolveAllItems(view)));
-			}
-			else
-			{
-				for (Item item : view.items())
+				View view = join.view();
+				if (view instanceof Withable)
 				{
-					items.add(provider().provideReference(view, item.label()));
+					items.addAll(refer(view, AbstractWithsable.resolveAllItems(view)));
+				}
+				else
+				{
+					for (Item item : view.items())
+					{
+						if (item instanceof Column)
+						{
+							if (((Column) item).isPseudo())
+							{
+								continue;
+							}
+						}
+
+						if (usingLabels.contains(item.label()))
+						{
+							continue;
+						}
+
+						items.add(provider().provideReference(view, item.label()));
+
+						if (item.isUsingByJoin())
+						{
+							usingLabels.add(item.label());
+						}
+					}
 				}
 			}
 		}
@@ -895,27 +962,22 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 			Set<String> using = new HashSet<String>();
 
-			Column col = null;
 			for (Item item : items)
 			{
-				if ((col = Tools.as(item, Column.class)) != null)
+				if (item != null)
 				{
-					if (col.isUsingByJoin())
+					if (item.isUsingByJoin())
 					{
-						if (!using.contains(col.name()))
+						if (!using.contains(item.label()))
 						{
-							items().add(col);
-							using.add(col.name());
+							items().add(item);
+							using.add(item.label());
 						}
 					}
 					else
 					{
-						items().add(col);
+						items().add(item);
 					}
-				}
-				else
-				{
-					items().add(item);
 				}
 			}
 		}
@@ -1296,12 +1358,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect unionAll(Select select)
 	{
 		setopr().add(new AbstractSetopr().setopr(Setopr.UNION_ALL, select));
-		return this;
-	}
-
-	@Override
-	public Item usingByJoin(boolean using)
-	{
 		return this;
 	}
 

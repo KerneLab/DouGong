@@ -18,16 +18,17 @@ public abstract class AbstractReference extends AbstractColumn implements Refere
 	}
 
 	@Override
+	public boolean isUsingByJoin()
+	{
+		return this.view().isJoinUsing(this.name());
+	}
+
+	@Override
 	public AbstractColumn name(String name)
 	{
 		return this;
 	}
 
-	protected abstract AbstractReference replicate();
-
 	@Override
-	public AbstractReference usingByJoin(boolean using)
-	{
-		return (AbstractReference) super.usingByJoin(using);
-	}
+	protected abstract AbstractReference replicate();
 }

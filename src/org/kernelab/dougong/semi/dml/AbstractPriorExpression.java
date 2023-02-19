@@ -35,6 +35,7 @@ public class AbstractPriorExpression extends AbstractItem implements Providable,
 		return provider;
 	}
 
+	@Override
 	public AbstractPriorExpression provider(Provider provider)
 	{
 		this.provider = provider;

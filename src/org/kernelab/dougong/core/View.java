@@ -37,6 +37,14 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	public AllItems all();
 
 	/**
+	 * To determine whether this view is joined using a certain column label.
+	 * 
+	 * @param label
+	 * @return
+	 */
+	public boolean isJoinUsing(String label);
+
+	/**
 	 * Get the Item associated with the given name in this View.
 	 * 
 	 * @param name
@@ -52,6 +60,13 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	 * @return
 	 */
 	public List<Item> items();
+
+	/**
+	 * Set the using labels for join.
+	 * 
+	 * @param labels
+	 */
+	public void joinUsing(String... labels);
 
 	/**
 	 * Get the Reference of the Item associated with the given name in this

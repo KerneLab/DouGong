@@ -7,9 +7,7 @@ import org.kernelab.dougong.core.dml.Item;
 
 public abstract class AbstractItem extends AbstractExpression implements Item
 {
-	private String	alias	= null;
-
-	private boolean	using	= false;
+	private String alias = null;
 
 	@Override
 	public String alias()
@@ -33,7 +31,7 @@ public abstract class AbstractItem extends AbstractExpression implements Item
 	@Override
 	public boolean isUsingByJoin()
 	{
-		return using;
+		return false;
 	}
 
 	@Override
@@ -56,12 +54,5 @@ public abstract class AbstractItem extends AbstractExpression implements Item
 	public List<Item> resolveItems()
 	{
 		return listOf((Item) this);
-	}
-
-	@Override
-	public AbstractItem usingByJoin(boolean using)
-	{
-		this.using = using;
-		return this;
 	}
 }

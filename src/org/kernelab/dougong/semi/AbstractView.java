@@ -1,9 +1,11 @@
 package org.kernelab.dougong.semi;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Function;
@@ -24,6 +26,8 @@ public abstract class AbstractView extends AbstractText implements View
 	private List<Item>			items		= new LinkedList<Item>();
 
 	private Map<String, Item>	itemsMap	= new LinkedHashMap<String, Item>();
+
+	private Set<String>			usingLabels	= null;
 
 	public AbstractView()
 	{
@@ -60,6 +64,12 @@ public abstract class AbstractView extends AbstractText implements View
 	}
 
 	@Override
+	public boolean isJoinUsing(String label)
+	{
+		return this.usingLabels != null && this.usingLabels.contains(label);
+	}
+
+	@Override
 	public Item item(String name)
 	{
 		return referItems().get(name);
@@ -69,6 +79,19 @@ public abstract class AbstractView extends AbstractText implements View
 	public List<Item> items()
 	{
 		return items;
+	}
+
+	@Override
+	public void joinUsing(String... labels)
+	{
+		if (labels == null || labels.length == 0)
+		{
+			this.usingLabels = null;
+		}
+		else
+		{
+			this.usingLabels = Tools.setOfArray(new LinkedHashSet<String>(), labels);
+		}
 	}
 
 	public Pivot pivot(Function... aggs)

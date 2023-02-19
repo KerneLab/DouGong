@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
+import org.kernelab.dougong.core.meta.PseudoColumnMeta;
 import org.kernelab.dougong.semi.dml.AbstractSortable;
 
 public abstract class AbstractColumn extends AbstractSortable implements Column
@@ -23,6 +24,12 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 		this.name = name;
 		this.field = field;
 		this.alias = null;
+	}
+	
+	@Override
+	public boolean isUsingByJoin()
+	{
+		return this.view().isJoinUsing(this.label());
 	}
 
 	@Override
@@ -44,7 +51,6 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 		AbstractColumn col = (AbstractColumn) this.replicate() //
 				.name(this.name()) //
 				.alias(alias);
-		col.usingByJoin(this.isUsingByJoin());
 		col.ascend(this.ascending());
 		return col;
 	}
@@ -53,6 +59,17 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 	public Field field()
 	{
 		return field;
+	}
+
+	@Override
+	public boolean isPseudo()
+	{
+		Field field = this.field();
+		if (field != null)
+		{
+			return field.getAnnotation(PseudoColumnMeta.class) != null;
+		}
+		return false;
 	}
 
 	@Override

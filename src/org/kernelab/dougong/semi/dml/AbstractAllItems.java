@@ -1,7 +1,9 @@
 package org.kernelab.dougong.semi.dml;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.View;
@@ -200,7 +202,22 @@ public abstract class AbstractAllItems implements AllItems
 		{
 			return AbstractWithsable.resolveAllItems(view());
 		}
-		return view().items();
+
+		List<Item> items = new LinkedList<Item>();
+
+		for (Item item : view().items())
+		{
+			if (item instanceof Column)
+			{
+				if (((Column) item).isPseudo())
+				{
+					continue;
+				}
+			}
+			items.add(item);
+		}
+
+		return items;
 	}
 
 	@Override

@@ -1,8 +1,10 @@
 package org.kernelab.dougong.semi.dml;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Item;
@@ -24,22 +26,34 @@ public abstract class AbstractJoin implements Join
 
 	private Item[]		using;
 
-	protected void collectFormerLabels(Set<String> set)
+	protected void collectLabels(Set<String> set, Item it)
 	{
-		for (Item col : this.view().items())
+		if (it instanceof Column)
 		{
-			set.add(col.label());
+			if (((Column) it).isPseudo())
+			{
+				return;
+			}
+		}
+		set.add(it.label());
+	}
+
+	protected void collectLabelsRecursive(Set<String> set)
+	{
+		for (Item it : this.view().items())
+		{
+			collectLabels(set, it);
 		}
 
 		if (former() != null)
 		{
-			((AbstractJoin) former()).collectFormerLabels(set);
+			((AbstractJoin) former()).collectLabelsRecursive(set);
 		}
 		else if (leading() != null)
 		{
-			for (Item col : leading().items())
+			for (Item it : leading().items())
 			{
-				set.add(col.label());
+				collectLabels(set, it);
 			}
 		}
 	}
@@ -80,8 +94,7 @@ public abstract class AbstractJoin implements Join
 	@Override
 	public Join on(Condition condition)
 	{
-		if (!this.natural() //
-				&& this.on() == null && this.using() == null //
+		if (this.on() == null && this.using() == null //
 				&& condition != null)
 		{
 			this.on = condition;
@@ -91,43 +104,19 @@ public abstract class AbstractJoin implements Join
 	}
 
 	@Override
-	public Join spread(Item... items)
+	public Join spread(String... labels)
 	{
-		if (items != null && items.length > 0)
+		if (labels != null && labels.length > 0)
 		{
-			Item item = null;
-
-			for (Item col : items)
-			{
-				if (col != null)
-				{
-					item = view().item(col.label());
-
-					if (item != null)
-					{
-						item.usingByJoin(true);
-					}
-				}
-			}
+			this.view().joinUsing(labels);
 
 			if (former() != null)
 			{
-				former().spread(items);
+				former().spread(labels);
 			}
 			else if (leading() != null)
 			{
-				for (Item col : items)
-				{
-					if (col != null)
-					{
-						item = leading().item(col.label());
-
-						if (item != null)
-						{
-							item.usingByJoin(true);
-						}
-					}
-				}
+				this.leading().joinUsing(labels);
 			}
 		}
 
@@ -166,7 +155,7 @@ public abstract class AbstractJoin implements Join
 		{
 			buffer.append(NATURAL + " ");
 		}
-		buffer.append(JOINS[type()]);
+		buffer.append(JOINS.get(type()));
 		buffer.append(" JOIN ");
 		this.view().toStringViewed(buffer);
 		return buffer;
@@ -191,8 +180,7 @@ public abstract class AbstractJoin implements Join
 	@Override
 	public Join using(Item... items)
 	{
-		if (!this.natural() //
-				&& this.on() == null && this.using() == null //
+		if (this.on() == null && this.using() == null //
 				&& items != null && items.length > 0)
 		{
 			this.using = items;
@@ -201,7 +189,17 @@ public abstract class AbstractJoin implements Join
 
 		if (!this.natural())
 		{
-			this.spread(items);
+			if (items != null && items.length > 0)
+			{
+				Set<String> labels = new LinkedHashSet<String>();
+
+				for (Item item : items)
+				{
+					labels.add(item.label());
+				}
+
+				this.spread(labels.toArray(new String[0]));
+			}
 		}
 		else
 		{
@@ -209,26 +207,26 @@ public abstract class AbstractJoin implements Join
 
 			if (former() != null)
 			{
-				((AbstractJoin) former()).collectFormerLabels(formerCols);
+				((AbstractJoin) former()).collectLabelsRecursive(formerCols);
 			}
 			else if (leading() != null)
 			{
-				for (Item col : leading().items())
+				for (Item it : leading().items())
 				{
-					formerCols.add(col.label());
+					collectLabels(formerCols, it);
 				}
 			}
 
-			Set<Item> naturing = new HashSet<Item>();
-			for (Item col : this.view().items())
+			Set<String> naturing = new LinkedHashSet<String>();
+			for (Item it : this.view().items())
 			{
-				if (formerCols.contains(col.label()))
+				if (formerCols.contains(it.label()))
 				{
-					naturing.add(col);
+					naturing.add(it.label());
 				}
 			}
 
-			this.spread(naturing.toArray(new Item[0]));
+			this.spread(naturing.toArray(new String[0]));
 		}
 
 		return this;
@@ -238,5 +236,11 @@ public abstract class AbstractJoin implements Join
 	public View view()
 	{
 		return view;
+	}
+
+	@Override
+	public boolean viewSelectable()
+	{
+		return type() != SEMI_JOIN && type() != ANTI_JOIN;
 	}
 }

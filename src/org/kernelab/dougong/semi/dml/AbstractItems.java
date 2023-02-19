@@ -173,10 +173,4 @@ public abstract class AbstractItems extends AbstractExpression implements Items,
 
 		return buffer;
 	}
-
-	@Override
-	public Item usingByJoin(boolean using)
-	{
-		return this;
-	}
 }
