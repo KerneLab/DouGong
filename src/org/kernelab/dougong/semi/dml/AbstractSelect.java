@@ -474,7 +474,10 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 			{
 				this.usingLabels = new LinkedHashSet<String>();
 			}
-			this.usingLabels.addAll(Tools.setOfArray(new LinkedHashSet<String>(), labels));
+			for (String label : labels)
+			{
+				this.usingLabels.add(label);
+			}
 		}
 	}
 

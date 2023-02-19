@@ -90,7 +90,10 @@ public abstract class AbstractView extends AbstractText implements View
 			{
 				this.usingLabels = new LinkedHashSet<String>();
 			}
-			this.usingLabels.addAll(Tools.setOfArray(new LinkedHashSet<String>(), labels));
+			for (String label : labels)
+			{
+				this.usingLabels.add(label);
+			}
 		}
 	}
 
