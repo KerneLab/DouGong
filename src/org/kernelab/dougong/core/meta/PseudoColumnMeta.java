@@ -7,15 +7,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * A Pseudo Column will not be resolved by AllItems.
+ */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface AbsoluteKeyMeta
+public @interface PseudoColumnMeta
 {
-	/**
-	 * Indicate whether this AbsoluteKey column is generating value on insert or
-	 * not. Default is true.
-	 */
-	public boolean generate() default true;
 }

@@ -9,6 +9,7 @@ import org.kernelab.dougong.core.meta.GenerateValueMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
+import org.kernelab.dougong.core.meta.PseudoColumnMeta;
 import org.kernelab.dougong.core.meta.TypeMeta;
 import org.kernelab.dougong.semi.AbstractTable;
 
@@ -26,6 +27,7 @@ public class STAF extends AbstractTable
 	@TypeMeta(type = "VARCHAR2", precision = 18, nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "rowid", select = "ROWIDTOCHAR(ROWID)")
 	@AbsoluteKeyMeta
+	@PseudoColumnMeta
 	public Column				ROWID;
 
 	@NameMeta(name = "COMP_ID")

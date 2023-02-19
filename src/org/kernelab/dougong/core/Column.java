@@ -8,6 +8,7 @@ import org.kernelab.dougong.core.dml.Sortable;
 
 public interface Column extends Named, Item, Sortable, Castable
 {
+	@Override
 	public Column as(String alias);
 
 	/**
@@ -16,6 +17,13 @@ public interface Column extends Named, Item, Sortable, Castable
 	 * @return
 	 */
 	public Field field();
+
+	/**
+	 * To determine whether this column is pseudo column or not.
+	 * 
+	 * @return
+	 */
+	public boolean isPseudo();
 
 	/**
 	 * Get the string of this Column including the table alias if specified but

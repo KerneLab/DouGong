@@ -1,6 +1,7 @@
 package org.kernelab.dougong.demo;
 
 import org.kernelab.dougong.core.meta.PrimaryKeyMeta;
+import org.kernelab.dougong.core.meta.PseudoColumnMeta;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
@@ -17,6 +18,7 @@ public class COMP extends AbstractTable
 	@TypeMeta(type = "VARCHAR2", precision = 18, nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "rowid", select = "ROWIDTOCHAR(ROWID)")
 	@AbsoluteKeyMeta
+	@PseudoColumnMeta
 	public Column	ROWID;
 
 	@NameMeta(name = "COMP_ID")
