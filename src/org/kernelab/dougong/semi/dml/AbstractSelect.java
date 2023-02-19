@@ -468,13 +468,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	@Override
 	public void joinUsing(String... labels)
 	{
-		if (labels == null || labels.length == 0)
+		if (labels != null && labels.length > 0)
 		{
-			this.usingLabels = null;
-		}
-		else
-		{
-			this.usingLabels = Tools.setOfArray(new LinkedHashSet<String>(), labels);
+			if (this.usingLabels == null)
+			{
+				this.usingLabels = new LinkedHashSet<String>();
+			}
+			this.usingLabels.addAll(Tools.setOfArray(new LinkedHashSet<String>(), labels));
 		}
 	}
 
