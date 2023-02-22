@@ -50,6 +50,24 @@ public class MariaInsert extends AbstractInsert
 	}
 
 	@Override
+	protected void textOfSource(StringBuilder buffer)
+	{
+		if (this.source != null)
+		{
+			buffer.append(' ');
+			if (!updates().isEmpty())
+			{
+				buffer.append('(');
+			}
+			this.source.toStringSource(buffer);
+			if (!updates().isEmpty())
+			{
+				buffer.append(')');
+			}
+		}
+	}
+
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		super.toString(buffer);
@@ -80,24 +98,6 @@ public class MariaInsert extends AbstractInsert
 		for (int i = 0; i < columnValuePairs.length; i += 2)
 		{
 			this.update((Column) columnValuePairs[i], columnValuePairs[i + 1]);
-		}
-
-		return this;
-	}
-
-	public MariaInsert updatesOfColumns(Column... columns)
-	{
-		if (columns == null || columns.length == 0)
-		{
-			return this.updatesByValues();
-		}
-
-		this.updates().clear();
-
-		for (Item col : columns)
-		{
-			this.update((Column) col,
-					provider().provideStringItem("VALUES(" + provider().provideNameText(((Column) col).name()) + ")"));
 		}
 
 		return this;
@@ -136,6 +136,24 @@ public class MariaInsert extends AbstractInsert
 				this.update((Column) col, provider()
 						.provideStringItem("VALUES(" + provider().provideNameText(((Column) col).name()) + ")"));
 			}
+		}
+
+		return this;
+	}
+
+	public MariaInsert updatesOfColumns(Column... columns)
+	{
+		if (columns == null || columns.length == 0)
+		{
+			return this.updatesByValues();
+		}
+
+		this.updates().clear();
+
+		for (Item col : columns)
+		{
+			this.update((Column) col,
+					provider().provideStringItem("VALUES(" + provider().provideNameText(((Column) col).name()) + ")"));
 		}
 
 		return this;
