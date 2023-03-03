@@ -45,7 +45,7 @@ public class TestIn
 				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
 				.select(d.COMP_ID, //
-						d.DEPT_NAME, //
+						d.DEP_NAME, //
 						s.STAF_NAME, //
 						SQL.func(F_TEST_FUNC.class, SQL.expr("1")) //
 				) //

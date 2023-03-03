@@ -24,17 +24,17 @@ public class TestUpsert
 	{
 		DEPT d = null;
 
-		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEPT_NAME) //
+		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEP_NAME) //
 				.values($.param("comp"), $.param("dept"), $.param("name")) //
 				.to(MariaInsert.class) //
-				.updates(d.DEPT_NAME, $.v("nameVal"));
+				.updates(d.DEP_NAME, $.v("nameVal"));
 	}
 
 	public static Insert makeInsertUpdatesByValues()
 	{
 		DEPT d = null;
 
-		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEPT_NAME) //
+		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEP_NAME) //
 				.values($.param("comp"), $.param("dept"), $.param("name")) //
 				.to(MariaInsert.class) //
 				.updatesByValues();
@@ -44,9 +44,9 @@ public class TestUpsert
 	{
 		DEPT d = null;
 		Select s = $.from($.table(DEPT.class, "R")).select($.all());
-		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEPT_NAME) //
+		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEP_NAME) //
 				.select(s) //
-				.pairs(d.COMP_ID, s.$("COMP_ID"), d.DEPT_ID, s.$("DEPT_ID"), d.DEPT_NAME, s.$("DEPT_NAME")) //
+				.pairs(d.COMP_ID, s.$("COMP_ID"), d.DEPT_ID, s.$("DEPT_ID"), d.DEP_NAME, s.$("DEPT_NAME")) //
 				.to(MariaInsert.class) //
 				.updatesByValues();
 	}
@@ -55,10 +55,10 @@ public class TestUpsert
 	{
 		DEPT d = null;
 		Select s = $.from($.table(DEPT.class, "R")).select($.all());
-		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEPT_NAME) //
+		return $.insert(d = $.table(DEPT.class, "s"), d.COMP_ID, d.DEPT_ID, d.DEP_NAME) //
 				.select(s) //
-				.pairs(d.COMP_ID, s.$("COMP_ID"), d.DEPT_ID, s.$("DEPT_ID"), d.DEPT_NAME, s.$("DEPT_NAME")) //
+				.pairs(d.COMP_ID, s.$("COMP_ID"), d.DEPT_ID, s.$("DEPT_ID"), d.DEP_NAME, s.$("DEPT_NAME")) //
 				.to(MariaInsert.class) //
-				.updatesOfColumns(d.DEPT_NAME, d.DEPT_ID);
+				.updatesOfColumns(d.DEP_NAME, d.DEPT_ID);
 	}
 }

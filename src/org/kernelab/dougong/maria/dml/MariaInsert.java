@@ -50,24 +50,6 @@ public class MariaInsert extends AbstractInsert
 	}
 
 	@Override
-	protected void textOfSource(StringBuilder buffer)
-	{
-		if (this.source != null)
-		{
-			buffer.append(' ');
-			if (!updates().isEmpty())
-			{
-				buffer.append('(');
-			}
-			this.source.toStringSource(buffer);
-			if (!updates().isEmpty())
-			{
-				buffer.append(')');
-			}
-		}
-	}
-
-	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		super.toString(buffer);

@@ -41,7 +41,7 @@ public class DEPT extends AbstractTable
 	@NameMeta(name = "DEPT_NAME")
 	@TypeMeta(type = "VARCHAR2", precision = 20, nullable = TypeMeta.NULLABLE)
 	@DataMeta(alias = "deptName")
-	public Column				DEPT_NAME;
+	public Column				DEP_NAME;
 
 	@ForeignKeyMeta
 	public ForeignKey FK_DEPT(COMP ref)

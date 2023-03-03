@@ -27,7 +27,7 @@ public class TestFunc
 		return $.from(s = $.table(STAF.class, "s")) //
 				.innerJoin(c = $.table(COMP.class, "c"), c.COMP_ID) //
 				.innerJoin(d = $.table(DEPT.class, "d"), d.DEPT_ID) //
-				.select(d.COMP_ID, d.DEPT_NAME, s.STAF_NAME, $.func(F_TEST_FUNC.class).as("a")) //
+				.select(d.COMP_ID, d.DEP_NAME, s.STAF_NAME, $.func(F_TEST_FUNC.class).as("a")) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID.descend()) //
 		;

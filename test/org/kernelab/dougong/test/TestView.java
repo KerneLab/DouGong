@@ -51,7 +51,7 @@ public class TestView extends PredefinedView
 		return sql.from(s = sql.table(STAF.class, "s")) //
 				.innerJoin(c = sql.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
 				.innerJoin(d = sql.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(c.COMP_ID.as("comp_id_1"), d.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
+				.select(c.COMP_ID.as("comp_id_1"), d.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(sql.expr("0"))) //
 		;
 	}

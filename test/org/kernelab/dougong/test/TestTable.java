@@ -77,7 +77,7 @@ public class TestTable extends AbstractTable
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(c = SQL.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(c.COMP_ID, d.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
+				.select(c.COMP_ID, d.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 		;
 	}
@@ -91,7 +91,7 @@ public class TestTable extends AbstractTable
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
-				.select(c.COMP_ID, d.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
+				.select(c.COMP_ID, d.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 		;
 	}

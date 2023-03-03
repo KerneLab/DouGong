@@ -30,7 +30,7 @@ public class TestScope
 				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						d.DEPT_ID, //
-						d.DEPT_NAME, //
+						d.DEP_NAME, //
 						list //
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0")) //

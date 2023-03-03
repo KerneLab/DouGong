@@ -14,7 +14,7 @@ public class DemoPredefinedView extends PredefinedView
 
 		System.out.println(v.select().where(v.c.COMP_ID.eq(Config.SQL.param("compId"))));
 
-		System.out.println(v.select().where(v.d.DEPT_ID.eq(Config.SQL.param("deptId"))).orderBy(v.d.DEPT_NAME));
+		System.out.println(v.select().where(v.d.DEPT_ID.eq(Config.SQL.param("deptId"))).orderBy(v.d.DEP_NAME));
 	}
 
 	public COMP	c;
@@ -35,6 +35,6 @@ public class DemoPredefinedView extends PredefinedView
 				.select(c.COMP_ID.as("compId"), //
 						c.COM_NAME.as("compName"), //
 						d.DEPT_ID.as("id"), //
-						d.DEPT_NAME.as("name"));
+						d.DEP_NAME.as("name"));
 	}
 }

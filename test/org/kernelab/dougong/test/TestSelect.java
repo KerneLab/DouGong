@@ -118,7 +118,7 @@ public class TestSelect
 				.select(d.COMP_ID, //
 						s.all(), //
 						$.param("key").multiply(d.COMP_ID.plus($.expr("2"))).as("k"), //
-						d.DEPT_NAME.joint($.param("nm").plus($.expr("1"))).as("j"), //
+						d.DEP_NAME.joint($.param("nm").plus($.expr("1"))).as("j"), //
 						$.Null().as("n") //
 				) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
@@ -190,7 +190,7 @@ public class TestSelect
 						s.STAF_ID.as("staf"), //
 						s.STAF_SALARY.multiply($.expr("0.1")).as("tax"), //
 						$.func(SUM.class, d.COMP_ID).partitionBy(d.COMP_ID).orderBy(s.STAF_ID)
-								.range(d.COMP_ID, d.DEPT_NAME).as("s_") //
+								.range(d.COMP_ID, d.DEP_NAME).as("s_") //
 				) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(s.STAF_ID);
@@ -293,7 +293,7 @@ public class TestSelect
 
 		Select sel = $.from(d = $.table(DEPT.class, "D")) //
 				.select(d.COMP_ID, //
-						$.func(STACK.class, $.val(2), $.val("ID"), d.DEPT_ID, $.val("NAME"), d.DEPT_NAME).as("KEY",
+						$.func(STACK.class, $.val(2), $.val("ID"), d.DEPT_ID, $.val("NAME"), d.DEP_NAME).as("KEY",
 								"VAL"));
 
 		Select sel1 = $.from(sel.alias("V")) //
@@ -389,7 +389,7 @@ public class TestSelect
 		return $.from(s = $.table(STAF.class, "s")) //
 				.innerJoin(sel.alias("E"), sel.$("COMP_ID")) //
 				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
-				.select(sel.$("COMP_ID"), d.DEPT_NAME, s.STAF_NAME) //
+				.select(sel.$("COMP_ID"), d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt($.val(0))) //
 				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsFirst()) //
 		;
@@ -422,7 +422,7 @@ public class TestSelect
 		return $.from(s = $.table(STAF.class, "s")) //
 				.innerJoin(c = $.table(COMP.class, "c"), c.COMP_ID) //
 				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
-				.select(c.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
+				.select(c.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt($.val(0))) //
 				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsFirst()) //
 		;

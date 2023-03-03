@@ -25,12 +25,6 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 		this.field = field;
 		this.alias = null;
 	}
-	
-	@Override
-	public boolean isUsingByJoin()
-	{
-		return this.view().isJoinUsing(this.label());
-	}
 
 	@Override
 	public String alias()
@@ -56,6 +50,12 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 	}
 
 	@Override
+	public Column asFieldName()
+	{
+		return this.as(this.field().getName());
+	}
+
+	@Override
 	public Field field()
 	{
 		return field;
@@ -70,6 +70,12 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 			return field.getAnnotation(PseudoColumnMeta.class) != null;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean isUsingByJoin()
+	{
+		return this.view().isJoinUsing(this.label());
 	}
 
 	@Override

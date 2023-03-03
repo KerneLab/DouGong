@@ -12,6 +12,13 @@ public interface Column extends Named, Item, Sortable, Castable
 	public Column as(String alias);
 
 	/**
+	 * Get a copy of this Column with its field name.
+	 * 
+	 * @return
+	 */
+	public Column asFieldName();
+
+	/**
 	 * Get the field of class which represents the table containing this column.
 	 * 
 	 * @return

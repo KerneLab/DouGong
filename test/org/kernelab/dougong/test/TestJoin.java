@@ -34,7 +34,7 @@ public class TestJoin
 		return $.from(s = $.table(STAF.class, "s")) //
 				.innerJoin(c = $.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
 				.leftJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(c.COMP_ID, d.COMP_ID, d.DEPT_NAME, s.STAF_NAME) //
+				.select(c.COMP_ID, d.COMP_ID, d.DEP_NAME.asFieldName(), s.STAF_NAME) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 		;
 	}
@@ -48,7 +48,7 @@ public class TestJoin
 		return $.from(c = $.table(COMP.class, "c")) //
 				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID) //
 				.leftJoin(s = $.table(STAF.class, "s"), s.COMP_ID, s.DEPT_ID) //
-				.select(c.COMP_ID, s.DEPT_ID, d.DEPT_NAME, s.STAF_NAME) //
+				.select(c.COMP_ID, s.DEPT_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 		;
 	}
@@ -62,7 +62,7 @@ public class TestJoin
 		return $.from(c = $.table(COMP.class, "c")) //
 				.natural().innerJoin(d = $.table(DEPT.class, "d")) //
 				.natural().leftJoin(s = $.table(STAF.class, "s")) //
-				.select(c.COMP_ID, s.DEPT_ID, d.DEPT_NAME, s.STAF_NAME) //
+				.select(c.COMP_ID, s.DEPT_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 		;
 	}
