@@ -1,5 +1,6 @@
 package org.kernelab.dougong.semi.dml;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -251,11 +252,55 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return provider().provideComparisonCondition().eq(this, expr);
 	}
 
-	public AbstractSelect fillAliasByMeta()
+	/**
+	 * Fill the vacancy aliases of each selected Column object with its
+	 * {@link Field#getName()} if the NameMeta's name was specified but
+	 * different to its field name. All those unsatisfied items will be skipped
+	 * in this filling.
+	 * 
+	 * @return this Select object
+	 */
+	public AbstractSelect fillAliasByField()
 	{
+		Column column = null;
+
 		for (Item item : this.items())
 		{
-			Column column = Tools.as(item, Column.class);
+			column = Tools.as(item, Column.class);
+
+			if (column != null && column.alias() == null)
+			{
+				Field field = column.field();
+
+				if (field != null)
+				{
+					String name = Utils.getNameFromMeta(field);
+
+					if (Tools.notNullOrEmpty(name) && !Tools.equals(name, field.getName()))
+					{
+						column.alias(field.getName());
+					}
+				}
+			}
+		}
+
+		return this;
+	}
+
+	/**
+	 * Fill the vacancy aliases of each selected Column object with
+	 * {@link org.kernelab.dougong.core.meta.DataMeta#alias()}. All those
+	 * unsatisfied items will be skipped in this filling.
+	 * 
+	 * @return this Select object
+	 */
+	public AbstractSelect fillAliasByMeta()
+	{
+		Column column = null;
+
+		for (Item item : this.items())
+		{
+			column = Tools.as(item, Column.class);
 
 			if (column != null && column.alias() == null)
 			{

@@ -7,6 +7,7 @@ import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
+import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class TestExpr
 {
@@ -27,6 +28,7 @@ public class TestExpr
 				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
 				.select(d.COMP_ID, d.DEP_NAME, s.STAF_NAME, SQL.func(F_TEST_FUNC.class)) //
+				.to(AbstractSelect.class).fillAliasByField() //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(SQL.expr("NVL(SSS)")) //
 		;

@@ -52,6 +52,10 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 	@Override
 	public Column asFieldName()
 	{
+		if (this.field() == null)
+		{
+			return this;
+		}
 		return this.as(this.field().getName());
 	}
 

@@ -462,14 +462,7 @@ public class Utils
 	{
 		if (cls != null)
 		{
-			String name = null;
-
-			NameMeta meta = cls.getAnnotation(NameMeta.class);
-
-			if (meta != null)
-			{
-				name = meta.name();
-			}
+			String name = getNameFromMeta(cls);
 
 			if (Tools.isNullOrEmpty(name))
 			{
@@ -488,14 +481,7 @@ public class Utils
 	{
 		if (field != null)
 		{
-			String name = null;
-
-			NameMeta meta = field.getAnnotation(NameMeta.class);
-
-			if (meta != null)
-			{
-				name = meta.name();
-			}
+			String name = getNameFromMeta(field);
 
 			if (Tools.isNullOrEmpty(name))
 			{
@@ -508,6 +494,18 @@ public class Utils
 		{
 			return null;
 		}
+	}
+
+	public static String getNameFromMeta(Class<?> cls)
+	{
+		NameMeta meta = cls.getAnnotation(NameMeta.class);
+		return meta == null ? null : meta.name();
+	}
+
+	public static String getNameFromMeta(Field field)
+	{
+		NameMeta meta = field.getAnnotation(NameMeta.class);
+		return meta == null ? null : meta.name();
 	}
 
 	public static String getNameFromNamed(Named named)

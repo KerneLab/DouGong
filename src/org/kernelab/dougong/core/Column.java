@@ -12,7 +12,8 @@ public interface Column extends Named, Item, Sortable, Castable
 	public Column as(String alias);
 
 	/**
-	 * Get a copy of this Column with its field name.
+	 * Get a copy of this Column with its field name. This method should do
+	 * nothing and return self directly if its field was null.
 	 * 
 	 * @return
 	 */
@@ -20,6 +21,8 @@ public interface Column extends Named, Item, Sortable, Castable
 
 	/**
 	 * Get the field of class which represents the table containing this column.
+	 * Some subclass (e.g. Reference) might not has field if there was no entity
+	 * column fields in its belonging class and this method will return null.
 	 * 
 	 * @return
 	 */
