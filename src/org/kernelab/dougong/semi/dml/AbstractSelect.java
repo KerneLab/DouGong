@@ -263,23 +263,19 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect fillAliasByField()
 	{
 		Column column = null;
+		Field field = null;
 
 		for (Item item : this.items())
 		{
 			column = Tools.as(item, Column.class);
 
-			if (column != null && column.alias() == null)
+			if (column != null && column.alias() == null && (field = column.field()) != null)
 			{
-				Field field = column.field();
+				String name = Utils.getNameFromMeta(field);
 
-				if (field != null)
+				if (Tools.notNullOrEmpty(name) && !Tools.equals(name, field.getName()))
 				{
-					String name = Utils.getNameFromMeta(field);
-
-					if (Tools.notNullOrEmpty(name) && !Tools.equals(name, field.getName()))
-					{
-						column.alias(field.getName());
-					}
+					column.alias(field.getName());
 				}
 			}
 		}

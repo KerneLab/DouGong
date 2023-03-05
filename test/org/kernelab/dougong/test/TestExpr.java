@@ -27,7 +27,7 @@ public class TestExpr
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
 				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
-				.select(d.COMP_ID, d.DEP_NAME, s.STAF_NAME, SQL.func(F_TEST_FUNC.class)) //
+				.select(d.COMP_ID, d.DEP_NAME, s.STAF_NAME.as("stafName"), SQL.func(F_TEST_FUNC.class)) //
 				.to(AbstractSelect.class).fillAliasByField() //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 				.orderBy(SQL.expr("NVL(SSS)")) //
