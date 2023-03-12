@@ -17,27 +17,32 @@ public abstract class AbstractStringItem extends AbstractSortable implements Pro
 		this.provider(provider);
 	}
 
+	@Override
 	public String getString()
 	{
 		return item;
 	}
 
+	@Override
 	public Provider provider()
 	{
 		return provider;
 	}
 
+	@Override
 	public AbstractStringItem provider(Provider provider)
 	{
 		this.provider = provider;
 		return this;
 	}
 
+	@Override
 	protected AbstractStringItem replicate()
 	{
-		return this;
+		return (AbstractStringItem) provider().provideStringItem(this.getString());
 	}
 
+	@Override
 	public AbstractStringItem setString(String item)
 	{
 		this.item = item;
@@ -50,21 +55,25 @@ public abstract class AbstractStringItem extends AbstractSortable implements Pro
 		return this.getString() == null ? SQL.NULL : this.getString();
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		return buffer.append(this.toString());
 	}
 
+	@Override
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}
 
+	@Override
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}
 
+	@Override
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return Utils.outputAlias(this.provider(), toString(buffer), this);
