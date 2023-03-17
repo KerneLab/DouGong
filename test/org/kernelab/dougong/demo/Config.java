@@ -3,7 +3,7 @@ package org.kernelab.dougong.demo;
 import java.sql.SQLException;
 
 import org.kernelab.basis.sql.DataBase;
-import org.kernelab.basis.sql.DataBase.MariaDB;
+import org.kernelab.basis.sql.DataBase.OracleClient;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Provider;
@@ -20,10 +20,10 @@ public class Config
 
 	public static final SQL			SQL				= new SQL(PROVIDER);
 
-	// private static final DataBase DB_TEST = new OracleClient("orcl", "test",
-	// "TEST");
+	private static final DataBase	DB_TEST			= new OracleClient("orcl", "test", "TEST");
 
-	private static final DataBase	DB_TEST			= new MariaDB("localhost", 3306, "test", "test", "test");
+	// private static final DataBase DB_TEST = new MariaDB("localhost", 3306,
+	// "test", "test", "test");
 
 	private static final DataBase	DB				= DB_TEST;
 

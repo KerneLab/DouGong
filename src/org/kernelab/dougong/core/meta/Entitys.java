@@ -407,6 +407,60 @@ public abstract class Entitys
 		}
 	}
 
+	public static Collection<Column> getColumnsFromEntityByModel(SQL sql, Class<?> model, Entity entity,
+			Map<String, Column> colsMap, Collection<Column> columns)
+	{
+		if (model == null || model == Object.class)
+		{
+			return columns;
+		}
+
+		if (entity == null)
+		{
+			entity = getEntityFromModelClass(sql, model);
+		}
+
+		if (colsMap == null)
+		{
+			colsMap = new HashMap<String, Column>();
+			Column column = null;
+			Field field = null;
+			for (Item item : entity.items())
+			{
+				if ((column = Tools.as(item, Column.class)) != null)
+				{
+					if ((field = column.field()) != null)
+					{
+						colsMap.put(Utils.getDataLabelFromField(field), column);
+					}
+				}
+			}
+		}
+
+		if (columns == null)
+		{
+			columns = new HashSet<Column>();
+		}
+
+		columns = getColumnsFromEntityByModel(sql, model.getSuperclass(), entity, colsMap, columns);
+
+		DataMeta meta = null;
+		Column column = null;
+		for (Field field : model.getDeclaredFields())
+		{
+			if ((meta = field.getAnnotation(DataMeta.class)) != null //
+					&& meta.raw())
+			{
+				if ((column = colsMap.get(Utils.getDataLabelFromField(field))) != null)
+				{
+					columns.add(column);
+				}
+			}
+		}
+
+		return columns;
+	}
+
 	protected static Map<Column, String> getColumnsLabelMap(Collection<Column> columns)
 	{
 		Map<Column, String> map = new LinkedHashMap<Column, String>();
@@ -993,11 +1047,16 @@ public abstract class Entitys
 		return mapColumnToLabelByMeta(mapObjectToEntity(object, entity));
 	}
 
-	public static Select makeSelectByPrimaryKey(SQL sql, Entity entity)
+	public static Select makeSelectByPrimaryKey(SQL sql, Class<?> model, Entity entity)
 	{
+		if (entity == null)
+		{
+			entity = Entitys.getEntityFromModelClass(sql, model);
+		}
+
 		return sql.from(entity) //
 				.where(entity.primaryKey().queryCondition()) //
-				.select(entity.all()) //
+				.select(getColumnsFromEntityByModel(sql, model, entity, null, null).toArray(new Column[0])) //
 				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
 	}
@@ -1310,7 +1369,7 @@ public abstract class Entitys
 		}
 
 		Select select = sql.from(entity) //
-				.select(entity.all()) //
+				.select(getColumnsFromEntityByModel(sql, object.getClass(), entity, null, null).toArray(new Column[0])) //
 				.to(AbstractSelect.class) //
 				.fillAliasByMeta();
 
@@ -1589,17 +1648,19 @@ public abstract class Entitys
 				}
 			}
 
+			Column[] cols = getColumnsFromEntityByModel(sql, rels.model(), target, null, null).toArray(new Column[0]);
+
 			if (sel != null)
 			{ // Join with target
 				sel = sel.innerJoin(target.alias("t"), getForeignKey(rels.key(), rels.referred(), last, target)) //
 						.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
-						.select(target.all());
+						.select(cols);
 			}
 			else
 			{ // Query from target
 				sel = sql.from(target) //
 						.where(key.entity() == target ? key.queryCondition() : key.reference().queryCondition()) //
-						.select(target.all());
+						.select(cols);
 			}
 
 			sel = sel.to(AbstractSelect.class).fillAliasByMeta();
@@ -1630,15 +1691,13 @@ public abstract class Entitys
 
 	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, String scene, JSON params) throws SQLException
 	{
-		return selectObject(kit, sql, makeSelectByPrimaryKey(sql, Entitys.getEntityFromModelClass(sql, model)), model,
-				scene, params);
+		return selectObject(kit, sql, makeSelectByPrimaryKey(sql, model, null), model, scene, params);
 	}
 
 	public static <T> T selectObject(SQLKit kit, SQL sql, Class<T> model, String scene, Map<String, Object> params)
 			throws SQLException
 	{
-		return selectObject(kit, sql, makeSelectByPrimaryKey(sql, Entitys.getEntityFromModelClass(sql, model)), model,
-				scene, params);
+		return selectObject(kit, sql, makeSelectByPrimaryKey(sql, model, null), model, scene, params);
 	}
 
 	public static <T> T selectObject(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
@@ -1711,15 +1770,13 @@ public abstract class Entitys
 
 	public static <T> T selectObjectAlone(SQLKit kit, SQL sql, Class<T> model, JSON params) throws SQLException
 	{
-		return selectObjectAlone(kit, makeSelectByPrimaryKey(sql, Entitys.getEntityFromModelClass(sql, model)), model,
-				params);
+		return selectObjectAlone(kit, makeSelectByPrimaryKey(sql, model, null), model, params);
 	}
 
 	public static <T> T selectObjectAlone(SQLKit kit, SQL sql, Class<T> model, Map<String, Object> params)
 			throws SQLException
 	{
-		return selectObjectAlone(kit, makeSelectByPrimaryKey(sql, Entitys.getEntityFromModelClass(sql, model)), model,
-				params);
+		return selectObjectAlone(kit, makeSelectByPrimaryKey(sql, model, null), model, params);
 	}
 
 	public static <T> Canal<?, T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)

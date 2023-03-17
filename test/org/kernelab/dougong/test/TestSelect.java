@@ -56,7 +56,7 @@ public class TestSelect
 				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, //
 						s.STAF_ID, //
-						s.STAF_NAME.joint(s.STAF_JOB).as("jj"), //
+						s.STAF_NAME.joint(s.STAF_ROLE).as("jj"), //
 						s.STAF_NAME.as("name") //
 				) //
 				.to(AbstractSelect.class).fillAliasByMeta() //

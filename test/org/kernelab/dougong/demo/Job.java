@@ -6,9 +6,6 @@ import org.kernelab.dougong.core.meta.EntityMeta;
 @EntityMeta(entity = JOBS.class)
 public class Job
 {
-	@DataMeta(alias = "rowid")
-	private String	rowid;
-
 	@DataMeta(alias = "jobId")
 	private String	id;
 
@@ -35,11 +32,6 @@ public class Job
 		return name;
 	}
 
-	public String getRowid()
-	{
-		return rowid;
-	}
-
 	public void setId(String jobId)
 	{
 		this.id = jobId;
@@ -50,14 +42,9 @@ public class Job
 		this.name = jobName;
 	}
 
-	public void setRowid(String rowid)
-	{
-		this.rowid = rowid;
-	}
-
 	@Override
 	public String toString()
 	{
-		return "Job: rowid=" + this.getRowid() + " id=" + this.getId() + ", name=" + this.getName();
+		return "Job: id=" + this.getId() + ", name=" + this.getName();
 	}
 }
