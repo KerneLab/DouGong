@@ -1634,7 +1634,7 @@ public abstract class Entitys
 					{
 						curr = sql.view(join.entity());
 					}
-					curr.alias("t" + i);
+					curr.alias("T" + i);
 					if (last == null)
 					{
 						sel = sql.from(curr).select();
@@ -1652,9 +1652,24 @@ public abstract class Entitys
 
 			if (sel != null)
 			{ // Join with target
-				sel = sel.innerJoin(target.alias("t"), getForeignKey(rels.key(), rels.referred(), last, target)) //
+				Item[] items = new Item[cols.length];
+				String exp = null;
+				for (int i = 0; i < cols.length; i++)
+				{
+					if ((exp = getColumnSelectExpression(cols[i])) != null)
+					{
+						items[i] = sql.expr(exp.replace("?.", sql.provider().provideNameText("T") + ".") //
+								.replace("?", sql.provider().provideNameText(cols[i].name()))) //
+								.alias(Utils.getDataAliasFromField(cols[i].field()));
+					}
+					else
+					{
+						items[i] = cols[i];
+					}
+				}
+				sel = sel.innerJoin(target.alias("T"), getForeignKey(rels.key(), rels.referred(), last, target)) //
 						.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
-						.select(cols);
+						.select(items);
 			}
 			else
 			{ // Query from target

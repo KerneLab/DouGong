@@ -457,7 +457,7 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		}
 		else
 		{
-			buffer.append(select);
+			buffer.append(select.replace("?.", "").replace("?", this.provideNameText(column.name())));
 		}
 		return Utils.outputAlias(this, buffer, column);
 	}

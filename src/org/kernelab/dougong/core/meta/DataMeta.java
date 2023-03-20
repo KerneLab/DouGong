@@ -51,7 +51,9 @@ public @interface DataMeta
 	/**
 	 * Indicate the expression of this item on being selected. If this
 	 * expression is not empty, it will take place of NameMeta as the select
-	 * expression.
+	 * expression. Code {@code ?.} can be used to refer the table alias and will
+	 * be replaced to {@code T.} meanwhile {@code ?} will be replaced to column
+	 * name. So that {@code ?.?} can be used to refer current column correctly.
 	 */
 	public String select() default "";
 }

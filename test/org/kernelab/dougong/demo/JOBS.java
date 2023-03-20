@@ -14,7 +14,7 @@ public class JOBS extends AbstractTable
 {
 	@NameMeta(name = "ROWID")
 	@TypeMeta(type = "VARCHAR2", precision = 18, nullable = TypeMeta.NO_NULLS)
-	@DataMeta(alias = "rowid", select = "ROWIDTOCHAR(ROWID)")
+	@DataMeta(alias = "rowid", select = "ROWIDTOCHAR(?.ROWID)")
 	@AbsoluteKeyMeta
 	public Column	ROWID;
 

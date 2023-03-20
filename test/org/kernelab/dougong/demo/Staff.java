@@ -154,7 +154,7 @@ public class Staff
 					@Override
 					public String map(Job el) throws Exception
 					{
-						return el.getName();
+						return el.getName() + "|" + el.getRowid();
 					}
 				}).toString(",", "[", "]");
 	}
