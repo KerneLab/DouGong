@@ -450,14 +450,14 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	@Override
 	public StringBuilder provideOutputColumnSelect(StringBuilder buffer, Column column)
 	{
-		String select = Entitys.getColumnSelectExpression(column);
+		String select = Entitys.getColumnSelectExpression(this, column);
 		if (select == null)
 		{
 			this.provideOutputColumnExpress(buffer, column);
 		}
 		else
 		{
-			buffer.append(select.replace("?.", "").replace("?", this.provideNameText(column.name())));
+			buffer.append(select);
 		}
 		return Utils.outputAlias(this, buffer, column);
 	}

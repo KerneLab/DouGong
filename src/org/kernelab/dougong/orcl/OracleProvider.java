@@ -132,12 +132,8 @@ public class OracleProvider extends AbstractProvider
 		for (int i = 0; i < returns.length; i++)
 		{
 			Column column = returns[i];
-			String select = Entitys.getColumnSelectExpression(column);
-			if (select != null)
-			{
-				select = select.replace("?.", "").replace("?", sql.provider().provideNameText(column.name()));
-			}
-			rets[i] = select != null ? sql.expr(select).alias(Utils.getDataAliasFromField(column.field())) : column;
+			String select = Entitys.getColumnSelectExpression(this, column);
+			rets[i] = select != null ? sql.expr(select) : column;
 		}
 
 		insert.to(OracleInsert.class).returning(rets);

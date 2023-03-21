@@ -26,6 +26,7 @@ import org.kernelab.basis.sql.Sequel;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
+import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.AbsoluteKey;
 import org.kernelab.dougong.core.ddl.EntityKey;
@@ -394,17 +395,24 @@ public abstract class Entitys
 		return columns;
 	}
 
-	public static String getColumnSelectExpression(Column column)
+	public static String getColumnSelectExpression(Provider p, Column column)
 	{
 		DataMeta meta = column.field() == null ? null : column.field().getAnnotation(DataMeta.class);
 		if (meta == null || meta.select() == null || meta.select().length() == 0)
 		{
 			return null;
 		}
+
+		String expr = meta.select();
+		if (column.view().alias() == null)
+		{
+			expr = expr.replace("?.", "");
+		}
 		else
 		{
-			return meta.select();
+			expr = expr.replace("?.", p.provideNameText(column.view().alias()) + ".");
 		}
+		return expr.replace("?", p.provideNameText(column.name()));
 	}
 
 	public static Collection<Column> getColumnsFromEntityByModel(SQL sql, Class<?> model, Entity entity,
@@ -1652,24 +1660,9 @@ public abstract class Entitys
 
 			if (sel != null)
 			{ // Join with target
-				Item[] items = new Item[cols.length];
-				String exp = null;
-				for (int i = 0; i < cols.length; i++)
-				{
-					if ((exp = getColumnSelectExpression(cols[i])) != null)
-					{
-						items[i] = sql.expr(exp.replace("?.", sql.provider().provideNameText("T") + ".") //
-								.replace("?", sql.provider().provideNameText(cols[i].name()))) //
-								.alias(Utils.getDataAliasFromField(cols[i].field()));
-					}
-					else
-					{
-						items[i] = cols[i];
-					}
-				}
 				sel = sel.innerJoin(target.alias("T"), getForeignKey(rels.key(), rels.referred(), last, target)) //
 						.where(key.entity() == first ? key.queryCondition() : key.reference().queryCondition()) //
-						.select(items);
+						.select(cols);
 			}
 			else
 			{ // Query from target
