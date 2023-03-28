@@ -97,17 +97,20 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 		}
 	}
 
+	@Override
 	public List<WithDefinition> withs()
 	{
 		return with;
 	}
 
+	@Override
 	public AbstractWithsable withs(List<WithDefinition> with)
 	{
 		this.with = with;
 		return this;
 	}
 
+	@Override
 	public AbstractWithsable withs(WithDefinition... withs)
 	{
 		this.with = new LinkedList<WithDefinition>();

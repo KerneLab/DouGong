@@ -126,12 +126,19 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		buffer.append("INSERT");
 	}
 
-	protected void textOfSource(StringBuilder buffer)
+	protected void textOfSourceBody(StringBuilder buffer)
 	{
 		if (this.source != null)
 		{
-			buffer.append(' ');
-			this.source.toStringSource(buffer);
+			this.source.toStringSourceOfBody(buffer);
+		}
+	}
+
+	protected void textOfSourceWith(StringBuilder buffer)
+	{
+		if (this.source != null)
+		{
+			this.source.toStringSourceOfWith(buffer);
 		}
 	}
 
@@ -185,7 +192,9 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		}
 		else if (this.source != null)
 		{
-			this.textOfSource(buffer);
+			buffer.append(' ');
+			this.textOfSourceWith(buffer);
+			this.textOfSourceBody(buffer);
 		}
 		return buffer;
 	}

@@ -1338,9 +1338,30 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
-	public StringBuilder toStringSource(StringBuilder buffer)
+	public StringBuilder toStringSourceOfBody(StringBuilder buffer)
 	{
-		return this.toString(buffer);
+		AbstractSelect select = prepare();
+		select.textOfHead(buffer);
+		select.textOfHint(buffer);
+		select.textOfUnique(buffer);
+		select.textOfItems(buffer);
+		select.textOfFrom(buffer);
+		select.textOfJoin(buffer);
+		select.textOfWhere(buffer);
+		select.textOfConnectBy(buffer);
+		select.textOfGroup(buffer);
+		select.textOfHaving(buffer);
+		select.textOfAbstractSetopr(buffer);
+		select.textOfOrder(buffer);
+		return buffer;
+	}
+
+	@Override
+	public StringBuilder toStringSourceOfWith(StringBuilder buffer)
+	{
+		AbstractSelect select = prepare();
+		select.textOfWith(buffer);
+		return buffer;
 	}
 
 	@Override

@@ -13,6 +13,8 @@ import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.dml.AbstractInsert;
 
@@ -53,6 +55,49 @@ public class MariaInsert extends AbstractInsert
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		super.toString(buffer);
+		return textOfDuplicateKeyUpdate(buffer);
+	}
+
+	public String toStringWithFirst()
+	{
+		return this.toStringWithFirst(new StringBuilder()).toString();
+	}
+
+	public StringBuilder toStringWithFirst(StringBuilder buffer)
+	{
+		if (this.source == null)
+		{
+			return this.toString(buffer);
+		}
+
+		Select sel = null;
+		if (this.source instanceof Select)
+		{
+			sel = (Select) this.source;
+		}
+		else if (this.source instanceof Subquery)
+		{
+			sel = ((Subquery) this.source).select();
+		}
+
+		if (sel != null && sel.withs() != null && !sel.withs().isEmpty())
+		{
+			this.textOfSourceWith(buffer);
+		}
+
+		this.textOfHead(buffer);
+		this.textOfHint(buffer);
+		this.textOfTarget(buffer);
+		this.textOfColumns(buffer);
+		if (values() != null)
+		{
+			this.textOfValues(buffer);
+		}
+		else if (this.source != null)
+		{
+			buffer.append(' ');
+			this.textOfSourceBody(buffer);
+		}
 
 		return textOfDuplicateKeyUpdate(buffer);
 	}

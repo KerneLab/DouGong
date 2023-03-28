@@ -342,9 +342,15 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	}
 
 	@Override
-	public StringBuilder toStringSource(StringBuilder buffer)
+	public StringBuilder toStringSourceOfBody(StringBuilder buffer)
 	{
-		return this.select().toStringSource(buffer);
+		return this.select().toStringSourceOfBody(buffer);
+	}
+
+	@Override
+	public StringBuilder toStringSourceOfWith(StringBuilder buffer)
+	{
+		return this.select().toStringSourceOfWith(buffer);
 	}
 
 	@Override
