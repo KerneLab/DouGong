@@ -9,9 +9,15 @@ public abstract class AbstractSortable extends AbstractItem implements Sortable
 	private Boolean	nulls	= null;
 
 	@Override
-	public AbstractSortable ascend()
+	public AbstractSortable asc()
 	{
 		return this.replicate().ascend(true);
+	}
+
+	@Override
+	public AbstractSortable ascend()
+	{
+		return this.asc();
 	}
 
 	@Override
@@ -28,9 +34,15 @@ public abstract class AbstractSortable extends AbstractItem implements Sortable
 	}
 
 	@Override
-	public AbstractSortable descend()
+	public AbstractSortable desc()
 	{
 		return this.replicate().ascend(false);
+	}
+
+	@Override
+	public AbstractSortable descend()
+	{
+		return this.desc();
 	}
 
 	@Override

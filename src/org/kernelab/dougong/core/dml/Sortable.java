@@ -17,20 +17,29 @@ public interface Sortable extends Item
 	 * 
 	 * @return
 	 */
+	public Sortable asc();
+
+	/**
+	 * Deprecated, please use {@link Sortable#asc()}
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	public Sortable ascend();
 
 	/**
-	 * Return this object according to the given order.
-	 * 
+	 * Set order and return this object.
+	 *
 	 * @param ascend
 	 *            true if in ascending order otherwise false.
 	 * @return
 	 */
+
 	public Sortable ascend(boolean ascend);
 
 	/**
 	 * true if and only if this expr is in ascending order otherwise descend.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean ascending();
@@ -40,6 +49,14 @@ public interface Sortable extends Item
 	 * 
 	 * @return
 	 */
+	public Sortable desc();
+
+	/**
+	 * Deprecated, please use {@link Sortable#desc()}
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	public Sortable descend();
 
 	/**
@@ -59,14 +76,14 @@ public interface Sortable extends Item
 	/**
 	 * true if this expr is ordered with nullLast, false if this expr is ordered
 	 * with nullFirst, null means did not specify the nulls position.
-	 * 
+	 *
 	 * @return
 	 */
 	public Boolean nullsPosition();
 
 	/**
-	 * Return this object with given nulls position.
-	 * 
+	 * Set nulls position and return this object.
+	 *
 	 * @return
 	 * @see {@link Sortable#nullsPosition()}
 	 */

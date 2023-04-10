@@ -31,7 +31,7 @@ public class TestIn
 				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
 				.select(d.COMP_ID) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
-				.orderBy(d.COMP_ID.descend()) //
+				.orderBy(d.COMP_ID.desc()) //
 		;
 	}
 
@@ -51,7 +51,7 @@ public class TestIn
 				) //
 				.where(d.COMP_ID.gt(SQL.expr("0")) //
 						.and(d.COMP_ID.in(scope))) //
-				.orderBy(d.COMP_ID.descend()) //
+				.orderBy(d.COMP_ID.desc()) //
 		;
 	}
 }

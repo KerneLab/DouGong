@@ -78,7 +78,7 @@ public class TestInsert
 				.innerJoin(d = $.table(DEPT.class, "d"), d.DEPT_ID) //
 				.select(d.DEPT_ID, c.COMP_ID) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
-				.orderBy(d.COMP_ID.descend()) //
+				.orderBy(d.COMP_ID.desc()) //
 				.insert(s) //
 				.columns(s.DEPT_ID, s.COMP_ID) //
 		;
@@ -95,7 +95,7 @@ public class TestInsert
 				.innerJoin(d = $.table(DEPT.class, "d"), d.DEPT_ID.eq(s.DEPT_ID)) //
 				.select(d.DEPT_ID, c.COMP_ID) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
-				.orderBy(d.COMP_ID.descend()) //
+				.orderBy(d.COMP_ID.desc()) //
 				.insert(s) //
 				.columns(s.DEPT_ID, s.COMP_ID) //
 		;
@@ -112,7 +112,7 @@ public class TestInsert
 				.innerJoin(d = $.table(DEPT.class, "d"), d.DEPT_ID.eq(s.DEPT_ID)) //
 				.select() //
 				.where(d.COMP_ID.gt($.expr("0"))) //
-				.orderBy(d.COMP_ID.descend()) //
+				.orderBy(d.COMP_ID.desc()) //
 				.insert(s) //
 				.pairs(s.DEPT_ID, d.DEPT_ID, //
 						s.COMP_ID, d.COMP_ID) //
@@ -130,7 +130,7 @@ public class TestInsert
 				.innerJoin(d = $.table(DEPT.class, "d"), d.DEPT_ID.eq(s.DEPT_ID)) //
 				.select() //
 				.where(d.COMP_ID.gt($.expr("0"))) //
-				.orderBy(d.COMP_ID.descend()) //
+				.orderBy(d.COMP_ID.desc()) //
 				.insert(s) //
 				.pair(s.DEPT_ID, d.DEPT_ID) //
 				.pair(s.COMP_ID, d.COMP_ID) //
