@@ -13,8 +13,8 @@ public class MariaColumn extends AbstractColumn
 	}
 
 	@Override
-	protected MariaColumn replicate()
+	protected MariaColumn newInstance()
 	{
-		return (MariaColumn) new MariaColumn(view(), name(), field()).replicateOrderOf(this);
+		return new MariaColumn(view(), name(), field());
 	}
 }

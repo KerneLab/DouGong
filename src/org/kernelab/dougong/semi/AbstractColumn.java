@@ -42,11 +42,9 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 	@Override
 	public AbstractColumn as(String alias)
 	{
-		AbstractColumn col = (AbstractColumn) this.replicate() //
-				.name(this.name()) //
+		return this.replicate() //
+				.to(AbstractColumn.class) //
 				.alias(alias);
-		col.ascend(this.ascending());
-		return col;
 	}
 
 	@Override
@@ -105,9 +103,6 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 	{
 		return view().provider();
 	}
-
-	@Override
-	protected abstract AbstractColumn replicate();
 
 	@Override
 	public String toString()

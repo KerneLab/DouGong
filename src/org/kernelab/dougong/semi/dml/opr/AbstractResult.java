@@ -7,13 +7,12 @@ import org.kernelab.dougong.semi.dml.AbstractSortable;
 public abstract class AbstractResult extends AbstractSortable implements Result
 {
 	@Override
-	protected abstract AbstractResult replicate();
-
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}
 
+	@Override
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return Utils.outputAlias(this.provider(), this.toStringExpress(buffer), this);

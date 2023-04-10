@@ -28,7 +28,4 @@ public abstract class AbstractReference extends AbstractColumn implements Refere
 	{
 		return this;
 	}
-
-	@Override
-	protected abstract AbstractReference replicate();
 }

@@ -19,6 +19,12 @@ public class AbstractUnaryResult extends AbstractResult implements Providable
 		this.operand = operand;
 	}
 
+	@Override
+	protected AbstractUnaryResult newInstance()
+	{
+		return provider().provideProvider(new AbstractUnaryResult(operator(), operand()));
+	}
+
 	public Expression operand()
 	{
 		return operand;
@@ -40,13 +46,6 @@ public class AbstractUnaryResult extends AbstractResult implements Providable
 	{
 		this.provider = provider;
 		return this;
-	}
-
-	@Override
-	protected AbstractUnaryResult replicate()
-	{
-		return (AbstractUnaryResult) new AbstractUnaryResult(operator(), operand()).provider(provider())
-				.replicateOrderOf(this);
 	}
 
 	@Override

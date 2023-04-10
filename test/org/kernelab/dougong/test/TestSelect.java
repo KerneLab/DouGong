@@ -74,9 +74,7 @@ public class TestSelect
 				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY.negative().negative().as("nn"),
 						(s.STAF_SALARY.multiply($.v(100))).negative().as("n2"));
 
-		Tools.debug($.from(sel = sel.as("T")).select(sel.ref("id"), sel.ref("STAF_NAME")));
-
-		return $.from(sel = sel.as("R")).select(sel.$("id"), sel.$("STAF_NAME"));
+		return $.from(sel = sel.as("R")).select(sel.$("id"), sel.$("STAF_NAME")).orderBy(sel.$("id").desc());
 	}
 
 	public static Select makeSelectAliased1()

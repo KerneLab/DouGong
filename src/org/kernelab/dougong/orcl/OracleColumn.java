@@ -13,8 +13,8 @@ public class OracleColumn extends AbstractColumn
 	}
 
 	@Override
-	protected OracleColumn replicate()
+	protected OracleColumn newInstance()
 	{
-		return (OracleColumn) new OracleColumn(view(), name(), field()).replicateOrderOf(this);
+		return new OracleColumn(view(), name(), field());
 	}
 }

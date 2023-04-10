@@ -20,23 +20,23 @@ public class AbstractStringExpressionResult extends AbstractResult implements Pr
 		return expression;
 	}
 
+	@Override
+	protected AbstractStringExpressionResult newInstance()
+	{
+		return provider().provideProvider(new AbstractStringExpressionResult(expression()));
+	}
+
+	@Override
 	public Provider provider()
 	{
 		return provider;
 	}
 
+	@Override
 	public AbstractStringExpressionResult provider(Provider provider)
 	{
 		this.provider = provider;
 		return this;
-	}
-
-	@Override
-	protected AbstractResult replicate()
-	{
-		return provider()
-				.provideProvider((AbstractStringExpressionResult) new AbstractStringExpressionResult(expression())
-						.replicateOrderOf(this));
 	}
 
 	@Override

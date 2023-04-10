@@ -11,10 +11,9 @@ public class MariaJointResult extends AbstractVarinaryResult
 	}
 
 	@Override
-	protected MariaJointResult replicate()
+	protected MariaJointResult newInstance()
 	{
-		return this.provider().provideProvider(
-				(MariaJointResult) new MariaJointResult(operator(), operands()).replicateOrderOf(this));
+		return this.provider().provideProvider(new MariaJointResult(operator(), operands()));
 	}
 
 	@Override

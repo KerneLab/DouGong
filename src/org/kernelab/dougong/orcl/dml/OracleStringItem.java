@@ -9,4 +9,10 @@ public class OracleStringItem extends AbstractStringItem
 	{
 		super(provider);
 	}
+
+	@Override
+	protected OracleStringItem newInstance()
+	{
+		return new OracleStringItem(this.provider());
+	}
 }

@@ -45,6 +45,14 @@ public abstract class AbstractSortable extends AbstractItem implements Sortable
 		return this.desc();
 	}
 
+	/**
+	 * Return a new instance of this class with the attributes declared by this
+	 * class.
+	 * 
+	 * @return
+	 */
+	protected abstract AbstractSortable newInstance();
+
 	@Override
 	public Sortable nullsFirst()
 	{
@@ -71,9 +79,12 @@ public abstract class AbstractSortable extends AbstractItem implements Sortable
 	}
 
 	@Override
-	protected abstract AbstractSortable replicate();
+	protected AbstractSortable replicate()
+	{
+		return this.newInstance().replicateOrderOf(this);
+	}
 
-	protected AbstractSortable replicateOrderOf(Sortable sort)
+	private AbstractSortable replicateOrderOf(Sortable sort)
 	{
 		this.ascend(sort.ascending()).nullsPosition(sort.nullsPosition());
 		return this;

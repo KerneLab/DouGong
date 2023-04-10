@@ -9,4 +9,10 @@ public class MariaStringItem extends AbstractStringItem
 	{
 		super(provider);
 	}
+
+	@Override
+	protected MariaStringItem newInstance()
+	{
+		return new MariaStringItem(this.provider());
+	}
 }

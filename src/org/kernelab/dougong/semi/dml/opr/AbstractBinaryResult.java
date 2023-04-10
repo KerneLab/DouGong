@@ -22,6 +22,12 @@ public class AbstractBinaryResult extends AbstractResult implements Providable
 		this.operand2 = operand2;
 	}
 
+	@Override
+	protected AbstractBinaryResult newInstance()
+	{
+		return this.provider().provideProvider(new AbstractBinaryResult(operator(), operand1(), operand2()));
+	}
+
 	public Expression operand1()
 	{
 		return operand1;
@@ -48,14 +54,6 @@ public class AbstractBinaryResult extends AbstractResult implements Providable
 	{
 		this.provider = provider;
 		return this;
-	}
-
-	@Override
-	protected AbstractBinaryResult replicate()
-	{
-		return this.provider()
-				.provideProvider((AbstractBinaryResult) new AbstractBinaryResult(operator(), operand1(), operand2())
-						.replicateOrderOf(this));
 	}
 
 	@Override
