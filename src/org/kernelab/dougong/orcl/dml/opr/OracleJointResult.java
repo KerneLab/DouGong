@@ -13,6 +13,7 @@ public class OracleJointResult extends AbstractVarinaryResult
 	@Override
 	protected OracleJointResult replicate()
 	{
-		return (OracleJointResult) new OracleJointResult(operator(), operands()).provider(provider());
+		return this.provider().provideProvider(
+				(OracleJointResult) new OracleJointResult(operator(), operands()).replicateOrderOf(this));
 	}
 }

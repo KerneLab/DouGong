@@ -15,6 +15,6 @@ public class MariaColumn extends AbstractColumn
 	@Override
 	protected MariaColumn replicate()
 	{
-		return new MariaColumn(view(), name(), field());
+		return (MariaColumn) new MariaColumn(view(), name(), field()).replicateOrderOf(this);
 	}
 }

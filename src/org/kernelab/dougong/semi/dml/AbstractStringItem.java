@@ -39,7 +39,8 @@ public abstract class AbstractStringItem extends AbstractSortable implements Pro
 	@Override
 	protected AbstractStringItem replicate()
 	{
-		return (AbstractStringItem) provider().provideStringItem(this.getString());
+		return (AbstractStringItem) ((AbstractStringItem) provider().provideStringItem(this.getString()))
+				.replicateOrderOf(this);
 	}
 
 	@Override

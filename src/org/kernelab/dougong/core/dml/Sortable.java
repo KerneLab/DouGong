@@ -20,7 +20,7 @@ public interface Sortable extends Item
 	public Sortable ascend();
 
 	/**
-	 * Return a Sortable object according to the given order.
+	 * Return this object according to the given order.
 	 * 
 	 * @param ascend
 	 *            true if in ascending order otherwise false.
@@ -65,7 +65,7 @@ public interface Sortable extends Item
 	public Boolean nullsPosition();
 
 	/**
-	 * Return a Sortable object with given nulls position.
+	 * Return this object with given nulls position.
 	 * 
 	 * @return
 	 * @see {@link Sortable#nullsPosition()}

@@ -157,6 +157,7 @@ public class AbstractFunction extends AbstractSortable implements Function
 				.args(this.args()) //
 				.provider(this.provider()) //
 				.ascend(this.ascending()) //
+				.nullsPosition(this.nullsPosition()) //
 		;
 	}
 

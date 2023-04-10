@@ -283,7 +283,7 @@ public class TestSelect
 
 		return $.from(sel) //
 				.select(sel.ref("name").as("nm")) //
-				.orderBy(sel.$("COMP_ID").ascend(), sel.$("name").descend(), sel.$("name").plus($.val(1)).ascend()) //
+				.orderBy(sel.$("COMP_ID").ascend(), sel.$("name").descend(), sel.$("name").plus($.val(1)).descend()) //
 		;
 	}
 

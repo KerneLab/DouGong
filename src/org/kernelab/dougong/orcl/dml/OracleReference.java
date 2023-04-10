@@ -13,7 +13,7 @@ public class OracleReference extends AbstractReference
 	@Override
 	protected OracleReference replicate()
 	{
-		return new OracleReference(view(), name());
+		return (OracleReference) new OracleReference(view(), name()).replicateOrderOf(this);
 	}
 
 	@Override

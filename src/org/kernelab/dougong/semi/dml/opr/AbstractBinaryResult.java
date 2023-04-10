@@ -53,7 +53,9 @@ public class AbstractBinaryResult extends AbstractResult implements Providable
 	@Override
 	protected AbstractBinaryResult replicate()
 	{
-		return new AbstractBinaryResult(operator(), operand1(), operand2()).provider(provider());
+		return this.provider()
+				.provideProvider((AbstractBinaryResult) new AbstractBinaryResult(operator(), operand1(), operand2())
+						.replicateOrderOf(this));
 	}
 
 	@Override

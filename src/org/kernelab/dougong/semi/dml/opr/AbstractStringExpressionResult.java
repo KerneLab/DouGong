@@ -34,7 +34,9 @@ public class AbstractStringExpressionResult extends AbstractResult implements Pr
 	@Override
 	protected AbstractResult replicate()
 	{
-		return provider().provideProvider(new AbstractStringExpressionResult(expression()));
+		return provider()
+				.provideProvider((AbstractStringExpressionResult) new AbstractStringExpressionResult(expression())
+						.replicateOrderOf(this));
 	}
 
 	@Override

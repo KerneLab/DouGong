@@ -11,7 +11,7 @@ public abstract class AbstractSortable extends AbstractItem implements Sortable
 	@Override
 	public AbstractSortable ascend()
 	{
-		return ascend(true);
+		return this.replicate().ascend(true);
 	}
 
 	@Override
@@ -30,19 +30,19 @@ public abstract class AbstractSortable extends AbstractItem implements Sortable
 	@Override
 	public AbstractSortable descend()
 	{
-		return ascend(false);
+		return this.replicate().ascend(false);
 	}
 
 	@Override
 	public Sortable nullsFirst()
 	{
-		return nullsPosition(NULLS_FIRST);
+		return this.replicate().nullsPosition(NULLS_FIRST);
 	}
 
 	@Override
 	public Sortable nullsLast()
 	{
-		return nullsPosition(NULLS_LAST);
+		return this.replicate().nullsPosition(NULLS_LAST);
 	}
 
 	@Override
@@ -58,7 +58,14 @@ public abstract class AbstractSortable extends AbstractItem implements Sortable
 		return this;
 	}
 
+	@Override
 	protected abstract AbstractSortable replicate();
+
+	protected AbstractSortable replicateOrderOf(Sortable sort)
+	{
+		this.ascend(sort.ascending()).nullsPosition(sort.nullsPosition());
+		return this;
+	}
 
 	@Override
 	public StringBuilder toStringOrdered(StringBuilder buffer)

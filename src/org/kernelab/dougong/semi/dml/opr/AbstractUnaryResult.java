@@ -45,7 +45,8 @@ public class AbstractUnaryResult extends AbstractResult implements Providable
 	@Override
 	protected AbstractUnaryResult replicate()
 	{
-		return new AbstractUnaryResult(operator(), operand()).provider(provider());
+		return (AbstractUnaryResult) new AbstractUnaryResult(operator(), operand()).provider(provider())
+				.replicateOrderOf(this);
 	}
 
 	@Override

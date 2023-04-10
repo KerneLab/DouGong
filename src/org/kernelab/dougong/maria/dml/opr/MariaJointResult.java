@@ -13,7 +13,8 @@ public class MariaJointResult extends AbstractVarinaryResult
 	@Override
 	protected MariaJointResult replicate()
 	{
-		return (MariaJointResult) new MariaJointResult(operator(), operands()).provider(provider());
+		return this.provider().provideProvider(
+				(MariaJointResult) new MariaJointResult(operator(), operands()).replicateOrderOf(this));
 	}
 
 	@Override

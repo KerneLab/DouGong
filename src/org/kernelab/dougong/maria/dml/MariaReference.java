@@ -13,7 +13,7 @@ public class MariaReference extends AbstractReference
 	@Override
 	protected MariaReference replicate()
 	{
-		return new MariaReference(view(), name());
+		return (MariaReference) new MariaReference(view(), name()).replicateOrderOf(this);
 	}
 
 	@Override
