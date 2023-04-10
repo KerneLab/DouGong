@@ -26,6 +26,7 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	 */
 	public Reference $(String refer);
 
+	@Override
 	public View alias(String alias);
 
 	/**

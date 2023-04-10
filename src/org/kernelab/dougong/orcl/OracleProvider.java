@@ -16,7 +16,6 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
-import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
@@ -33,7 +32,6 @@ import org.kernelab.dougong.orcl.dml.OracleItems;
 import org.kernelab.dougong.orcl.dml.OracleJoin;
 import org.kernelab.dougong.orcl.dml.OracleReference;
 import org.kernelab.dougong.orcl.dml.OracleSelect;
-import org.kernelab.dougong.orcl.dml.OracleSortable;
 import org.kernelab.dougong.orcl.dml.OracleStringItem;
 import org.kernelab.dougong.orcl.dml.OracleUpdate;
 import org.kernelab.dougong.orcl.dml.cond.OracleComparisonCondition;
@@ -315,41 +313,6 @@ public class OracleProvider extends AbstractProvider
 		return buffer;
 	}
 
-	@Override
-	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort)
-	{
-		if (buffer != null && sort != null)
-		{
-			buffer.append(' ');
-
-			if (sort.ascending())
-			{
-				buffer.append("ASC");
-			}
-			else
-			{
-				buffer.append("DESC");
-			}
-
-			if (sort instanceof OracleSortable)
-			{
-				OracleSortable os = (OracleSortable) sort;
-
-				switch (os.getNullsPosition())
-				{
-					case OracleSortable.NULLS_FIRST:
-						buffer.append(' ').append(OracleSortable.NULLS_FIRST_OPR);
-						break;
-
-					case OracleSortable.NULLS_LAST:
-						buffer.append(' ').append(OracleSortable.NULLS_LAST_OPR);
-						break;
-				}
-			}
-		}
-		return buffer;
-	}
-
 	public StringBuilder provideOutputReturningClause(StringBuilder buffer, Expression[] returning)
 	{
 		if (returning != null && returning.length > 0)
@@ -455,10 +418,5 @@ public class OracleProvider extends AbstractProvider
 	public OracleUpdate provideUpdate()
 	{
 		return this.provideProvider(new OracleUpdate());
-	}
-
-	public OracleSortable sort(Sortable sort)
-	{
-		return (OracleSortable) sort;
 	}
 }

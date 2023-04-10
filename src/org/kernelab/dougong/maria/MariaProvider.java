@@ -18,7 +18,6 @@ import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Pivot;
-import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
@@ -259,25 +258,6 @@ public class MariaProvider extends AbstractProvider
 			buffer.append(')');
 		}
 
-		return buffer;
-	}
-
-	@Override
-	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort)
-	{
-		if (buffer != null && sort != null)
-		{
-			buffer.append(' ');
-
-			if (sort.ascending())
-			{
-				buffer.append("ASC");
-			}
-			else
-			{
-				buffer.append("DESC");
-			}
-		}
 		return buffer;
 	}
 

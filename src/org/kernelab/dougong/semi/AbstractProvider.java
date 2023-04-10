@@ -39,6 +39,7 @@ import org.kernelab.dougong.core.dml.Label;
 import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
 import org.kernelab.dougong.core.dml.WithDefinition;
@@ -488,6 +489,37 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		if (buffer != null)
 		{
 			buffer.append(this.provideNameText(name));
+		}
+		return buffer;
+	}
+
+	@Override
+	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort)
+	{
+		if (buffer != null && sort != null)
+		{
+			buffer.append(' ');
+
+			if (sort.ascending())
+			{
+				buffer.append("ASC");
+			}
+			else
+			{
+				buffer.append("DESC");
+			}
+
+			if (sort.nullsPosition() != null)
+			{
+				if (Boolean.TRUE.equals(sort.nullsPosition()))
+				{
+					buffer.append(' ').append(Sortable.NULLS_LAST_OPR);
+				}
+				else
+				{
+					buffer.append(' ').append(Sortable.NULLS_FIRST_OPR);
+				}
+			}
 		}
 		return buffer;
 	}

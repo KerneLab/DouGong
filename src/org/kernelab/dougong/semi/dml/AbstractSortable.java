@@ -4,7 +4,9 @@ import org.kernelab.dougong.core.dml.Sortable;
 
 public abstract class AbstractSortable extends AbstractItem implements Sortable
 {
-	private boolean order = true;
+	private boolean	order	= true;
+
+	private Boolean	nulls	= null;
 
 	@Override
 	public AbstractSortable ascend()
@@ -29,6 +31,31 @@ public abstract class AbstractSortable extends AbstractItem implements Sortable
 	public AbstractSortable descend()
 	{
 		return ascend(false);
+	}
+
+	@Override
+	public Sortable nullsFirst()
+	{
+		return nullsPosition(NULLS_FIRST);
+	}
+
+	@Override
+	public Sortable nullsLast()
+	{
+		return nullsPosition(NULLS_LAST);
+	}
+
+	@Override
+	public Boolean nullsPosition()
+	{
+		return nulls;
+	}
+
+	@Override
+	public Sortable nullsPosition(Boolean first)
+	{
+		this.nulls = first;
+		return this;
 	}
 
 	protected abstract AbstractSortable replicate();

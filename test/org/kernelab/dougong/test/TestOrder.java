@@ -6,14 +6,12 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.demo.COMP;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
-import org.kernelab.dougong.orcl.OracleColumn;
-import org.kernelab.dougong.orcl.OracleProvider;
-import org.kernelab.dougong.orcl.dml.OracleStringItem;
+import org.kernelab.dougong.maria.MariaProvider;
 
 public class TestOrder
 {
-	// public static SQL SQL = new SQL(new MariaProvider());
-	public static SQL SQL = new SQL(new OracleProvider());
+	public static SQL SQL = new SQL(new MariaProvider());
+	// public static SQL SQL = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
@@ -33,7 +31,7 @@ public class TestOrder
 				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, d.DEP_NAME, SQL.func(F_TEST_FUNC.class, s.STAF_NAME).as("FF")) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
-				.orderBy(SQL.$("FF").to(OracleStringItem.class).nullsLast().descend()) //
+				.orderBy(SQL.$("FF").nullsLast().descend()) //
 		;
 	}
 
@@ -48,7 +46,7 @@ public class TestOrder
 				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
-				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsLast().descend()) //
+				.orderBy(d.COMP_ID.nullsLast().descend()) //
 		;
 	}
 
@@ -63,7 +61,7 @@ public class TestOrder
 				.innerJoin(d = SQL.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
 				.select(c.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(SQL.val(0))) //
-				.orderBy(d.COMP_ID.to(OracleColumn.class).nullsFirst()) //
+				.orderBy(d.COMP_ID.nullsFirst()) //
 		;
 	}
 }
