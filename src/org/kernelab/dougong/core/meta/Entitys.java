@@ -447,7 +447,7 @@ public abstract class Entitys
 
 		if (columns == null)
 		{
-			columns = new HashSet<Column>();
+			columns = new LinkedHashSet<Column>();
 		}
 
 		columns = getColumnsFromEntityByModel(sql, model.getSuperclass(), entity, colsMap, columns);
