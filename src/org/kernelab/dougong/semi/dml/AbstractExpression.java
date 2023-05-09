@@ -130,6 +130,12 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 	}
 
 	@Override
+	public Result modulo(Expression operand)
+	{
+		return provider().provideModuloOperator().operate(this, operand);
+	}
+
+	@Override
 	public Result multiply(Expression operand)
 	{
 		return provider().provideMultiplyOperator().operate(this, operand);

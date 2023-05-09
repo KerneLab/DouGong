@@ -47,6 +47,7 @@ import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.opr.ArithmeticOperable;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.ModuloOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.NegativeOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
@@ -324,6 +325,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public MinusOperator provideMinusOperator()
 	{
 		return provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.MINUS));
+	}
+
+	@Override
+	public ModuloOperator provideModuloOperator()
+	{
+		return provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.MODULO));
 	}
 
 	@Override

@@ -202,6 +202,12 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	}
 
 	@Override
+	public Result modulo(Expression operand)
+	{
+		return provider().provideModuloOperator().operate(this, operand);
+	}
+
+	@Override
 	public Result multiply(Expression operand)
 	{
 		return provider().provideMultiplyOperator().operate(this, operand);

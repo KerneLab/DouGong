@@ -62,6 +62,7 @@ public abstract class AbstractVarinaryResult extends AbstractResult implements P
 				}
 				Utils.outputExpr(buffer, expr);
 			}
+
 			return buffer;
 		}
 		else

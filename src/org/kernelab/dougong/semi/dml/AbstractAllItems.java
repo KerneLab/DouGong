@@ -125,6 +125,12 @@ public abstract class AbstractAllItems implements AllItems
 	}
 
 	@Override
+	public Result modulo(Expression operand)
+	{
+		return null;
+	}
+
+	@Override
 	public Result multiply(Expression operand)
 	{
 		return null;

@@ -19,8 +19,8 @@ public class TestSelect
 	{
 	}
 
-	public static SQL $ = new SQL(new MariaProvider());
-	// public static SQL $ = new SQL(new OracleProvider());
+//	public static SQL $ = new SQL(new MariaProvider());
+	 public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
@@ -45,6 +45,7 @@ public class TestSelect
 			Tools.debug(makeSelectValuesMaria());
 		}
 		Tools.debug(makeSelectSetopr());
+		Tools.debug(makeSelectModulo());
 	}
 
 	public static Select makeSelectAliasByMeta()
@@ -232,6 +233,24 @@ public class TestSelect
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 				.limit($.expr("0"), $.expr("1")) //
+		;
+	}
+
+	public static Select makeSelectModulo()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.COMP_ID, //
+						s.all(), //
+						$.param("key").multiply(d.COMP_ID.modulo($.v(2))).as("k"), //
+						d.DEP_NAME.joint($.param("nm").modulo($.v(1))).as("j"), //
+						$.Null().as("n") //
+				) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
+				.orderBy(d.COMP_ID) //
 		;
 	}
 

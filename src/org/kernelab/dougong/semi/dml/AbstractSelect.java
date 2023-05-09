@@ -595,6 +595,12 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public Result modulo(Expression operand)
+	{
+		return provider().provideModuloOperator().operate(this, operand);
+	}
+
+	@Override
 	public Result multiply(Expression operand)
 	{
 		return provider().provideMultiplyOperator().operate(this, operand);

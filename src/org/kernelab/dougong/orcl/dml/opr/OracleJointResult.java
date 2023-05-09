@@ -15,4 +15,13 @@ public class OracleJointResult extends AbstractVarinaryResult
 	{
 		return this.provider().provideProvider(new OracleJointResult(operator(), operands()));
 	}
+
+	@Override
+	public StringBuilder toString(StringBuilder buffer)
+	{
+		buffer.append('(');
+		super.toString(buffer);
+		buffer.append(')');
+		return buffer;
+	}
 }

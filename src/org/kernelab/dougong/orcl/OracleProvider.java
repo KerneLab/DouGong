@@ -17,6 +17,7 @@ import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
+import org.kernelab.dougong.core.dml.opr.ModuloOperator;
 import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
@@ -41,6 +42,7 @@ import org.kernelab.dougong.orcl.dml.cond.OracleRegexpLikeCondition;
 import org.kernelab.dougong.orcl.dml.opr.OracleCaseDecideExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleCaseSwitchExpression;
 import org.kernelab.dougong.orcl.dml.opr.OracleJointOperator;
+import org.kernelab.dougong.orcl.dml.opr.OracleModuloOperator;
 import org.kernelab.dougong.orcl.util.OracleKeysFetcher;
 import org.kernelab.dougong.semi.AbstractProvider;
 
@@ -222,6 +224,12 @@ public class OracleProvider extends AbstractProvider
 	public KeysFetcher provideKeysFetcher()
 	{
 		return new OracleKeysFetcher();
+	}
+
+	@Override
+	public ModuloOperator provideModuloOperator()
+	{
+		return provideProvider(new OracleModuloOperator());
 	}
 
 	@Override

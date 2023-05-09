@@ -59,8 +59,11 @@ public class AbstractBinaryResult extends AbstractResult implements Providable
 	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
+		buffer.append('(');
 		Utils.outputExpr(buffer, operand1());
 		buffer.append(operator());
-		return Utils.outputExpr(buffer, operand2());
+		Utils.outputExpr(buffer, operand2());
+		buffer.append(')');
+		return buffer;
 	}
 }

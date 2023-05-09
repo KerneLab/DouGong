@@ -30,7 +30,6 @@ import org.kernelab.dougong.core.dml.cond.AtomicCondition;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.dml.cond.LogicalCondition;
 import org.kernelab.dougong.core.dml.cond.ReflectiveCondition;
-import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.meta.DataMeta;
 import org.kernelab.dougong.core.meta.MappingMeta;
 import org.kernelab.dougong.core.meta.MemberMeta;
@@ -755,16 +754,7 @@ public class Utils
 	{
 		if (obj instanceof Expression)
 		{
-			boolean isResult = obj instanceof Result;
-			if (isResult)
-			{
-				buf.append('(');
-			}
 			((Expression) obj).toStringExpress(buf);
-			if (isResult)
-			{
-				buf.append(')');
-			}
 		}
 		else if (obj instanceof Text)
 		{

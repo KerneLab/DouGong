@@ -53,6 +53,7 @@ import org.kernelab.dougong.core.dml.opr.CaseSwitchExpression;
 import org.kernelab.dougong.core.dml.opr.DivideOperator;
 import org.kernelab.dougong.core.dml.opr.JointOperator;
 import org.kernelab.dougong.core.dml.opr.MinusOperator;
+import org.kernelab.dougong.core.dml.opr.ModuloOperator;
 import org.kernelab.dougong.core.dml.opr.MultiplyOperator;
 import org.kernelab.dougong.core.dml.opr.NegativeOperator;
 import org.kernelab.dougong.core.dml.opr.PlusOperator;
@@ -216,6 +217,8 @@ public interface Provider extends Castable, Serializable
 	public Merge provideMerge();
 
 	public MinusOperator provideMinusOperator();
+
+	public ModuloOperator provideModuloOperator();
 
 	public MultiplyOperator provideMultiplyOperator();
 
