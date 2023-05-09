@@ -22,11 +22,13 @@ public abstract class AbstractCaseSwitchExpression extends AbstractCaseExpressio
 				.whens(this.whens());
 	}
 
+	@Override
 	public Expression caseValue()
 	{
 		return caseValue;
 	}
 
+	@Override
 	public AbstractCaseSwitchExpression caseValue(Expression cas)
 	{
 		this.caseValue = cas;
@@ -62,12 +64,14 @@ public abstract class AbstractCaseSwitchExpression extends AbstractCaseExpressio
 		}
 	}
 
+	@Override
 	public AbstractCaseSwitchExpression when(Expression when, Expression then)
 	{
 		whens().add(new Relation<Expression, Expression>(when, then));
 		return this;
 	}
 
+	@Override
 	public List<Relation<Expression, Expression>> whens()
 	{
 		return whens;

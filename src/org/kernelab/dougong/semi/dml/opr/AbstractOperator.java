@@ -8,11 +8,13 @@ public class AbstractOperator extends AbstractCastable implements Providable
 {
 	private Provider provider;
 
+	@Override
 	public Provider provider()
 	{
 		return provider;
 	}
 
+	@Override
 	public AbstractOperator provider(Provider provider)
 	{
 		this.provider = provider;

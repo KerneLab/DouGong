@@ -11,7 +11,7 @@ import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractCaseDecideExpression extends AbstractCaseExpression implements CaseDecideExpression
 {
-	private List<Relation<Condition, Expression>>	whens	= new LinkedList<Relation<Condition, Expression>>();
+	private List<Relation<Condition, Expression>> whens = new LinkedList<Relation<Condition, Expression>>();
 
 	@Override
 	public AbstractCaseDecideExpression as(String alias)
@@ -41,12 +41,14 @@ public abstract class AbstractCaseDecideExpression extends AbstractCaseExpressio
 		}
 	}
 
+	@Override
 	public AbstractCaseDecideExpression when(Condition cond, Expression then)
 	{
 		whens().add(new Relation<Condition, Expression>(cond, then));
 		return this;
 	}
 
+	@Override
 	public List<Relation<Condition, Expression>> whens()
 	{
 		return whens;

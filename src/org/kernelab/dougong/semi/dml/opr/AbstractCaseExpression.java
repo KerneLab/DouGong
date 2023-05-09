@@ -23,11 +23,13 @@ public abstract class AbstractCaseExpression extends AbstractItem implements Cas
 				.els(this.els());
 	}
 
+	@Override
 	public Expression els()
 	{
 		return els;
 	}
 
+	@Override
 	public AbstractCaseExpression els(Expression expr)
 	{
 		this.els = expr;
@@ -51,6 +53,7 @@ public abstract class AbstractCaseExpression extends AbstractItem implements Cas
 
 	protected abstract void textOfWhen(StringBuilder buffer);
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		textOfHead(buffer);
@@ -59,11 +62,13 @@ public abstract class AbstractCaseExpression extends AbstractItem implements Cas
 		return buffer;
 	}
 
+	@Override
 	public StringBuilder toStringExpress(StringBuilder buffer)
 	{
 		return toString(buffer);
 	}
 
+	@Override
 	public StringBuilder toStringSelected(StringBuilder buffer)
 	{
 		return Utils.outputAlias(this.provider(), this.toStringExpress(buffer), this);
