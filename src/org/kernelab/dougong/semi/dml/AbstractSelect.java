@@ -568,6 +568,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public AbstractSelect limit(Expression rows)
+	{
+		this.rows = rows;
+		return this;
+	}
+
+	@Override
 	public AbstractSelect limit(Expression skip, Expression rows)
 	{
 		this.skip = skip;
@@ -678,6 +685,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public RegexpLikeCondition notRLike(Expression pattern)
 	{
 		return (RegexpLikeCondition) provider().provideRegexpCondition().rLike(this, pattern).not();
+	}
+
+	@Override
+	public AbstractSelect offset(Expression skip)
+	{
+		this.skip = skip;
+		return this;
 	}
 
 	protected Expression[] orderBy()

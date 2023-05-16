@@ -17,16 +17,15 @@ public class OracleSelect extends AbstractSelect
 	protected OracleSelect prepare()
 	{
 		Expression rows = this.rows();
+		Expression skip = this.skip();
 
-		if (rows != null)
+		if (rows != null || skip != null)
 		{
 			String rn = ROWNUM_ALIAS;
 			String col = '"' + rn + '"';
 			Item rownum = provider().provideStringItem("ROWNUM");
 
-			Expression skip = this.skip();
-
-			if (skip != null)
+			if (rows != null && skip != null)
 			{
 				rows = rows.plus(skip);
 			}
@@ -34,9 +33,12 @@ public class OracleSelect extends AbstractSelect
 			Select inner = this.as("t");
 			inner.limit(null, null);
 
-			Select semi = provider().provideSelect() //
-					.from(inner) //
-					.where(rownum.le(rows));
+			Select semi = provider().provideSelect().from(inner);
+
+			if (rows != null)
+			{
+				semi = semi.where(rownum.le(rows));
+			}
 
 			if (skip == null)
 			{

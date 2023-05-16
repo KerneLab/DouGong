@@ -136,17 +136,37 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 	// //////////////////////////////////////////////////////
 
 	/**
-	 * Specify the limit condition including skip and rows parameter.
+	 * Specify the limit argument.
+	 * 
+	 * @param rows
+	 *            The max number of rows would be returned. Could be
+	 *            {@code null} if no limit.
+	 * @return
+	 */
+	public Select limit(Expression rows);
+
+	/**
+	 * Specify the limit arguments including offset and rows parameter.
 	 * 
 	 * @param skip
-	 *            The skip rows number. Could be {@code null} if no row need to
-	 *            be skipped which is identical to {@code 0}.
+	 *            The offset rows number. Could be {@code null} if no row need
+	 *            to be skipped which is identical to {@code 0}.
 	 * @param rows
-	 *            The max number of rows would be returned. This parameter must
-	 *            NOT be {@code null}.
+	 *            The max number of rows would be returned. Could be
+	 *            {@code null} if no limit.
 	 * @return Select object.
 	 */
 	public Select limit(Expression skip, Expression rows);
+
+	/**
+	 * Specify the offset argument.
+	 * 
+	 * @param skip
+	 *            The offset rows number. Could be {@code null} if no row need
+	 *            to be skipped which is identical to {@code 0}.
+	 * @return
+	 */
+	public Select offset(Expression skip);
 
 	// //////////////////////////////////////////////////////
 

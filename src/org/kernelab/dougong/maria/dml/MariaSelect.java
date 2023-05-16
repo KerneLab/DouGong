@@ -17,14 +17,16 @@ public class MariaSelect extends AbstractSelect
 		if (rows() != null)
 		{
 			buffer.append(" LIMIT ");
-
-			if (skip() != null)
-			{
-				skip().toStringExpress(buffer);
-				buffer.append(',');
-			}
-
 			rows().toStringExpress(buffer);
+		}
+	}
+
+	protected void textOfOffset(StringBuilder buffer)
+	{
+		if (skip() != null)
+		{
+			buffer.append(" OFFSET ");
+			skip().toStringExpress(buffer);
 		}
 	}
 
@@ -33,6 +35,7 @@ public class MariaSelect extends AbstractSelect
 	{
 		super.toString(buffer);
 		this.textOfLimit(buffer);
+		this.textOfOffset(buffer);
 		return buffer;
 	}
 
@@ -41,6 +44,7 @@ public class MariaSelect extends AbstractSelect
 	{
 		super.toStringScoped(buffer);
 		this.textOfLimit(buffer);
+		this.textOfOffset(buffer);
 		return buffer;
 	}
 }
