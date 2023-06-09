@@ -30,6 +30,22 @@ public class TestInsert
 		Tools.debug(makeSelectWithSelect().toString(new StringBuilder()));
 		Tools.debug(makeSelectWithFirst());
 		Tools.debug(makeSelectWithReturn().toString(new StringBuilder()));
+
+		if ($.provider() instanceof MariaProvider)
+		{
+			Tools.debug(makeInsertIgnore().toString(new StringBuilder()));
+		}
+	}
+
+	public static Insert makeInsertIgnore()
+	{
+		STAF s = null;
+
+		return $.insert(s = $.table(STAF.class, "s"), s.COMP_ID, s.DEPT_ID) //
+				.values($.param("comp"), $.param("dept")) //
+				.to(MariaInsert.class) //
+				.ignore(true) //
+		;
 	}
 
 	public static Insert makeInsert()

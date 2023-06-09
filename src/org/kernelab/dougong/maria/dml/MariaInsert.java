@@ -20,7 +20,20 @@ import org.kernelab.dougong.semi.dml.AbstractInsert;
 
 public class MariaInsert extends AbstractInsert
 {
-	private List<Relation<Column, Expression>> updates = new LinkedList<Relation<Column, Expression>>();
+	private List<Relation<Column, Expression>>	updates	= new LinkedList<Relation<Column, Expression>>();
+
+	private boolean								ignore	= false;
+
+	public boolean ignore()
+	{
+		return ignore;
+	}
+
+	public MariaInsert ignore(boolean ignore)
+	{
+		this.ignore = ignore;
+		return this;
+	}
 
 	@Override
 	public MariaInsert provider(Provider provider)
@@ -49,6 +62,17 @@ public class MariaInsert extends AbstractInsert
 		}
 
 		return buffer;
+	}
+
+	@Override
+	protected void textOfHead(StringBuilder buffer)
+	{
+		super.textOfHead(buffer);
+
+		if (this.ignore())
+		{
+			buffer.append(" IGNORE");
+		}
 	}
 
 	@Override
