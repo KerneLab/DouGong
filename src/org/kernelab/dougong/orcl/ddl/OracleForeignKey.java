@@ -11,10 +11,4 @@ public class OracleForeignKey extends AbstractForeignKey
 	{
 		super(reference, entity, columns);
 	}
-
-	public StringBuilder toString(StringBuilder buffer)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

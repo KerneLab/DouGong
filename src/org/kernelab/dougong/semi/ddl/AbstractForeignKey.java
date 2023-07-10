@@ -58,12 +58,14 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 		this.reference = reference;
 	}
 
+	@Override
 	public boolean inPrimaryKey()
 	{
 		PrimaryKey pk = this.entity().primaryKey();
 		return pk != null && pk.contains(this.columns());
 	}
 
+	@Override
 	public ComposableCondition joinCondition()
 	{
 		Column[] columns = this.columns();
@@ -87,21 +89,25 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 		return c;
 	}
 
+	@Override
 	public <T> Map<Column, Object> mapValuesTo(T object, Entity entity)
 	{
 		return entity() == entity ? mapValuesToReferrer(object) : mapValuesToReference(object);
 	}
 
+	@Override
 	public <T> Map<Column, Object> mapValuesToReference(T object)
 	{
 		return mapValuesToReference(object, this);
 	}
 
+	@Override
 	public <T> Map<Column, Object> mapValuesToReferrer(T object)
 	{
 		return mapValuesToReferrer(object, this);
 	}
 
+	@Override
 	public Condition queryCondition()
 	{
 		Column[] columns = new Column[this.reference().columns().length];
@@ -109,8 +115,45 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 		return queryCondition(columns);
 	}
 
+	@Override
 	public PrimaryKey reference()
 	{
 		return reference;
+	}
+
+	@Override
+	public String toString()
+	{
+		return toString(new StringBuilder()).toString();
+	}
+
+	@Override
+	public StringBuilder toString(StringBuilder buffer)
+	{
+		buffer.append(entity().toString() + "(");
+
+		for (int i = 0; i < columns().length; i++)
+		{
+			if (i > 0)
+			{
+				buffer.append(",");
+			}
+			buffer.append(columns()[i].toString());
+		}
+
+		buffer.append(") -> " + reference().entity() + "(");
+
+		for (int i = 0; i < reference().columns().length; i++)
+		{
+			if (i > 0)
+			{
+				buffer.append(",");
+			}
+			buffer.append(reference().columns()[i].toString());
+		}
+
+		buffer.append(")");
+
+		return buffer;
 	}
 }

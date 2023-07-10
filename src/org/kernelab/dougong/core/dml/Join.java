@@ -10,26 +10,37 @@ import org.kernelab.dougong.core.View;
 
 public interface Join extends Relation
 {
-	public static final byte			INNER_JOIN	= 0;
+	public static final String			NATURAL	= "NATURAL";
 
-	public static final byte			LEFT_JOIN	= 1;
+	public static final byte			DEFAULT	= -1;
 
-	public static final byte			RIGHT_JOIN	= 2;
+	// DIRECT
+	public static final byte			INNER	= 0;
 
-	public static final byte			FULL_JOIN	= 3;
+	public static final byte			LEFT	= 1;
 
-	public static final byte			CROSS_JOIN	= 4;
+	public static final byte			RIGHT	= 2;
 
-	public static final byte			SEMI_JOIN	= 5;
+	public static final byte			FULL	= 3;
 
-	public static final byte			ANTI_JOIN	= 6;
+	public static final byte			CROSS	= 4;
 
-	public static final String			NATURAL		= "NATURAL";
+	public static final List<String>	DIRECTS	= Collections
+			.unmodifiableList(Tools.listOfArray(new ArrayList<String>(), "INNER", "LEFT", "RIGHT", "FULL", "CROSS"));
 
-	public static final List<String>	JOINS		= Collections.unmodifiableList(
-			Tools.listOfArray(new ArrayList<String>(), "INNER", "LEFT", "RIGHT", "FULL", "CROSS", "SEMI", "ANTI"));
+	// TYPE
+	public static final byte			OUTER	= 0;
 
-	public Join join(View leading, Join former, boolean natural, byte type, View view, String alias);
+	public static final byte			SEMI	= 1;
+
+	public static final byte			ANTI	= 2;
+
+	public static final List<String>	TYPES	= Collections
+			.unmodifiableList(Tools.listOfArray(new ArrayList<String>(), "OUTER", "SEMI", "ANTI"));
+
+	public byte direct();
+
+	public Join join(View leading, Join former, boolean natural, byte direct, byte type, View view, String alias);
 
 	public boolean natural();
 

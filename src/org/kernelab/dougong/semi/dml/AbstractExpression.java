@@ -14,6 +14,7 @@ import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
 import org.kernelab.dougong.core.dml.cond.RegexpLikeCondition;
 import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.dml.test.NegativeSemiTestable;
 import org.kernelab.dougong.semi.AbstractCastable;
 
 public abstract class AbstractExpression extends AbstractCastable implements Expression
@@ -154,17 +155,26 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 	}
 
 	@Override
+	public NegativeSemiTestable not()
+	{
+		return provider().provideNegativeSemiTestable(this);
+	}
+
+	@Deprecated
+	@Override
 	public RangeCondition notBetween(Expression from, Expression to)
 	{
 		return (RangeCondition) provider().provideRangeCondition().between(this, from, to).not();
 	}
 
+	@Deprecated
 	@Override
 	public LikeCondition notILike(Expression pattern)
 	{
 		return notILike(pattern, null);
 	}
 
+	@Deprecated
 	@Override
 	public LikeCondition notILike(Expression pattern, Expression escape)
 	{
@@ -172,24 +182,28 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 				.like(provider().provideToUpperCase(this), provider().provideToUpperCase(pattern), escape).not();
 	}
 
+	@Deprecated
 	@Override
 	public MembershipCondition notIn(Scope scope)
 	{
 		return (MembershipCondition) provider().provideMembershipCondition().in(this, scope).not();
 	}
 
+	@Deprecated
 	@Override
 	public LikeCondition notLike(Expression pattern)
 	{
 		return notLike(pattern, null);
 	}
 
+	@Deprecated
 	@Override
 	public LikeCondition notLike(Expression pattern, Expression escape)
 	{
 		return (LikeCondition) provider().provideLikeCondition().like(this, pattern, escape).not();
 	}
 
+	@Deprecated
 	@Override
 	public RegexpLikeCondition notRLike(Expression pattern)
 	{

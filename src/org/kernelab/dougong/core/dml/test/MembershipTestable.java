@@ -7,5 +7,6 @@ public interface MembershipTestable
 {
 	public MembershipCondition in(Scope scope);
 
+	@Deprecated
 	public MembershipCondition notIn(Scope scope);
 }

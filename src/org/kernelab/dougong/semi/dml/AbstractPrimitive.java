@@ -15,6 +15,13 @@ import org.kernelab.dougong.core.dml.WithDefinition;
 public class AbstractPrimitive extends AbstractJoinable implements Primitive
 {
 	@Override
+	public AbstractPrimitive anti()
+	{
+		super.anti();
+		return this;
+	}
+
+	@Override
 	public AbstractPrimitive antiJoin(View view, Condition on)
 	{
 		super.antiJoin(view, on);
@@ -31,6 +38,13 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	public AbstractPrimitive antiJoin(View view, Item... using)
 	{
 		super.antiJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive cross()
+	{
+		super.cross();
 		return this;
 	}
 
@@ -70,6 +84,13 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	}
 
 	@Override
+	public AbstractPrimitive full()
+	{
+		super.full();
+		return this;
+	}
+
+	@Override
 	public AbstractPrimitive fullJoin(View view, Condition on)
 	{
 		super.fullJoin(view, on);
@@ -90,6 +111,13 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	}
 
 	@Override
+	public AbstractPrimitive inner()
+	{
+		super.inner();
+		return this;
+	}
+
+	@Override
 	public AbstractPrimitive innerJoin(View view, Condition on)
 	{
 		super.innerJoin(view, on);
@@ -106,6 +134,33 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	public AbstractPrimitive innerJoin(View view, Item... using)
 	{
 		super.innerJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive join(View view, Condition on)
+	{
+		super.join(view, on);
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive join(View view, ForeignKey rels)
+	{
+		return join(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractPrimitive join(View view, Item... using)
+	{
+		super.join(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive left()
+	{
+		super.left();
 		return this;
 	}
 
@@ -137,6 +192,20 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 	}
 
 	@Override
+	public AbstractPrimitive outer()
+	{
+		super.outer();
+		return this;
+	}
+
+	@Override
+	public AbstractPrimitive right()
+	{
+		super.right();
+		return this;
+	}
+
+	@Override
 	public AbstractPrimitive rightJoin(View view, Condition on)
 	{
 		super.rightJoin(view, on);
@@ -163,6 +232,13 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 				.recursive(this.recursive()).withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where()) //
 				.select(exprs);
+	}
+
+	@Override
+	public AbstractPrimitive semi()
+	{
+		super.semi();
+		return this;
 	}
 
 	@Override

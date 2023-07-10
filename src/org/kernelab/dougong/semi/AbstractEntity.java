@@ -184,6 +184,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 
 	private Map<String, Field> columnFields;
 
+	@Override
 	public AbsoluteKey absoluteKey()
 	{
 		Column column = null;
@@ -214,6 +215,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		}
 	}
 
+	@Override
 	public ForeignKey foreignKey(String name, Entity reference)
 	{
 		return findForeignKey(this, name, reference);
@@ -431,6 +433,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 		return this.getClass().newInstance();
 	}
 
+	@Override
 	public PrimaryKey primaryKey()
 	{
 		TreeMap<Integer, Column> keys = new TreeMap<Integer, Column>();

@@ -14,6 +14,7 @@ import org.kernelab.dougong.core.dml.cond.NullCondition;
 import org.kernelab.dougong.core.dml.cond.RangeCondition;
 import org.kernelab.dougong.core.dml.cond.RegexpLikeCondition;
 import org.kernelab.dougong.core.dml.opr.Result;
+import org.kernelab.dougong.core.dml.test.NegativeSemiTestable;
 
 public class AbstractTotalItems implements AllItems
 {
@@ -133,6 +134,12 @@ public class AbstractTotalItems implements AllItems
 
 	@Override
 	public Result negative()
+	{
+		return null;
+	}
+
+	@Override
+	public NegativeSemiTestable not()
 	{
 		return null;
 	}

@@ -18,9 +18,11 @@ public abstract class AbstractJoin implements Join
 
 	private boolean		natural;
 
+	private byte		direct;
+
 	private byte		type;
 
-	private View		view;
+	private View		view; 
 
 	private Condition	on;
 
@@ -58,17 +60,25 @@ public abstract class AbstractJoin implements Join
 		}
 	}
 
+	@Override
+	public byte direct()
+	{
+		return direct;
+	}
+
 	protected Join former()
 	{
 		return former;
 	}
 
 	@Override
-	public AbstractJoin join(View leading, Join former, boolean natural, byte type, View view, String alias)
+	public AbstractJoin join(View leading, Join former, boolean natural, byte direct, byte type, View view,
+			String alias)
 	{
 		this.leading = leading;
 		this.former = former;
 		this.natural = natural;
+		this.direct = direct;
 		this.type = type;
 		this.view = view.alias(alias);
 		return this;
@@ -155,8 +165,15 @@ public abstract class AbstractJoin implements Join
 		{
 			buffer.append(NATURAL + " ");
 		}
-		buffer.append(JOINS.get(type()));
-		buffer.append(" JOIN ");
+		if (direct() > DEFAULT)
+		{
+			buffer.append(DIRECTS.get(direct()) + " ");
+		}
+		if (type() > DEFAULT)
+		{
+			buffer.append(TYPES.get(type()) + " ");
+		}
+		buffer.append("JOIN ");
 		this.view().toStringViewed(buffer);
 		return buffer;
 	}
@@ -241,6 +258,6 @@ public abstract class AbstractJoin implements Join
 	@Override
 	public boolean viewSelectable()
 	{
-		return type() != SEMI_JOIN && type() != ANTI_JOIN;
+		return type() != SEMI && type() != ANTI;
 	}
 }

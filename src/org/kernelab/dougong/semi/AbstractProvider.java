@@ -77,6 +77,7 @@ import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
 import org.kernelab.dougong.semi.ddl.table.AbstractDropTable;
 import org.kernelab.dougong.semi.dml.AbstractMerge;
+import org.kernelab.dougong.semi.dml.AbstractNegativeSemiTestable;
 import org.kernelab.dougong.semi.dml.AbstractPivot;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractPriorExpression;
@@ -343,6 +344,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public NegativeOperator provideNegativeOperator()
 	{
 		return provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.MINUS));
+	}
+
+	@Override
+	public AbstractNegativeSemiTestable provideNegativeSemiTestable(Expression expr)
+	{
+		return provideProvider(new AbstractNegativeSemiTestable(expr));
 	}
 
 	@Override

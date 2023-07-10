@@ -19,12 +19,21 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 
 	private boolean		natural	= false;
 
+	private byte		direct	= AbstractJoin.DEFAULT;
+
+	private byte		type	= AbstractJoin.DEFAULT;
+
+	@Override
+	public Joinable anti()
+	{
+		this.type = AbstractJoin.ANTI;
+		return this;
+	}
+
 	@Override
 	public Joinable antiJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.ANTI_JOIN, view, view.alias()).on(on));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.DEFAULT).setType(AbstractJoin.ANTI).join(view, on);
 	}
 
 	@Override
@@ -36,10 +45,7 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	@Override
 	public Joinable antiJoin(View view, Item... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.ANTI_JOIN, view, view.alias())
-				.using(using));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.DEFAULT).setType(AbstractJoin.ANTI).join(view, using);
 	}
 
 	@Override
@@ -61,11 +67,16 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	}
 
 	@Override
+	public Joinable cross()
+	{
+		this.direct = AbstractJoin.CROSS;
+		return this;
+	}
+
+	@Override
 	public Joinable crossJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.CROSS_JOIN, view, view.alias()).on(on));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.CROSS).setType(AbstractJoin.DEFAULT).join(view, on);
 	}
 
 	@Override
@@ -77,10 +88,7 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	@Override
 	public Joinable crossJoin(View view, Item... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.CROSS_JOIN, view, view.alias())
-				.using(using));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.CROSS).setType(AbstractJoin.DEFAULT).join(view, using);
 	}
 
 	/**
@@ -120,11 +128,16 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	}
 
 	@Override
+	public Joinable full()
+	{
+		this.direct = AbstractJoin.FULL;
+		return this;
+	}
+
+	@Override
 	public Joinable fullJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.FULL_JOIN, view, view.alias()).on(on));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.FULL).setType(AbstractJoin.DEFAULT).join(view, on);
 	}
 
 	@Override
@@ -136,10 +149,12 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	@Override
 	public Joinable fullJoin(View view, Item... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.FULL_JOIN, view, view.alias())
-				.using(using));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.FULL).setType(AbstractJoin.DEFAULT).join(view, using);
+	}
+
+	protected byte getDirect()
+	{
+		return direct;
 	}
 
 	protected View getLastFrom()
@@ -152,12 +167,22 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 		return joins().isEmpty() ? null : joins().get(joins().size() - 1);
 	}
 
+	protected byte getType()
+	{
+		return type;
+	}
+
+	@Override
+	public Joinable inner()
+	{
+		this.direct = AbstractJoin.INNER;
+		return this;
+	}
+
 	@Override
 	public Joinable innerJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.INNER_JOIN, view, view.alias()).on(on));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.INNER).setType(AbstractJoin.DEFAULT).join(view, on);
 	}
 
 	@Override
@@ -169,15 +194,35 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	@Override
 	public Joinable innerJoin(View view, Item... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.INNER_JOIN, view, view.alias())
-				.using(using));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.INNER).setType(AbstractJoin.DEFAULT).join(view, using);
 	}
 
 	protected boolean isNatural()
 	{
 		return natural;
+	}
+
+	@Override
+	public Joinable join(View view, Condition on)
+	{
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), isNatural(), getDirect(), getType(), view, view.alias()).on(on));
+		return reset();
+	}
+
+	@Override
+	public Joinable join(View view, ForeignKey rels)
+	{
+		return join(view, rels.joinCondition());
+	}
+
+	@Override
+	public Joinable join(View view, Item... using)
+	{
+		joins().add(provider().provideJoin() //
+				.join(getLastFrom(), getLastJoin(), isNatural(), getDirect(), getType(), view, view.alias())
+				.using(using));
+		return reset();
 	}
 
 	protected List<Join> joins()
@@ -195,87 +240,20 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 			for (Join join : joins)
 			{
 				this.setNatural(join.natural());
+				this.setDirect(join.direct());
+				this.setType(join.type());
 
 				if (join.on() != null)
 				{
-					switch (join.type())
-					{
-						case Join.INNER_JOIN:
-							this.innerJoin(join.view(), join.on());
-							break;
-						case Join.LEFT_JOIN:
-							this.leftJoin(join.view(), join.on());
-							break;
-						case Join.RIGHT_JOIN:
-							this.rightJoin(join.view(), join.on());
-							break;
-						case Join.FULL_JOIN:
-							this.fullJoin(join.view(), join.on());
-							break;
-						case Join.CROSS_JOIN:
-							this.crossJoin(join.view(), join.on());
-							break;
-						case Join.SEMI_JOIN:
-							this.semiJoin(join.view(), join.on());
-							break;
-						case Join.ANTI_JOIN:
-							this.antiJoin(join.view(), join.on());
-							break;
-					}
+					this.join(join.view(), join.on());
 				}
 				else if (join.using() != null)
 				{
-					switch (join.type())
-					{
-						case Join.INNER_JOIN:
-							this.innerJoin(join.view(), join.using());
-							break;
-						case Join.LEFT_JOIN:
-							this.leftJoin(join.view(), join.using());
-							break;
-						case Join.RIGHT_JOIN:
-							this.rightJoin(join.view(), join.using());
-							break;
-						case Join.FULL_JOIN:
-							this.fullJoin(join.view(), join.using());
-							break;
-						case Join.CROSS_JOIN:
-							this.crossJoin(join.view(), join.using());
-							break;
-						case Join.SEMI_JOIN:
-							this.semiJoin(join.view(), join.using());
-							break;
-						case Join.ANTI_JOIN:
-							this.antiJoin(join.view(), join.using());
-							break;
-					}
+					this.join(join.view(), join.using());
 				}
 				else
 				{
-					switch (join.type())
-					{
-						case Join.INNER_JOIN:
-							this.innerJoin(join.view());
-							break;
-						case Join.LEFT_JOIN:
-							this.leftJoin(join.view());
-							break;
-						case Join.RIGHT_JOIN:
-							this.rightJoin(join.view());
-							break;
-						case Join.FULL_JOIN:
-							this.fullJoin(join.view());
-							break;
-						case Join.CROSS_JOIN:
-							this.crossJoin(join.view());
-							break;
-						case Join.SEMI_JOIN:
-							this.semiJoin(join.view());
-							break;
-						case Join.ANTI_JOIN:
-							this.antiJoin(join.view());
-							break;
-					}
+					this.join(join.view());
 				}
 			}
 		}
@@ -284,11 +262,16 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	}
 
 	@Override
+	public Joinable left()
+	{
+		this.direct = AbstractJoin.LEFT;
+		return this;
+	}
+
+	@Override
 	public Joinable leftJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.LEFT_JOIN, view, view.alias()).on(on));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.LEFT).setType(AbstractJoin.DEFAULT).join(view, on);
 	}
 
 	@Override
@@ -300,10 +283,7 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	@Override
 	public Joinable leftJoin(View view, Item... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.LEFT_JOIN, view, view.alias())
-				.using(using));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.LEFT).setType(AbstractJoin.DEFAULT).join(view, using);
 	}
 
 	@Override
@@ -313,17 +293,32 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 		return this;
 	}
 
-	protected AbstractJoinable resetNatural()
+	@Override
+	public Joinable outer()
 	{
-		return this.setNatural(false);
+		this.type = AbstractJoin.OUTER;
+		return this;
+	}
+
+	protected AbstractJoinable reset()
+	{
+		this.setNatural(false);
+		this.setDirect(AbstractJoin.DEFAULT);
+		this.setType(AbstractJoin.DEFAULT);
+		return this;
+	}
+
+	@Override
+	public Joinable right()
+	{
+		this.direct = AbstractJoin.RIGHT;
+		return this;
 	}
 
 	@Override
 	public Joinable rightJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.RIGHT_JOIN, view, view.alias()).on(on));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.RIGHT).setType(AbstractJoin.DEFAULT).join(view, on);
 	}
 
 	@Override
@@ -335,18 +330,20 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	@Override
 	public Joinable rightJoin(View view, Item... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.RIGHT_JOIN, view, view.alias())
-				.using(using));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.RIGHT).setType(AbstractJoin.DEFAULT).join(view, using);
+	}
+
+	@Override
+	public Joinable semi()
+	{
+		this.type = AbstractJoin.SEMI;
+		return this;
 	}
 
 	@Override
 	public Joinable semiJoin(View view, Condition on)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.SEMI_JOIN, view, view.alias()).on(on));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.DEFAULT).setType(AbstractJoin.SEMI).join(view, on);
 	}
 
 	@Override
@@ -358,15 +355,24 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	@Override
 	public Joinable semiJoin(View view, Item... using)
 	{
-		joins().add(provider().provideJoin() //
-				.join(getLastFrom(), getLastJoin(), isNatural(), AbstractJoin.SEMI_JOIN, view, view.alias())
-				.using(using));
-		return resetNatural();
+		return this.setDirect(AbstractJoin.DEFAULT).setType(AbstractJoin.SEMI).join(view, using);
+	}
+
+	protected AbstractJoinable setDirect(byte direct)
+	{
+		this.direct = direct;
+		return this;
 	}
 
 	protected AbstractJoinable setNatural(boolean natural)
 	{
 		this.natural = natural;
+		return this;
+	}
+
+	protected AbstractJoinable setType(byte type)
+	{
+		this.type = type;
 		return this;
 	}
 

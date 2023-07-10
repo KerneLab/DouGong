@@ -79,11 +79,13 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		this.columns = columns;
 	}
 
+	@Override
 	public Column[] columns()
 	{
 		return columns;
 	}
 
+	@Override
 	public boolean contains(Column... columns)
 	{
 		Set<Column> s = this.getColumnSet();
@@ -99,6 +101,7 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		return true;
 	}
 
+	@Override
 	public Entity entity()
 	{
 		return entity;

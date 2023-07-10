@@ -6,6 +6,8 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 
 public interface Primitive extends Filterable, Joinable, Withsable
 {
+	public Primitive anti();
+
 	/**
 	 * Add anti-join to this object.
 	 * 
@@ -35,6 +37,9 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	 */
 	@Override
 	public Primitive antiJoin(View view, Item... using);
+
+	@Override
+	public Primitive cross();
 
 	/**
 	 * Add cross-join to this object.
@@ -80,6 +85,9 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	@Override
 	public Primitive from(View view);
 
+	@Override
+	public Primitive full();
+
 	/**
 	 * Add full-join to this object.
 	 * 
@@ -110,6 +118,9 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	@Override
 	public Primitive fullJoin(View view, Item... using);
 
+	@Override
+	public Primitive inner();
+
 	/**
 	 * Add inner-join to this object.
 	 * 
@@ -139,6 +150,39 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	 */
 	@Override
 	public Primitive innerJoin(View view, Item... using);
+
+	/**
+	 * Add join to this object.
+	 * 
+	 * @param view
+	 * @param cond
+	 * @return
+	 */
+	@Override
+	public Primitive join(View view, Condition cond);
+
+	/**
+	 * Add join to this object.
+	 * 
+	 * @param view
+	 * @param rels
+	 * @return
+	 */
+	@Override
+	public Primitive join(View view, ForeignKey rels);
+
+	/**
+	 * Add join to this object.
+	 * 
+	 * @param view
+	 * @param using
+	 * @return
+	 */
+	@Override
+	public Primitive join(View view, Item... using);
+
+	@Override
+	public Primitive left();
 
 	/**
 	 * Add left-join to this object.
@@ -175,6 +219,12 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	 */
 	@Override
 	public Primitive natural();
+
+	@Override
+	public Primitive outer();
+
+	@Override
+	public Primitive right();
 
 	/**
 	 * Add right-join to this object.
@@ -214,6 +264,9 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	 * @return
 	 */
 	public Select select(Expression... exprs);
+
+	@Override
+	public Primitive semi();
 
 	/**
 	 * Add semi-join to this object.

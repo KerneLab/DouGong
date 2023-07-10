@@ -75,6 +75,7 @@ import org.kernelab.dougong.core.dml.param.Param;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
+import org.kernelab.dougong.core.dml.test.NegativeSemiTestable;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
 import org.kernelab.dougong.core.util.Recursor;
@@ -234,6 +235,8 @@ public interface Provider extends Castable, Serializable
 	public String provideNameText(String name);
 
 	public NegativeOperator provideNegativeOperator();
+
+	public NegativeSemiTestable provideNegativeSemiTestable(Expression expr);
 
 	public <T> T provideNewInstance(Class<T> cls);
 

@@ -7,5 +7,6 @@ public interface RangeTestable
 {
 	public RangeCondition between(Expression from, Expression to);
 
+	@Deprecated
 	public RangeCondition notBetween(Expression from, Expression to);
 }

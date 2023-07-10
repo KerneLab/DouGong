@@ -221,7 +221,7 @@ public abstract class Entitys
 
 		if (gotKey)
 		{
-			Condition beyond = abscol.notIn(sql.provider().provideParameter(absname));
+			Condition beyond = abscol.not().in(sql.provider().provideParameter(absname));
 			cond = sql.and(cond, beyond);
 		}
 
