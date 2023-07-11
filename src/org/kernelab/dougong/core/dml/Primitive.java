@@ -6,68 +6,27 @@ import org.kernelab.dougong.core.ddl.ForeignKey;
 
 public interface Primitive extends Filterable, Joinable, Withsable
 {
+	@Override
 	public Primitive anti();
 
-	/**
-	 * Add anti-join to this object.
-	 * 
-	 * @param view
-	 * @param cond
-	 * @return
-	 */
 	@Override
 	public Primitive antiJoin(View view, Condition cond);
 
-	/**
-	 * Add anti-join to this object.
-	 * 
-	 * @param view
-	 * @param rels
-	 * @return
-	 */
 	@Override
 	public Primitive antiJoin(View view, ForeignKey rels);
 
-	/**
-	 * Add anti-join to this object.
-	 * 
-	 * @param view
-	 * @param using
-	 * @return
-	 */
 	@Override
 	public Primitive antiJoin(View view, Item... using);
 
 	@Override
 	public Primitive cross();
 
-	/**
-	 * Add cross-join to this object.
-	 * 
-	 * @param view
-	 * @param cond
-	 * @return
-	 */
 	@Override
 	public Primitive crossJoin(View view, Condition cond);
 
-	/**
-	 * Add cross-join to this object.
-	 * 
-	 * @param view
-	 * @param rels
-	 * @return
-	 */
 	@Override
 	public Primitive crossJoin(View view, ForeignKey rels);
 
-	/**
-	 * Add cross-join to this object.
-	 * 
-	 * @param view
-	 * @param using
-	 * @return
-	 */
 	@Override
 	public Primitive crossJoin(View view, Item... using);
 
@@ -88,135 +47,48 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	@Override
 	public Primitive full();
 
-	/**
-	 * Add full-join to this object.
-	 * 
-	 * @param view
-	 * @param cond
-	 * @return
-	 */
 	@Override
 	public Primitive fullJoin(View view, Condition cond);
 
-	/**
-	 * Add full-join to this object.
-	 * 
-	 * @param view
-	 * @param rels
-	 * @return
-	 */
 	@Override
 	public Primitive fullJoin(View view, ForeignKey rels);
 
-	/**
-	 * Add full-join to this object.
-	 * 
-	 * @param view
-	 * @param using
-	 * @return
-	 */
 	@Override
 	public Primitive fullJoin(View view, Item... using);
 
 	@Override
 	public Primitive inner();
 
-	/**
-	 * Add inner-join to this object.
-	 * 
-	 * @param view
-	 * @param cond
-	 * @return
-	 */
 	@Override
 	public Primitive innerJoin(View view, Condition cond);
 
-	/**
-	 * Add inner-join to this object.
-	 * 
-	 * @param view
-	 * @param rels
-	 * @return
-	 */
 	@Override
 	public Primitive innerJoin(View view, ForeignKey rels);
 
-	/**
-	 * Add inner-join to this object.
-	 * 
-	 * @param view
-	 * @param using
-	 * @return
-	 */
 	@Override
 	public Primitive innerJoin(View view, Item... using);
 
-	/**
-	 * Add join to this object.
-	 * 
-	 * @param view
-	 * @param cond
-	 * @return
-	 */
 	@Override
 	public Primitive join(View view, Condition cond);
 
-	/**
-	 * Add join to this object.
-	 * 
-	 * @param view
-	 * @param rels
-	 * @return
-	 */
 	@Override
 	public Primitive join(View view, ForeignKey rels);
 
-	/**
-	 * Add join to this object.
-	 * 
-	 * @param view
-	 * @param using
-	 * @return
-	 */
 	@Override
 	public Primitive join(View view, Item... using);
 
 	@Override
 	public Primitive left();
 
-	/**
-	 * Add left-join to this object.
-	 * 
-	 * @param view
-	 * @param cond
-	 * @return
-	 */
 	@Override
 	public Primitive leftJoin(View view, Condition cond);
 
-	/**
-	 * Add left-join to this object.
-	 * 
-	 * @param view
-	 * @param rels
-	 * @return
-	 */
 	@Override
 	public Primitive leftJoin(View view, ForeignKey rels);
 
-	/**
-	 * Add left-join to this object.
-	 * 
-	 * @param view
-	 * @param using
-	 * @return
-	 */
 	@Override
 	public Primitive leftJoin(View view, Item... using);
 
-	/**
-	 * Make next join become to a natural join.
-	 */
 	@Override
 	public Primitive natural();
 
@@ -226,33 +98,12 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	@Override
 	public Primitive right();
 
-	/**
-	 * Add right-join to this object.
-	 * 
-	 * @param view
-	 * @param cond
-	 * @return
-	 */
 	@Override
 	public Primitive rightJoin(View view, Condition cond);
 
-	/**
-	 * Add right-join to this object.
-	 * 
-	 * @param view
-	 * @param rels
-	 * @return
-	 */
 	@Override
 	public Primitive rightJoin(View view, ForeignKey rels);
 
-	/**
-	 * Add right-join to this object.
-	 * 
-	 * @param view
-	 * @param using
-	 * @return
-	 */
 	@Override
 	public Primitive rightJoin(View view, Item... using);
 
@@ -268,33 +119,12 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	@Override
 	public Primitive semi();
 
-	/**
-	 * Add semi-join to this object.
-	 * 
-	 * @param view
-	 * @param cond
-	 * @return
-	 */
 	@Override
 	public Primitive semiJoin(View view, Condition cond);
 
-	/**
-	 * Add semi-join to this object.
-	 * 
-	 * @param view
-	 * @param rels
-	 * @return
-	 */
 	@Override
 	public Primitive semiJoin(View view, ForeignKey rels);
 
-	/**
-	 * Add semi-join to this object.
-	 * 
-	 * @param view
-	 * @param using
-	 * @return
-	 */
 	@Override
 	public Primitive semiJoin(View view, Item... using);
 
