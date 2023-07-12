@@ -14,19 +14,14 @@ public interface LikeTestable
 
 	public LikeCondition like(Expression pattern, Expression escape);
 
-	@Deprecated
 	public LikeCondition notILike(Expression pattern);
 
-	@Deprecated
 	public LikeCondition notILike(Expression pattern, Expression escape);
 
-	@Deprecated
 	public LikeCondition notLike(Expression pattern);
 
-	@Deprecated
 	public LikeCondition notLike(Expression pattern, Expression escape);
 
-	@Deprecated
 	public RegexpLikeCondition notRLike(Expression pattern);
 
 	public RegexpLikeCondition rLike(Expression pattern);
