@@ -19,13 +19,14 @@ public class TestSelect
 	{
 	}
 
-//	public static SQL $ = new SQL(new MariaProvider());
-	 public static SQL $ = new SQL(new OracleProvider());
+	// public static SQL $ = new SQL(new MariaProvider());
+	public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
 		Tools.debug(makeSelectAliased());
 		Tools.debug(makeSelectAliased1());
+		Tools.debug(makeSelectNested());
 		Tools.debug(makeSelectHint());
 		Tools.debug(makeSelectExists());
 		Tools.debug(makeSelectPartitioned());
@@ -81,12 +82,6 @@ public class TestSelect
 	public static Select makeSelectAliased1()
 	{
 		STAF s = $.table(STAF.class, "S");
-
-		Select sel = $.from(s) //
-				.where(s.STAF_ID.isNotNull()) //
-				.select(s.STAF_ID.as("id"), s.STAF_NAME, s.STAF_SALARY);
-
-		Tools.debug(sel);
 
 		return $.from(s = s.as("T")) //
 				.where(s.STAF_ID.isNotNull()) //
@@ -266,8 +261,8 @@ public class TestSelect
 				) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
-				.to(AbstractSelect.class).fillAliasByMeta()
-		// .as("t") //
+				.to(AbstractSelect.class).fillAliasByMeta() //
+				.as("t") //
 		;
 
 		return $.from(sel) //

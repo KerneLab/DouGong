@@ -32,67 +32,100 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 	public Select natural();
 
 	@Override
-	public Select innerJoin(View view, Condition cond);
-
-	@Override
-	public Select leftJoin(View view, Condition cond);
-
-	@Override
-	public Select rightJoin(View view, Condition cond);
-
-	@Override
-	public Select fullJoin(View view, Condition cond);
-
-	@Override
-	public Select crossJoin(View view, Condition cond);
-
-	@Override
-	public Select semiJoin(View view, Condition cond);
+	public Select anti();
 
 	@Override
 	public Select antiJoin(View view, Condition cond);
 
 	@Override
-	public Select innerJoin(View view, Item... using);
-
-	@Override
-	public Select leftJoin(View view, Item... using);
-
-	@Override
-	public Select rightJoin(View view, Item... using);
-
-	@Override
-	public Select fullJoin(View view, Item... using);
-
-	@Override
-	public Select crossJoin(View view, Item... using);
-
-	@Override
-	public Select semiJoin(View view, Item... using);
+	public Select antiJoin(View view, ForeignKey rels);
 
 	@Override
 	public Select antiJoin(View view, Item... using);
 
 	@Override
-	public Select innerJoin(View view, ForeignKey rels);
+	public Select cross();
 
 	@Override
-	public Select leftJoin(View view, ForeignKey rels);
-
-	@Override
-	public Select rightJoin(View view, ForeignKey rels);
-
-	@Override
-	public Select fullJoin(View view, ForeignKey rels);
+	public Select crossJoin(View view, Condition cond);
 
 	@Override
 	public Select crossJoin(View view, ForeignKey rels);
 
 	@Override
+	public Select crossJoin(View view, Item... using);
+
+	@Override
+	public Select full();
+
+	@Override
+	public Select fullJoin(View view, Condition cond);
+
+	@Override
+	public Select fullJoin(View view, ForeignKey rels);
+
+	@Override
+	public Select fullJoin(View view, Item... using);
+
+	@Override
+	public Select inner();
+
+	@Override
+	public Select innerJoin(View view, Condition cond);
+
+	@Override
+	public Select innerJoin(View view, ForeignKey rels);
+
+	@Override
+	public Select innerJoin(View view, Item... using);
+
+	@Override
+	public Select join(View view, Condition on);
+
+	@Override
+	public Select join(View view, ForeignKey rels);
+
+	@Override
+	public Select join(View view, Item... using);
+
+	@Override
+	public Select left();
+
+	@Override
+	public Select leftJoin(View view, Condition cond);
+
+	@Override
+	public Select leftJoin(View view, ForeignKey rels);
+
+	@Override
+	public Select leftJoin(View view, Item... using);
+
+	@Override
+	public Select outer();
+
+	@Override
+	public Select right();
+
+	@Override
+	public Select rightJoin(View view, Condition cond);
+
+	@Override
+	public Select rightJoin(View view, ForeignKey rels);
+
+	@Override
+	public Select rightJoin(View view, Item... using);
+
+	@Override
+	public Select semi();
+
+	@Override
+	public Select semiJoin(View view, Condition cond);
+
+	@Override
 	public Select semiJoin(View view, ForeignKey rels);
 
 	@Override
-	public Select antiJoin(View view, ForeignKey rels);
+	public Select semiJoin(View view, Item... using);
 
 	// //////////////////////////////////////////////////////
 

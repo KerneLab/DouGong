@@ -70,6 +70,7 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	public Joinable cross()
 	{
 		this.direct = AbstractJoin.CROSS;
+		this.type = AbstractJoin.DEFAULT;
 		return this;
 	}
 
@@ -176,6 +177,7 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	public Joinable inner()
 	{
 		this.direct = AbstractJoin.INNER;
+		this.type = AbstractJoin.DEFAULT;
 		return this;
 	}
 

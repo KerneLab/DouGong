@@ -113,6 +113,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public AbstractSelect anti()
+	{
+		super.anti();
+		return this;
+	}
+
+	@Override
 	public AbstractSelect antiJoin(View view, Condition on)
 	{
 		super.antiJoin(view, on);
@@ -185,11 +192,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 			clone.orderBy = Utils.copy(this.orderBy);
 		}
 
-		if (this.items != null)
-		{
-			clone.items = Utils.copy(this.items, new LinkedList<Item>());
-		}
-
+		clone.items = null;
 		clone.itemsMap = null;
 		clone.usingLabels = null;
 
@@ -205,6 +208,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect connectBy(Condition connectBy)
 	{
 		this.connectBy = connectBy;
+		return this;
+	}
+
+	@Override
+	public AbstractSelect cross()
+	{
+		super.cross();
 		return this;
 	}
 
@@ -316,6 +326,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public AbstractSelect full()
+	{
+		super.full();
+		return this;
+	}
+
+	@Override
 	public AbstractSelect fullJoin(View view, Condition on)
 	{
 		super.fullJoin(view, on);
@@ -416,6 +433,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public AbstractSelect inner()
+	{
+		super.inner();
+		return this;
+	}
+
+	@Override
 	public AbstractSelect innerJoin(View view, Condition on)
 	{
 		super.innerJoin(view, on);
@@ -482,7 +506,66 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	@Override
 	public List<Item> items()
 	{
-		return items;
+		if (this.items == null)
+		{
+			this.items = new LinkedList<Item>();
+
+			Expression[] exprs = this.selects();
+
+			if (exprs != null && exprs.length > 0)
+			{
+				List<Item> items = new LinkedList<Item>();
+
+				for (Expression expr : exprs)
+				{
+					if (expr instanceof AllItems)
+					{
+						AllItems all = (AllItems) expr;
+						if (all.view() != null)
+						{
+							if (all.view() instanceof Entity)
+							{
+								items.addAll(all.resolveItems());
+							}
+							else
+							{
+								items.addAll(this.refer(all.view(), all.resolveItems()));
+							}
+						}
+						else
+						{
+							items.addAll(this.resolveItemsFromViews());
+						}
+					}
+					else
+					{
+						items.addAll(expr.resolveItems());
+					}
+				}
+
+				Set<String> using = new HashSet<String>();
+
+				for (Item item : items)
+				{
+					if (item != null)
+					{
+						if (item.isUsingByJoin())
+						{
+							if (!using.contains(item.label()))
+							{
+								this.items.add(item);
+								using.add(item.label());
+							}
+						}
+						else
+						{
+							this.items.add(item);
+						}
+					}
+				}
+			}
+		}
+		return this.items;
 	}
 
 	@Override
@@ -554,6 +637,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public ComparisonCondition le(Expression expr)
 	{
 		return provider().provideComparisonCondition().le(this, expr);
+	}
+
+	@Override
+	public AbstractSelect left()
+	{
+		super.left();
+		return this;
 	}
 
 	@Override
@@ -731,6 +821,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect orderBy(Expression... exprs)
 	{
 		this.orderBy = exprs;
+		return this;
+	}
+
+	@Override
+	public AbstractSelect outer()
+	{
+		super.outer();
 		return this;
 	}
 
@@ -978,6 +1075,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public AbstractSelect right()
+	{
+		super.right();
+		return this;
+	}
+
+	@Override
 	public AbstractSelect rightJoin(View view, Condition on)
 	{
 		super.rightJoin(view, on);
@@ -1017,69 +1121,21 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect select(Expression... exprs)
 	{
 		this.select = exprs;
-
-		items().clear();
+		this.items = null;
 		this.itemsMap = null;
-
-		if (exprs != null && exprs.length > 0)
-		{
-			List<Item> items = new LinkedList<Item>();
-
-			for (Expression expr : exprs)
-			{
-				if (expr instanceof AllItems)
-				{
-					AllItems all = (AllItems) expr;
-					if (all.view() != null)
-					{
-						if (all.view() instanceof Entity)
-						{
-							items.addAll(all.resolveItems());
-						}
-						else
-						{
-							items.addAll(this.refer(all.view(), all.resolveItems()));
-						}
-					}
-					else
-					{
-						items.addAll(this.resolveItemsFromViews());
-					}
-				}
-				else
-				{
-					items.addAll(expr.resolveItems());
-				}
-			}
-
-			Set<String> using = new HashSet<String>();
-
-			for (Item item : items)
-			{
-				if (item != null)
-				{
-					if (item.isUsingByJoin())
-					{
-						if (!using.contains(item.label()))
-						{
-							items().add(item);
-							using.add(item.label());
-						}
-					}
-					else
-					{
-						items().add(item);
-					}
-				}
-			}
-		}
-
 		return this;
 	}
 
 	protected Expression[] selects()
 	{
 		return select;
+	}
+
+	@Override
+	public AbstractSelect semi()
+	{
+		super.semi();
+		return this;
 	}
 
 	@Override

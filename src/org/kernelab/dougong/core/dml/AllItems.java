@@ -11,6 +11,7 @@ public interface AllItems extends Expression
 	 * specified. The table alias would disappear when the table alias is not
 	 * specified.
 	 */
+	@Override
 	public StringBuilder toString(StringBuilder buffer);
 
 	/**
