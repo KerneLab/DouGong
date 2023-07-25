@@ -17,6 +17,7 @@ public class TestDelete
 	{
 		Tools.debug(makeDelete().toString(new StringBuilder()));
 		Tools.debug(makeDeleteJoin().toString(new StringBuilder()));
+		Tools.debug(makeDeleteLeftJoin().toString(new StringBuilder()));
 	}
 
 	public static Delete makeDelete()
@@ -36,6 +37,18 @@ public class TestDelete
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(d = SQL.table(DEPT.class, "D"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.where(s.COMP_ID.gt(SQL.expr("0"))) //
+				.delete(s, d) //
+		;
+	}
+
+	public static Delete makeDeleteLeftJoin()
+	{
+		STAF s = null;
+		DEPT d = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "s")) //
+				.left().join(d = SQL.table(DEPT.class, "D"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.where(s.COMP_ID.gt(SQL.expr("0"))) //
 				.delete(s, d) //
 		;

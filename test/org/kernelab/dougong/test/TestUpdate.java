@@ -17,6 +17,7 @@ public class TestUpdate
 	{
 		Tools.debug(makeUpdate().toString(new StringBuilder()));
 		Tools.debug(makeUpdateJoin().toString(new StringBuilder()));
+		Tools.debug(makeUpdateLeftJoin().toString(new StringBuilder()));
 	}
 
 	public static Update makeUpdate()
@@ -39,6 +40,18 @@ public class TestUpdate
 		return SQL.from(s = SQL.table(STAF.class, "S")) //
 				.update() //
 				.innerJoin(d = SQL.table(DEPT.class, "D"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.set(s.STAF_SALARY, s.STAF_SALARY.plus(SQL.val(1))) //
+				.where(d.COMP_ID.isNotNull());
+	}
+
+	public static Update makeUpdateLeftJoin()
+	{
+		STAF s = null;
+		DEPT d = null;
+
+		return SQL.from(s = SQL.table(STAF.class, "S")) //
+				.update() //
+				.left().join(d = SQL.table(DEPT.class, "D"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.set(s.STAF_SALARY, s.STAF_SALARY.plus(SQL.val(1))) //
 				.where(d.COMP_ID.isNotNull());
 	}

@@ -10,6 +10,7 @@ import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.WithDefinition;
@@ -31,9 +32,9 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 	}
 
 	@Override
-	public AbstractUpdate fullJoin(View view, Column... using)
+	public AbstractUpdate full()
 	{
-		super.fullJoin(view, using);
+		super.full();
 		return this;
 	}
 
@@ -51,6 +52,13 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 		return fullJoin(view, rels.joinCondition());
 	}
 
+	@Override
+	public AbstractUpdate fullJoin(View view, Item... using)
+	{
+		super.fullJoin(view, using);
+		return this;
+	}
+
 	protected String hint()
 	{
 		return hint;
@@ -64,9 +72,9 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 	}
 
 	@Override
-	public AbstractUpdate innerJoin(View view, Column... using)
+	public AbstractUpdate inner()
 	{
-		super.innerJoin(view, using);
+		super.inner();
 		return this;
 	}
 
@@ -85,6 +93,34 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 	}
 
 	@Override
+	public AbstractUpdate innerJoin(View view, Item... using)
+	{
+		super.innerJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate join(View view, Condition on)
+	{
+		super.join(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractUpdate join(View view, ForeignKey rels)
+	{
+		return join(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractUpdate join(View view, Item... using)
+	{
+		super.join(view, using);
+		return this;
+	}
+
+	@Override
 	public AbstractUpdate joins(List<Join> joins)
 	{
 		super.joins(joins);
@@ -92,9 +128,9 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 	}
 
 	@Override
-	public AbstractUpdate leftJoin(View view, Column... using)
+	public AbstractUpdate left()
 	{
-		super.leftJoin(view, using);
+		super.left();
 		return this;
 	}
 
@@ -113,6 +149,13 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 	}
 
 	@Override
+	public AbstractUpdate leftJoin(View view, Item... using)
+	{
+		super.leftJoin(view, using);
+		return this;
+	}
+
+	@Override
 	public AbstractUpdate provider(Provider provider)
 	{
 		super.provider(provider);
@@ -127,9 +170,9 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 	}
 
 	@Override
-	public AbstractUpdate rightJoin(View view, Column... using)
+	public AbstractUpdate right()
 	{
-		super.rightJoin(view, using);
+		super.right();
 		return this;
 	}
 
@@ -148,13 +191,20 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 	}
 
 	@Override
+	public AbstractUpdate rightJoin(View view, Item... using)
+	{
+		super.rightJoin(view, using);
+		return this;
+	}
+
+	@Override
 	public AbstractUpdate set(Column column, Expression value)
 	{
 		sets().add(new Relation<Column, Expression>(column, value));
 		return this;
 	}
 
-	protected List<Relation<Column, Expression>> sets()
+	public List<Relation<Column, Expression>> sets()
 	{
 		return sets;
 	}
@@ -238,6 +288,7 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 		return toString(new StringBuilder()).toString();
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
@@ -249,6 +300,7 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 		return buffer;
 	}
 
+	@Override
 	public AbstractUpdate update(View view)
 	{
 		super.from(view);

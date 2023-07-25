@@ -2,13 +2,13 @@ package org.kernelab.dougong.semi.dml;
 
 import java.util.List;
 
-import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.util.AccessGather;
@@ -40,9 +40,9 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 	}
 
 	@Override
-	public AbstractDelete fullJoin(View view, Column... using)
+	public AbstractDelete full()
 	{
-		super.fullJoin(view, using);
+		super.full();
 		return this;
 	}
 
@@ -60,11 +60,19 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 		return fullJoin(view, rels.joinCondition());
 	}
 
+	@Override
+	public AbstractDelete fullJoin(View view, Item... using)
+	{
+		super.fullJoin(view, using);
+		return this;
+	}
+
 	protected String hint()
 	{
 		return hint;
 	}
 
+	@Override
 	public AbstractDelete hint(String hint)
 	{
 		this.hint = hint;
@@ -72,9 +80,9 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 	}
 
 	@Override
-	public AbstractDelete innerJoin(View view, Column... using)
+	public AbstractDelete inner()
 	{
-		super.innerJoin(view, using);
+		super.inner();
 		return this;
 	}
 
@@ -92,6 +100,35 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 		return innerJoin(view, rels.joinCondition());
 	}
 
+	@Override
+	public AbstractDelete innerJoin(View view, Item... using)
+	{
+		super.innerJoin(view, using);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete join(View view, Condition on)
+	{
+		super.join(view, on);
+		AccessGather.gather(this, Access.TYPE_JOIN, on);
+		return this;
+	}
+
+	@Override
+	public AbstractDelete join(View view, ForeignKey rels)
+	{
+		return join(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractDelete join(View view, Item... using)
+	{
+		super.join(view, using);
+		return this;
+	}
+
+	@Override
 	public AbstractDelete joins(List<Join> joins)
 	{
 		super.joins(joins);
@@ -99,9 +136,9 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 	}
 
 	@Override
-	public AbstractDelete leftJoin(View view, Column... using)
+	public AbstractDelete left()
 	{
-		super.leftJoin(view, using);
+		super.left();
 		return this;
 	}
 
@@ -120,6 +157,13 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 	}
 
 	@Override
+	public AbstractDelete leftJoin(View view, Item... using)
+	{
+		super.leftJoin(view, using);
+		return this;
+	}
+
+	@Override
 	public AbstractDelete provider(Provider provider)
 	{
 		super.provider(provider);
@@ -134,9 +178,9 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 	}
 
 	@Override
-	public AbstractDelete rightJoin(View view, Column... using)
+	public AbstractDelete right()
 	{
-		super.rightJoin(view, using);
+		super.right();
 		return this;
 	}
 
@@ -152,6 +196,13 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 	public AbstractDelete rightJoin(View view, ForeignKey rels)
 	{
 		return rightJoin(view, rels.joinCondition());
+	}
+
+	@Override
+	public AbstractDelete rightJoin(View view, Item... using)
+	{
+		super.rightJoin(view, using);
+		return this;
 	}
 
 	protected void textOfHead(StringBuilder buffer)
@@ -198,6 +249,7 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 		return toString(new StringBuilder()).toString();
 	}
 
+	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		this.textOfHead(buffer);
