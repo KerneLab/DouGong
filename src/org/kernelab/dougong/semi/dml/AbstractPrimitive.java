@@ -68,6 +68,7 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 		return this;
 	}
 
+	@Override
 	public Delete delete(Table... targets)
 	{
 		return this.provider().provideDelete() //
@@ -226,12 +227,22 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 		return this;
 	}
 
+	@Override
 	public Select select(Expression... exprs)
 	{
 		return this.provider().provideSelect() //
 				.recursive(this.recursive()).withs(this.withs()) //
 				.from(this.from()).joins(this.joins()).where(this.where()) //
 				.select(exprs);
+	}
+
+	@Override
+	public Select selectOver(Expression... exprs)
+	{
+		return this.provider().provideSelect() //
+				.recursive(this.recursive()).withs(this.withs()) //
+				.from(this.from()).joins(this.joins()).where(this.where()) //
+				.selectOver(exprs);
 	}
 
 	@Override
@@ -261,6 +272,7 @@ public class AbstractPrimitive extends AbstractJoinable implements Primitive
 		return this;
 	}
 
+	@Override
 	public Update update()
 	{
 		return this.provider().provideUpdate() //

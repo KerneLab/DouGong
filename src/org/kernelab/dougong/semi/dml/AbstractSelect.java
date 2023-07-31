@@ -2,6 +2,7 @@ package org.kernelab.dougong.semi.dml;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -1121,6 +1122,72 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public AbstractSelect select(Expression... exprs)
 	{
 		this.select = exprs;
+		this.items = null;
+		this.itemsMap = null;
+		return this;
+	}
+
+	@Override
+	public AbstractSelect selectOver(Expression... exprs)
+	{
+		Map<String, Item> ups = new LinkedHashMap<String, Item>();
+		for (Item item : this.resolveItemsFromViews())
+		{
+			ups.put(Utils.getLabelOfExpression(item), item);
+		}
+
+		Map<String, Expression> ovs = new HashMap<String, Expression>();
+		for (Expression expr : exprs)
+		{
+			for (String label : Utils.getLabelsOfExpression(expr))
+			{
+				ovs.put(label, expr);
+			}
+		}
+
+		List<Expression> sels = new LinkedList<Expression>();
+		Set<String> add = new HashSet<String>();
+		for (Entry<String, Item> entry : ups.entrySet())
+		{
+			if (!ovs.containsKey(entry.getKey()))
+			{
+				sels.add(entry.getValue());
+			}
+			else
+			{
+				Expression exp = ovs.get(entry.getKey());
+				String[] lbs = Utils.getLabelsOfExpression(exp);
+				boolean added = false;
+				for (String l : lbs)
+				{
+					if (add.contains(l))
+					{
+						added = true;
+						break;
+					}
+				}
+				if (!added)
+				{
+					sels.add(exp);
+					for (String l : lbs)
+					{
+						add.add(l);
+					}
+				}
+			}
+		}
+
+		for (String a : add)
+		{
+			ovs.remove(a);
+		}
+
+		for (Expression ov : new LinkedHashSet<Expression>(ovs.values()))
+		{
+			sels.add(ov);
+		}
+
+		this.select = sels.toArray(new Expression[0]);
 		this.items = null;
 		this.itemsMap = null;
 		return this;

@@ -116,6 +116,8 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	 */
 	public Select select(Expression... exprs);
 
+	public Select selectOver(Expression... exprs);
+
 	@Override
 	public Primitive semi();
 

@@ -22,6 +22,7 @@ import org.kernelab.dougong.core.Named;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.dml.Alias;
+import org.kernelab.dougong.core.dml.Aliases;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Items;
@@ -422,6 +423,35 @@ public class Utils
 		}
 
 		return getNameOfExpression(expr);
+	}
+
+	public static String[] getLabelsOfExpression(Expression expr)
+	{
+		List<String> labels = new LinkedList<String>();
+
+		if (expr instanceof Aliases && ((Aliases) expr).aliases() != null)
+		{ // Multi-Return-Columns Function
+			for (String alias : ((Aliases) expr).aliases())
+			{
+				labels.add(alias);
+			}
+		}
+		else if (expr instanceof Items)
+		{ // Items list
+			if (((Items) expr).list() != null)
+			{
+				for (Expression exp : ((Items) expr).list())
+				{
+					labels.add(Utils.getLabelOfExpression(exp));
+				}
+			}
+		}
+		else
+		{ // Single expression
+			labels.add(Utils.getLabelOfExpression(expr));
+		}
+
+		return labels.toArray(new String[0]);
 	}
 
 	public static Map<String, Field> getMappingFields(Class<?> cls, Map<String, Field> result)

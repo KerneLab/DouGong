@@ -14,6 +14,8 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 {
 	public Select select(Expression... exprs);
 
+	public Select selectOver(Expression... exprs);
+
 	// //////////////////////////////////////////////////////
 
 	public Select distinct(boolean distinct);
