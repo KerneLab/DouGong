@@ -1085,6 +1085,11 @@ public abstract class Entitys
 
 		Map<Column, Expression> meta = table.getColumnDefaultExpressions(key);
 
+		if (meta.isEmpty())
+		{
+			return null;
+		}
+
 		if (object != null)
 		{
 			meta = overwriteColumnDefaults(sql, object, meta, null);
@@ -2119,8 +2124,14 @@ public abstract class Entitys
 
 		Key key = getUpdateKey(entity, object);
 
-		Update update = makeUpdate(sql, entity, object, key) //
-				.where(key.queryCondition());
+		Update update = makeUpdate(sql, entity, object, key);
+
+		if (update == null)
+		{
+			return 0;
+		}
+
+		update = update.where(key.queryCondition());
 
 		Map<String, Object> params = makeParams(object, entity);
 
