@@ -9,6 +9,7 @@ import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 import org.kernelab.dougong.core.meta.EntityMeta;
+import org.kernelab.dougong.core.meta.ForeignKeyMeta;
 
 public abstract class AbstractForeignKey extends AbstractKey implements ForeignKey
 {
@@ -50,7 +51,11 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 		}
 	}
 
-	private PrimaryKey reference;
+	private PrimaryKey	reference;
+
+	private byte		onDelete	= ForeignKeyMeta.RESTRICT;
+
+	private byte		onUpdate	= ForeignKeyMeta.RESTRICT;
 
 	public AbstractForeignKey(PrimaryKey reference, Entity entity, Column... columns)
 	{
@@ -59,10 +64,32 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 	}
 
 	@Override
+	public boolean equals(Object obj)
+	{
+		if (!super.equals(obj))
+		{
+			return false;
+		}
+
+		if (!(obj instanceof ForeignKey))
+		{
+			return false;
+		}
+
+		return equals(this.reference(), ((ForeignKey) obj).reference());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return super.hashCode() * 31 + hashCode(reference());
+	}
+
+	@Override
 	public boolean inPrimaryKey()
 	{
 		PrimaryKey pk = this.entity().primaryKey();
-		return pk != null && pk.contains(this.columns());
+		return pk != null && pk.containsAll(this.columns());
 	}
 
 	@Override
@@ -105,6 +132,30 @@ public abstract class AbstractForeignKey extends AbstractKey implements ForeignK
 	public <T> Map<Column, Object> mapValuesToReferrer(T object)
 	{
 		return mapValuesToReferrer(object, this);
+	}
+
+	@Override
+	public byte onDelete()
+	{
+		return onDelete;
+	}
+
+	public AbstractForeignKey onDelete(byte onDelete)
+	{
+		this.onDelete = onDelete;
+		return this;
+	}
+
+	@Override
+	public byte onUpdate()
+	{
+		return onUpdate;
+	}
+
+	public AbstractForeignKey onUpdate(byte onUpdate)
+	{
+		this.onUpdate = onUpdate;
+		return this;
 	}
 
 	@Override

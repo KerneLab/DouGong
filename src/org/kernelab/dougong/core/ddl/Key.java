@@ -14,12 +14,12 @@ public interface Key
 	public Column[] columns();
 
 	/**
-	 * To judge whether the given columns are all contained in this key.
+	 * To determine whether the given columns are contained in this keys.
 	 * 
 	 * @param columns
 	 * @return
 	 */
-	public boolean contains(Column... columns);
+	public boolean containsAll(Column... columns);
 
 	/**
 	 * Get the entity this key belongs to.
@@ -27,6 +27,25 @@ public interface Key
 	 * @return
 	 */
 	public Entity entity();
+
+	/**
+	 * Get a columns array that is in this key but not in the given columns'
+	 * list.
+	 * 
+	 * @param excludes
+	 * @return
+	 */
+	public Column[] excludeColumns(Column... excludes);
+
+	/**
+	 * Get the columns in the given Entity according the columns' name defined
+	 * in this Key.
+	 * 
+	 * @param entity
+	 * @return Column objects in the given Entity or null if the Entity was not
+	 *         same to the Entity defined in this Key.
+	 */
+	public Column[] getColumnsOf(Entity entity);
 
 	/**
 	 * Get a typical query condition according to this key.

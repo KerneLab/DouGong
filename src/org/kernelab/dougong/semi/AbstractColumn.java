@@ -10,6 +10,58 @@ import org.kernelab.dougong.semi.dml.AbstractSortable;
 
 public abstract class AbstractColumn extends AbstractSortable implements Column
 {
+	public static boolean equals(Column a, Column b)
+	{
+		return a != null && b != null && a.view().getClass() == b.view().getClass() && a.name().equals(b.name());
+	}
+
+	public static boolean equals(Column[] a, Column[] b)
+	{
+		if (a == null || b == null)
+		{
+			return false;
+		}
+
+		int len = a.length;
+		if (b.length != len)
+		{
+			return false;
+		}
+
+		for (int i = 0; i < len; i++)
+		{
+			if (!equals(a[i], b[i]))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static int hashCode(Column c)
+	{
+		return c == null ? 0 : (c.view().getClass().hashCode() * 31 + c.name().hashCode());
+	}
+
+	public static int hashCode(Column[] cols)
+	{
+		if (cols == null)
+		{
+			return 0;
+		}
+		else
+		{
+			final int prime = 31;
+			int result = 1;
+			for (Column c : cols)
+			{
+				result = result * prime + (c == null ? 0 : c.name().hashCode());
+			}
+			return result;
+		}
+	}
+
 	private View	view;
 
 	private String	name;

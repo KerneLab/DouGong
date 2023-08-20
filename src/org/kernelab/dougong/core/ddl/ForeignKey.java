@@ -55,6 +55,20 @@ public interface ForeignKey extends DDL, Key
 	public <T> Map<Column, Object> mapValuesToReferrer(T object);
 
 	/**
+	 * Behavior on delete.
+	 * 
+	 * @return
+	 */
+	public byte onDelete();
+
+	/**
+	 * Behavior on update.
+	 * 
+	 * @return
+	 */
+	public byte onUpdate();
+
+	/**
 	 * Get the reference primary key.
 	 * 
 	 * @return

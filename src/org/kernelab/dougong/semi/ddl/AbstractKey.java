@@ -2,22 +2,64 @@ package org.kernelab.dougong.semi.ddl;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.basis.WrappedLinkedHashSet;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
 import org.kernelab.dougong.core.ddl.Key;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
+import org.kernelab.dougong.core.meta.MetaContext;
 import org.kernelab.dougong.core.util.Utils;
+import org.kernelab.dougong.semi.AbstractColumn;
 import org.kernelab.dougong.semi.AbstractProvidable;
 
 public abstract class AbstractKey extends AbstractProvidable implements Key
 {
+	public static boolean equals(Key a, Key b)
+	{
+		if (a.entity() == null || b.entity() == null)
+		{
+			return false;
+		}
+		else if (a.entity().getClass() != b.entity().getClass())
+		{
+			return false;
+		}
+
+		if (!AbstractColumn.equals(a.columns(), b.columns()))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	public static int hashCode(Entity entity, Column[] columns)
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (entity == null ? 0 : entity.getClass().hashCode());
+		result = prime * result + AbstractColumn.hashCode(columns);
+		return result;
+	}
+
+	public static int hashCode(Key key)
+	{
+		if (key == null)
+		{
+			return 0;
+		}
+		else
+		{
+			return hashCode(key.entity(), key.columns());
+		}
+	}
+
 	/**
 	 * Get a map which contains columns against corresponding values of in the
 	 * object.
@@ -86,7 +128,7 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 	}
 
 	@Override
-	public boolean contains(Column... columns)
+	public boolean containsAll(Column... columns)
 	{
 		Set<Column> s = this.getColumnSet();
 
@@ -107,13 +149,76 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		return entity;
 	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+
+		if (obj == null)
+		{
+			return false;
+		}
+
+		if (!(obj instanceof Key))
+		{
+			return false;
+		}
+
+		return equals(this, (Key) obj);
+	}
+
+	@Override
+	public Column[] excludeColumns(Column... excludes)
+	{
+		if (excludes == null)
+		{
+			return null;
+		}
+		if (excludes.length == 0)
+		{
+			return this.columns();
+		}
+		Set<Column> cols = this.getColumnSet();
+		for (Column c : excludes)
+		{
+			cols.remove(c);
+		}
+		return cols.toArray(new Column[0]);
+	}
+
 	protected Set<Column> getColumnSet()
 	{
 		if (columnSet == null)
 		{
-			columnSet = Tools.setOfArray(new HashSet<Column>(), this.columns());
+			columnSet = Tools.setOfArray(new WrappedLinkedHashSet<Column>(MetaContext.COLUMN_EQUAL), this.columns());
 		}
 		return columnSet;
+	}
+
+	@Override
+	public Column[] getColumnsOf(Entity entity)
+	{
+		if (entity().getClass() != entity.getClass())
+		{
+			return null;
+		}
+
+		Column[] defs = columns();
+		Column[] cols = new Column[defs.length];
+		for (int i = 0; i < defs.length; i++)
+		{
+			cols[i] = (Column) entity.item(defs[i].name());
+		}
+		return cols;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return hashCode(this);
 	}
 
 	protected Condition queryCondition(Column... columns)

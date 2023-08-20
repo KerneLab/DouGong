@@ -14,11 +14,13 @@ public abstract class AbstractPrimaryKey extends AbstractKey implements PrimaryK
 		super(entity, columns);
 	}
 
+	@Override
 	public <T> Map<Column, Object> mapValues(T object)
 	{
 		return mapObjectValuesOfColumns(object, this.columns());
 	}
 
+	@Override
 	public Condition queryCondition()
 	{
 		return queryCondition(columns());
