@@ -1230,7 +1230,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
-	protected List<Setopr> setopr()
+	public List<Setopr> setopr()
 	{
 		return setopr;
 	}

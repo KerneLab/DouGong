@@ -9,6 +9,7 @@ import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.core.dml.Withable;
 import org.kernelab.dougong.core.dml.Withsable;
+import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.AbstractProvidable;
 
 public abstract class AbstractWithsable extends AbstractProvidable implements Withsable
@@ -35,6 +36,19 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 	private boolean					recursive	= false;
 
 	private List<WithDefinition>	with		= null;
+
+	@Override
+	protected AbstractWithsable clone() throws CloneNotSupportedException
+	{
+		AbstractWithsable clone = (AbstractWithsable) super.clone();
+
+		if (this.with != null)
+		{
+			clone.with = Utils.copy(this.with, new LinkedList<WithDefinition>());
+		}
+
+		return clone;
+	}
 
 	@Override
 	public boolean recursive()

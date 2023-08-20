@@ -7,6 +7,7 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class OracleSelect extends AbstractSelect
@@ -30,8 +31,10 @@ public class OracleSelect extends AbstractSelect
 				rows = rows.plus(skip);
 			}
 
-			Select inner = this.as("t");
+			AbstractSelect inner = this.as("t");
+			inner.withs((List<WithDefinition>) null);
 			inner.limit(null, null);
+			inner.setopr().clear();
 
 			Select semi = provider().provideSelect().from(inner);
 
@@ -42,7 +45,10 @@ public class OracleSelect extends AbstractSelect
 
 			if (skip == null)
 			{
-				return (OracleSelect) semi.select(inner.all());
+				OracleSelect res = (OracleSelect) semi.select(inner.all());
+				res.withs(this.withs());
+				res.setopr().addAll(this.setopr());
+				return res;
 			}
 			else
 			{
@@ -54,10 +60,15 @@ public class OracleSelect extends AbstractSelect
 				list.addAll(semi.referItems().values());
 				list.remove(list.size() - 1);
 
-				return (OracleSelect) provider().provideSelect() //
+				OracleSelect res = (OracleSelect) provider().provideSelect() //
 						.from(semi) //
 						.select(list.toArray(new Expression[list.size()])) //
 						.where(provider().provideStringItem(col).gt(skip));
+
+				res.withs(this.withs());
+				res.setopr().addAll(this.setopr());
+
+				return res;
 			}
 		}
 		else
