@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kernelab.basis.Canal;
-import org.kernelab.basis.JSON;
+import org.kernelab.basis.Filter;
+import org.kernelab.basis.Mapper;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.sql.Row;
 import org.kernelab.basis.sql.SQLKit;
@@ -28,12 +29,12 @@ import org.kernelab.dougong.core.dml.cond.AtomicCondition;
 
 public class Recursor
 {
-	public static class CycleDetectedException extends RuntimeException
+	public static class CycleDetectedException extends SQLException
 	{
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = -7844178941583896393L;
+		private static final long serialVersionUID = 6604465561461711402L;
 
 		public CycleDetectedException(String message)
 		{
@@ -46,23 +47,47 @@ public class Recursor
 		public Row result(Row row, LinkedList<Row> path, boolean isLeaf);
 	}
 
-	private Provider			provider;
+	public static <R extends Map<String, ?>> String path(List<R> path, String key, String joint)
+	{
+		if (path == null || key == null || joint == null)
+		{
+			return null;
+		}
 
-	private Primitive			view;
+		StringBuilder buff = new StringBuilder();
 
-	private Condition			startWith;
+		for (Map<String, ?> node : path)
+		{
+			buff.append(joint);
+			buff.append(node.get(key));
+		}
 
-	private Condition			connectBy;
+		return buff.toString();
+	}
 
-	private boolean				nocycle	= false;
+	private Provider				provider;
 
-	private Expression[]		selects;
+	private Primitive				view;
 
-	private Map<String, String>	selectItems;
+	private Condition				startWith;
 
-	private Resulter			resulter;
+	private Condition				connectBy;
 
-	private Select				union;
+	private Mapper<Select, Select>	selectMapper;
+
+	private boolean					nocycle		= false;
+
+	private Expression[]			selects;
+
+	private Map<String, String>		selectItems;
+
+	private Filter<Row>				where;
+
+	private Resulter				resulter;
+
+	private Select					union;
+
+	private boolean					distinct	= false;
 
 	protected Condition connectBy()
 	{
@@ -72,6 +97,12 @@ public class Recursor
 	public Recursor connectBy(Condition connectBy)
 	{
 		this.connectBy = connectBy;
+		return this;
+	}
+
+	public Recursor distinct()
+	{
+		this.distinct = true;
 		return this;
 	}
 
@@ -102,6 +133,11 @@ public class Recursor
 		return this.selectItems;
 	}
 
+	protected boolean isDistinct()
+	{
+		return distinct;
+	}
+
 	protected boolean isNocycle()
 	{
 		return nocycle;
@@ -124,13 +160,94 @@ public class Recursor
 		return this;
 	}
 
-	protected void query(SQLKit kit, Collection<Row> rows, LinkedList<Row> path, String select, String[] priors,
-			Set<Row> nodes, List<Row> results) throws SQLException
+	public Canal<?, Row> query(SQLKit kit, Map<String, Object> params) throws SQLException
+	{
+		Select init = this.select(this.view.where(this.startWith)).select(selects);
+		Select recur = this.select(this.view.where(this.connectBy)).select(selects);
+
+		Mapper<Select, Select> mapper = selectMapper();
+		if (mapper != null)
+		{
+			try
+			{
+				init = mapper.map(init);
+				recur = mapper.map(recur);
+			}
+			catch (Exception e)
+			{
+				throw new SQLException("Could not convert recursive select", e);
+			}
+		}
+
+		Condition cond = this.connectBy();
+		List<Object> refls = Utils.reflectConditions(new LinkedList<Object>(), cond);
+		Set<Column> extra = new HashSet<Column>();
+		Set<String> prior = new LinkedHashSet<String>();
+		replace(refls, extra, prior);
+		String[] priors = prior.toArray(new String[0]);
+		Set<String> extraNames = new HashSet<String>();
+		if (!extra.isEmpty())
+		{
+			List<Expression> sel = new LinkedList<Expression>(init.items());
+			sel.addAll(extra);
+			Expression[] selects = sel.toArray(new Expression[0]);
+			init.select(selects);
+			recur.select(selects);
+			for (Column ext : extra)
+			{
+				extraNames.add(ext.label());
+			}
+		}
+
+		Collection<Row> res = kit.execute(init.toString(), params).getRows(new LinkedList<Row>(), Row.class);
+
+		List<Row> recurs = new LinkedList<Row>();
+
+		query(kit, params, res, new LinkedList<Row>(), recur.toString(), priors, new HashSet<Row>(), extraNames,
+				recurs);
+
+		Canal<?, Row> result = Canal.of(recurs);
+
+		if (this.union() != null)
+		{
+			String[] labels = Canal.of(init.items()).map(new Mapper<Item, String>()
+			{
+				@Override
+				public String map(Item el) throws Exception
+				{
+					return el.label();
+				}
+			}).collect().toArray(new String[0]);
+
+			int i = 0;
+			for (Item item : this.union().items())
+			{
+				if (item.alias() == null)
+				{
+					item.alias(labels[i]);
+				}
+				i++;
+			}
+
+			result = result.union(
+					Canal.of(kit.execute(this.union().toString(), params).getRows(new LinkedList<Row>(), Row.class)));
+		}
+
+		if (this.isDistinct())
+		{
+			result = result.distinct();
+		}
+
+		return result;
+	}
+
+	protected void query(SQLKit kit, Map<String, Object> params, Collection<Row> rows, LinkedList<Row> path,
+			String select, String[] priors, Set<Row> nodes, Set<String> extra, List<Row> results) throws SQLException
 	{
 		Row node = null, result = null;
 		for (Row row : rows)
 		{
-			node = row.gets(priors);
+			node = row.newRow(priors);
 
 			if (nodes.contains(node))
 			{
@@ -148,68 +265,37 @@ public class Recursor
 				nodes.add(node);
 			}
 
-			path.add(row);
+			path.add(row.exclude(extra));
 
-			Collection<Row> subs = kit.execute(select, node.to(JSON.class)).getRows(new LinkedList<Row>(), Row.class);
+			Collection<Row> subs = kit.execute(select, Row.of(params).set(node)).getRows(new LinkedList<Row>(),
+					Row.class);
 
-			result = this.result() == null ? row : this.result().result(row, path, subs.isEmpty());
+			try
+			{
+				result = this.where() == null ? row : (this.where().filter(row) ? row : null);
+			}
+			catch (Exception e)
+			{
+				throw new SQLException("Could not filter recursive query result row", e);
+			}
+
+			result = result == null || this.result() == null ? result
+					: this.result().result(result, path, subs.isEmpty());
+
 			if (result != null)
 			{
 				results.add(result);
 			}
 
-			query(kit, subs, path, select, priors, nodes, results);
+			query(kit, params, subs, path, select, priors, nodes, extra, results);
 
 			nodes.remove(node);
 			path.removeLast();
 		}
 	}
 
-	public Canal<?, Row> query(SQLKit kit, JSON param) throws Exception
-	{
-		Condition cond = this.connectBy();
-
-		List<Object> refls = Utils.reflectConditions(new LinkedList<Object>(), cond);
-		Set<Column> extra = new HashSet<Column>();
-		Set<String> prior = new LinkedHashSet<String>();
-		replace(refls, extra, prior);
-		String[] priors = prior.toArray(new String[0]);
-
-		List<Expression> sel = Tools.listOfArray(new LinkedList<Expression>(), this.selects);
-		sel.addAll(extra);
-		Expression[] selects = sel.toArray(new Expression[0]);
-
-		Select init = this.select(this.view.where(this.startWith)).select(selects);
-		Select recur = this.select(this.view.where(this.connectBy)).select(selects);
-
-		Collection<Row> res = kit.execute(init.toString(), param).getRows(new LinkedList<Row>(), Row.class);
-
-		List<Row> recurs = new LinkedList<Row>();
-
-		query(kit, res, new LinkedList<Row>(), recur.toString(), priors, new HashSet<Row>(), recurs);
-
-		Canal<?, Row> result = Canal.of(recurs);
-
-		if (this.union() == null)
-		{
-			return result;
-		}
-
-		int i = 0;
-		for (Item item : this.union().items())
-		{
-			if (item.alias() == null)
-			{
-				item.alias(Utils.getLabelOfExpression(selects[i]));
-			}
-			i++;
-		}
-		return result
-				.union(Canal.of(kit.execute(this.union().toString(), param).getRows(new LinkedList<Row>(), Row.class)));
-	}
-
 	@SuppressWarnings("unchecked")
-	protected void replace(List<Object> conds, Set<Column> extra, Set<String> priors)
+	protected void replace(List<Object> conds, Set<Column> extra, Set<String> priors) throws SQLException
 	{
 		Map<String, String> map = this.getSelectItems();
 
@@ -243,15 +329,14 @@ public class Recursor
 							}
 							else
 							{
-								throw new RuntimeException(
-										"Non column prior expression " + pe + " occurred in condition");
+								throw new SQLException("Non column prior expression " + pe + " occurred in condition");
 							}
 						}
 					}
 				}
 				else
 				{
-					throw new RuntimeException("Non atomic condition " + o.toString() + " occurred in reflect list");
+					throw new SQLException("Non atomic condition " + o.toString() + " occurred in reflect list");
 				}
 			}
 			else if (o instanceof List)
@@ -279,9 +364,20 @@ public class Recursor
 		return this;
 	}
 
-	protected Select select(Primitive view) throws Exception
+	protected Select select(Primitive view)
 	{
 		return view.select(this.selects);
+	}
+
+	protected Mapper<Select, Select> selectMapper()
+	{
+		return selectMapper;
+	}
+
+	public Recursor selectMapper(Mapper<Select, Select> selectMapper)
+	{
+		this.selectMapper = selectMapper;
+		return this;
 	}
 
 	protected Condition startWith()
@@ -306,7 +402,7 @@ public class Recursor
 		return this;
 	}
 
-	protected Primitive view()
+	public Primitive view()
 	{
 		return view;
 	}
@@ -314,6 +410,17 @@ public class Recursor
 	public Recursor view(Primitive view)
 	{
 		this.view = view;
+		return this;
+	}
+
+	protected Filter<Row> where()
+	{
+		return where;
+	}
+
+	public Recursor where(Filter<Row> where)
+	{
+		this.where = where;
 		return this;
 	}
 }
