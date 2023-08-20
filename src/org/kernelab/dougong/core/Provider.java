@@ -33,6 +33,7 @@ import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.dml.PriorExpression;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.Setopr;
 import org.kernelab.dougong.core.dml.Sortable;
 import org.kernelab.dougong.core.dml.StringItem;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -436,6 +437,8 @@ public interface Provider extends Castable, Serializable
 	public Result provideResult(String expression);
 
 	public Select provideSelect();
+
+	public Setopr provideSetopr();
 
 	public SQL provideSQL();
 

@@ -46,6 +46,8 @@ public class TestSelect
 			Tools.debug(makeSelectValuesMaria());
 		}
 		Tools.debug(makeSelectSetopr());
+		Tools.debug(makeSelectSetopr1());
+		Tools.debug(makeSelectSetopr2());
 		Tools.debug(makeSelectModulo());
 	}
 
@@ -348,6 +350,22 @@ public class TestSelect
 
 		return $.from(s).select(s.$("COMP_ID")) //
 				.unionAll(u);
+	}
+
+	public static Select makeSelectSetopr1()
+	{
+		Select a = makeSelectSetopr().alias("A");
+
+		return $.from(a).select(a.$("COMP_ID"));
+	}
+
+	public static Select makeSelectSetopr2()
+	{
+		Select a = makeSelectSetopr().alias("A");
+
+		COMP c = null;
+
+		return $.from(c = $.table(COMP.class, "C")).where(c.COMP_ID.in(a)).select(c.all());
 	}
 
 	public static Select makeSelectSubquery()

@@ -81,6 +81,7 @@ import org.kernelab.dougong.semi.dml.AbstractNegativeSemiTestable;
 import org.kernelab.dougong.semi.dml.AbstractPivot;
 import org.kernelab.dougong.semi.dml.AbstractPrimitive;
 import org.kernelab.dougong.semi.dml.AbstractPriorExpression;
+import org.kernelab.dougong.semi.dml.AbstractSetopr;
 import org.kernelab.dougong.semi.dml.AbstractTotalItems;
 import org.kernelab.dougong.semi.dml.AbstractWithDefinition;
 import org.kernelab.dougong.semi.dml.DaoAgent;
@@ -935,6 +936,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	public Result provideResult(String expression)
 	{
 		return provideProvider(new AbstractStringExpressionResult(expression));
+	}
+
+	@Override
+	public AbstractSetopr provideSetopr()
+	{
+		return new AbstractSetopr();
 	}
 
 	@Override

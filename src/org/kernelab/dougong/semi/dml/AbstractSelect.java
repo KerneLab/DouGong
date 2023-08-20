@@ -2,7 +2,6 @@ package org.kernelab.dougong.semi.dml;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -52,41 +51,41 @@ import org.kernelab.dougong.core.util.Utils;
 
 public abstract class AbstractSelect extends AbstractJoinable implements Select
 {
-	private String					alias		= null;
+	private String				alias		= null;
 
-	private boolean					distinct	= false;
+	private boolean				distinct	= false;
 
-	private Expression[]			select		= null;
+	private Expression[]		select		= null;
 
-	private List<Pivot>				pivots		= new ArrayList<Pivot>();
+	private List<Pivot>			pivots		= new ArrayList<Pivot>();
 
-	private Condition				startWith	= null;
+	private Condition			startWith	= null;
 
-	private Condition				connectBy	= null;
+	private Condition			connectBy	= null;
 
-	private boolean					nocycle		= false;
+	private boolean				nocycle		= false;
 
-	private Expression[]			groupBy		= null;
+	private Expression[]		groupBy		= null;
 
-	private Condition				having		= null;
+	private Condition			having		= null;
 
-	private List<AbstractSetopr>	setopr		= new LinkedList<AbstractSetopr>();
+	private List<Setopr>		setopr		= new LinkedList<Setopr>();
 
-	private Expression[]			orderBy		= null;
+	private Expression[]		orderBy		= null;
 
-	private List<Item>				items		= new LinkedList<Item>();
+	private List<Item>			items		= new LinkedList<Item>();
 
-	private Map<String, Item>		itemsMap	= null;
+	private Map<String, Item>	itemsMap	= null;
 
-	private Expression				skip		= null;
+	private Expression			skip		= null;
 
-	private Expression				rows		= null;
+	private Expression			rows		= null;
 
-	private String					hint		= null;
+	private String				hint		= null;
 
-	private WithDefinition			with		= null;
+	private WithDefinition		with		= null;
 
-	private Set<String>				usingLabels	= null;
+	private Set<String>			usingLabels	= null;
 
 	@Override
 	public Reference $(String refer)
@@ -185,7 +184,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 		if (this.setopr != null)
 		{
-			clone.setopr = Utils.copy(this.setopr, new LinkedList<AbstractSetopr>());
+			clone.setopr = Utils.copy(this.setopr, new LinkedList<Setopr>());
 		}
 
 		if (this.orderBy != null)
@@ -262,6 +261,13 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public ComparisonCondition eq(Expression expr)
 	{
 		return provider().provideComparisonCondition().eq(this, expr);
+	}
+
+	@Override
+	public AbstractSelect except(Select select)
+	{
+		setopr().add(provider().provideSetopr().setopr(Setopr.EXCEPT, select));
+		return this;
 	}
 
 	/**
@@ -470,7 +476,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	@Override
 	public AbstractSelect intersect(Select select)
 	{
-		setopr().add(new AbstractSetopr().setopr(Setopr.INTERSECT, select));
+		setopr().add(provider().provideSetopr().setopr(Setopr.INTERSECT, select));
 		return this;
 	}
 
@@ -490,6 +496,11 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public NullCondition isNull()
 	{
 		return provider().provideNullCondition().isNull(this);
+	}
+
+	protected boolean isSetopr()
+	{
+		return this.setopr() != null && !this.setopr().isEmpty();
 	}
 
 	@Override
@@ -705,13 +716,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public Result minus(Expression operand)
 	{
 		return provider().provideMinusOperator().operate(this, operand);
-	}
-
-	@Override
-	public AbstractSelect minus(Select select)
-	{
-		setopr().add(new AbstractSetopr().setopr(Setopr.MINUS, select));
-		return this;
 	}
 
 	@Override
@@ -1136,7 +1140,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 			ups.put(Utils.getLabelOfExpression(item), item);
 		}
 
-		Map<String, Expression> ovs = new HashMap<String, Expression>();
+		Map<String, Expression> ovs = new LinkedHashMap<String, Expression>();
 		for (Expression expr : exprs)
 		{
 			for (String label : Utils.getLabelsOfExpression(expr))
@@ -1226,7 +1230,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
-	protected List<AbstractSetopr> setopr()
+	protected List<Setopr> setopr()
 	{
 		return setopr;
 	}
@@ -1251,17 +1255,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	{
 		this.startWith = startWith;
 		return this;
-	}
-
-	protected void textOfAbstractSetopr(StringBuilder buffer)
-	{
-		for (AbstractSetopr opr : setopr())
-		{
-			if (opr != null)
-			{
-				opr.toString(buffer);
-			}
-		}
 	}
 
 	protected void textOfConnectBy(StringBuilder buffer)
@@ -1387,6 +1380,28 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		}
 	}
 
+	protected void textOfSetopr(StringBuilder buffer)
+	{
+		for (Setopr opr : setopr())
+		{
+			if (opr != null)
+			{
+				opr.toString(buffer);
+			}
+		}
+	}
+
+	protected void textOfSetoprScoped(StringBuilder buffer)
+	{
+		for (Setopr opr : setopr())
+		{
+			if (opr != null)
+			{
+				opr.toStringScoped(buffer);
+			}
+		}
+	}
+
 	protected void textOfUnique(StringBuilder buffer)
 	{
 		if (distinct())
@@ -1430,10 +1445,8 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return toString(new StringBuilder()).toString();
 	}
 
-	@Override
-	public StringBuilder toString(StringBuilder buffer)
+	protected void toString(AbstractSelect select, StringBuilder buffer)
 	{
-		AbstractSelect select = prepare();
 		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfHint(buffer);
@@ -1445,8 +1458,23 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		select.textOfConnectBy(buffer);
 		select.textOfGroup(buffer);
 		select.textOfHaving(buffer);
-		select.textOfAbstractSetopr(buffer);
 		select.textOfOrder(buffer);
+	}
+
+	@Override
+	public StringBuilder toString(StringBuilder buffer)
+	{
+		AbstractSelect select = prepare();
+		if (select.isSetopr())
+		{
+			buffer.append('(');
+		}
+		this.toString(select, buffer);
+		if (select.isSetopr())
+		{
+			buffer.append(')');
+		}
+		select.textOfSetopr(buffer);
 		return buffer;
 	}
 
@@ -1483,10 +1511,8 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return buffer;
 	}
 
-	@Override
-	public StringBuilder toStringScoped(StringBuilder buffer)
+	protected void toStringScoped(AbstractSelect select, StringBuilder buffer)
 	{
-		AbstractSelect select = prepare();
 		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfHint(buffer);
@@ -1498,7 +1524,22 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		select.textOfConnectBy(buffer);
 		select.textOfGroup(buffer);
 		select.textOfHaving(buffer);
-		select.textOfAbstractSetopr(buffer);
+	}
+
+	@Override
+	public StringBuilder toStringScoped(StringBuilder buffer)
+	{
+		AbstractSelect select = prepare();
+		if (select.isSetopr())
+		{
+			buffer.append('(');
+		}
+		this.toStringScoped(select, buffer);
+		if (select.isSetopr())
+		{
+			buffer.append(')');
+		}
+		select.textOfSetoprScoped(buffer);
 		return buffer;
 	}
 
@@ -1508,10 +1549,8 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return Utils.outputAlias(this.provider(), this.toStringExpress(buffer), this);
 	}
 
-	@Override
-	public StringBuilder toStringSourceOfBody(StringBuilder buffer)
+	protected void toStringSourceOfBody(AbstractSelect select, StringBuilder buffer)
 	{
-		AbstractSelect select = prepare();
 		select.textOfHead(buffer);
 		select.textOfHint(buffer);
 		select.textOfUnique(buffer);
@@ -1522,8 +1561,23 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		select.textOfConnectBy(buffer);
 		select.textOfGroup(buffer);
 		select.textOfHaving(buffer);
-		select.textOfAbstractSetopr(buffer);
 		select.textOfOrder(buffer);
+	}
+
+	@Override
+	public StringBuilder toStringSourceOfBody(StringBuilder buffer)
+	{
+		AbstractSelect select = prepare();
+		if (select.isSetopr())
+		{
+			buffer.append('(');
+		}
+		this.toStringSourceOfBody(select, buffer);
+		if (select.isSetopr())
+		{
+			buffer.append(')');
+		}
+		select.textOfSetopr(buffer);
 		return buffer;
 	}
 
@@ -1586,14 +1640,14 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	@Override
 	public AbstractSelect union(Select select)
 	{
-		setopr().add(new AbstractSetopr().setopr(Setopr.UNION, select));
+		setopr().add(provider().provideSetopr().setopr(Setopr.UNION, select));
 		return this;
 	}
 
 	@Override
 	public AbstractSelect unionAll(Select select)
 	{
-		setopr().add(new AbstractSetopr().setopr(Setopr.UNION_ALL, select));
+		setopr().add(provider().provideSetopr().setopr(Setopr.UNION_ALL, select));
 		return this;
 	}
 

@@ -31,20 +31,26 @@ public class MariaSelect extends AbstractSelect
 	}
 
 	@Override
-	public StringBuilder toString(StringBuilder buffer)
+	protected void toString(AbstractSelect select, StringBuilder buffer)
 	{
-		super.toString(buffer);
+		super.toString(select, buffer);
 		this.textOfLimit(buffer);
 		this.textOfOffset(buffer);
-		return buffer;
 	}
 
 	@Override
-	public StringBuilder toStringScoped(StringBuilder buffer)
+	protected void toStringScoped(AbstractSelect select, StringBuilder buffer)
 	{
-		super.toStringScoped(buffer);
+		super.toStringScoped(select, buffer);
 		this.textOfLimit(buffer);
 		this.textOfOffset(buffer);
-		return buffer;
+	}
+
+	@Override
+	protected void toStringSourceOfBody(AbstractSelect select, StringBuilder buffer)
+	{
+		super.toStringSourceOfBody(select, buffer);
+		this.textOfLimit(buffer);
+		this.textOfOffset(buffer);
 	}
 }

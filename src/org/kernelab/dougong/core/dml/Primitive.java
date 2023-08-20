@@ -116,6 +116,13 @@ public interface Primitive extends Filterable, Joinable, Withsable
 	 */
 	public Select select(Expression... exprs);
 
+	/**
+	 * Create a Select with given expressions which will overwrite the source
+	 * items have the same corresponding labels.
+	 * 
+	 * @param exprs
+	 * @return
+	 */
 	public Select selectOver(Expression... exprs);
 
 	@Override

@@ -152,9 +152,9 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 
 	// //////////////////////////////////////////////////////
 
-	public Select intersect(Select select);
+	public Select except(Select select);
 
-	public Select minus(Select select);
+	public Select intersect(Select select);
 
 	public Select union(Select select);
 
