@@ -498,7 +498,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return provider().provideNullCondition().isNull(this);
 	}
 
-	protected boolean isSetopr()
+	public boolean isSetopr()
 	{
 		return this.setopr() != null && !this.setopr().isEmpty();
 	}

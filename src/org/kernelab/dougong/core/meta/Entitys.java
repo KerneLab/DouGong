@@ -24,6 +24,7 @@ import org.kernelab.basis.JSON;
 import org.kernelab.basis.Mapper;
 import org.kernelab.basis.Reducer;
 import org.kernelab.basis.Tools;
+import org.kernelab.basis.sql.Row.RowProjector;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.basis.sql.Sequel;
 import org.kernelab.dougong.SQL;
@@ -827,6 +828,11 @@ public abstract class Entitys
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static <T> RowProjector<T> getRowProjectorByModelMeta(Class<T> model)
+	{
+		return new RowProjector<T>(model, Utils.getFieldNameMapByMetaFully(model, null));
 	}
 
 	public static <T> EntityKey getUpdateKey(Entity entity, T object)

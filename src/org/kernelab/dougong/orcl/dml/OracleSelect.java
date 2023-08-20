@@ -7,12 +7,26 @@ import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.Setopr;
 import org.kernelab.dougong.core.dml.WithDefinition;
 import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class OracleSelect extends AbstractSelect
 {
-	protected static final String ROWNUM_ALIAS = "+Dou" + ((char) 31) + "Gong-Limit*Orcl/Row" + ((char) 30) + "Num|";
+	protected static final String	ROWNUM_ALIAS	= "+DouGong-Limit|Offset*RowNum/";
+
+	private boolean					forceOrder		= false;
+
+	protected boolean forceOrder()
+	{
+		return forceOrder;
+	}
+
+	protected OracleSelect forceOrder(boolean forceOrder)
+	{
+		this.forceOrder = forceOrder;
+		return this;
+	}
 
 	@Override
 	protected OracleSelect prepare()
@@ -23,7 +37,6 @@ public class OracleSelect extends AbstractSelect
 		if (rows != null || skip != null)
 		{
 			String rn = ROWNUM_ALIAS;
-			String col = '"' + rn + '"';
 			Item rownum = provider().provideStringItem("ROWNUM");
 
 			if (rows != null && skip != null)
@@ -31,12 +44,14 @@ public class OracleSelect extends AbstractSelect
 				rows = rows.plus(skip);
 			}
 
-			AbstractSelect inner = this.as("t");
+			OracleSelect inner = (OracleSelect) this.as("I");
 			inner.withs((List<WithDefinition>) null);
 			inner.limit(null, null);
 			inner.setopr().clear();
+			inner.forceOrder(true);
 
 			Select semi = provider().provideSelect().from(inner);
+			semi.alias("S");
 
 			if (rows != null)
 			{
@@ -48,6 +63,7 @@ public class OracleSelect extends AbstractSelect
 				OracleSelect res = (OracleSelect) semi.select(inner.all());
 				res.withs(this.withs());
 				res.setopr().addAll(this.setopr());
+				res.alias(this.alias());
 				return res;
 			}
 			else
@@ -55,18 +71,19 @@ public class OracleSelect extends AbstractSelect
 				semi.select(inner.all(), //
 						rownum.as(rn));
 
-				List<Expression> list = new LinkedList<Expression>();
+				LinkedList<Expression> list = new LinkedList<Expression>();
 
 				list.addAll(semi.referItems().values());
-				list.remove(list.size() - 1);
+				list.removeLast();
 
 				OracleSelect res = (OracleSelect) provider().provideSelect() //
 						.from(semi) //
-						.select(list.toArray(new Expression[list.size()])) //
-						.where(provider().provideStringItem(col).gt(skip));
+						.select(list.toArray(new Expression[0])) //
+						.where(semi.ref(rn).gt(skip));
 
 				res.withs(this.withs());
 				res.setopr().addAll(this.setopr());
+				res.alias(this.alias());
 
 				return res;
 			}
@@ -82,5 +99,57 @@ public class OracleSelect extends AbstractSelect
 	{
 		super.provider(provider);
 		return this;
+	}
+
+	@Override
+	protected void textOfSetopr(StringBuilder buffer)
+	{
+		for (Setopr opr : setopr())
+		{
+			if (opr != null)
+			{
+				opr.toStringScoped(buffer);
+			}
+		}
+	}
+
+	@Override
+	protected void toString(AbstractSelect select, StringBuilder buffer)
+	{
+		if (select.isSetopr())
+		{
+			super.toStringScoped(select, buffer);
+		}
+		else
+		{
+			super.toString(select, buffer);
+		}
+	}
+
+	@Override
+	protected void toStringScoped(AbstractSelect select, StringBuilder buffer)
+	{
+		super.toStringScoped(select, buffer);
+		OracleSelect s = select.to(OracleSelect.class);
+		if (s != null && s.forceOrder())
+		{
+			this.textOfOrder(buffer);
+		}
+	}
+
+	@Override
+	public StringBuilder toStringViewed(StringBuilder buffer)
+	{
+		if (this.with() != null)
+		{
+			return this.provider().provideOutputWithableAliased(buffer, this);
+		}
+		else
+		{
+			buffer.append('(');
+			this.toStringScoped(buffer);
+			buffer.append(')');
+			return this.provider().provideOutputAlias(buffer, this);
+		}
 	}
 }
