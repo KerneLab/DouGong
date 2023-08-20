@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.kernelab.basis.Pair;
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
@@ -54,6 +55,11 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		return this;
 	}
 
+	public Insertable into()
+	{
+		return target;
+	}
+
 	@Override
 	public AbstractInsert into(Insertable target)
 	{
@@ -74,6 +80,35 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		return this;
 	}
 
+	public List<Pair<Column, Expression>> pairs()
+	{
+		if (this.pairs == null && this.columns != null)
+		{
+			if (this.source() != null)
+			{
+				AbstractSelect sel = Tools.as(this.select(), AbstractSelect.class);
+				if (sel != null)
+				{
+					this.pairs = new LinkedList<Pair<Column, Expression>>();
+					Expression[] exprs = sel.selects();
+					for (int i = 0; i < this.columns.length; i++)
+					{
+						this.pairs.add(new Pair<Column, Expression>(this.columns[i], exprs[i]));
+					}
+				}
+			}
+			else if (this.values != null)
+			{
+				this.pairs = new LinkedList<Pair<Column, Expression>>();
+				for (int i = 0; i < this.columns.length; i++)
+				{
+					this.pairs.add(new Pair<Column, Expression>(this.columns[i], this.values[i]));
+				}
+			}
+		}
+		return pairs;
+	}
+
 	@Override
 	public AbstractInsert pairs(Expression... columnValuePairs)
 	{
@@ -87,6 +122,26 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		return this;
 	}
 
+	public Select select()
+	{
+		if (this.source() == null)
+		{
+			return null;
+		}
+		else if (this.source() instanceof Select)
+		{
+			return (Select) this.source();
+		}
+		else if (this.source() instanceof Subquery)
+		{
+			return ((Subquery) this.source()).select();
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	@Override
 	public AbstractInsert select(Source source)
 	{
@@ -94,6 +149,11 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		this.source = source;
 		this.pairs = null;
 		return this;
+	}
+
+	public Source source()
+	{
+		return source;
 	}
 
 	protected void textOfColumns(StringBuilder buffer)
@@ -128,24 +188,24 @@ public class AbstractInsert extends AbstractHintable implements Insert
 
 	protected void textOfSourceBody(StringBuilder buffer)
 	{
-		if (this.source != null)
+		if (this.source() != null)
 		{
-			this.source.toStringSourceOfBody(buffer);
+			this.source().toStringSourceOfBody(buffer);
 		}
 	}
 
 	protected void textOfSourceWith(StringBuilder buffer)
 	{
-		if (this.source != null)
+		if (this.source() != null)
 		{
-			this.source.toStringSourceOfWith(buffer);
+			this.source().toStringSourceOfWith(buffer);
 		}
 	}
 
 	protected void textOfTarget(StringBuilder buffer)
 	{
 		buffer.append(" INTO ");
-		target.toStringInsertable(buffer);
+		this.into().toStringInsertable(buffer);
 	}
 
 	protected void textOfValues(StringBuilder buffer)
@@ -190,7 +250,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		{
 			this.textOfValues(buffer);
 		}
-		else if (this.source != null)
+		else if (this.source() != null)
 		{
 			buffer.append(' ');
 			this.textOfSourceWith(buffer);
@@ -209,18 +269,18 @@ public class AbstractInsert extends AbstractHintable implements Insert
 			{
 				values[i++] = pair.value;
 			}
-			if (this.source == null)
+			if (this.source() == null)
 			{
 				this.values = values;
 			}
-			else if (this.source instanceof Select)
+			else if (this.source() instanceof Select)
 			{
-				Select sel = (Select) this.source;
+				Select sel = (Select) this.source();
 				this.source = sel.as(sel.alias()).select(values);
 			}
-			else if (this.source instanceof Subquery)
+			else if (this.source() instanceof Subquery)
 			{
-				this.source = provider().provideSelect().from((Subquery) this.source).select(values);
+				this.source = provider().provideSelect().from((Subquery) this.source()).select(values);
 			}
 			this.pairs = null;
 		}

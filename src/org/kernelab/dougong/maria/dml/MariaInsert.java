@@ -89,19 +89,19 @@ public class MariaInsert extends AbstractInsert
 
 	public StringBuilder toStringWithFirst(StringBuilder buffer)
 	{
-		if (this.source == null)
+		if (this.select() == null)
 		{
 			return this.toString(buffer);
 		}
 
 		Select sel = null;
-		if (this.source instanceof Select)
+		if (this.select() instanceof Select)
 		{
-			sel = (Select) this.source;
+			sel = (Select) this.select();
 		}
-		else if (this.source instanceof Subquery)
+		else if (this.select() instanceof Subquery)
 		{
-			sel = ((Subquery) this.source).select();
+			sel = ((Subquery) this.select()).select();
 		}
 
 		if (sel != null && sel.withs() != null && !sel.withs().isEmpty())
@@ -117,7 +117,7 @@ public class MariaInsert extends AbstractInsert
 		{
 			this.textOfValues(buffer);
 		}
-		else if (this.source != null)
+		else if (this.select() != null)
 		{
 			buffer.append(' ');
 			this.textOfSourceBody(buffer);
@@ -156,7 +156,7 @@ public class MariaInsert extends AbstractInsert
 
 	public MariaInsert updatesByValues()
 	{
-		Table table = Tools.as(this.target, Table.class);
+		Table table = Tools.as(this.into(), Table.class);
 
 		if (table == null)
 		{
