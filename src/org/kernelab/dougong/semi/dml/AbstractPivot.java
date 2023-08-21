@@ -56,6 +56,7 @@ public class AbstractPivot extends AbstractView implements Pivot
 		return this.provider().provideAllItems(this);
 	}
 
+	@SuppressWarnings("unchecked")
 	public AbstractPivot as(String alias)
 	{
 		return this.replicate().alias(alias);

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Scope;
+import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Item;
@@ -47,7 +48,8 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Subquery> T as(String alias)
+	@Override
+	public <T extends View> T as(String alias)
 	{
 		AbstractSubquery sq = this.clone();
 		if (sq != null)

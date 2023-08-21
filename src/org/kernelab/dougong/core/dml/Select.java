@@ -208,6 +208,7 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 	@Override
 	public Select alias(String alias);
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Select as(String alias);
 

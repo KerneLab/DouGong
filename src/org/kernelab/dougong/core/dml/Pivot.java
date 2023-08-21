@@ -6,6 +6,8 @@ import org.kernelab.dougong.core.View;
 
 public interface Pivot extends View
 {
+	@SuppressWarnings("unchecked")
+	@Override
 	public Pivot as(String alias);
 
 	public Function[] pivotAggs();

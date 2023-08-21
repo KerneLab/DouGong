@@ -140,6 +140,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public AbstractSelect as(String alias)
 	{

@@ -38,6 +38,14 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	public AllItems all();
 
 	/**
+	 * Get a clone instance of this View with given alias.
+	 * 
+	 * @param alias
+	 * @return
+	 */
+	public <V extends View> V as(String alias);
+
+	/**
 	 * To determine whether this view is joined using a certain column label.
 	 * 
 	 * @param label

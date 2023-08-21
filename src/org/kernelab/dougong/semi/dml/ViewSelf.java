@@ -15,7 +15,7 @@ public class ViewSelf extends AbstractView
 	public static class NotInstantiatedException extends RuntimeException
 	{
 		/**
-		 * 
+		 *  
 		 */
 		private static final long serialVersionUID = 5476557570029857363L;
 
@@ -33,6 +33,8 @@ public class ViewSelf extends AbstractView
 		return self().all();
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
 	public ViewSelf as(String alias)
 	{
 		try

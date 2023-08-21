@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
+import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
@@ -42,7 +43,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Table> T as(String alias)
+	public <T extends View> T as(String alias)
 	{
 		AbstractTable table = this.clone();
 		if (table != null)
