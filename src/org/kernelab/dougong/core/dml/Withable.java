@@ -1,6 +1,8 @@
 package org.kernelab.dougong.core.dml;
 
-public interface Withable extends Alias
+import org.kernelab.basis.Castable;
+
+public interface Withable extends Alias, Castable
 {
 	public StringBuilder toStringWith(StringBuilder buffer);
 

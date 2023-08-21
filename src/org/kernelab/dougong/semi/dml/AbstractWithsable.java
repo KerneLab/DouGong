@@ -51,6 +51,23 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 	}
 
 	@Override
+	public Withable findWith(String withName)
+	{
+		if (withName == null || this.with == null)
+		{
+			return null;
+		}
+		for (WithDefinition with : with)
+		{
+			if (withName.equals(with.name()))
+			{
+				return with.select();
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public boolean recursive()
 	{
 		return recursive;

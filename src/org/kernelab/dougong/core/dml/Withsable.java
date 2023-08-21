@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface Withsable
 {
+	public Withable findWith(String name);
+
 	public boolean recursive();
 
 	public Withsable recursive(boolean recursive);
