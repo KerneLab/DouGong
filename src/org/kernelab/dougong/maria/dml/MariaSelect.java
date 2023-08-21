@@ -41,9 +41,7 @@ public class MariaSelect extends AbstractSelect
 	@Override
 	protected void toStringScoped(AbstractSelect select, StringBuilder buffer)
 	{
-		super.toStringScoped(select, buffer);
-		this.textOfLimit(buffer);
-		this.textOfOffset(buffer);
+		this.toString(select, buffer);
 	}
 
 	@Override
