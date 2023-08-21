@@ -14,19 +14,19 @@ public class MariaSelect extends AbstractSelect
 
 	protected void textOfLimit(StringBuilder buffer)
 	{
-		if (rows() != null)
+		if (limit() != null)
 		{
 			buffer.append(" LIMIT ");
-			rows().toStringExpress(buffer);
+			limit().toStringExpress(buffer);
 		}
 	}
 
 	protected void textOfOffset(StringBuilder buffer)
 	{
-		if (skip() != null)
+		if (offset() != null)
 		{
 			buffer.append(" OFFSET ");
-			skip().toStringExpress(buffer);
+			offset().toStringExpress(buffer);
 		}
 	}
 

@@ -77,9 +77,9 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 	private Map<String, Item>	itemsMap	= null;
 
-	private Expression			skip		= null;
+	private Expression			offset		= null;
 
-	private Expression			rows		= null;
+	private Expression			limit		= null;
 
 	private String				hint		= null;
 
@@ -691,18 +691,27 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return provider().provideLikeCondition().like(this, pattern, escape);
 	}
 
-	@Override
-	public AbstractSelect limit(Expression rows)
+	/**
+	 * The expression which indicates the rows should be returned at most.<br />
+	 * Returns {@code null} which means not be specified.
+	 */
+	protected Expression limit()
 	{
-		this.rows = rows;
+		return limit;
+	}
+
+	@Override
+	public AbstractSelect limit(Expression limit)
+	{
+		this.limit = limit;
 		return this;
 	}
 
 	@Override
-	public AbstractSelect limit(Expression skip, Expression rows)
+	public AbstractSelect limit(Expression offset, Expression rows)
 	{
-		this.skip = skip;
-		this.rows = rows;
+		this.offset = offset;
+		this.limit = rows;
 		return this;
 	}
 
@@ -810,10 +819,20 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return (RegexpLikeCondition) provider().provideRegexpCondition().rLike(this, pattern).not();
 	}
 
-	@Override
-	public AbstractSelect offset(Expression skip)
+	/**
+	 * The expression which indicates the rows should be skipped in the result.
+	 * <br />
+	 * Returns {@code null} which means not be specified.
+	 */
+	protected Expression offset()
 	{
-		this.skip = skip;
+		return offset;
+	}
+
+	@Override
+	public AbstractSelect offset(Expression offset)
+	{
+		this.offset = offset;
 		return this;
 	}
 
@@ -1113,15 +1132,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return provider().provideRegexpCondition().rLike(this, pattern);
 	}
 
-	/**
-	 * The expression which indicates the rows should be returned at most.<br />
-	 * Returns {@code null} which means not be specified.
-	 */
-	protected Expression rows()
-	{
-		return rows;
-	}
-
 	@Override
 	public AbstractSelect select(Expression... exprs)
 	{
@@ -1233,16 +1243,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public List<Setopr> setopr()
 	{
 		return setopr;
-	}
-
-	/**
-	 * The expression which indicates the rows should be skipped in the result.
-	 * <br />
-	 * Returns {@code null} which means not be specified.
-	 */
-	protected Expression skip()
-	{
-		return skip;
 	}
 
 	protected Condition startWith()

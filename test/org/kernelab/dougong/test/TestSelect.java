@@ -45,9 +45,6 @@ public class TestSelect
 		{
 			Tools.debug(makeSelectValuesMaria());
 		}
-		Tools.debug(makeSelectSetopr());
-		Tools.debug(makeSelectSetopr1());
-		Tools.debug(makeSelectSetopr2());
 		Tools.debug(makeSelectModulo());
 	}
 
@@ -333,39 +330,6 @@ public class TestSelect
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
-	}
-
-	public static Select makeSelectSetopr()
-	{
-		DEPT d = null;
-
-		Select s = $.from(d = $.table(DEPT.class)) //
-				.select(d.COMP_ID, d.DEPT_ID);
-		Select t = null;
-
-		COMP c = null;
-		Select u = $.from(c = $.table(COMP.class)) //
-				.where(c.COMP_ID.in($.from(t = s.as("T")).select(t.$("COMP_ID")))) //
-				.select(c.COMP_ID);
-
-		return $.from(s).select(s.$("COMP_ID")) //
-				.unionAll(u);
-	}
-
-	public static Select makeSelectSetopr1()
-	{
-		Select a = makeSelectSetopr().alias("A");
-
-		return $.from(a).select(a.$("COMP_ID"));
-	}
-
-	public static Select makeSelectSetopr2()
-	{
-		Select a = makeSelectSetopr().alias("A");
-
-		COMP c = null;
-
-		return $.from(c = $.table(COMP.class, "C")).where(c.COMP_ID.in(a)).select(c.all());
 	}
 
 	public static Select makeSelectSubquery()

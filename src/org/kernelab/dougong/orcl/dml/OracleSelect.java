@@ -31,8 +31,8 @@ public class OracleSelect extends AbstractSelect
 	@Override
 	protected OracleSelect prepare()
 	{
-		Expression rows = this.rows();
-		Expression skip = this.skip();
+		Expression rows = this.limit();
+		Expression skip = this.offset();
 
 		if (rows != null || skip != null)
 		{
