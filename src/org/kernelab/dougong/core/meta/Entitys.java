@@ -422,9 +422,12 @@ public abstract class Entitys
 			params.put(Utils.getDataLabelFromField(pk.columns()[i].field()), pkVals[i]);
 		}
 
+		Expression one = sql.val(1);
+
 		Select select = sql.from(entity) //
 				.where(pk.queryCondition()) //
-				.select(sql.val(1));
+				.select(one) //
+				.limit(one);
 
 		return kit.exists(select.toString(), params);
 	}
@@ -453,9 +456,12 @@ public abstract class Entitys
 			return false;
 		}
 
+		Expression one = sql.val(1);
+
 		Select select = sql.from(entity) //
 				.where(key.queryCondition()) //
-				.select(sql.val(1));
+				.select(one) //
+				.limit(one);
 
 		Map<String, Object> params = mapColumnToLabelByMeta(key.mapValues(object));
 
