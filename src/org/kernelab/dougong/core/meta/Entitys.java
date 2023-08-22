@@ -341,6 +341,10 @@ public abstract class Entitys
 		Class<?> manyClass = meta.model();
 		final Entity manyEntity = getEntityFromModelClass(sql, manyClass);
 		ForeignKey fk = getForeignKey(meta.key(), meta.referred(), entity, manyEntity);
+		if (fk == null)
+		{
+			return;
+		}
 
 		PrimaryKey pk = null;
 		AbsoluteKey ak = null;
