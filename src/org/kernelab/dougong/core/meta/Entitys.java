@@ -193,7 +193,8 @@ public abstract class Entitys
 	/**
 	 * Delete the objects in referrer entity which match the foreign key values
 	 * from parent but the absolute key are beyond the correspond values in the
-	 * given children collection.
+	 * given children collection. If the absolute key is null then all the
+	 * objects on referrer side will be deleted in its entity.
 	 * 
 	 * @param kit
 	 * @param sql
@@ -211,38 +212,41 @@ public abstract class Entitys
 	{
 		Condition cond = fk.entity() == referrerEntity ? fk.queryCondition() : fk.reference().queryCondition();
 
-		final Column absCol = ak.columns()[0];
-		String absname = Utils.getDataLabelFromField(absCol.field());
-
-		Iterable<Object> absVals = Canal.of(children).map(new Mapper<Object, Object[]>()
-		{
-			@Override
-			public Object[] map(Object el)
-			{
-				return mapObjectToValues(el, absCol);
-			}
-		}).filter(new Filter<Object[]>()
-		{
-			@Override
-			public boolean filter(Object[] el) throws Exception
-			{
-				return el != null;
-			}
-		}).map(new Mapper<Object[], Object>()
-		{
-			@Override
-			public Object map(Object[] el) throws Exception
-			{
-				return el[0];
-			}
-		});
-
 		Map<String, Object> params = mapColumnToLabelByMeta(fk.mapValuesTo(parent, referrerEntity));
 
-		Condition beyondCond = fragmentInConditions(sql, absCol, false, absname, true, 1000, absVals, params);
-		if (beyondCond != null)
+		if (ak != null)
 		{
-			cond = sql.and(cond, beyondCond);
+			final Column absCol = ak.columns()[0];
+			String absname = Utils.getDataLabelFromField(absCol.field());
+
+			Iterable<Object> absVals = Canal.of(children).map(new Mapper<Object, Object[]>()
+			{
+				@Override
+				public Object[] map(Object el)
+				{
+					return mapObjectToValues(el, absCol);
+				}
+			}).filter(new Filter<Object[]>()
+			{
+				@Override
+				public boolean filter(Object[] el) throws Exception
+				{
+					return el != null;
+				}
+			}).map(new Mapper<Object[], Object>()
+			{
+				@Override
+				public Object map(Object[] el) throws Exception
+				{
+					return el[0];
+				}
+			});
+
+			Condition beyondCond = fragmentInConditions(sql, absCol, false, absname, true, 1000, absVals, params);
+			if (beyondCond != null)
+			{
+				cond = sql.and(cond, beyondCond);
+			}
 		}
 
 		Select select = sql.from(referrerEntity) //
@@ -278,6 +282,8 @@ public abstract class Entitys
 	{
 		Condition cond = fk.entity() == referrerEntity ? fk.queryCondition() : fk.reference().queryCondition();
 
+		Map<String, Object> params = mapColumnToLabelByMeta(fk.mapValuesTo(parent, referrerEntity));
+
 		final Column[] restCols = pk.excludeColumns(fk.columns());
 
 		String name = "_";
@@ -298,7 +304,6 @@ public abstract class Entitys
 			}
 		});
 
-		Map<String, Object> params = mapColumnToLabelByMeta(fk.mapValuesTo(parent, referrerEntity));
 		Condition beyondCond = fragmentInConditions(sql, beyondCols, false, name, true, 1000, restVals, params);
 		if (beyondCond != null)
 		{
@@ -332,11 +337,6 @@ public abstract class Entitys
 			}
 		}
 
-		if (many == null)
-		{
-			return;
-		}
-
 		OneToManyMeta meta = field.getAnnotation(OneToManyMeta.class);
 		Class<?> manyClass = meta.model();
 		final Entity manyEntity = getEntityFromModelClass(sql, manyClass);
@@ -344,7 +344,7 @@ public abstract class Entitys
 
 		PrimaryKey pk = null;
 		AbsoluteKey ak = null;
-		if (beyondOnly)
+		if (many != null && beyondOnly)
 		{
 			boolean hasChild = false;
 			for (Object o : many)
@@ -375,18 +375,9 @@ public abstract class Entitys
 		{
 			deleteObjectsBeyondPrimaryKey(kit, sql, parent, many, fk, pk, manyClass, manyEntity);
 		}
-		else if (ak != null)
-		{
-			deleteObjectsBeyondAbsoluteKey(kit, sql, parent, many, fk, ak, manyClass, manyEntity);
-		}
 		else
 		{
-			for (Object child : many)
-			{
-				deleteObjectCascade(kit, sql, child, manyEntity);
-				deleteObjectAlone(kit, sql, child, manyEntity);
-			}
-			deleteObjects(kit, sql, parent, fk, manyEntity);
+			deleteObjectsBeyondAbsoluteKey(kit, sql, parent, many, fk, ak, manyClass, manyEntity);
 		}
 	}
 
@@ -1822,11 +1813,6 @@ public abstract class Entitys
 		catch (Exception e)
 		{
 			throw new RuntimeException(e);
-		}
-
-		if (many == null)
-		{
-			return;
 		}
 
 		deleteOneToMany(kit, sql, parent, entity, field, true, many);
