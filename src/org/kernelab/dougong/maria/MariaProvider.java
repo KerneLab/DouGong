@@ -42,6 +42,7 @@ import org.kernelab.dougong.maria.dml.cond.MariaRegexpLikeCondition;
 import org.kernelab.dougong.maria.dml.opr.MariaCaseDecideExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaCaseSwitchExpression;
 import org.kernelab.dougong.maria.dml.opr.MariaJointOperator;
+import org.kernelab.dougong.maria.func.IFNULL;
 import org.kernelab.dougong.semi.AbstractProvider;
 
 public class MariaProvider extends AbstractProvider
@@ -153,14 +154,15 @@ public class MariaProvider extends AbstractProvider
 	@Override
 	public ComposableCondition provideIsEmptyCondition(Expression expr)
 	{
-		return this.provideLogicalCondition().and(expr.isNull().or(expr.eq(provideStringItem(provideTextLiteral("")))));
+		Expression empty = provideStringItem(provideTextLiteral(""));
+		return this.provideLogicalCondition().and(provideFunction(IFNULL.class).call(expr, empty).eq(empty));
 	}
 
 	@Override
 	public ComposableCondition provideIsNotEmptyCondition(Expression expr)
 	{
-		return this.provideLogicalCondition()
-				.and(expr.isNotNull().and(expr.ne(provideStringItem(provideTextLiteral("")))));
+		Expression empty = provideStringItem(provideTextLiteral(""));
+		return this.provideLogicalCondition().and(provideFunction(IFNULL.class).call(expr, empty).ne(empty));
 	}
 
 	@Override
