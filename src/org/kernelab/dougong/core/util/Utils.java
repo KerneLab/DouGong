@@ -283,7 +283,7 @@ public class Utils
 
 	public static Map<String, Object> getFieldNameMapByMeta(Class<?> cls, Map<String, Object> map, Set<String> labels)
 	{
-		if (cls == null || cls == Object.class || labels == null || labels.size() == 0)
+		if (cls == null || cls == Object.class || (labels != null && labels.size() == 0))
 		{
 			return map;
 		}
@@ -295,39 +295,17 @@ public class Utils
 
 		map = getFieldNameMapByMeta(cls.getSuperclass(), map, labels);
 
-		DataMeta meta = null;
-
-		for (Field field : cls.getDeclaredFields())
-		{
-			if ((meta = field.getAnnotation(DataMeta.class)) != null //
-					&& labels.contains(meta.alias()))
-			{
-				map.put(field.getName(), getDataLabelFromField(field));
-			}
-		}
-
-		return map;
-	}
-
-	public static Map<String, Object> getFieldNameMapByMetaFully(Class<?> cls, Map<String, Object> map)
-	{
-		if (cls == null || cls == Object.class)
-		{
-			return map;
-		}
-
-		if (map == null)
-		{
-			map = new LinkedHashMap<String, Object>();
-		}
-
-		map = getFieldNameMapByMetaFully(cls.getSuperclass(), map);
+		String label = null;
 
 		for (Field field : cls.getDeclaredFields())
 		{
 			if (field.getAnnotation(DataMeta.class) != null)
 			{
-				map.put(field.getName(), getDataLabelFromField(field));
+				label = getDataLabelFromField(field);
+				if (labels == null || labels.contains(label))
+				{
+					map.put(field.getName(), label);
+				}
 			}
 		}
 

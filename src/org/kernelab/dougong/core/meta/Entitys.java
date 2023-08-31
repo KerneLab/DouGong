@@ -753,6 +753,16 @@ public abstract class Entitys
 		return Utils.getDataLabelFromField(column.field());
 	}
 
+	public static Set<String> getLabelsOfSelect(Select select)
+	{
+		Set<String> labels = new LinkedHashSet<String>();
+		for (Item item : select.items())
+		{
+			labels.add(item.label());
+		}
+		return labels;
+	}
+
 	protected static Field getManyToOneField(Class<?> manyClass, Class<?> oneClass)
 	{
 		ManyToOneMeta meta = null;
@@ -833,7 +843,7 @@ public abstract class Entitys
 
 	public static <T> RowProjector<T> getRowProjectorByModelMeta(Class<T> model)
 	{
-		return new RowProjector<T>(model, Utils.getFieldNameMapByMetaFully(model, null));
+		return new RowProjector<T>(model, Utils.getFieldNameMapByMeta(model, null, null));
 	}
 
 	public static <T> EntityKey getUpdateKey(Entity entity, T object)
@@ -2030,7 +2040,7 @@ public abstract class Entitys
 		Sequel s = kit.execute(select.toString(), params);
 		try
 		{
-			return s.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+			return s.getRow(model, Utils.getFieldNameMapByMeta(model, null, getLabelsOfSelect(select)));
 		}
 		finally
 		{
@@ -2044,7 +2054,7 @@ public abstract class Entitys
 		Sequel s = kit.execute(select.toString(), params);
 		try
 		{
-			return s.getRow(model, Utils.getFieldNameMapByMetaFully(model, null));
+			return s.getRow(model, Utils.getFieldNameMapByMeta(model, null, getLabelsOfSelect(select)));
 		}
 		finally
 		{
@@ -2079,7 +2089,7 @@ public abstract class Entitys
 			final String scene, JSON params) throws SQLException
 	{
 		return kit.execute(select.toString(), params) //
-				.getRows(model, Utils.getFieldNameMapByMetaFully(model, null)) //
+				.getRows(model, Utils.getFieldNameMapByMeta(model, null, getLabelsOfSelect(select))) //
 				.map(new Mapper<T, T>()
 				{
 					@Override
@@ -2108,7 +2118,7 @@ public abstract class Entitys
 			final String scene, Map<String, Object> params) throws SQLException
 	{
 		return kit.execute(select.toString(), params) //
-				.getRows(model, Utils.getFieldNameMapByMetaFully(model, null)) //
+				.getRows(model, Utils.getFieldNameMapByMeta(model, null, getLabelsOfSelect(select))) //
 				.map(new Mapper<T, T>()
 				{
 					@Override
