@@ -24,12 +24,14 @@ import org.kernelab.basis.Reducer;
 import org.kernelab.basis.Relation;
 import org.kernelab.basis.Tools;
 import org.kernelab.basis.WrappedHashMap;
+import org.kernelab.basis.sql.Row;
 import org.kernelab.basis.sql.SQLKit;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.ddl.PrimaryKey;
 import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
@@ -43,6 +45,7 @@ import org.kernelab.dougong.semi.AbstractColumn;
 import org.kernelab.dougong.semi.ddl.AbstractForeignKey;
 import org.kernelab.dougong.semi.dml.AbstractDelete;
 import org.kernelab.dougong.semi.dml.AbstractInsert;
+import org.kernelab.dougong.semi.dml.AbstractSelect;
 import org.kernelab.dougong.semi.dml.AbstractUpdate;
 
 public class MetaContext
@@ -87,14 +90,15 @@ public class MetaContext
 		{
 			return;
 		}
+
 		MetaContext meta = getContext();
 		if (meta == null)
 		{
 			return;
 		}
-		for (Tuple3<ForeignKey, String, Boolean> check : meta.checkForeignKey(delete))
+		else
 		{
-			check(kit, params, check);
+			meta.onDelete(kit, delete, params);
 		}
 	}
 
@@ -104,14 +108,15 @@ public class MetaContext
 		{
 			return;
 		}
+
 		MetaContext meta = getContext();
 		if (meta == null)
 		{
 			return;
 		}
-		for (Tuple3<ForeignKey, String, Boolean> check : meta.checkForeignKey(insert))
+		else
 		{
-			check(kit, params, check);
+			meta.onInsert(kit, insert, params);
 		}
 	}
 
@@ -143,14 +148,15 @@ public class MetaContext
 		{
 			return;
 		}
+
 		MetaContext meta = getContext();
 		if (meta == null)
 		{
 			return;
 		}
-		for (Tuple3<ForeignKey, String, Boolean> check : meta.checkForeignKey(update))
+		else
 		{
-			check(kit, params, check);
+			meta.onUpdate(kit, update, params);
 		}
 	}
 
@@ -349,18 +355,79 @@ public class MetaContext
 	/**
 	 * <pre>
 	 * Suppose A(a1,a2) -> B(b1,b2)
-	 * Check delete on B for every foreign key: 
+	 * Delete cascade for every row:
+	 *   select pk1,pk2,pk3 from A where a1=b1 and a2=b2
+	 * Delete on B for every cascade foreign key: 
+	 *   delete from A where (a1,a2,..) in (select b1,b2,.. from B where delete rules)
+	 * </pre>
+	 * 
+	 * @param delete
+	 * @return The delete and cascade rules.
+	 */
+	@SuppressWarnings("unchecked")
+	protected Iterable<Tuple3<ForeignKey, Tuple2<String, Delete>, Delete>> cascadeForeignKey(Delete delete)
+	{
+		AbstractDelete del = Tools.as(delete, AbstractDelete.class);
+
+		if (del == null || !(del.from() instanceof Table))
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		final Table table = (Table) del.from();
+		final Condition rule = del.where();
+
+		return Canal.of(getForeignKeysByReference(table)).filter(new Filter<ForeignKey>()
+		{
+			@Override
+			public boolean filter(ForeignKey el) throws Exception
+			{
+				return el.onDelete() == ForeignKeyMeta.CASCADE;
+			}
+		}).map(new Mapper<ForeignKey, Tuple3<ForeignKey, Tuple2<String, Delete>, Delete>>()
+		{
+			@Override
+			public Tuple3<ForeignKey, Tuple2<String, Delete>, Delete> map(ForeignKey fk) throws Exception
+			{
+				Scope scope = $.from(table).where(rule).select(fk.reference().getColumnsOf(table));
+				Delete del = $.from(fk.entity()) //
+						.where($.list(fk.columns()).in(scope)) //
+						.delete();
+				PrimaryKey pk = fk.entity().primaryKey();
+				Tuple2<String, Delete> cas = null;
+				if (pk != null)
+				{
+					String s = $.from(fk.entity()) //
+							.where($.list(fk.columns()).in(scope)) //
+							.select(pk.columns()) //
+							.to(AbstractSelect.class) //
+							.fillAliasByMeta() //
+							.toString();
+					Delete d = $.from(fk.entity()) //
+							.where(fk.queryCondition()) //
+							.delete();
+					cas = Tuple.of(s, d);
+				}
+				return Tuple.of(fk, cas, del);
+			}
+		});
+	}
+
+	/**
+	 * <pre>
+	 * Suppose A(a1,a2) -> B(b1,b2)
+	 * Check delete on B for every restrict foreign key: 
 	 *   select 1 from A where (a1,a2,..) in (select b1,b2,.. from B where delete rules) limit 1
 	 * </pre>
 	 * 
 	 * @param delete
 	 * @return The check rules, the last data in tuple indicates whether the
 	 *         check is triggerred by referrer side. In this case, the last data
-	 *         is false, so that, if the select result is not empty,
+	 *         is false, so that, if the select result was not empty,
 	 *         ExistingReferenceException should be thrown.
 	 */
 	@SuppressWarnings("unchecked")
-	public Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Delete delete)
+	protected Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Delete delete)
 	{
 		AbstractDelete del = Tools.as(delete, AbstractDelete.class);
 
@@ -373,36 +440,42 @@ public class MetaContext
 		final Condition rule = del.where();
 		final Expression one = $.v(1);
 
-		return Canal.of(getForeignKeysByReference(table))
-				.map(new Mapper<ForeignKey, Tuple3<ForeignKey, String, Boolean>>()
-				{
-					@Override
-					public Tuple3<ForeignKey, String, Boolean> map(ForeignKey fk) throws Exception
-					{
-						Scope scope = $.from(table).where(rule).select(fk.reference().getColumnsOf(table));
-						return Tuple.of(fk, $.from(fk.entity()) //
-								.where($.list(fk.columns()).in(scope)) //
-								.select(one) //
-								.limit(one).toString(), false);
-					}
-				});
+		return Canal.of(getForeignKeysByReference(table)).filter(new Filter<ForeignKey>()
+		{
+			@Override
+			public boolean filter(ForeignKey el) throws Exception
+			{
+				return el.onDelete() == ForeignKeyMeta.RESTRICT;
+			}
+		}).map(new Mapper<ForeignKey, Tuple3<ForeignKey, String, Boolean>>()
+		{
+			@Override
+			public Tuple3<ForeignKey, String, Boolean> map(ForeignKey fk) throws Exception
+			{
+				Scope scope = $.from(table).where(rule).select(fk.reference().getColumnsOf(table));
+				return Tuple.of(fk, $.from(fk.entity()) //
+						.where($.list(fk.columns()).in(scope)) //
+						.select(one) //
+						.limit(one).toString(), false);
+			}
+		});
 	}
 
 	/**
 	 * <pre>
 	 * Suppose A(a1,a2) -> B(b1,b2)
-	 * Check insert on A for every foreign key: 
+	 * Check insert on A for every restrict foreign key: 
 	 *   select 1 from (select aa1,aa2,.. from B limit 1 | select aa1,aa2,.. from ...) x where not exists (select 1 from B y where y.b1=x.aa1 and y.b2=x.aa2 ..) limit 1
 	 * </pre>
 	 * 
 	 * @param insert
 	 * @return The check rules, the last data in tuple indicates whether the
 	 *         check is triggerred by referrer side. In this case, the last data
-	 *         is true, so that, if the select result is not empty,
+	 *         is true, so that, if the select result was not empty,
 	 *         MissingReferenceException should be thrown.
 	 */
 	@SuppressWarnings("unchecked")
-	public Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Insert insert)
+	protected Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Insert insert)
 	{
 		final AbstractInsert ins = Tools.as(insert, AbstractInsert.class);
 
@@ -514,22 +587,22 @@ public class MetaContext
 	/**
 	 * <pre>
 	 * Suppose A(a1,a2) -> B(b1,b2)
-	 * Check update on A for foreign keys contains updating columns:
+	 * Check update on A for restrict foreign keys contains updating columns:
 	 *   select 1 from (select aa1,aa2 from A where (((a1 is null and aa1 is not null) or a1!=aa1) or ((a2 is null and aa2 is not null) or a2!=aa2) ..) and update rules) x where not exists (select 1 from B y where y.b1=x.aa1 and y.b2=x.aa2 ..) limit 1
-	 * Check update on B for foreign keys contains updating columns:
+	 * Check update on B for restrict foreign keys contains updating columns:
 	 *   select 1 from A where (a1,a2,..) in (select b1,b2,.. from B where (b1!=bb1 or b2!=bb2 ..) and update rules) limit 1
 	 * </pre>
 	 * 
 	 * @param update
 	 * @return The check rules, the last data in tuple indicates whether the
 	 *         check is triggerred by referrer side. Which means if the last
-	 *         data is true but the select result is not empty,
+	 *         data is true but the select result was not empty,
 	 *         MissingReferenceException should be thrown; If the last data is
-	 *         false but the select result is not empty,
+	 *         false but the select result was not empty,
 	 *         ExistingReferenceException should be thrown.
 	 */
 	@SuppressWarnings("unchecked")
-	public Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Update update)
+	protected Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Update update)
 	{
 		AbstractUpdate upd = Tools.as(update, AbstractUpdate.class);
 
@@ -810,28 +883,28 @@ public class MetaContext
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<ForeignKey> getForeignKeysByReference(Column column)
+	protected Set<ForeignKey> getForeignKeysByReference(Column column)
 	{
 		Set<ForeignKey> set = this.getColumnOnForeignKeyReference().get(column);
 		return set == null ? Collections.EMPTY_SET : set;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<ForeignKey> getForeignKeysByReference(Table table)
+	protected Set<ForeignKey> getForeignKeysByReference(Table table)
 	{
 		Set<ForeignKey> set = this.getTableOnForeignKeyReference().get(table);
 		return set == null ? Collections.EMPTY_SET : set;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<ForeignKey> getForeignKeysByReferrer(Column column)
+	protected Set<ForeignKey> getForeignKeysByReferrer(Column column)
 	{
 		Set<ForeignKey> set = this.getColumnOnForeignKeyReferrer().get(column);
 		return set == null ? Collections.EMPTY_SET : set;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<ForeignKey> getForeignKeysByReferrer(Table table)
+	protected Set<ForeignKey> getForeignKeysByReferrer(Table table)
 	{
 		Set<ForeignKey> set = this.getTableOnForeignKeyReferrer().get(table);
 		return set == null ? Collections.EMPTY_SET : set;
@@ -850,6 +923,41 @@ public class MetaContext
 	protected Map<Table, Set<ForeignKey>> getTableOnForeignKeyReferrer()
 	{
 		return tableOnForeignKeyReferrer;
+	}
+
+	protected void onDelete(SQLKit kit, Delete delete, Map<String, Object> params) throws SQLException
+	{
+		for (Tuple3<ForeignKey, String, Boolean> check : this.checkForeignKey(delete))
+		{
+			check(kit, params, check);
+		}
+		for (Tuple3<ForeignKey, Tuple2<String, Delete>, Delete> rules : this.cascadeForeignKey(delete))
+		{
+			if (rules._2 != null)
+			{
+				for (Row row : kit.execute(rules._2._1, params).getRows(Row.class))
+				{
+					check(kit, rules._2._2, row);
+				}
+			}
+			kit.update(rules._3.toString(), params);
+		}
+	}
+
+	protected void onInsert(SQLKit kit, Insert insert, Map<String, Object> params) throws SQLException
+	{
+		for (Tuple3<ForeignKey, String, Boolean> check : this.checkForeignKey(insert))
+		{
+			check(kit, params, check);
+		}
+	}
+
+	protected void onUpdate(SQLKit kit, Update update, Map<String, Object> params) throws SQLException
+	{
+		for (Tuple3<ForeignKey, String, Boolean> check : this.checkForeignKey(update))
+		{
+			check(kit, params, check);
+		}
 	}
 
 	protected void setColumnOnForeignKeyReference(Map<Column, Set<ForeignKey>> columnOnForeignKeyReference)
