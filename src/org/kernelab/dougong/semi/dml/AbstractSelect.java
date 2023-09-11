@@ -1448,7 +1448,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 	protected void toString(AbstractSelect select, StringBuilder buffer)
 	{
-		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfHint(buffer);
 		select.textOfUnique(buffer);
@@ -1466,6 +1465,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		AbstractSelect select = prepare();
+		select.textOfWith(buffer);
 		if (select.isSetopr())
 		{
 			buffer.append('(');
@@ -1514,7 +1514,6 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 	protected void toStringScoped(AbstractSelect select, StringBuilder buffer)
 	{
-		select.textOfWith(buffer);
 		select.textOfHead(buffer);
 		select.textOfHint(buffer);
 		select.textOfUnique(buffer);
@@ -1531,6 +1530,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public StringBuilder toStringScoped(StringBuilder buffer)
 	{
 		AbstractSelect select = prepare();
+		select.textOfWith(buffer);
 		if (select.isSetopr())
 		{
 			buffer.append('(');
