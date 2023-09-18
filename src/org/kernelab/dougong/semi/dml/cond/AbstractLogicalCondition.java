@@ -14,7 +14,7 @@ public class AbstractLogicalCondition extends AbstractCondition implements Logic
 	@Override
 	public AbstractLogicalCondition and(boolean when, Condition cond)
 	{
-		if (when && cond != null)
+		if (when && cond != null && !cond.isEmpty())
 		{
 			if (!this.conds.isEmpty())
 			{
@@ -45,7 +45,7 @@ public class AbstractLogicalCondition extends AbstractCondition implements Logic
 	@Override
 	public AbstractLogicalCondition not(boolean when, Condition cond)
 	{
-		if (when && cond != null)
+		if (when && cond != null && !cond.isEmpty())
 		{
 			this.conds.add(NOT);
 			this.conds.add(cond);
@@ -62,7 +62,7 @@ public class AbstractLogicalCondition extends AbstractCondition implements Logic
 	@Override
 	public AbstractLogicalCondition or(boolean when, Condition cond)
 	{
-		if (when && cond != null)
+		if (when && cond != null && !cond.isEmpty())
 		{
 			if (!this.conds.isEmpty())
 			{

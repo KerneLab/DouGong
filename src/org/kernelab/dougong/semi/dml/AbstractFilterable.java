@@ -10,11 +10,13 @@ public abstract class AbstractFilterable extends AbstractWithsable implements Fi
 
 	private Condition	where	= null;
 
+	@Override
 	public View from()
 	{
 		return from;
 	}
 
+	@Override
 	public AbstractFilterable from(View from)
 	{
 		this.from = from;
@@ -29,18 +31,20 @@ public abstract class AbstractFilterable extends AbstractWithsable implements Fi
 
 	protected void textOfWhere(StringBuilder buffer)
 	{
-		if (where() != null && !where.isEmpty())
+		if (where() != null && !where().isEmpty())
 		{
 			buffer.append(" WHERE ");
 			where().toString(buffer);
 		}
 	}
 
+	@Override
 	public Condition where()
 	{
 		return where;
 	}
 
+	@Override
 	public AbstractFilterable where(Condition cond)
 	{
 		this.where = cond;

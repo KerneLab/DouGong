@@ -8,7 +8,7 @@ public abstract class AbstractComposableCondition extends AbstractCondition impl
 	@Override
 	public ComposableCondition and(boolean when, Condition cond)
 	{
-		if (when)
+		if (when && cond != null && !cond.isEmpty())
 		{
 			return provider().provideLogicalCondition().set(this).and(true, cond);
 		}
@@ -33,7 +33,7 @@ public abstract class AbstractComposableCondition extends AbstractCondition impl
 	@Override
 	public ComposableCondition or(boolean when, Condition cond)
 	{
-		if (when)
+		if (when && cond != null && !cond.isEmpty())
 		{
 			return provider().provideLogicalCondition().set(this).or(true, cond);
 		}

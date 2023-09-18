@@ -113,7 +113,14 @@ public class SQL implements Serializable
 
 	public ComposableCondition cond(ComposableCondition c)
 	{
-		return provider().provideLogicalCondition().and(c);
+		if (c == null || c.isEmpty())
+		{
+			return c;
+		}
+		else
+		{
+			return provider().provideLogicalCondition().and(c);
+		}
 	}
 
 	public Expression escape()
