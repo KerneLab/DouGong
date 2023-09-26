@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -81,6 +82,10 @@ public class MetaContext
 																	};
 
 	protected static final ReentrantReadWriteLock	CONTEXT_LOCK	= new ReentrantReadWriteLock(true);
+
+	protected static final String					OLD_PREFIX		= "_o_#";
+
+	protected static final String					NEW_PREFIX		= "_n_#";
 
 	protected static MetaContext					CONTEXT			= null;
 
@@ -374,8 +379,14 @@ public class MetaContext
 			return Collections.EMPTY_SET;
 		}
 
-		final Table table = (Table) del.from();
-		final Condition rule = del.where();
+		Table table = (Table) del.from();
+		if (table.primaryKey() == null)
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		Condition rule = del.where();
+		final Scope scope = $.from(table).where(rule).select(table.primaryKey().columns());
 
 		return Canal.of(getForeignKeysByReference(table)).filter(new Filter<ForeignKey>()
 		{
@@ -389,8 +400,7 @@ public class MetaContext
 			@Override
 			public Tuple3<ForeignKey, Tuple2<String, Delete>, Delete> map(ForeignKey fk) throws Exception
 			{
-				Scope scope = $.from(table).where(rule).select(fk.reference().getColumnsOf(table));
-				Delete del = $.from(fk.entity()) //
+				Delete dl = $.from(fk.entity()) //
 						.where($.list(fk.columns()).in(scope)) //
 						.delete();
 				PrimaryKey pk = fk.entity().primaryKey();
@@ -403,12 +413,209 @@ public class MetaContext
 							.to(AbstractSelect.class) //
 							.fillAliasByMeta() //
 							.toString();
-					Delete d = $.from(fk.entity()) //
-							.where(fk.queryCondition()) //
+					Delete d = $.from(pk.entity()) //
+							.where(pk.queryCondition()) //
 							.delete();
 					cas = Tuple.of(s, d);
 				}
-				return Tuple.of(fk, cas, del);
+				return Tuple.of(fk, cas, dl);
+			}
+		});
+	}
+
+	protected Tuple3<Collection<Row>, Set<Integer>, Integer> cascadeForeignKey(SQLKit kit, Update update,
+			Map<String, Object> params) throws SQLException
+	{
+		AbstractUpdate upd = Tools.as(update, AbstractUpdate.class);
+
+		if (upd == null || !(upd.from() instanceof Table))
+		{
+			return null;
+		}
+
+		Table table = (Table) upd.from();
+		if (table.primaryKey() == null)
+		{
+			return null;
+		}
+
+		Condition rule = upd.where();
+		final Map<Column, Expression> valMap = new WrappedHashMap<Column, Expression>(COLUMN_EQUAL);
+		for (Relation<Column, Expression> r : upd.sets())
+		{
+			valMap.put(r.getKey(), r.getValue());
+		}
+
+		Column[] cols = table.primaryKey().columns();
+		Canal<?, Tuple2<Column, Expression>> sets = Canal.of(cols).map(new Mapper<Column, Tuple2<Column, Expression>>()
+		{
+			@Override
+			public Tuple2<Column, Expression> map(Column c) throws Exception
+			{
+				return Tuple.of(c, valMap.get(c));
+			}
+		});
+
+		/*
+		 * Generate the updating columns' condition which must changing values.
+		 * It's no need to update if nothing change on the key columns.
+		 */
+		ComposableCondition cond = sets.filter(new Filter<Tuple2<Column, Expression>>()
+		{
+			@Override
+			public boolean filter(Tuple2<Column, Expression> el) throws Exception
+			{
+				return el._2 != null;
+			}
+		}).map(new Mapper<Tuple2<Column, Expression>, ComposableCondition>()
+		{
+			@Override
+			public ComposableCondition map(Tuple2<Column, Expression> el) throws Exception
+			{
+				return el._1.ne(el._2);
+			}
+		}).reduce(new Reducer<ComposableCondition, ComposableCondition>()
+		{
+			@Override
+			public ComposableCondition reduce(ComposableCondition a, ComposableCondition b) throws Exception
+			{
+				return a.or(b);
+			}
+		}).orNull();
+
+		if (rule != null && cond != null)
+		{
+			cond = $.and(rule, cond);
+		}
+
+		if (cond == null)
+		{
+			return null;
+		}
+
+		Canal<?, Tuple2<Integer, Expression>> pkset = sets.zipWithIndex()
+				.filter(new Filter<Tuple2<Tuple2<Column, Expression>, Integer>>()
+				{
+					@Override
+					public boolean filter(Tuple2<Tuple2<Column, Expression>, Integer> el) throws Exception
+					{
+						return el._1._2 != null;
+					}
+				}).map(new Mapper<Tuple2<Tuple2<Column, Expression>, Integer>, Tuple2<Integer, Expression>>()
+				{
+					@Override
+					public Tuple2<Integer, Expression> map(Tuple2<Tuple2<Column, Expression>, Integer> el)
+							throws Exception
+					{
+						return Tuple.of(el._2, el._1._2);
+					}
+				});
+
+		Expression[] sels = sets.zipWithIndex()
+				.map(new Mapper<Tuple2<Tuple2<Column, Expression>, Integer>, Expression>()
+				{
+					@Override
+					public Expression map(Tuple2<Tuple2<Column, Expression>, Integer> el) throws Exception
+					{
+						return el._1._1.as(OLD_PREFIX + el._2);
+					}
+				}).union(pkset.map(new Mapper<Tuple2<Integer, Expression>, Expression>()
+				{
+					@Override
+					public Expression map(Tuple2<Integer, Expression> el) throws Exception
+					{
+						Item i = Tools.as(el._2, Item.class);
+						return i.as(NEW_PREFIX + el._1);
+					}
+				})).collect().toArray(new Expression[0]);
+
+		Set<Integer> upks = (Set<Integer>) pkset.map(new Mapper<Tuple2<Integer, Expression>, Integer>()
+		{
+			@Override
+			public Integer map(Tuple2<Integer, Expression> el) throws Exception
+			{
+				return el._1;
+			}
+		}).collect(new LinkedHashSet<Integer>());
+
+		String changes = $.from(table) //
+				.where(cond) //
+				.select(sels) //
+				.toString();
+
+		return Tuple.of(kit.execute(changes, params).getRows(Row.class).collect(), upks, cols.length);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Iterable<Update> cascadeForeignKey(Update update, final Set<Integer> upks, final int fkcols)
+	{
+		AbstractUpdate upd = Tools.as(update, AbstractUpdate.class);
+
+		if (upd == null || !(upd.from() instanceof Table))
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		Table table = (Table) upd.from();
+		if (table.primaryKey() == null)
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		return Canal.of(upd.sets()).flatMap(new Mapper<Relation<Column, Expression>, Iterable<ForeignKey>>()
+		{
+			@Override
+			public Iterable<ForeignKey> map(Relation<Column, Expression> el) throws Exception
+			{
+				return getForeignKeysByReference(el.getKey());
+			}
+		}).filter(new Filter<ForeignKey>()
+		{
+			@Override
+			public boolean filter(ForeignKey el) throws Exception
+			{
+				return el.onUpdate() == ForeignKeyMeta.CASCADE;
+			}
+		}).distinct().map(new Mapper<ForeignKey, Update>()
+		{
+			@Override
+			public Update map(ForeignKey fk) throws Exception
+			{
+				Condition cond = Canal.of(fk.columns()).limit(fkcols).zipWithIndex()
+						.map(new Mapper<Tuple2<Column, Integer>, ComposableCondition>()
+						{
+							@Override
+							public ComposableCondition map(Tuple2<Column, Integer> el) throws Exception
+							{
+								return el._1.eq($.param(OLD_PREFIX + el._2));
+							}
+						}).reduce(new Reducer<ComposableCondition, ComposableCondition>()
+						{
+							@Override
+							public ComposableCondition reduce(ComposableCondition a, ComposableCondition b)
+									throws Exception
+							{
+								return a.and(b);
+							}
+						}).orNull();
+
+				Expression[] sets = Canal.of(fk.columns()).zipWithIndex().filter(new Filter<Tuple2<Column, Integer>>()
+				{
+					@Override
+					public boolean filter(Tuple2<Column, Integer> el) throws Exception
+					{
+						return upks.contains(el._2);
+					}
+				}).flatMap(new Mapper<Tuple2<Column, Integer>, Iterable<Expression>>()
+				{
+					@Override
+					public Iterable<Expression> map(Tuple2<Column, Integer> el) throws Exception
+					{
+						return Canal.of(new Expression[] { el._1, $.param(NEW_PREFIX + el._2) });
+					}
+				}).collect().toArray(new Expression[0]);
+
+				return $.from(fk.entity()).where(cond).update().sets(sets);
 			}
 		});
 	}
@@ -436,8 +643,14 @@ public class MetaContext
 			return Collections.EMPTY_SET;
 		}
 
-		final Table table = (Table) del.from();
-		final Condition rule = del.where();
+		Table table = (Table) del.from();
+		if (table.primaryKey() == null)
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		Condition rule = del.where();
+		final Scope scope = $.from(table).where(rule).select(table.primaryKey().columns());
 		final Expression one = $.v(1);
 
 		return Canal.of(getForeignKeysByReference(table)).filter(new Filter<ForeignKey>()
@@ -452,7 +665,6 @@ public class MetaContext
 			@Override
 			public Tuple3<ForeignKey, String, Boolean> map(ForeignKey fk) throws Exception
 			{
-				Scope scope = $.from(table).where(rule).select(fk.reference().getColumnsOf(table));
 				return Tuple.of(fk, $.from(fk.entity()) //
 						.where($.list(fk.columns()).in(scope)) //
 						.select(one) //
@@ -594,6 +806,7 @@ public class MetaContext
 	 * </pre>
 	 * 
 	 * @param update
+	 * @params restrictOnly
 	 * @return The check rules, the last data in tuple indicates whether the
 	 *         check is triggerred by referrer side. Which means if the last
 	 *         data is true but the select result was not empty,
@@ -602,7 +815,7 @@ public class MetaContext
 	 *         ExistingReferenceException should be thrown.
 	 */
 	@SuppressWarnings("unchecked")
-	protected Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Update update)
+	protected Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Update update, final boolean restrictOnly)
 	{
 		AbstractUpdate upd = Tools.as(update, AbstractUpdate.class);
 
@@ -611,7 +824,6 @@ public class MetaContext
 			return Collections.EMPTY_SET;
 		}
 
-		final Table table = (Table) upd.from();
 		final Condition rule = upd.where();
 		final Expression one = $.v(1);
 		final Map<Column, Expression> valMap = new WrappedHashMap<Column, Expression>(COLUMN_EQUAL);
@@ -620,13 +832,102 @@ public class MetaContext
 			valMap.put(r.getKey(), r.getValue());
 		}
 
-		// Check update target as referrer in some foreign key
+		Canal<?, Tuple3<ForeignKey, String, Boolean>> checksRefn = null;
+
+		final Table table = (Table) upd.from();
+		if (table.primaryKey() == null)
+		{
+			checksRefn = Canal.none();
+		}
+		else
+		{
+			Column[] cols = table.primaryKey().columns();
+
+			/*
+			 * Generate the updating columns' condition which must changing
+			 * values. It's no need to check if nothing change on the key
+			 * columns.
+			 */
+			ComposableCondition cond = Canal.of(cols).map(new Mapper<Column, ComposableCondition>()
+			{
+				@Override
+				public ComposableCondition map(Column c) throws Exception
+				{
+					Expression e = valMap.get(c);
+					return e == null ? null : c.ne(e);
+				}
+			}).filter(new Filter<ComposableCondition>()
+			{
+				@Override
+				public boolean filter(ComposableCondition el) throws Exception
+				{
+					return el != null;
+				}
+			}).reduce(new Reducer<ComposableCondition, ComposableCondition>()
+			{
+				@Override
+				public ComposableCondition reduce(ComposableCondition a, ComposableCondition b) throws Exception
+				{
+					return a.or(b);
+				}
+			}).orNull();
+
+			if (rule != null && cond != null)
+			{
+				cond = $.and(rule, cond);
+			}
+
+			final Scope scope = cond != null ? $.from(table).where(cond).select(cols) : null;
+
+			if (scope == null)
+			{
+				checksRefn = Canal.none();
+			}
+			else
+			{
+				checksRefn = Canal.of(upd.sets())
+						.flatMap(new Mapper<Relation<Column, Expression>, Iterable<ForeignKey>>()
+						{
+							@Override
+							public Iterable<ForeignKey> map(Relation<Column, Expression> el) throws Exception
+							{
+								return getForeignKeysByReference(el.getKey());
+							}
+						}).filter(new Filter<ForeignKey>()
+						{
+							@Override
+							public boolean filter(ForeignKey el) throws Exception
+							{
+								return el.onUpdate() == ForeignKeyMeta.RESTRICT;
+							}
+						}).distinct().map(new Mapper<ForeignKey, Tuple3<ForeignKey, String, Boolean>>()
+						{
+							@Override
+							public Tuple3<ForeignKey, String, Boolean> map(ForeignKey fk) throws Exception
+							{
+								return Tuple.of(fk, $.from(fk.entity()) //
+										.where($.list(fk.columns()).in(scope)) //
+										.select(one) //
+										.limit(one).toString(), false);
+							}
+						});
+			}
+		}
+
+		// Check update target as referrer
 		return Canal.of(upd.sets()).flatMap(new Mapper<Relation<Column, Expression>, Iterable<ForeignKey>>()
 		{
 			@Override
 			public Iterable<ForeignKey> map(Relation<Column, Expression> el) throws Exception
 			{
 				return getForeignKeysByReferrer(el.getKey());
+			}
+		}).filter(new Filter<ForeignKey>()
+		{
+			@Override
+			public boolean filter(ForeignKey el) throws Exception
+			{
+				return !restrictOnly || el.onUpdate() == ForeignKeyMeta.RESTRICT;
 			}
 		}).distinct().map(new Mapper<ForeignKey, Tuple3<ForeignKey, String, Boolean>>()
 		{
@@ -641,8 +942,10 @@ public class MetaContext
 							{
 								Expression e = valMap.get(c);
 								if (e == null)
-								{ // Check the column even if it was not being
-									// updated.
+								{ /*
+									 * Check the column even if it was not being
+									 * updated.
+									 */
 									return Tuple.of(c, null);
 								}
 								else
@@ -738,64 +1041,39 @@ public class MetaContext
 						.select(one) //
 						.limit(one).toString(), true);
 			}
-		}).union( // Check update target as reference in some foreign key
-				Canal.of(upd.sets()).flatMap(new Mapper<Relation<Column, Expression>, Iterable<ForeignKey>>()
-				{
-					@Override
-					public Iterable<ForeignKey> map(Relation<Column, Expression> el) throws Exception
-					{
-						return getForeignKeysByReference(el.getKey());
-					}
-				}).distinct().map(new Mapper<ForeignKey, Tuple3<ForeignKey, String, Boolean>>()
-				{
-					@Override
-					public Tuple3<ForeignKey, String, Boolean> map(ForeignKey fk) throws Exception
-					{
-						Column[] cols = fk.reference().getColumnsOf(table);
-						/*
-						 * Generate the updating columns' condition which must
-						 * changing values. It's no need to check if nothing
-						 * change on the key columns.
-						 */
-						ComposableCondition cond = Canal.of(cols).map(new Mapper<Column, ComposableCondition>()
-						{
-							@Override
-							public ComposableCondition map(Column c) throws Exception
-							{
-								Expression e = valMap.get(c);
-								return e == null ? null : c.ne(e);
-							}
-						}).filter(new Filter<ComposableCondition>()
-						{
-							@Override
-							public boolean filter(ComposableCondition el) throws Exception
-							{
-								return el != null;
-							}
-						}).reduce(new Reducer<ComposableCondition, ComposableCondition>()
-						{
-							@Override
-							public ComposableCondition reduce(ComposableCondition a, ComposableCondition b)
-									throws Exception
-							{
-								return a.or(b);
-							}
-						}).get();
+		}).union(checksRefn) // Check update target as reference
+		;
+	}
 
-						if (rule != null)
-						{
-							cond = $.and(rule, cond);
-						}
+	protected void checkUpdate(SQLKit kit, Update update, Map<String, Object> params, boolean restrictOnly)
+			throws SQLException
+	{
+		for (Tuple3<ForeignKey, String, Boolean> check : this.checkForeignKey(update, restrictOnly))
+		{
+			check(kit, params, check);
+		}
+	}
 
-						Scope scope = $.from(table).where(cond).select(cols);
-
-						return Tuple.of(fk, $.from(fk.entity()) //
-								.where($.list(fk.columns()).in(scope)) //
-								.select(one) //
-								.limit(one).toString(), false);
-					}
-				}) //
-		);
+	protected void checkUpdateCascade(SQLKit kit, Update update, Map<String, Object> params,
+			Tuple3<Collection<Row>, Set<Integer>, Integer> mapks) throws SQLException
+	{
+		if (mapks == null)
+		{
+			mapks = cascadeForeignKey(kit, update, params);
+		}
+		if (mapks == null)
+		{
+			return;
+		}
+		for (Update upd : this.cascadeForeignKey(update, mapks._2, mapks._3))
+		{
+			String u = upd.toString();
+			for (Row row : mapks._1)
+			{
+				onUpdate(kit, upd, row, mapks);
+				kit.update(u, row);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -954,10 +1232,14 @@ public class MetaContext
 
 	protected void onUpdate(SQLKit kit, Update update, Map<String, Object> params) throws SQLException
 	{
-		for (Tuple3<ForeignKey, String, Boolean> check : this.checkForeignKey(update))
-		{
-			check(kit, params, check);
-		}
+		onUpdate(kit, update, params, null);
+	}
+
+	protected void onUpdate(SQLKit kit, Update update, Map<String, Object> params,
+			Tuple3<Collection<Row>, Set<Integer>, Integer> mapks) throws SQLException
+	{
+		checkUpdate(kit, update, params, mapks != null);
+		checkUpdateCascade(kit, update, params, mapks);
 	}
 
 	protected void setColumnOnForeignKeyReference(Map<Column, Set<ForeignKey>> columnOnForeignKeyReference)

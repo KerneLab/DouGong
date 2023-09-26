@@ -121,6 +121,7 @@ public class AbstractFunction extends AbstractSortable implements Function
 		return this;
 	}
 
+	@Override
 	protected AbstractFunction newInstance()
 	{
 		try
