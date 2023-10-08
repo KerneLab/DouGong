@@ -14,6 +14,11 @@ import java.lang.annotation.Target;
 public @interface ForeignKeyMeta
 {
 	/**
+	 * Set the referrer's data to {@code null}.
+	 */
+	public static final byte	SET_NULL	= 0;
+
+	/**
 	 * Deny the changes on reference.
 	 */
 	public static final byte	RESTRICT	= 1;

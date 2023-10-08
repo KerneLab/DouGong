@@ -373,7 +373,6 @@ public class MetaContext
 	protected Iterable<Tuple3<ForeignKey, Tuple2<String, Delete>, Delete>> cascadeForeignKey(Delete delete)
 	{
 		AbstractDelete del = Tools.as(delete, AbstractDelete.class);
-
 		if (del == null || !(del.from() instanceof Table))
 		{
 			return Collections.EMPTY_SET;
@@ -427,7 +426,6 @@ public class MetaContext
 			Map<String, Object> params) throws SQLException
 	{
 		AbstractUpdate upd = Tools.as(update, AbstractUpdate.class);
-
 		if (upd == null || !(upd.from() instanceof Table))
 		{
 			return null;
@@ -550,7 +548,6 @@ public class MetaContext
 	protected Iterable<Update> cascadeForeignKey(Update update, final Set<Integer> upks, final int fkcols)
 	{
 		AbstractUpdate upd = Tools.as(update, AbstractUpdate.class);
-
 		if (upd == null || !(upd.from() instanceof Table))
 		{
 			return Collections.EMPTY_SET;
@@ -637,7 +634,6 @@ public class MetaContext
 	protected Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Delete delete)
 	{
 		AbstractDelete del = Tools.as(delete, AbstractDelete.class);
-
 		if (del == null || !(del.from() instanceof Table))
 		{
 			return Collections.EMPTY_SET;
@@ -690,7 +686,6 @@ public class MetaContext
 	protected Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Insert insert)
 	{
 		final AbstractInsert ins = Tools.as(insert, AbstractInsert.class);
-
 		if (ins == null || !(ins.into() instanceof Table))
 		{
 			return Collections.EMPTY_SET;
@@ -818,7 +813,6 @@ public class MetaContext
 	protected Iterable<Tuple3<ForeignKey, String, Boolean>> checkForeignKey(Update update, final boolean restrictOnly)
 	{
 		AbstractUpdate upd = Tools.as(update, AbstractUpdate.class);
-
 		if (upd == null || !(upd.from() instanceof Table))
 		{
 			return Collections.EMPTY_SET;
@@ -1052,6 +1046,11 @@ public class MetaContext
 		{
 			check(kit, params, check);
 		}
+		for (Update upd : this.setNullForeignKey(update))
+		{
+			check(kit, upd, params);
+			kit.update(upd.toString(), params);
+		}
 	}
 
 	protected void checkUpdateCascade(SQLKit kit, Update update, Map<String, Object> params,
@@ -1209,6 +1208,11 @@ public class MetaContext
 		{
 			check(kit, params, check);
 		}
+		for (Tuple2<ForeignKey, Update> sets : this.setNullForeignKey(delete))
+		{
+			check(kit, sets._2, params);
+			kit.update(sets._2.toString(), params);
+		}
 		for (Tuple3<ForeignKey, Tuple2<String, Delete>, Delete> rules : this.cascadeForeignKey(delete))
 		{
 			if (rules._2 != null)
@@ -1250,6 +1254,126 @@ public class MetaContext
 	protected void setColumnOnForeignKeyReferrer(Map<Column, Set<ForeignKey>> columnOnForeignKeyReferrer)
 	{
 		this.columnOnForeignKeyReferrer = columnOnForeignKeyReferrer;
+	}
+
+	/**
+	 * <pre>
+	 * Suppose A(a1,a2) -> B(b1,b2)
+	 * Set a1,a2 to null for every row:
+	 *   update A set a1=null,a2=null,.. where (a1,a2,..) in (select b1,b2,.. from B where delete rules)
+	 * </pre>
+	 * 
+	 * @param delete
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected Iterable<Tuple2<ForeignKey, Update>> setNullForeignKey(Delete delete)
+	{
+		AbstractDelete del = Tools.as(delete, AbstractDelete.class);
+		if (del == null || !(del.from() instanceof Table))
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		Table table = (Table) del.from();
+		if (table.primaryKey() == null)
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		Condition rule = del.where();
+		final Scope scope = $.from(table).where(rule).select(table.primaryKey().columns());
+		final Expression NULL = $.Null();
+
+		return Canal.of(getForeignKeysByReference(table)).filter(new Filter<ForeignKey>()
+		{
+			@Override
+			public boolean filter(ForeignKey el) throws Exception
+			{
+				return el.onDelete() == ForeignKeyMeta.SET_NULL;
+			}
+		}).map(new Mapper<ForeignKey, Tuple2<ForeignKey, Update>>()
+		{
+			@Override
+			public Tuple2<ForeignKey, Update> map(ForeignKey fk) throws Exception
+			{
+				Expression[] setNulls = Canal.of(fk.columns()).flatMap(new Mapper<Column, Iterable<Expression>>()
+				{
+					@Override
+					public Iterable<Expression> map(Column el) throws Exception
+					{
+						return Canal.of(new Expression[] { el, NULL });
+					}
+				}).collect().toArray(new Expression[0]);
+
+				return Tuple.of(fk, $.from(fk.entity()).where($.list(fk.columns()).in(scope)).update().sets(setNulls));
+			}
+		});
+	}
+
+	/**
+	 * <pre>
+	 * Suppose A(a1,a2) -> B(b1,b2)
+	 * Set a1,a2 to null for every row:
+	 *   update A set a1=null,a2=null,.. where (a1,a2,..) in (select b1,b2,.. from B where update rules)
+	 * </pre>
+	 * 
+	 * @param update
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected Iterable<Update> setNullForeignKey(Update update)
+	{
+		AbstractUpdate upd = Tools.as(update, AbstractUpdate.class);
+		if (upd == null || !(upd.from() instanceof Table))
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		Table table = (Table) upd.from();
+		if (table.primaryKey() == null)
+		{
+			return Collections.EMPTY_SET;
+		}
+
+		Condition rule = upd.where();
+		final Scope scope = $.from(table).where(rule).select(table.primaryKey().columns());
+		final Expression NULL = $.Null();
+
+		return Canal.of(upd.sets()).flatMap(new Mapper<Relation<Column, Expression>, Iterable<ForeignKey>>()
+		{
+			@Override
+			public Iterable<ForeignKey> map(Relation<Column, Expression> el) throws Exception
+			{
+				return getForeignKeysByReference(el.getKey());
+			}
+		}).filter(new Filter<ForeignKey>()
+		{
+			@Override
+			public boolean filter(ForeignKey el) throws Exception
+			{
+				return el.onUpdate() == ForeignKeyMeta.SET_NULL;
+			}
+		}).distinct().map(new Mapper<ForeignKey, Update>()
+		{
+			@Override
+			public Update map(ForeignKey fk) throws Exception
+			{
+				Expression[] setNulls = Canal.of(fk.columns()).flatMap(new Mapper<Column, Iterable<Expression>>()
+				{
+					@Override
+					public Iterable<Expression> map(Column el) throws Exception
+					{
+						return Canal.of(new Expression[] { el, NULL });
+					}
+				}).collect().toArray(new Expression[0]);
+
+				return $.from(fk.entity()) //
+						.where($.list(fk.columns()).in(scope)) //
+						.update() //
+						.sets(setNulls);
+			}
+		});
 	}
 
 	protected void setTableForeignKeyMethods(Map<Class<? extends Table>, Set<Method>> tableForeignKeyMethods)
