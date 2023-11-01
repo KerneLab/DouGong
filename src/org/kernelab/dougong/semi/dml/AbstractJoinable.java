@@ -9,6 +9,7 @@ import org.kernelab.dougong.core.dml.Condition;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Join;
 import org.kernelab.dougong.core.dml.Joinable;
+import org.kernelab.dougong.core.dml.Primitive;
 import org.kernelab.dougong.core.util.Utils;
 
 public class AbstractJoinable extends AbstractFilterable implements Joinable
@@ -407,5 +408,14 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 			buffer.append(' ');
 			join.toString(buffer);
 		}
+	}
+
+	public Primitive toPrimitive()
+	{
+		Primitive p = this.provider().providePrimitive();
+		p.recursive(this.recursive()).withs(this.withs());
+		p.from(this.from()).joins(this.joins());
+		p.where(this.where());
+		return p;
 	}
 }

@@ -20,7 +20,7 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 
 	private String	hint;
 
-	protected Table[] delete()
+	public Table[] delete()
 	{
 		return this.targets;
 	}
