@@ -35,6 +35,13 @@ public abstract class AbstractComparisonCondition extends AbstractComposableCond
 	}
 
 	@Override
+	public AbstractComparisonCondition eqns(Expression a, Expression b)
+	{
+		this.compType = EQUALS_NULL_SAFE;
+		return this.set(a, b);
+	}
+
+	@Override
 	public AbstractComparisonCondition ge(Expression a, Expression b)
 	{
 		this.compType = GREATER_EQUALS;
