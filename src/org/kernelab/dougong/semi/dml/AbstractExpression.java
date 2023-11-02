@@ -38,6 +38,12 @@ public abstract class AbstractExpression extends AbstractCastable implements Exp
 	}
 
 	@Override
+	public ComparisonCondition eqns(Expression expr)
+	{
+		return provider().provideComparisonCondition().eqns(this, expr);
+	}
+
+	@Override
 	public ComparisonCondition ge(Expression expr)
 	{
 		return provider().provideComparisonCondition().ge(this, expr);

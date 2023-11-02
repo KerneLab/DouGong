@@ -95,6 +95,12 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	}
 
 	@Override
+	public ComparisonCondition eqns(Expression expr)
+	{
+		return provider().provideComparisonCondition().eqns(this, expr);
+	}
+
+	@Override
 	public ComparisonCondition ge(Expression expr)
 	{
 		return provider().provideComparisonCondition().eq(this, expr);

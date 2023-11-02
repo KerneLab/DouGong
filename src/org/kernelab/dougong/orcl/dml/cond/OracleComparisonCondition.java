@@ -89,6 +89,10 @@ public class OracleComparisonCondition extends AbstractComparisonCondition
 			{
 				l = lefts.get(i);
 				r = rights.get(i);
+				if (i > 0)
+				{
+					buffer.append(" AND ");
+				}
 				buffer.append('(');
 				l.toStringExpress(buffer);
 				buffer.append(EQUALS);

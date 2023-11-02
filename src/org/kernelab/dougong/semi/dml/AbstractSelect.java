@@ -265,6 +265,12 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	}
 
 	@Override
+	public ComparisonCondition eqns(Expression expr)
+	{
+		return provider().provideComparisonCondition().eqns(this, expr);
+	}
+
+	@Override
 	public AbstractSelect except(Select select)
 	{
 		setopr().add(provider().provideSetopr().setopr(Setopr.EXCEPT, select));

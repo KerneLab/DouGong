@@ -48,6 +48,12 @@ public abstract class AbstractAllItems implements AllItems
 	}
 
 	@Override
+	public ComparisonCondition eqns(Expression expr)
+	{
+		return null;
+	}
+
+	@Override
 	public ComparisonCondition ge(Expression expr)
 	{
 		return null;

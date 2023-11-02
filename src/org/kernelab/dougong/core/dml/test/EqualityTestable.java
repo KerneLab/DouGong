@@ -7,5 +7,7 @@ public interface EqualityTestable
 {
 	public ComparisonCondition eq(Expression expr);
 
+	public ComparisonCondition eqns(Expression expr);
+
 	public ComparisonCondition ne(Expression expr);
 }
