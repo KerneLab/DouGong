@@ -66,33 +66,57 @@ public abstract class AbstractJoin implements Join
 		return direct;
 	}
 
-	protected Join former()
+	public AbstractJoin direct(byte direct)
+	{
+		this.direct = direct;
+		return this;
+	}
+
+	public Join former()
 	{
 		return former;
+	}
+
+	public AbstractJoin former(Join former)
+	{
+		this.former = former;
+		return this;
 	}
 
 	@Override
 	public AbstractJoin join(View leading, Join former, boolean natural, byte direct, byte type, View view,
 			String alias)
 	{
-		this.leading = leading;
-		this.former = former;
-		this.natural = natural;
-		this.direct = direct;
-		this.type = type;
-		this.view = view.alias(alias);
+		this.leading(leading);
+		this.former(former);
+		this.natural(natural);
+		this.direct(direct);
+		this.type(type);
+		this.view(view.alias(alias));
 		return this;
 	}
 
-	protected View leading()
+	public View leading()
 	{
 		return leading;
+	}
+
+	public AbstractJoin leading(View leading)
+	{
+		this.leading = leading;
+		return this;
 	}
 
 	@Override
 	public boolean natural()
 	{
 		return natural;
+	}
+
+	public AbstractJoin natural(boolean natural)
+	{
+		this.natural = natural;
+		return this;
 	}
 
 	@Override
@@ -187,6 +211,12 @@ public abstract class AbstractJoin implements Join
 		return type;
 	}
 
+	public AbstractJoin type(byte type)
+	{
+		this.type = type;
+		return this;
+	}
+
 	@Override
 	public Item[] using()
 	{
@@ -200,49 +230,50 @@ public abstract class AbstractJoin implements Join
 		{
 			this.using = items;
 			this.on = null;
+		}
 
-			if (!this.natural())
+		if (!this.natural())
+		{
+			if (items != null && items.length > 0)
 			{
-				if (items != null && items.length > 0)
-				{
-					Set<String> labels = new LinkedHashSet<String>();
+				Set<String> labels = new LinkedHashSet<String>();
 
-					for (Item item : items)
-					{
-						labels.add(item.label());
-					}
-
-					this.spread(labels.toArray(new String[0]));
-				}
-			}
-			else
-			{
-				Set<String> formerCols = new HashSet<String>();
-
-				if (former() != null)
+				for (Item item : items)
 				{
-					((AbstractJoin) former()).collectLabelsRecursive(formerCols);
-				}
-				else if (leading() != null)
-				{
-					for (Item it : leading().items())
-					{
-						collectLabels(formerCols, it);
-					}
+					labels.add(item.label());
 				}
 
-				Set<String> naturing = new LinkedHashSet<String>();
-				for (Item it : this.view().items())
-				{
-					if (formerCols.contains(it.label()))
-					{
-						naturing.add(it.label());
-					}
-				}
-
-				this.spread(naturing.toArray(new String[0]));
+				this.spread(labels.toArray(new String[0]));
 			}
 		}
+		else
+		{
+			Set<String> formerCols = new HashSet<String>();
+
+			if (former() != null)
+			{
+				((AbstractJoin) former()).collectLabelsRecursive(formerCols);
+			}
+			else if (leading() != null)
+			{
+				for (Item it : leading().items())
+				{
+					collectLabels(formerCols, it);
+				}
+			}
+
+			Set<String> naturing = new LinkedHashSet<String>();
+			for (Item it : this.view().items())
+			{
+				if (formerCols.contains(it.label()))
+				{
+					naturing.add(it.label());
+				}
+			}
+
+			this.spread(naturing.toArray(new String[0]));
+		}
+
 		return this;
 	}
 
