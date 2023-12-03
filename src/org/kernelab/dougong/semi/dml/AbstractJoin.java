@@ -22,7 +22,7 @@ public abstract class AbstractJoin implements Join
 
 	private byte		type;
 
-	private View		view; 
+	private View		view;
 
 	private Condition	on;
 
@@ -104,8 +104,7 @@ public abstract class AbstractJoin implements Join
 	@Override
 	public Join on(Condition condition)
 	{
-		if (this.on() == null && this.using() == null //
-				&& condition != null)
+		if (condition != null)
 		{
 			this.on = condition;
 			this.using = null;
@@ -197,55 +196,53 @@ public abstract class AbstractJoin implements Join
 	@Override
 	public Join using(Item... items)
 	{
-		if (this.on() == null && this.using() == null //
-				&& items != null && items.length > 0)
+		if (items != null && items.length > 0)
 		{
 			this.using = items;
 			this.on = null;
-		}
 
-		if (!this.natural())
-		{
-			if (items != null && items.length > 0)
+			if (!this.natural())
 			{
-				Set<String> labels = new LinkedHashSet<String>();
-
-				for (Item item : items)
+				if (items != null && items.length > 0)
 				{
-					labels.add(item.label());
-				}
+					Set<String> labels = new LinkedHashSet<String>();
 
-				this.spread(labels.toArray(new String[0]));
-			}
-		}
-		else
-		{
-			Set<String> formerCols = new HashSet<String>();
+					for (Item item : items)
+					{
+						labels.add(item.label());
+					}
 
-			if (former() != null)
-			{
-				((AbstractJoin) former()).collectLabelsRecursive(formerCols);
-			}
-			else if (leading() != null)
-			{
-				for (Item it : leading().items())
-				{
-					collectLabels(formerCols, it);
+					this.spread(labels.toArray(new String[0]));
 				}
 			}
-
-			Set<String> naturing = new LinkedHashSet<String>();
-			for (Item it : this.view().items())
+			else
 			{
-				if (formerCols.contains(it.label()))
+				Set<String> formerCols = new HashSet<String>();
+
+				if (former() != null)
 				{
-					naturing.add(it.label());
+					((AbstractJoin) former()).collectLabelsRecursive(formerCols);
 				}
+				else if (leading() != null)
+				{
+					for (Item it : leading().items())
+					{
+						collectLabels(formerCols, it);
+					}
+				}
+
+				Set<String> naturing = new LinkedHashSet<String>();
+				for (Item it : this.view().items())
+				{
+					if (formerCols.contains(it.label()))
+					{
+						naturing.add(it.label());
+					}
+				}
+
+				this.spread(naturing.toArray(new String[0]));
 			}
-
-			this.spread(naturing.toArray(new String[0]));
 		}
-
 		return this;
 	}
 
@@ -253,6 +250,12 @@ public abstract class AbstractJoin implements Join
 	public View view()
 	{
 		return view;
+	}
+
+	public AbstractJoin view(View view)
+	{
+		this.view = view;
+		return this;
 	}
 
 	@Override

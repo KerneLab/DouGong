@@ -277,14 +277,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
-	/**
-	 * Fill the vacancy aliases of each selected Column object with its
-	 * {@link Field#getName()} if the NameMeta's name was specified but
-	 * different to its field name. All those unsatisfied items will be skipped
-	 * in this filling.
-	 * 
-	 * @return this Select object
-	 */
+	@Override
 	public AbstractSelect fillAliasByField()
 	{
 		Column column = null;
@@ -308,13 +301,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
-	/**
-	 * Fill the vacancy aliases of each selected Column object with
-	 * {@link org.kernelab.dougong.core.meta.DataMeta#alias()}. All those
-	 * unsatisfied items will be skipped in this filling.
-	 * 
-	 * @return this Select object
-	 */
+	@Override
 	public AbstractSelect fillAliasByMeta()
 	{
 		Column column = null;

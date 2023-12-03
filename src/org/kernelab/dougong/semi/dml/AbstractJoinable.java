@@ -124,7 +124,7 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 		return this;
 	}
 
-	protected List<View> froms()
+	public List<View> froms()
 	{
 		return froms;
 	}

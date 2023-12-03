@@ -1,5 +1,6 @@
 package org.kernelab.dougong.core.dml;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.kernelab.dougong.core.Column;
@@ -228,4 +229,23 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 	// //////////////////////////////////////////////////////
 
 	public <T extends Subquery> T to(T subquery);
+
+	/**
+	 * Fill the vacancy aliases of each selected Column object with its
+	 * {@link Field#getName()} if the NameMeta's name was specified but
+	 * different to its field name. All those unsatisfied items will be skipped
+	 * in this filling.
+	 * 
+	 * @return this Select object
+	 */
+	public Select fillAliasByField();
+
+	/**
+	 * Fill the vacancy aliases of each selected Column object with
+	 * {@link org.kernelab.dougong.core.meta.DataMeta#alias()}. All those
+	 * unsatisfied items will be skipped in this filling.
+	 * 
+	 * @return this Select object
+	 */
+	public Select fillAliasByMeta();
 }
