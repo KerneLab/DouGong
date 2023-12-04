@@ -228,7 +228,7 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 		return reset();
 	}
 
-	protected List<Join> joins()
+	public List<Join> joins()
 	{
 		return joins;
 	}
@@ -414,7 +414,11 @@ public class AbstractJoinable extends AbstractFilterable implements Joinable
 	{
 		Primitive p = this.provider().providePrimitive();
 		p.recursive(this.recursive()).withs(this.withs());
-		p.from(this.from()).joins(this.joins());
+		for (View from : this.froms())
+		{
+			p.from(from);
+		}
+		p.joins(this.joins());
 		p.where(this.where());
 		return p;
 	}
