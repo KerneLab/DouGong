@@ -1,8 +1,9 @@
 package org.kernelab.dougong.core;
 
 import org.kernelab.dougong.core.dml.Insertable;
+import org.kernelab.dougong.core.dml.Label;
 
-public interface Table extends Named, View, Entity, Member, Partitioned, Insertable
+public interface Table extends Named, Label, View, Entity, Member, Partitioned, Insertable
 {
 	@Override
 	public Table alias(String alias);

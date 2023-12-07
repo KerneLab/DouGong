@@ -121,6 +121,12 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	}
 
 	@Override
+	public String label()
+	{
+		return alias() != null ? alias() : name();
+	}
+
+	@Override
 	public String name()
 	{
 		return name;
