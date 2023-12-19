@@ -221,6 +221,29 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		return hashCode(this);
 	}
 
+	@Override
+	public int indexOf(Column column)
+	{
+		if (this.entity().getClass() != column.view().getClass())
+		{
+			return -2;
+		}
+
+		String name = column.getMetaName();
+
+		Column[] cols = columns();
+
+		for (int i = 0; i < cols.length; i++)
+		{
+			if (Tools.equals(name, cols[i].getMetaName()))
+			{
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	protected Condition queryCondition(Column... columns)
 	{
 		ComposableCondition c = null;

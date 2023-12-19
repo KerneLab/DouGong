@@ -29,6 +29,14 @@ public interface Column extends Named, Item, Sortable, Castable
 	public Field field();
 
 	/**
+	 * Return the name of field if it is available or return the name of this
+	 * column from meta.
+	 * 
+	 * @return
+	 */
+	public String getMetaName();
+
+	/**
 	 * To determine whether this column is pseudo column or not.
 	 * 
 	 * @return

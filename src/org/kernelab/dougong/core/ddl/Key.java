@@ -48,6 +48,16 @@ public interface Key
 	public Column[] getColumnsOf(Entity entity);
 
 	/**
+	 * Get a zero-base index of the given column appears in this key. Return -2
+	 * if the given column does not belong to the entity of this key. Or return
+	 * -1 if not found in this key.
+	 * 
+	 * @param column
+	 * @return
+	 */
+	public int indexOf(Column column);
+
+	/**
 	 * Get a typical query condition according to this key.
 	 * 
 	 * @return

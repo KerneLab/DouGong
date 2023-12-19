@@ -2,6 +2,7 @@ package org.kernelab.dougong.semi;
 
 import java.lang.reflect.Field;
 
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
@@ -12,7 +13,9 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 {
 	public static boolean equals(Column a, Column b)
 	{
-		return a != null && b != null && a.view().getClass() == b.view().getClass() && a.name().equals(b.name());
+		return a != null && b != null //
+				&& a.view().getClass() == b.view().getClass() //
+				&& Tools.equals(a.getMetaName(), b.getMetaName());
 	}
 
 	public static boolean equals(Column[] a, Column[] b)
@@ -41,7 +44,7 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 
 	public static int hashCode(Column c)
 	{
-		return c == null ? 0 : (c.view().getClass().hashCode() * 31 + c.name().hashCode());
+		return c == null ? 0 : (c.view().getClass().hashCode() * 31 + c.getMetaName().hashCode());
 	}
 
 	public static int hashCode(Column[] cols)
@@ -56,7 +59,7 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 			int result = 1;
 			for (Column c : cols)
 			{
-				result = result * prime + (c == null ? 0 : c.name().hashCode());
+				result = result * prime + (c == null ? 0 : c.getMetaName().hashCode());
 			}
 			return result;
 		}
@@ -113,6 +116,19 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 	public Field field()
 	{
 		return field;
+	}
+
+	@Override
+	public String getMetaName()
+	{
+		if (field() != null)
+		{
+			return field().getName();
+		}
+		else
+		{
+			return name();
+		}
 	}
 
 	@Override
