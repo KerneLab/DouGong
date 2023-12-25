@@ -14,7 +14,7 @@ public interface Key
 	public Column[] columns();
 
 	/**
-	 * To determine whether the given columns are contained in this keys.
+	 * To determine whether the given columns are all contained in this key.
 	 * 
 	 * @param columns
 	 * @return
@@ -46,6 +46,14 @@ public interface Key
 	 *         same to the Entity defined in this Key.
 	 */
 	public Column[] getColumnsOf(Entity entity);
+
+	/**
+	 * To determine whether the given column is contained in this key.
+	 * 
+	 * @param column
+	 * @return
+	 */
+	public boolean has(Column column);
 
 	/**
 	 * Get a zero-base index of the given column appears in this key. Return -2

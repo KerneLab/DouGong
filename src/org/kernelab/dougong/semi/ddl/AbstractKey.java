@@ -1,6 +1,7 @@
 package org.kernelab.dougong.semi.ddl;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -193,7 +194,7 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 	{
 		if (columnSet == null)
 		{
-			columnSet = Tools.setOfArray(new WrappedLinkedHashSet<Column>(MetaContext.COLUMN_EQUAL), this.columns());
+			columnSet = Tools.setOfArray(new WrappedLinkedHashSet<Column>(MetaContext.COLUMN_BY_CLASS), this.columns());
 		}
 		return columnSet;
 	}
@@ -208,11 +209,25 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 
 		Column[] defs = columns();
 		Column[] cols = new Column[defs.length];
+
 		for (int i = 0; i < defs.length; i++)
 		{
-			cols[i] = (Column) entity.item(defs[i].name());
+			try
+			{
+				cols[i] = Tools.access(entity, defs[i].getMetaName(), null);
+			}
+			catch (Exception e)
+			{
+				cols[i] = (Column) entity.item(defs[i].name());
+			}
 		}
 		return cols;
+	}
+
+	@Override
+	public boolean has(Column column)
+	{
+		return this.getColumnSet().contains(column);
 	}
 
 	@Override

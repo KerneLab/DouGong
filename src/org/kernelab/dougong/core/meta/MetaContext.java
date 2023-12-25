@@ -51,7 +51,7 @@ import org.kernelab.dougong.semi.dml.AbstractUpdate;
 
 public class MetaContext
 {
-	public static final HashedEquality<Column>		COLUMN_EQUAL	= new HashedEquality<Column>()
+	public static final HashedEquality<Column>		COLUMN_BY_CLASS	= new HashedEquality<Column>()
 																	{
 																		@Override
 																		public boolean equals(Column a, Column b)
@@ -66,7 +66,7 @@ public class MetaContext
 																		}
 																	};
 
-	public static final HashedEquality<Table>		TABLE_EQUAL		= new HashedEquality<Table>()
+	public static final HashedEquality<Table>		TABLE_BY_CLASS	= new HashedEquality<Table>()
 																	{
 																		@Override
 																		public boolean equals(Table a, Table b)
@@ -341,16 +341,16 @@ public class MetaContext
 	private Map<Class<? extends Table>, Set<Method>>	tableForeignKeyMethods		= new HashMap<Class<? extends Table>, Set<Method>>();
 
 	private Map<Column, Set<ForeignKey>>				columnOnForeignKeyReferrer	= new WrappedHashMap<Column, Set<ForeignKey>>(
-			COLUMN_EQUAL);
+			COLUMN_BY_CLASS);
 
 	private Map<Column, Set<ForeignKey>>				columnOnForeignKeyReference	= new WrappedHashMap<Column, Set<ForeignKey>>(
-			COLUMN_EQUAL);
+			COLUMN_BY_CLASS);
 
 	private Map<Table, Set<ForeignKey>>					tableOnForeignKeyReferrer	= new WrappedHashMap<Table, Set<ForeignKey>>(
-			TABLE_EQUAL);
+			TABLE_BY_CLASS);
 
 	private Map<Table, Set<ForeignKey>>					tableOnForeignKeyReference	= new WrappedHashMap<Table, Set<ForeignKey>>(
-			TABLE_EQUAL);
+			TABLE_BY_CLASS);
 
 	public MetaContext(SQL sql)
 	{
@@ -438,7 +438,7 @@ public class MetaContext
 		}
 
 		Condition rule = upd.where();
-		final Map<Column, Expression> valMap = new WrappedHashMap<Column, Expression>(COLUMN_EQUAL);
+		final Map<Column, Expression> valMap = new WrappedHashMap<Column, Expression>(COLUMN_BY_CLASS);
 		for (Relation<Column, Expression> r : upd.sets())
 		{
 			valMap.put(r.getKey(), r.getValue());
@@ -693,7 +693,7 @@ public class MetaContext
 
 		final Table table = (Table) ins.into();
 		final Expression one = $.v(1);
-		final Map<Column, Expression> valMap = new WrappedHashMap<Column, Expression>(COLUMN_EQUAL);
+		final Map<Column, Expression> valMap = new WrappedHashMap<Column, Expression>(COLUMN_BY_CLASS);
 		for (Pair<Column, Expression> r : ins.pairs())
 		{
 			valMap.put(r.key, r.value);
@@ -820,7 +820,7 @@ public class MetaContext
 
 		final Condition rule = upd.where();
 		final Expression one = $.v(1);
-		final Map<Column, Expression> valMap = new WrappedHashMap<Column, Expression>(COLUMN_EQUAL);
+		final Map<Column, Expression> valMap = new WrappedHashMap<Column, Expression>(COLUMN_BY_CLASS);
 		for (Relation<Column, Expression> r : upd.sets())
 		{
 			valMap.put(r.getKey(), r.getValue());
