@@ -1,12 +1,12 @@
 package org.kernelab.dougong.semi.ddl;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.kernelab.basis.Tools;
+import org.kernelab.basis.WrappedLinkedHashMap;
 import org.kernelab.basis.WrappedLinkedHashSet;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Entity;
@@ -110,11 +110,11 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		return res;
 	}
 
-	private Entity		entity;
+	private Entity					entity;
 
-	private Column[]	columns;
+	private Column[]				columns;
 
-	private Set<Column>	columnSet	= null;
+	private Map<Column, Integer>	columnMap	= null;
 
 	public AbstractKey(Entity entity, Column... columns)
 	{
@@ -131,11 +131,11 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 	@Override
 	public boolean containsAll(Column... columns)
 	{
-		Set<Column> s = this.getColumnSet();
+		Map<Column, Integer> m = this.getColumnMap();
 
 		for (Column c : columns)
 		{
-			if (!s.contains(c))
+			if (!m.containsKey(c))
 			{
 				return false;
 			}
@@ -182,7 +182,8 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		{
 			return this.columns();
 		}
-		Set<Column> cols = this.getColumnSet();
+		Set<Column> cols = new WrappedLinkedHashSet<Column>(MetaContext.COLUMN_BY_CLASS);
+		cols.addAll(this.getColumnMap().keySet());
 		for (Column c : excludes)
 		{
 			cols.remove(c);
@@ -190,13 +191,35 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		return cols.toArray(new Column[0]);
 	}
 
-	protected Set<Column> getColumnSet()
+	protected Map<Column, Integer> getColumnMap()
 	{
-		if (columnSet == null)
+		if (columnMap == null)
 		{
-			columnSet = Tools.setOfArray(new WrappedLinkedHashSet<Column>(MetaContext.COLUMN_BY_CLASS), this.columns());
+			columnMap = new WrappedLinkedHashMap<Column, Integer>(MetaContext.COLUMN_BY_CLASS);
+			int i = 0;
+			for (Column c : this.columns())
+			{
+				columnMap.put(c, i++);
+			}
 		}
-		return columnSet;
+		return columnMap;
+	}
+
+	@Override
+	public Column[] getColumns(int... indexes)
+	{
+		Column[] cols = new Column[indexes.length];
+
+		int idx = -1;
+		for (int i = 0; i < indexes.length; i++)
+		{
+			if ((idx = indexes[i]) >= 0)
+			{
+				cols[i] = this.columns()[idx];
+			}
+		}
+
+		return cols;
 	}
 
 	@Override
@@ -227,13 +250,27 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 	@Override
 	public boolean has(Column column)
 	{
-		return this.getColumnSet().contains(column);
+		return this.getColumnMap().containsKey(column);
 	}
 
 	@Override
 	public int hashCode()
 	{
 		return hashCode(this);
+	}
+
+	@Override
+	public int[] indexesOf(Column... columns)
+	{
+		int[] arr = new int[columns.length];
+
+		int i = 0;
+		for (Column c : columns)
+		{
+			arr[i++] = indexOf(c);
+		}
+
+		return arr;
 	}
 
 	@Override
@@ -244,19 +281,9 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 			return -2;
 		}
 
-		String name = column.getMetaName();
+		Integer index = this.getColumnMap().get(column);
 
-		Column[] cols = columns();
-
-		for (int i = 0; i < cols.length; i++)
-		{
-			if (Tools.equals(name, cols[i].getMetaName()))
-			{
-				return i;
-			}
-		}
-
-		return -1;
+		return index != null ? index : -1;
 	}
 
 	protected Condition queryCondition(Column... columns)

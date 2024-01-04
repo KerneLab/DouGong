@@ -38,6 +38,14 @@ public interface Key
 	public Column[] excludeColumns(Column... excludes);
 
 	/**
+	 * Get the columns according to the given indexes.
+	 * 
+	 * @param indexes
+	 * @return
+	 */
+	public Column[] getColumns(int... indexes);
+
+	/**
 	 * Get the columns in the given Entity according the columns' name defined
 	 * in this Key.
 	 * 
@@ -54,6 +62,15 @@ public interface Key
 	 * @return
 	 */
 	public boolean has(Column column);
+
+	/**
+	 * Get an array of column indexes (zero-base) according to the given
+	 * columns.
+	 * 
+	 * @param columns
+	 * @return
+	 */
+	public int[] indexesOf(Column... columns);
 
 	/**
 	 * Get a zero-base index of the given column appears in this key. Return -2
