@@ -208,18 +208,17 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 	@Override
 	public Column[] getColumns(int... indexes)
 	{
-		Column[] cols = new Column[indexes.length];
-
-		int idx = -1;
-		for (int i = 0; i < indexes.length; i++)
+		Column[] cols = this.columns();
+		Column[] res = new Column[indexes.length];
+		for (int i = 0, j = -1; i < indexes.length; i++)
 		{
-			if ((idx = indexes[i]) >= 0)
+			j = indexes[i];
+			if (j >= 0 && j < cols.length)
 			{
-				cols[i] = this.columns()[idx];
+				res[i] = cols[j];
 			}
 		}
-
-		return cols;
+		return res;
 	}
 
 	@Override
@@ -280,9 +279,7 @@ public abstract class AbstractKey extends AbstractProvidable implements Key
 		{
 			return -2;
 		}
-
 		Integer index = this.getColumnMap().get(column);
-
 		return index != null ? index : -1;
 	}
 
