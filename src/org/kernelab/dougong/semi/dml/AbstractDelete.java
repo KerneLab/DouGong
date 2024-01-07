@@ -67,7 +67,7 @@ public class AbstractDelete extends AbstractJoinable implements Delete
 		return this;
 	}
 
-	protected String hint()
+	public String hint()
 	{
 		return hint;
 	}

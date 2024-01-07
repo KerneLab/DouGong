@@ -26,7 +26,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 
 	protected List<Pair<Column, Expression>>	pairs;
 
-	protected Column[] columns()
+	public Column[] columns()
 	{
 		if (this.columns == null && this.pairs != null)
 		{
@@ -46,6 +46,12 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		this.columns = columns;
 		this.pairs = null;
 		return this;
+	}
+
+	@Override
+	public String hint()
+	{
+		return super.hint();
 	}
 
 	@Override
@@ -259,7 +265,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 		return buffer;
 	}
 
-	protected Expression[] values()
+	public Expression[] values()
 	{
 		if (this.values == null && this.pairs != null)
 		{

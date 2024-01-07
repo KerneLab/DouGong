@@ -59,7 +59,7 @@ public class AbstractUpdate extends AbstractJoinable implements Update
 		return this;
 	}
 
-	protected String hint()
+	public String hint()
 	{
 		return hint;
 	}

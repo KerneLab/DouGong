@@ -200,7 +200,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return clone;
 	}
 
-	protected Condition connectBy()
+	public Condition connectBy()
 	{
 		return connectBy;
 	}
@@ -240,7 +240,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
-	protected boolean distinct()
+	public boolean distinct()
 	{
 		return distinct;
 	}
@@ -372,7 +372,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return joins().isEmpty() ? null : joins().get(joins().size() - 1);
 	}
 
-	protected Expression[] groupBy()
+	public Expression[] groupBy()
 	{
 		return groupBy;
 	}
@@ -390,7 +390,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return provider().provideComparisonCondition().gt(this, expr);
 	}
 
-	protected Condition having()
+	public Condition having()
 	{
 		return having;
 	}
@@ -402,7 +402,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
-	protected String hint()
+	public String hint()
 	{
 		return hint;
 	}
@@ -689,7 +689,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	 * The expression which indicates the rows should be returned at most.<br />
 	 * Returns {@code null} which means not be specified.
 	 */
-	protected Expression limit()
+	public Expression limit()
 	{
 		return limit;
 	}
@@ -752,7 +752,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return provider().provideNegativeOperator().operate(this);
 	}
 
-	protected boolean nocycle()
+	public boolean nocycle()
 	{
 		return nocycle;
 	}
@@ -818,7 +818,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	 * <br />
 	 * Returns {@code null} which means not be specified.
 	 */
-	protected Expression offset()
+	public Expression offset()
 	{
 		return offset;
 	}
@@ -830,7 +830,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
-	protected Expression[] orderBy()
+	public Expression[] orderBy()
 	{
 		return orderBy;
 	}
@@ -1201,7 +1201,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
-	protected Expression[] selects()
+	public Expression[] selects()
 	{
 		return select;
 	}
@@ -1239,7 +1239,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return setopr;
 	}
 
-	protected Condition startWith()
+	public Condition startWith()
 	{
 		return startWith;
 	}
