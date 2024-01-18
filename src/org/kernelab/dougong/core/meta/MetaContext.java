@@ -445,7 +445,7 @@ public class MetaContext
 		}
 
 		Column[] cols = table.primaryKey().columns();
-		Canal<?, Tuple2<Column, Expression>> sets = Canal.of(cols).map(new Mapper<Column, Tuple2<Column, Expression>>()
+		Canal<Tuple2<Column, Expression>> sets = Canal.of(cols).map(new Mapper<Column, Tuple2<Column, Expression>>()
 		{
 			@Override
 			public Tuple2<Column, Expression> map(Column c) throws Exception
@@ -491,7 +491,7 @@ public class MetaContext
 			return null;
 		}
 
-		Canal<?, Tuple2<Integer, Expression>> pkset = sets.zipWithIndex()
+		Canal<Tuple2<Integer, Expression>> pkset = sets.zipWithIndex()
 				.filter(new Filter<Tuple2<Tuple2<Column, Expression>, Integer>>()
 				{
 					@Override
@@ -826,7 +826,7 @@ public class MetaContext
 			valMap.put(r.getKey(), r.getValue());
 		}
 
-		Canal<?, Tuple3<ForeignKey, String, Boolean>> checksRefn = null;
+		Canal<Tuple3<ForeignKey, String, Boolean>> checksRefn = null;
 
 		final Table table = (Table) upd.from();
 		if (table.primaryKey() == null)

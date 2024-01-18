@@ -2073,19 +2073,19 @@ public abstract class Entitys
 		return selectObjectAlone(kit, makeSelectByPrimaryKey(sql, model, null), model, params);
 	}
 
-	public static <T> Canal<?, T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
+	public static <T> Canal<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model, JSON params)
 			throws SQLException
 	{
 		return selectObjects(kit, sql, select, model, (String) null, params);
 	}
 
-	public static <T> Canal<?, T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
+	public static <T> Canal<T> selectObjects(SQLKit kit, SQL sql, Select select, Class<T> model,
 			Map<String, Object> params) throws SQLException
 	{
 		return selectObjects(kit, sql, select, model, (String) null, params);
 	}
 
-	public static <T> Canal<?, T> selectObjects(final SQLKit kit, final SQL sql, Select select, Class<T> model,
+	public static <T> Canal<T> selectObjects(final SQLKit kit, final SQL sql, Select select, Class<T> model,
 			final String scene, JSON params) throws SQLException
 	{
 		return kit.execute(select.toString(), params) //
@@ -2114,7 +2114,7 @@ public abstract class Entitys
 				.collect(coll != null ? coll : new LinkedList<T>());
 	}
 
-	public static <T> Canal<?, T> selectObjects(final SQLKit kit, final SQL sql, Select select, Class<T> model,
+	public static <T> Canal<T> selectObjects(final SQLKit kit, final SQL sql, Select select, Class<T> model,
 			final String scene, Map<String, Object> params) throws SQLException
 	{
 		return kit.execute(select.toString(), params) //

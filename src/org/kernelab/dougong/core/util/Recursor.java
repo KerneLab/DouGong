@@ -160,7 +160,7 @@ public class Recursor
 		return this;
 	}
 
-	public Canal<?, Row> query(SQLKit kit, Map<String, Object> params) throws SQLException
+	public Canal<Row> query(SQLKit kit, Map<String, Object> params) throws SQLException
 	{
 		Select init = this.select(this.view.where(this.startWith)).select(selects);
 		Select recur = this.select(this.view.where(this.connectBy)).select(selects);
@@ -206,7 +206,7 @@ public class Recursor
 		query(kit, params, res, new LinkedList<Row>(), recur.toString(), priors, new HashSet<Row>(), extraNames,
 				recurs);
 
-		Canal<?, Row> result = Canal.of(recurs);
+		Canal<Row> result = Canal.of(recurs);
 
 		if (this.union() != null)
 		{
