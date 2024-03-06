@@ -53,7 +53,13 @@ public class ViewSelf extends AbstractView
 	@Override
 	public List<Item> items()
 	{
-		return self().items();
+		return this.items();
+	}
+
+	@Override
+	public List<Item> listItems()
+	{
+		return self().listItems();
 	}
 
 	@Override

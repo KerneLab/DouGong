@@ -26,7 +26,7 @@ public class DEPT extends AbstractTable
 	@PseudoColumnMeta
 	public Column				ROWID;
 
-	@NameMeta(name = "COMP_ID")
+	@NameMeta(name = "COMPID")
 	@TypeMeta(type = "VARCHAR2", precision = 10, nullable = TypeMeta.NO_NULLS)
 	@DataMeta(alias = "compId")
 	@PrimaryKeyMeta(ordinal = 1)

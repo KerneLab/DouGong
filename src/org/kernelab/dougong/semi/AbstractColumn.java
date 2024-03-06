@@ -151,7 +151,7 @@ public abstract class AbstractColumn extends AbstractSortable implements Column
 	@Override
 	public String label()
 	{
-		return alias() != null ? alias() : name();
+		return alias() != null ? alias() : provider().provideDefaultLabel(this);
 	}
 
 	@Override

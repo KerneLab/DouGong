@@ -1,5 +1,7 @@
 package org.kernelab.dougong.orcl.dml;
 
+import org.kernelab.basis.Tools;
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.semi.dml.AbstractJoin;
 
@@ -18,7 +20,7 @@ public class OracleJoin extends AbstractJoin
 	{
 		buffer.append(" USING (");
 		boolean first = true;
-		for (Item c : this.using())
+		for (Item i : this.using())
 		{
 			if (first)
 			{
@@ -28,7 +30,8 @@ public class OracleJoin extends AbstractJoin
 			{
 				buffer.append(',');
 			}
-			this.view().provider().provideOutputNameText(buffer, c.label());
+			Column c = Tools.as(i, Column.class);
+			this.view().provider().provideOutputNameText(buffer, c != null ? c.name() : i.label());
 		}
 		buffer.append(')');
 		return buffer;

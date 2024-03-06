@@ -97,6 +97,12 @@ public abstract class AbstractView extends AbstractText implements View
 		}
 	}
 
+	@Override
+	public List<Item> listItems()
+	{
+		return items;
+	}
+
 	public Pivot pivot(Function... aggs)
 	{
 		return provider().providePivot().pivotOn(this).pivotAggs(aggs);

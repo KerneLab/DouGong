@@ -122,6 +122,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	private SQL					sql;
 
 	@Override
+	public boolean isAutoFillSelectTableColumnAliasByFieldName()
+	{
+		return true;
+	}
+
+	@Override
 	public AbsoluteKey provideAbsoluteKey(Entity entity, Column... columns)
 	{
 		return provideProvider(new AbstractAbsoluteKey(entity, columns));
@@ -201,6 +207,19 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	}
 
 	@Override
+	public String provideDefaultLabel(Column column)
+	{
+		if (column == null)
+		{
+			return null;
+		}
+		else
+		{
+			return isAutoFillSelectTableColumnAliasByFieldName() ? column.getMetaName() : column.name();
+		}
+	}
+
+	@Override
 	public DivideOperator provideDivideOperator()
 	{
 		return this.provideProvider(new AbstractArithmeticOperator(ArithmeticOperable.DIVIDE));
@@ -228,9 +247,25 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		return this.provideProvider(new AbstractDropTable());
 	}
 
+	@Override
 	public AbstractExistsCondition provideExistsCondition()
 	{
 		return this.provideProvider(new AbstractExistsCondition());
+	}
+
+	@Override
+	public Item provideFillSelectTableColumnAliasByFieldName(Item item)
+	{
+		if (isAutoFillSelectTableColumnAliasByFieldName() //
+				&& item instanceof Column && item.alias() == null)
+		{
+			Column c = (Column) item;
+			if (c.field() != null && !c.field().getName().equals(c.name()))
+			{
+				c.alias(provideDefaultLabel(c));
+			}
+		}
+		return item;
 	}
 
 	@Override

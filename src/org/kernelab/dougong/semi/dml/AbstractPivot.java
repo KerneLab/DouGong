@@ -12,6 +12,7 @@ import org.kernelab.basis.Mapper;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Function;
+import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Expression;
@@ -90,6 +91,21 @@ public class AbstractPivot extends AbstractView implements Pivot
 
 	@Override
 	public List<Item> items()
+	{
+		listItems();
+
+		Provider p = provider();
+
+		for (Item item : items)
+		{
+			p.provideFillSelectTableColumnAliasByFieldName(item);
+		}
+
+		return items;
+	}
+
+	@Override
+	public List<Item> listItems()
 	{
 		if (this.items == null)
 		{

@@ -1,7 +1,6 @@
 package org.kernelab.dougong.test;
 
-import java.io.File;
-
+import org.kernelab.basis.Tools;
 import org.kernelab.dougong.SQL;
 import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.dml.Delete;
@@ -9,9 +8,7 @@ import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.meta.MemberMeta;
 import org.kernelab.dougong.core.meta.NameMeta;
-import org.kernelab.dougong.core.util.EntityMaker;
 import org.kernelab.dougong.demo.COMP;
-import org.kernelab.dougong.demo.Config;
 import org.kernelab.dougong.demo.DEPT;
 import org.kernelab.dougong.demo.STAF;
 import org.kernelab.dougong.orcl.OracleProvider;
@@ -26,18 +23,22 @@ public class TestTable extends AbstractTable
 	{
 		// Tools.debug(makeSelect().toString(new StringBuilder()));
 
-		Select select = makeSelectWithJoinOnCondition();
+		Tools.debug(makeSelectWithJoinUsingColumns());
 
-		try
-		{
-			EntityMaker.makeSubquery(Config.PROVIDER, Config.getSQLKit(),
-					Config.getSQLKit().query(EntityMaker.fillParametersWithNull(select.toString())), "DEMO_SUBQUERY",
-					new File("E:\\project\\DouGong\\src"), TestTable.class, "UTF-8", "java");
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		// Select select = makeSelectWithJoinOnCondition();
+		//
+		// try
+		// {
+		// EntityMaker.makeSubquery(Config.PROVIDER, Config.getSQLKit(),
+		// Config.getSQLKit().query(EntityMaker.fillParametersWithNull(select.toString())),
+		// "DEMO_SUBQUERY",
+		// new File("E:\\project\\DouGong\\src"), TestTable.class, "UTF-8",
+		// "java");
+		// }
+		// catch (Exception e)
+		// {
+		// e.printStackTrace();
+		// }
 	}
 
 	public static Delete makeDelete()
@@ -90,7 +91,7 @@ public class TestTable extends AbstractTable
 
 		return SQL.from(s = SQL.table(STAF.class, "s")) //
 				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), d.DEPT_ID) //
+				.innerJoin(d = SQL.table(DEPT.class, "d"), c.COMP_ID, d.DEPT_ID) //
 				.select(c.COMP_ID, d.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
 				.where(d.COMP_ID.gt(SQL.expr("0"))) //
 		;

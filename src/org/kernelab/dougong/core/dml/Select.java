@@ -9,6 +9,8 @@ import org.kernelab.dougong.core.Scope;
 import org.kernelab.dougong.core.Text;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.ddl.ForeignKey;
+import org.kernelab.dougong.core.meta.DataMeta;
+import org.kernelab.dougong.core.meta.NameMeta;
 
 public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable, Updatable, Deletable, Source,
 		Providable, Filterable, Joinable, Hintable, Withable, Withsable
@@ -242,10 +244,20 @@ public interface Select extends DQL, Text, Alias, Item, View, Scope, Insertable,
 
 	/**
 	 * Fill the vacancy aliases of each selected Column object with
-	 * {@link org.kernelab.dougong.core.meta.DataMeta#alias()}. All those
-	 * unsatisfied items will be skipped in this filling.
+	 * {@link DataMeta#alias()}. All those unsatisfied items will be skipped in
+	 * this filling.
 	 * 
 	 * @return this Select object
 	 */
 	public Select fillAliasByMeta();
+
+	/**
+	 * Fill the vacancy aliases of each selected Column object with its name
+	 * (could be defined by {@link NameMeta#name()} or set by
+	 * {@link Column#name(name)}). All those unsatisfied items will be skipped
+	 * in this filling.
+	 * 
+	 * @return this Select object
+	 */
+	public Select fillAliasByName();
 }

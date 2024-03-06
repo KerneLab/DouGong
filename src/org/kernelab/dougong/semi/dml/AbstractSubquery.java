@@ -199,6 +199,12 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	}
 
 	@Override
+	public List<Item> listItems()
+	{
+		return this.items();
+	}
+
+	@Override
 	public ComparisonCondition lt(Expression expr)
 	{
 		return provider().provideComparisonCondition().lt(this, expr);

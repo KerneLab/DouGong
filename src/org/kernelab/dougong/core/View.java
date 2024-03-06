@@ -16,11 +16,11 @@ import org.kernelab.dougong.core.dml.Updatable;
 public interface View extends Text, Alias, Updatable, Deletable, Providable
 {
 	/**
-	 * Get the Item associated with the given name in this View. <br />
+	 * Get the Item associated with the given label in this View. <br/>
 	 * This method is alias of {@code ref(String)}.
 	 * 
 	 * @param refer
-	 *            The reference name of the Item.
+	 *            The reference label of the Item.
 	 * @return The reference.
 	 * @see View#ref(String)
 	 */
@@ -64,7 +64,7 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 
 	/**
 	 * Get the real items on this view which including the items represented by
-	 * {@code *}.
+	 * {@code *} and fill the default label if need.
 	 * 
 	 * @return
 	 */
@@ -78,18 +78,26 @@ public interface View extends Text, Alias, Updatable, Deletable, Providable
 	public void joinUsing(String... labels);
 
 	/**
-	 * Get the Reference of the Item associated with the given name in this
+	 * List real items on this view which including the items represented by
+	 * {@code *} but might NOT fill the default label.
+	 * 
+	 * @return
+	 */
+	public List<Item> listItems();
+
+	/**
+	 * Get the Reference of the Item associated with the given label in this
 	 * View.
 	 * 
 	 * @param refer
-	 *            The reference name of the Item.
+	 *            The reference label of the Item.
 	 * @return The reference.
 	 */
 	public Reference ref(String refer);
 
 	/**
 	 * Return a <name, Item> map to describe the items could be selected from
-	 * this View. The key of map must be the reference name of the item which
+	 * this View. The key of map must be the reference label of the item which
 	 * might be alias name or its own name.
 	 * 
 	 * @return The items map.

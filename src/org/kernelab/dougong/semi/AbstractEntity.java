@@ -407,7 +407,8 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	protected Column newColumn(Field field)
 	{
 		String name = Utils.getNameFromField(field);
-		Column column = provider().provideColumn(this, name, field);
+		Provider p = provider();
+		Column column = p.provideColumn(this, name, field);
 		if (isSettable(field))
 		{
 			try
@@ -419,7 +420,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 			}
 		}
 		items().add(column);
-		referItems().put(column.name(), column);
+		referItems().put(p.provideDefaultLabel(column), column);
 		return column;
 	}
 

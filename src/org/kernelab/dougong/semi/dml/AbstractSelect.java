@@ -283,7 +283,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		Column column = null;
 		Field field = null;
 
-		for (Item item : this.items())
+		for (Item item : this.listItems())
 		{
 			column = Tools.as(item, Column.class);
 
@@ -306,13 +306,31 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	{
 		Column column = null;
 
-		for (Item item : this.items())
+		for (Item item : this.listItems())
 		{
 			column = Tools.as(item, Column.class);
 
 			if (column != null && column.alias() == null)
 			{
 				column.alias(Utils.getDataAliasFromField(column.field()));
+			}
+		}
+
+		return this;
+	}
+
+	@Override
+	public AbstractSelect fillAliasByName()
+	{
+		Column column = null;
+
+		for (Item item : this.listItems())
+		{
+			column = Tools.as(item, Column.class);
+
+			if (column != null && column.alias() == null)
+			{
+				column.alias(column.name());
 			}
 		}
 
@@ -514,61 +532,11 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	{
 		if (this.items == null)
 		{
-			this.items = new LinkedList<Item>();
-
-			Expression[] exprs = this.selects();
-
-			if (exprs != null && exprs.length > 0)
+			this.items = this.listItems();
+			Provider p = this.provider();
+			for (Item item : this.items)
 			{
-				List<Item> items = new LinkedList<Item>();
-
-				for (Expression expr : exprs)
-				{
-					if (expr instanceof AllItems)
-					{
-						AllItems all = (AllItems) expr;
-						if (all.view() != null)
-						{
-							if (all.view() instanceof Entity)
-							{
-								items.addAll(all.resolveItems());
-							}
-							else
-							{
-								items.addAll(this.refer(all.view(), all.resolveItems()));
-							}
-						}
-						else
-						{
-							items.addAll(this.resolveItemsFromViews());
-						}
-					}
-					else
-					{
-						items.addAll(expr.resolveItems());
-					}
-				}
-
-				Set<String> using = new HashSet<String>();
-
-				for (Item item : items)
-				{
-					if (item != null)
-					{
-						if (item.isUsingByJoin())
-						{
-							if (!using.contains(item.label()))
-							{
-								this.items.add(item);
-								using.add(item.label());
-							}
-						}
-						else
-						{
-							this.items.add(item);
-						}
-					}
-				}
+				p.provideFillSelectTableColumnAliasByFieldName(item);
 			}
 		}
 		return this.items;
@@ -707,6 +675,68 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		this.offset = offset;
 		this.limit = rows;
 		return this;
+	}
+
+	public List<Item> listItems()
+	{
+		List<Item> list = new LinkedList<Item>();
+
+		Expression[] exprs = this.selects();
+
+		if (exprs != null && exprs.length > 0)
+		{
+			List<Item> items = new LinkedList<Item>();
+
+			for (Expression expr : exprs)
+			{
+				if (expr instanceof AllItems)
+				{
+					AllItems all = (AllItems) expr;
+					if (all.view() != null)
+					{
+						if (all.view() instanceof Entity)
+						{
+							items.addAll(all.resolveItems());
+						}
+						else
+						{
+							items.addAll(this.refer(all.view(), all.resolveItems()));
+						}
+					}
+					else
+					{
+						items.addAll(this.resolveItemsFromViews());
+					}
+				}
+				else
+				{
+					items.addAll(expr.resolveItems());
+				}
+			}
+
+			Set<String> using = new HashSet<String>();
+
+			for (Item item : items)
+			{
+				if (item != null)
+				{
+					if (item.isUsingByJoin())
+					{
+						if (!using.contains(item.label()))
+						{
+							list.add(item);
+							using.add(item.label());
+						}
+					}
+					else
+					{
+						list.add(item);
+					}
+				}
+			}
+		}
+
+		return list;
 	}
 
 	@Override
@@ -937,70 +967,39 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		{
 			this.itemsMap = new LinkedHashMap<String, Item>();
 
-			if (selects() != null)
+			Provider p = provider();
+
+			for (Item item : this.items())
 			{
-				for (Expression expr : selects())
+				if (item instanceof Column)
 				{
-					if (expr instanceof AllItems)
-					{ // AllItems
-						AllItems all = (AllItems) expr;
+					Reference ref = p.provideReference(this, ((Column) item).label());
+					this.itemsMap.put(ref.name(), ref);
+				}
+				else if (item instanceof Aliases && ((Aliases) item).aliases() != null)
+				{ // Multi-Return-Columns Function
+					for (String alias : ((Aliases) item).aliases())
+					{
+						this.itemsMap.put(alias, p.provideReference(this, alias));
+					}
+				}
+				else if (item instanceof Items)
+				{ // Items list
+					if (((Items) item).list() != null)
+					{
+						Reference ref = null;
 
-						if (all.view() == null)
+						for (Expression exp : ((Items) item).list())
 						{
-							for (View from : froms())
-							{
-								for (Entry<String, Item> entry : from.referItems().entrySet())
-								{
-									this.itemsMap.put(entry.getKey(),
-											provider().provideReference(this, entry.getValue().label()));
-								}
-							}
-							for (Join join : joins())
-							{
-								if (join.viewSelectable())
-								{
-									for (Entry<String, Item> entry : join.view().referItems().entrySet())
-									{
-										this.itemsMap.put(entry.getKey(),
-												provider().provideReference(this, entry.getValue().label()));
-									}
-								}
-							}
-						}
-						else
-						{
-							for (Entry<String, Item> entry : all.view().referItems().entrySet())
-							{
-								this.itemsMap.put(entry.getKey(),
-										provider().provideReference(this, entry.getValue().label()));
-							}
+							ref = p.provideReference(this, Utils.getLabelOfExpression(exp));
+							this.itemsMap.put(ref.name(), ref);
 						}
 					}
-					else if (expr instanceof Aliases && ((Aliases) expr).aliases() != null)
-					{ // Multi-Return-Columns Function
-						for (String alias : ((Aliases) expr).aliases())
-						{
-							this.itemsMap.put(alias, provider().provideReference(this, alias));
-						}
-					}
-					else if (expr instanceof Items)
-					{ // Items list
-						if (((Items) expr).list() != null)
-						{
-							Reference ref = null;
-
-							for (Expression exp : ((Items) expr).list())
-							{
-								ref = provider().provideReference(this, Utils.getLabelOfExpression(exp));
-								this.itemsMap.put(ref.name(), ref);
-							}
-						}
-					}
-					else
-					{ // Single expression
-						Reference ref = provider().provideReference(this, Utils.getLabelOfExpression(expr));
-						this.itemsMap.put(ref.name(), ref);
-					}
+				}
+				else
+				{ // Single expression
+					Reference ref = p.provideReference(this, Utils.getLabelOfExpression(item));
+					this.itemsMap.put(ref.name(), ref);
 				}
 			}
 		}
@@ -1019,6 +1018,8 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 		Set<String> usingLabels = new HashSet<String>();
 
+		Column c = null;
+
 		for (View view : this.froms())
 		{
 			if (view instanceof Withable)
@@ -1029,9 +1030,9 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 			{
 				for (Item item : view.items())
 				{
-					if (item instanceof Column)
+					if ((c = Tools.as(item, Column.class)) != null)
 					{
-						if (((Column) item).isPseudo())
+						if (c.isPseudo())
 						{
 							continue;
 						}
@@ -1042,7 +1043,14 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 						continue;
 					}
 
-					items.add(provider().provideReference(view, item.label()));
+					if (c != null)
+					{
+						items.add(c);
+					}
+					else
+					{
+						items.add(provider().provideReference(view, item.label()));
+					}
 
 					if (item.isUsingByJoin())
 					{
@@ -1065,9 +1073,9 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 				{
 					for (Item item : view.items())
 					{
-						if (item instanceof Column)
+						if ((c = Tools.as(item, Column.class)) != null)
 						{
-							if (((Column) item).isPseudo())
+							if (c.isPseudo())
 							{
 								continue;
 							}
@@ -1078,7 +1086,14 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 							continue;
 						}
 
-						items.add(provider().provideReference(view, item.label()));
+						if (c != null)
+						{
+							items.add(c);
+						}
+						else
+						{
+							items.add(provider().provideReference(view, item.label()));
+						}
 
 						if (item.isUsingByJoin())
 						{
@@ -1141,6 +1156,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		Map<String, Item> ups = new LinkedHashMap<String, Item>();
 		for (Item item : this.resolveItemsFromViews())
 		{
+			provider().provideFillSelectTableColumnAliasByFieldName(item);
 			ups.put(Utils.getLabelOfExpression(item), item);
 		}
 

@@ -16,7 +16,7 @@ public class TestAlias
 
 	public static void main(String[] args)
 	{
-		Tools.debug(makeSelect());
+		Tools.debug(makeSelect1());
 	}
 
 	public static Select makeSelect()
@@ -38,6 +38,26 @@ public class TestAlias
 				) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(s.STAF_ID);
+
+		return select;
+	}
+
+	public static Select makeSelect1()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		Select select = $.from(d = $.table(DEPT.class, "d")) //
+				.innerJoin(s = $.table(STAF.class, "s"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.all()) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
+				.orderBy(s.STAF_ID) //
+		// .fillAliasByField() //
+		// .fillAliasByMeta() //
+		// .fillAliasByName() //
+		;
+
+		Tools.debug(select.alias("T").ref("COMP_ID"));
 
 		return select;
 	}

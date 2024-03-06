@@ -76,7 +76,7 @@ public class TestWith
 		View q = null;
 
 		Select sel = $.with( //
-				$.with("va").as(va = $.from($.view(COMP.class).as("T")) //
+				$.with("va").as(va = $.from($.table(COMP.class).as("T")) //
 						.select($.all()).to(AbstractSubquery.class)),
 				$.with("vb").as(vb = $.from(va).select(va.$("COMP_ID")) //
 						.to(AbstractSubquery.class)) //

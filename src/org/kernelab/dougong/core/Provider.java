@@ -83,6 +83,14 @@ import org.kernelab.dougong.core.util.Recursor;
 
 public interface Provider extends Castable, Serializable
 {
+	/**
+	 * Indicate whether selected table column will be filled alias by its field
+	 * name in class automatically or not.
+	 * 
+	 * @return
+	 */
+	public boolean isAutoFillSelectTableColumnAliasByFieldName();
+
 	public AbsoluteKey provideAbsoluteKey(Entity entity, Column... columns);
 
 	/**
@@ -134,6 +142,8 @@ public interface Provider extends Castable, Serializable
 	 */
 	public String provideDatetimeFormat(String format);
 
+	public String provideDefaultLabel(Column column);
+
 	public Delete provideDelete();
 
 	public DivideOperator provideDivideOperator();
@@ -173,6 +183,18 @@ public interface Provider extends Castable, Serializable
 	public String provideEscapeValueLiterally(Object value);
 
 	public ExistsCondition provideExistsCondition();
+
+	/**
+	 * Fill alias of select table column by its field name in table class. Item
+	 * that has already been specified alias or non-table-column will be ignored
+	 * by this method. Normally, this method is called when the items in Select
+	 * being resolved (before ref(), toString() and so on). Subclass may turn
+	 * off this feature by return the items argument directly.
+	 * 
+	 * @param item
+	 * @return
+	 */
+	public Item provideFillSelectTableColumnAliasByFieldName(Item item);
 
 	public ForeignKey provideForeignKey(PrimaryKey reference, Entity entity, Column... columns);
 
