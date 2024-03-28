@@ -73,7 +73,9 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 	private Expression[]		orderBy		= null;
 
-	private List<Item>			items		= new LinkedList<Item>();
+	private List<Item>			items		= null;
+
+	private List<Item>			itemsList	= null;
 
 	private Map<String, Item>	itemsMap	= null;
 
@@ -91,6 +93,31 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	public Reference $(String refer)
 	{
 		return ref(refer);
+	}
+
+	protected List<Item> addItemsToList(List<Item> list, List<Item> items)
+	{
+		if (items == null || items.isEmpty())
+		{
+			return list;
+		}
+		if (list == null)
+		{
+			list = new LinkedList<Item>();
+		}
+		Column col = null;
+		for (Item item : items)
+		{
+			if ((col = Tools.as(item, Column.class)) != null && col.field() != null && col.alias() == null)
+			{
+				list.add(col.as(null));
+			}
+			else
+			{
+				list.add(item);
+			}
+		}
+		return list;
 	}
 
 	@Override
@@ -194,6 +221,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		}
 
 		clone.items = null;
+		clone.itemsList = null;
 		clone.itemsMap = null;
 		clone.usingLabels = null;
 
@@ -677,66 +705,69 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		return this;
 	}
 
+	@Override
 	public List<Item> listItems()
 	{
-		List<Item> list = new LinkedList<Item>();
-
-		Expression[] exprs = this.selects();
-
-		if (exprs != null && exprs.length > 0)
+		if (this.itemsList == null)
 		{
-			List<Item> items = new LinkedList<Item>();
+			this.itemsList = new LinkedList<Item>();
 
-			for (Expression expr : exprs)
+			Expression[] exprs = this.selects();
+
+			if (exprs != null && exprs.length > 0)
 			{
-				if (expr instanceof AllItems)
+				List<Item> items = new LinkedList<Item>();
+
+				for (Expression expr : exprs)
 				{
-					AllItems all = (AllItems) expr;
-					if (all.view() != null)
+					if (expr instanceof AllItems)
 					{
-						if (all.view() instanceof Entity)
+						AllItems all = (AllItems) expr;
+						if (all.view() != null)
 						{
-							items.addAll(all.resolveItems());
+							if (all.view() instanceof Entity)
+							{
+								addItemsToList(items, all.resolveItems());
+							}
+							else
+							{
+								addItemsToList(items, this.refer(all.view(), all.resolveItems()));
+							}
 						}
 						else
 						{
-							items.addAll(this.refer(all.view(), all.resolveItems()));
+							addItemsToList(items, this.resolveItemsFromViews());
 						}
 					}
 					else
 					{
-						items.addAll(this.resolveItemsFromViews());
+						addItemsToList(items, expr.resolveItems());
 					}
 				}
-				else
-				{
-					items.addAll(expr.resolveItems());
-				}
-			}
 
-			Set<String> using = new HashSet<String>();
+				Set<String> using = new HashSet<String>();
 
-			for (Item item : items)
-			{
-				if (item != null)
+				for (Item item : items)
 				{
-					if (item.isUsingByJoin())
+					if (item != null)
 					{
-						if (!using.contains(item.label()))
+						if (item.isUsingByJoin())
 						{
-							list.add(item);
-							using.add(item.label());
+							if (!using.contains(item.label()))
+							{
+								this.itemsList.add(item);
+								using.add(item.label());
+							}
 						}
-					}
-					else
-					{
-						list.add(item);
+						else
+						{
+							this.itemsList.add(item);
+						}
 					}
 				}
 			}
 		}
-
-		return list;
+		return this.itemsList;
 	}
 
 	@Override
@@ -1146,6 +1177,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	{
 		this.select = exprs;
 		this.items = null;
+		this.itemsList = null;
 		this.itemsMap = null;
 		return this;
 	}
@@ -1213,6 +1245,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 
 		this.select = sels.toArray(new Expression[0]);
 		this.items = null;
+		this.itemsList = null;
 		this.itemsMap = null;
 		return this;
 	}

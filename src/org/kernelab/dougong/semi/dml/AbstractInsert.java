@@ -9,6 +9,7 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Insertable;
+import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Source;
 import org.kernelab.dougong.core.dml.Subquery;
@@ -96,7 +97,7 @@ public class AbstractInsert extends AbstractHintable implements Insert
 				if (sel != null)
 				{
 					this.pairs = new LinkedList<Pair<Column, Expression>>();
-					Expression[] exprs = sel.selects();
+					Item[] exprs = sel.listItems().toArray(new Item[0]);
 					for (int i = 0; i < this.columns.length; i++)
 					{
 						this.pairs.add(new Pair<Column, Expression>(this.columns[i], exprs[i]));
