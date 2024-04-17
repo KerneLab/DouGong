@@ -10,28 +10,29 @@ import org.kernelab.dougong.maria.MariaProvider;
 
 public class TestOrder
 {
-	public static SQL SQL = new SQL(new MariaProvider());
-	// public static SQL SQL = new SQL(new OracleProvider());
+	public static SQL $ = new SQL(new MariaProvider());
+	// public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
+		Tools.debug(makeSelectWithOrderByCaseExpr().toString(new StringBuilder()));
 		Tools.debug(makeSelectWithOrderByCondition().toString(new StringBuilder()));
-		Tools.debug(makeSelectWithOrderByUsingColumns().toString(new StringBuilder()));
 		Tools.debug(makeSelectWithOrderBySelectExpr().toString(new StringBuilder()));
+		Tools.debug(makeSelectWithOrderByUsingColumns().toString(new StringBuilder()));
 	}
 
-	public static Select makeSelectWithOrderBySelectExpr()
+	public static Select makeSelectWithOrderByCaseExpr()
 	{
 		COMP c = null;
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(c = SQL.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(d.COMP_ID, d.DEP_NAME, SQL.func(F_TEST_FUNC.class, s.STAF_NAME).as("FF")) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
-				.orderBy(SQL.$("FF").nullsLast().desc()) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(c = $.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.COMP_ID, d.DEP_NAME, $.func(F_TEST_FUNC.class, s.STAF_NAME).as("FF")) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
+				.orderBy($.Case($.v(1)).when($.v(1), c.COMP_ID).when($.v(2), d.DEPT_ID).els(s.STAF_ID).desc()) //
 		;
 	}
 
@@ -41,12 +42,27 @@ public class TestOrder
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(c = SQL.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(c = $.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select(d.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
-				.where(d.COMP_ID.gt(SQL.expr("0"))) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID.nullsLast().desc()) //
+		;
+	}
+
+	public static Select makeSelectWithOrderBySelectExpr()
+	{
+		COMP c = null;
+		DEPT d = null;
+		STAF s = null;
+
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(c = $.table(COMP.class, "c"), s.COMP_ID.eq(c.COMP_ID)) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
+				.select(d.COMP_ID, d.DEP_NAME, $.func(F_TEST_FUNC.class, s.STAF_NAME).as("FF")) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
+				.orderBy($.$("FF").nullsLast().desc()) //
 		;
 	}
 
@@ -56,11 +72,11 @@ public class TestOrder
 		DEPT d = null;
 		STAF s = null;
 
-		return SQL.from(s = SQL.table(STAF.class, "s")) //
-				.innerJoin(c = SQL.table(COMP.class, "c"), c.COMP_ID) //
-				.innerJoin(d = SQL.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
+		return $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(c = $.table(COMP.class, "c"), c.COMP_ID) //
+				.innerJoin(d = $.table(DEPT.class, "d"), d.COMP_ID, d.DEPT_ID) //
 				.select(c.COMP_ID, d.DEP_NAME, s.STAF_NAME) //
-				.where(d.COMP_ID.gt(SQL.val(0))) //
+				.where(d.COMP_ID.gt($.val(0))) //
 				.orderBy(d.COMP_ID.nullsFirst()) //
 		;
 	}

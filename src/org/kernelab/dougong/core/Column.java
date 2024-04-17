@@ -3,10 +3,9 @@ package org.kernelab.dougong.core;
 import java.lang.reflect.Field;
 
 import org.kernelab.basis.Castable;
-import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Sortable;
 
-public interface Column extends Named, Item, Sortable, Castable
+public interface Column extends Named, Sortable, Castable
 {
 	@Override
 	public Column as(String alias);

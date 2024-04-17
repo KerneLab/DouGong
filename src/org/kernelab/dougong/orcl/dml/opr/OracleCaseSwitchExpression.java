@@ -1,11 +1,12 @@
 package org.kernelab.dougong.orcl.dml.opr;
 
 import org.kernelab.dougong.core.Provider;
+import org.kernelab.dougong.semi.dml.AbstractSortable;
 import org.kernelab.dougong.semi.dml.opr.AbstractCaseSwitchExpression;
 
 public class OracleCaseSwitchExpression extends AbstractCaseSwitchExpression
 {
-	private Provider	provider;
+	private Provider provider;
 
 	public OracleCaseSwitchExpression(Provider provider)
 	{
@@ -13,14 +14,14 @@ public class OracleCaseSwitchExpression extends AbstractCaseSwitchExpression
 	}
 
 	@Override
-	protected Provider provider()
+	protected AbstractSortable newInstance()
 	{
-		return provider;
+		return new OracleCaseSwitchExpression(this.provider());
 	}
 
 	@Override
-	protected OracleCaseSwitchExpression replicate()
+	protected Provider provider()
 	{
-		return new OracleCaseSwitchExpression(this.provider());
+		return provider;
 	}
 }

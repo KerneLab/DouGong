@@ -15,14 +15,6 @@ public abstract class AbstractCaseSwitchExpression extends AbstractCaseExpressio
 	private List<Relation<Expression, Expression>>	whens	= new LinkedList<Relation<Expression, Expression>>();
 
 	@Override
-	public AbstractCaseSwitchExpression as(String alias)
-	{
-		return ((AbstractCaseSwitchExpression) super.as(alias)) //
-				.caseValue(this.caseValue()) //
-				.whens(this.whens());
-	}
-
-	@Override
 	public Expression caseValue()
 	{
 		return caseValue;
@@ -39,6 +31,15 @@ public abstract class AbstractCaseSwitchExpression extends AbstractCaseExpressio
 	public AbstractCaseSwitchExpression els(Expression expr)
 	{
 		return (AbstractCaseSwitchExpression) super.els(expr);
+	}
+
+	@Override
+	protected AbstractCaseSwitchExpression replicate()
+	{
+		AbstractCaseSwitchExpression clone = (AbstractCaseSwitchExpression) super.replicate();
+		clone.caseValue(this.caseValue());
+		clone.whens(this.whens());
+		return clone;
 	}
 
 	@Override
@@ -79,6 +80,7 @@ public abstract class AbstractCaseSwitchExpression extends AbstractCaseExpressio
 
 	protected AbstractCaseSwitchExpression whens(List<Relation<Expression, Expression>> whens)
 	{
+		this.whens().clear();
 		this.whens().addAll(whens);
 		return this;
 	}

@@ -1,9 +1,9 @@
 package org.kernelab.dougong.core.dml.opr;
 
 import org.kernelab.dougong.core.dml.Expression;
-import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Sortable;
 
-public interface CaseExpression extends Item
+public interface CaseExpression extends Sortable
 {
 	public CaseExpression alias(String alias);
 

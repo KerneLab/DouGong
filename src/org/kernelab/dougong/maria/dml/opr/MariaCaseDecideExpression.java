@@ -5,7 +5,7 @@ import org.kernelab.dougong.semi.dml.opr.AbstractCaseDecideExpression;
 
 public class MariaCaseDecideExpression extends AbstractCaseDecideExpression
 {
-	private Provider	provider;
+	private Provider provider;
 
 	public MariaCaseDecideExpression(Provider provider)
 	{
@@ -13,14 +13,14 @@ public class MariaCaseDecideExpression extends AbstractCaseDecideExpression
 	}
 
 	@Override
-	protected Provider provider()
+	protected MariaCaseDecideExpression newInstance()
 	{
-		return provider;
+		return new MariaCaseDecideExpression(this.provider());
 	}
 
 	@Override
-	protected MariaCaseDecideExpression replicate()
+	protected Provider provider()
 	{
-		return new MariaCaseDecideExpression(this.provider());
+		return provider;
 	}
 }

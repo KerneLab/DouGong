@@ -2,10 +2,9 @@ package org.kernelab.dougong.core;
 
 import org.kernelab.dougong.core.dml.Aliases;
 import org.kernelab.dougong.core.dml.Expression;
-import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Sortable;
 
-public interface Function extends Named, Item, Aliases, Sortable, Member, Providable
+public interface Function extends Named, Aliases, Sortable, Member, Providable
 {
 	@Override
 	public Function alias(String alias);

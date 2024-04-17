@@ -14,16 +14,17 @@ public abstract class AbstractCaseDecideExpression extends AbstractCaseExpressio
 	private List<Relation<Condition, Expression>> whens = new LinkedList<Relation<Condition, Expression>>();
 
 	@Override
-	public AbstractCaseDecideExpression as(String alias)
-	{
-		return ((AbstractCaseDecideExpression) super.as(alias)) //
-				.whens(this.whens());
-	}
-
-	@Override
 	public AbstractCaseDecideExpression els(Expression expr)
 	{
 		return (AbstractCaseDecideExpression) super.els(expr);
+	}
+
+	@Override
+	protected AbstractCaseDecideExpression replicate()
+	{
+		AbstractCaseDecideExpression clone = (AbstractCaseDecideExpression) super.replicate();
+		clone.whens(this.whens());
+		return clone;
 	}
 
 	@Override
@@ -56,6 +57,7 @@ public abstract class AbstractCaseDecideExpression extends AbstractCaseExpressio
 
 	protected AbstractCaseDecideExpression whens(List<Relation<Condition, Expression>> whens)
 	{
+		this.whens().clear();
 		this.whens().addAll(whens);
 		return this;
 	}

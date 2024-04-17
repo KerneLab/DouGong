@@ -5,7 +5,7 @@ import org.kernelab.dougong.semi.dml.opr.AbstractCaseSwitchExpression;
 
 public class MariaCaseSwitchExpression extends AbstractCaseSwitchExpression
 {
-	private Provider	provider;
+	private Provider provider;
 
 	public MariaCaseSwitchExpression(Provider provider)
 	{
@@ -13,14 +13,14 @@ public class MariaCaseSwitchExpression extends AbstractCaseSwitchExpression
 	}
 
 	@Override
-	protected Provider provider()
+	protected MariaCaseSwitchExpression newInstance()
 	{
-		return provider;
+		return new MariaCaseSwitchExpression(this.provider());
 	}
 
 	@Override
-	protected MariaCaseSwitchExpression replicate()
+	protected Provider provider()
 	{
-		return new MariaCaseSwitchExpression(this.provider());
+		return provider;
 	}
 }

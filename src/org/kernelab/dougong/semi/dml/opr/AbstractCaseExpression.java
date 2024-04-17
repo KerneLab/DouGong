@@ -3,9 +3,9 @@ package org.kernelab.dougong.semi.dml.opr;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.opr.CaseExpression;
 import org.kernelab.dougong.core.util.Utils;
-import org.kernelab.dougong.semi.dml.AbstractItem;
+import org.kernelab.dougong.semi.dml.AbstractSortable;
 
-public abstract class AbstractCaseExpression extends AbstractItem implements CaseExpression
+public abstract class AbstractCaseExpression extends AbstractSortable implements CaseExpression
 {
 	private Expression els;
 
@@ -19,8 +19,7 @@ public abstract class AbstractCaseExpression extends AbstractItem implements Cas
 	@Override
 	public AbstractCaseExpression as(String alias)
 	{
-		return ((AbstractCaseExpression) super.as(alias)) //
-				.els(this.els());
+		return (AbstractCaseExpression) super.as(alias);
 	}
 
 	@Override
@@ -34,6 +33,14 @@ public abstract class AbstractCaseExpression extends AbstractItem implements Cas
 	{
 		this.els = expr;
 		return this;
+	}
+
+	@Override
+	protected AbstractCaseExpression replicate()
+	{
+		AbstractCaseExpression clone = (AbstractCaseExpression) super.replicate();
+		clone.els(this.els());
+		return clone;
 	}
 
 	protected void textOfHead(StringBuilder buffer)
