@@ -16,7 +16,7 @@ public class OracleDelete extends AbstractDelete
 		return this;
 	}
 
-	protected Expression[] returning()
+	public Expression[] returning()
 	{
 		return returning;
 	}

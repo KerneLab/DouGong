@@ -1,14 +1,11 @@
 package org.kernelab.dougong.orcl.dml;
 
 import org.kernelab.dougong.core.Provider;
-import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.orcl.OracleProvider;
-import org.kernelab.dougong.semi.dml.AbstractInsert;
+import org.kernelab.dougong.semi.dml.AdvancedInsert;
 
-public class OracleInsert extends AbstractInsert
+public class OracleInsert extends AdvancedInsert
 {
-	private Expression[] returning;
-
 	@Override
 	public OracleInsert provider(Provider provider)
 	{
@@ -16,27 +13,21 @@ public class OracleInsert extends AbstractInsert
 		return this;
 	}
 
-	protected Expression[] returning()
+	@Override
+	protected StringBuilder textOfReturningClause(StringBuilder buffer)
 	{
-		return returning;
-	}
-
-	public OracleInsert returning(Expression... exprs)
-	{
-		this.returning = exprs != null && exprs.length > 0 ? exprs : null;
-		return this;
+		if (values() != null)
+		{
+			this.provider().to(OracleProvider.class).provideOutputReturningClause(buffer, returning());
+		}
+		return buffer;
 	}
 
 	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{
 		super.toString(buffer);
-
-		if (values() != null)
-		{
-			this.provider().to(OracleProvider.class).provideOutputReturningClause(buffer, returning());
-		}
-
+		this.textOfReturningClause(buffer);
 		return buffer;
 	}
 }

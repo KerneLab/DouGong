@@ -16,7 +16,7 @@ public class OracleUpdate extends AbstractUpdate
 		return this;
 	}
 
-	protected Expression[] returning()
+	public Expression[] returning()
 	{
 		return returning;
 	}
