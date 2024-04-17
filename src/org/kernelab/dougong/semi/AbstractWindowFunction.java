@@ -148,8 +148,15 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 		{
 			buffer.append(" OVER(");
 
+			boolean wrote = false;
+
 			if (partitionBy() != null && partitionBy().length > 0)
 			{
+				if (wrote)
+				{
+					buffer.append(' ');
+				}
+
 				buffer.append("PARTITION BY ");
 
 				boolean first = true;
@@ -167,11 +174,16 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 					Utils.outputExpr(buffer, expr);
 				}
 
-				buffer.append(' ');
+				wrote = true;
 			}
 
 			if (orderBy() != null && orderBy().length > 0)
 			{
+				if (wrote)
+				{
+					buffer.append(' ');
+				}
+
 				buffer.append("ORDER BY ");
 
 				boolean first = true;
@@ -197,11 +209,16 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 					}
 				}
 
-				buffer.append(' ');
+				wrote = true;
 			}
 
 			if (between() != null && between().length > 0)
 			{
+				if (wrote)
+				{
+					buffer.append(' ');
+				}
+
 				if (isRows())
 				{
 					buffer.append("ROWS ");
@@ -223,6 +240,8 @@ public class AbstractWindowFunction extends AbstractFunction implements WindowFu
 					buffer.append(" AND ");
 					Utils.outputExpr(buffer, between()[1]);
 				}
+
+				wrote = true;
 			}
 
 			buffer.append(')');
