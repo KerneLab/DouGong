@@ -82,8 +82,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 					.provider(this.provider()) //
 					.catalog(this.catalog()) //
 					.schema(this.schema()) //
-					.name(this.name()) //
-			;
+					.name(this.name());
 		}
 		catch (Exception e)
 		{
@@ -208,7 +207,7 @@ public abstract class AbstractTable extends AbstractEntity implements Table
 	@Override
 	public StringBuilder toString(StringBuilder buffer, int level)
 	{
-		return this.provider().provideOutputTableName(buffer, this, level);
+		return this.provider().provideOutputMember(buffer, this, level);
 	}
 
 	@Override

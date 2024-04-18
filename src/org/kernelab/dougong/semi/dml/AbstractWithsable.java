@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.View;
 import org.kernelab.dougong.core.dml.Item;
@@ -30,7 +31,21 @@ public abstract class AbstractWithsable extends AbstractProvidable implements Wi
 				return items;
 			}
 		}
-		return view.items();
+		List<Item> items = view.items();
+		if (items == null || items.isEmpty())
+		{
+			return items;
+		}
+		List<Item> list = new LinkedList<Item>();
+		for (Item i : items)
+		{
+			if (i instanceof Column && ((Column) i).isPseudo())
+			{
+				continue;
+			}
+			list.add(i);
+		}
+		return list;
 	}
 
 	private boolean					recursive	= false;

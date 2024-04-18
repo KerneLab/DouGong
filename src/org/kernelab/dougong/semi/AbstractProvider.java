@@ -575,16 +575,9 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 	}
 
 	@Override
-	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table, int level)
-	{
-		this.provideOutputMember(buffer, table, level);
-		return buffer;
-	}
-
-	@Override
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table)
 	{
-		this.provideOutputTableName(buffer, table, -1);
+		this.provideOutputMember(buffer, table, -1);
 		this.provideOutputTablePartitionClause(buffer, table);
 		this.provideOutputAlias(buffer, table);
 		return buffer;

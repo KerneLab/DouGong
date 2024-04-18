@@ -35,13 +35,6 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	}
 
 	@Override
-	public AbstractSubquery alias(String alias)
-	{
-		super.alias(alias);
-		return this;
-	}
-
-	@Override
 	public AllItems all()
 	{
 		return this.provider().provideAllItems(this);
@@ -72,8 +65,8 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 		try
 		{
 			sq = (AbstractSubquery) this.newInstance();
-			sq.select(this.select().as(null));
-			sq.provider(this.provider());
+			sq.select(select() != null ? select().as(null) : null);
+			sq.provider(provider());
 		}
 		catch (Exception e)
 		{
@@ -153,7 +146,12 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	@Override
 	public List<Item> items()
 	{
-		List<Item> raw = this.select().items();
+		if (select() == null)
+		{
+			return super.items();
+		}
+
+		List<Item> raw = select().items();
 
 		List<Item> items = new ArrayList<Item>(raw.size());
 
@@ -298,7 +296,14 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	@Override
 	public Map<String, Item> referItems()
 	{
-		return select().referItems();
+		if (select() != null)
+		{
+			return select().referItems();
+		}
+		else
+		{
+			return super.referItems();
+		}
 	}
 
 	@Override
@@ -420,7 +425,14 @@ public class AbstractSubquery extends AbstractEntity implements Subquery
 	@Override
 	public WithDefinition with()
 	{
-		return this.select().with();
+		if (this.select() != null)
+		{
+			return this.select().with();
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	@Override

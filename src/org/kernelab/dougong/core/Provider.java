@@ -356,8 +356,6 @@ public interface Provider extends Castable, Serializable
 	 */
 	public StringBuilder provideOutputOrder(StringBuilder buffer, Sortable sort);
 
-	public StringBuilder provideOutputTableName(StringBuilder buffer, Table table, int level);
-
 	public StringBuilder provideOutputTableNameAliased(StringBuilder buffer, Table table);
 
 	public StringBuilder provideOutputTableNameInsert(StringBuilder buffer, Table table);

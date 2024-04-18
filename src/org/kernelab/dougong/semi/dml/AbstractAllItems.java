@@ -220,7 +220,11 @@ public abstract class AbstractAllItems implements AllItems
 	{
 		if (view() instanceof Withable)
 		{
-			return AbstractWithsable.resolveAllItems(view());
+			List<Item> items = AbstractWithsable.resolveAllItems(view());
+			if (items != null)
+			{
+				return items;
+			}
 		}
 
 		List<Item> items = new LinkedList<Item>();

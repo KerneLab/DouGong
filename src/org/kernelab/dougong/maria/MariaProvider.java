@@ -266,7 +266,7 @@ public class MariaProvider extends AbstractProvider
 	@Override
 	public StringBuilder provideOutputTableNameInsert(StringBuilder buffer, Table table)
 	{
-		this.provideOutputTableName(buffer, table, -1);
+		this.provideOutputMember(buffer, table, -1);
 		this.provideOutputTablePartitionClause(buffer, table);
 		return buffer;
 	}

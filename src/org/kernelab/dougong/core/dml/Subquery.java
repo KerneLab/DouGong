@@ -12,9 +12,6 @@ import org.kernelab.dougong.core.dml.test.RangeTestable;
 public interface Subquery extends View, Entity, Scope, Withable, Insertable, Source, Expression, ComparisonTestable,
 		LikeTestable, MembershipTestable, NullTestable, RangeTestable
 {
-	@Override
-	public Subquery alias(String alias);
-
 	public Select select();
 
 	public Subquery select(Select select);
