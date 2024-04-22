@@ -3,6 +3,7 @@ package org.kernelab.dougong.semi.dml;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -225,6 +226,8 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		clone.itemsMap = null;
 		clone.usingLabels = null;
 
+		clone.copyItemAliases(this);
+
 		return clone;
 	}
 
@@ -238,6 +241,28 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 	{
 		this.connectBy = connectBy;
 		return this;
+	}
+
+	protected void copyItemAliases(AbstractSelect sel)
+	{
+		Iterator<Item> here = this.listItems().iterator();
+		Iterator<Item> that = sel.listItems().iterator();
+		Aliases s = null;
+		Item a = null, b = null;
+		while (here.hasNext() && that.hasNext())
+		{
+			a = here.next();
+			b = that.next();
+			s = Tools.as(b, Aliases.class);
+			if (s != null && s.aliases() != null)
+			{
+				((Aliases) a).aliases(s.aliases());
+			}
+			else if (b.alias() != null)
+			{
+				a.alias(b.alias());
+			}
+		}
 	}
 
 	@Override

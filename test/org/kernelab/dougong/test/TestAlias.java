@@ -49,15 +49,17 @@ public class TestAlias
 
 		Select select = $.from(d = $.table(DEPT.class, "d")) //
 				.innerJoin(s = $.table(STAF.class, "s"), s.DEPT_ID.eq(d.DEPT_ID)) //
-				.select(d.all()) //
+				.select(d.COMP_ID, d.DEP_NAME, d.DEPT_ID.as("dpId")) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(s.STAF_ID) //
-		// .fillAliasByField() //
-		// .fillAliasByMeta() //
+				// .fillAliasByField() //
+				.fillAliasByMeta() //
 		// .fillAliasByName() //
 		;
 
-		Tools.debug(select.alias("T").ref("COMP_ID"));
+		Tools.debug(select.as("S"));
+
+		Tools.debug(select.as("T").ref("compId"));
 
 		return select;
 	}
