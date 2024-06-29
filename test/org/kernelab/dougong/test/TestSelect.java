@@ -11,7 +11,6 @@ import org.kernelab.dougong.maria.MariaProvider;
 import org.kernelab.dougong.orcl.OracleColumn;
 import org.kernelab.dougong.orcl.OracleProvider;
 import org.kernelab.dougong.semi.AbstractWindowFunction;
-import org.kernelab.dougong.semi.dml.AbstractSelect;
 
 public class TestSelect
 {
@@ -19,13 +18,14 @@ public class TestSelect
 	{
 	}
 
-	// public static SQL $ = new SQL(new MariaProvider());
-	public static SQL $ = new SQL(new OracleProvider());
+	public static SQL $ = new SQL(new MariaProvider());
+	// public static SQL $ = new SQL(new OracleProvider());
 
 	public static void main(String[] args)
 	{
 		Tools.debug(makeSelectAliased());
 		Tools.debug(makeSelectAliased1());
+		Tools.debug(makeSelectOver());
 		Tools.debug(makeSelectNested());
 		Tools.debug(makeSelectHint());
 		Tools.debug(makeSelectExists());
@@ -60,7 +60,7 @@ public class TestSelect
 						s.STAF_NAME.joint(s.STAF_ROLE).as("jj"), //
 						s.STAF_NAME.as("name") //
 				) //
-				.to(AbstractSelect.class).fillAliasByMeta() //
+				.fillAliasByMeta() //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
@@ -95,7 +95,7 @@ public class TestSelect
 		return $.from(s = $.table(STAF.class, "s")) //
 				.innerJoin(d = $.table(DEPT.class, "d"), s.DEPT_ID.eq(d.DEPT_ID)) //
 				.select($.all()) //
-				.to(AbstractSelect.class).fillAliasByMeta() //
+				.fillAliasByMeta() //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
 		;
@@ -260,12 +260,33 @@ public class TestSelect
 				) //
 				.where(d.COMP_ID.gt($.expr("0"))) //
 				.orderBy(d.COMP_ID) //
-				.to(AbstractSelect.class).fillAliasByMeta() //
+				.fillAliasByMeta() //
 				.as("t") //
 		;
 
 		return $.from(sel) //
 				.select($.all()) //
+		;
+	}
+
+	public static Select makeSelectOver()
+	{
+		DEPT d = null;
+		STAF s = null;
+
+		Select sel = $.from(s = $.table(STAF.class, "s")) //
+				.innerJoin(d = $.table(DEPT.class, "d"), s.FK_STAF(d)) //
+				.select(d.all(), //
+						s.STAF_NAME.as("name") //
+				) //
+				.where(d.COMP_ID.gt($.expr("0"))) //
+				.orderBy(d.COMP_ID) //
+				.fillAliasByMeta() //
+				.as("t") //
+		;
+
+		return $.from(sel) //
+				.selectOver($.v(1).as("compId"), $.v("nn").as("name")) //
 		;
 	}
 
