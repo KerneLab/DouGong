@@ -6,23 +6,11 @@ import java.util.List;
 import org.kernelab.basis.Tools;
 import org.kernelab.dougong.core.dml.Expression;
 import org.kernelab.dougong.core.dml.Items;
+import org.kernelab.dougong.core.err.IllegalNullSafeEqualsException;
 import org.kernelab.dougong.semi.dml.cond.AbstractComparisonCondition;
 
 public class OracleComparisonCondition extends AbstractComparisonCondition
 {
-	public static class IllegalNullSafeEqualsException extends RuntimeException
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 777357513118683364L;
-
-		public IllegalNullSafeEqualsException(String msg)
-		{
-			super(msg);
-		}
-	}
-
 	@Override
 	public StringBuilder toString(StringBuilder buffer)
 	{

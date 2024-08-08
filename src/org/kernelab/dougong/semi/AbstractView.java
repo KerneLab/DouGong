@@ -18,6 +18,7 @@ import org.kernelab.dougong.core.dml.Pivot;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Select;
 import org.kernelab.dougong.core.dml.Update;
+import org.kernelab.dougong.core.err.NoSuchItemException;
 
 public abstract class AbstractView extends AbstractText implements View
 {
@@ -119,7 +120,7 @@ public abstract class AbstractView extends AbstractText implements View
 		}
 		else
 		{
-			return null;
+			throw new NoSuchItemException(refer);
 		}
 	}
 

@@ -8,23 +8,11 @@ import org.kernelab.dougong.core.dml.AllItems;
 import org.kernelab.dougong.core.dml.Item;
 import org.kernelab.dougong.core.dml.Reference;
 import org.kernelab.dougong.core.dml.Withable;
+import org.kernelab.dougong.core.err.UninstantiatedException;
 import org.kernelab.dougong.semi.AbstractView;
 
 public class ViewSelf extends AbstractView
 {
-	public static class NotInstantiatedException extends RuntimeException
-	{
-		/**
-		 *  
-		 */
-		private static final long serialVersionUID = 5476557570029857363L;
-
-		public NotInstantiatedException(String message)
-		{
-			super(message);
-		}
-	}
-
 	private View self;
 
 	@Override
@@ -83,7 +71,7 @@ public class ViewSelf extends AbstractView
 	{
 		if (self == null)
 		{
-			throw new NotInstantiatedException(this.alias());
+			throw new UninstantiatedException(this.alias());
 		}
 		return self;
 	}

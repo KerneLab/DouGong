@@ -46,6 +46,7 @@ import org.kernelab.dougong.core.dml.cond.RangeCondition;
 import org.kernelab.dougong.core.dml.cond.RegexpLikeCondition;
 import org.kernelab.dougong.core.dml.opr.Result;
 import org.kernelab.dougong.core.dml.test.NegativeSemiTestable;
+import org.kernelab.dougong.core.err.NoSuchItemException;
 import org.kernelab.dougong.core.util.AccessGather;
 import org.kernelab.dougong.core.util.AccessGather.Access;
 import org.kernelab.dougong.core.util.Utils;
@@ -1000,7 +1001,7 @@ public abstract class AbstractSelect extends AbstractJoinable implements Select
 		}
 		else
 		{
-			return null;
+			throw new NoSuchItemException(refer);
 		}
 	}
 
