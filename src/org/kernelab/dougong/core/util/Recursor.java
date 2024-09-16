@@ -244,10 +244,10 @@ public class Recursor
 	protected void query(SQLKit kit, Map<String, Object> params, Collection<Row> rows, LinkedList<Row> path,
 			String select, String[] priors, Set<Row> nodes, Set<String> extra, List<Row> results) throws SQLException
 	{
-		Row node = null, result = null;
+		Row node = null, result = null, base = Row.of(params);
 		for (Row row : rows)
 		{
-			node = row.newRow(priors);
+			node = row.select(priors);
 
 			if (nodes.contains(node))
 			{
@@ -265,9 +265,11 @@ public class Recursor
 				nodes.add(node);
 			}
 
-			path.add(row.exclude(extra));
+			row = row.exclude(extra);
 
-			Collection<Row> subs = kit.execute(select, Row.of(params).set(node)).getRows(new LinkedList<Row>(),
+			path.add(row);
+
+			Collection<Row> subs = kit.execute(select, base.select(null, node)).getRows(new LinkedList<Row>(),
 					Row.class);
 
 			try
