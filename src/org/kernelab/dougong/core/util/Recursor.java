@@ -265,9 +265,7 @@ public class Recursor
 				nodes.add(node);
 			}
 
-			row = row.exclude(extra);
-
-			path.add(row);
+			path.add(row.delete(extra));
 
 			Collection<Row> subs = kit.execute(select, base.select(null, node)).getRows(new LinkedList<Row>(),
 					Row.class);
