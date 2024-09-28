@@ -33,8 +33,7 @@ public abstract class AbstractEntity extends AbstractView implements Entity
 	{
 		try
 		{
-			return (ForeignKey) entity.getClass().getDeclaredMethod(foreignKey, reference.getClass()).invoke(entity,
-					reference);
+			return (ForeignKey) entity.getClass().getMethod(foreignKey, reference.getClass()).invoke(entity, reference);
 		}
 		catch (Exception e)
 		{
