@@ -38,6 +38,12 @@ public class DataProjector implements JSON.Projector<Object>
 
 	private Map<Class<?>, Set<Field>>			manyToOne	= new HashMap<Class<?>, Set<Field>>();
 
+	@Override
+	public Object instance(Class<Object> cls, JSON json) throws Exception
+	{
+		return null;
+	}
+
 	protected Map<String, Object> mapFields(Class<?> cls)
 	{
 		Map<String, Object> map = cache.get(cls);
@@ -75,6 +81,7 @@ public class DataProjector implements JSON.Projector<Object>
 		return map;
 	}
 
+	@Override
 	public Object project(Object obj, JSON json) throws Exception
 	{
 		if (json == null)
