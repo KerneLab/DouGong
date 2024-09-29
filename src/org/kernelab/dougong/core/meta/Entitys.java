@@ -1,7 +1,7 @@
 package org.kernelab.dougong.core.meta;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.Member;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -823,8 +823,8 @@ public abstract class Entitys
 			return null;
 		}
 
-		Method method = Tools.accessor(object.getClass(), null, field, Queryable.class);
-		if (method == null)
+		Member mem = Tools.accessor(object.getClass(), null, field, Queryable.class);
+		if (mem == null)
 		{
 			return null;
 		}
@@ -832,7 +832,7 @@ public abstract class Entitys
 		Queryable sap = new Queryable(sql);
 		try
 		{
-			method.invoke(object, sap);
+			Tools.access(object, mem, sap);
 			return sap;
 		}
 		catch (Exception e)
