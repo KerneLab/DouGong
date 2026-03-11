@@ -222,11 +222,7 @@ public class Recursor
 			int i = 0;
 			for (Item item : this.union().items())
 			{
-				if (item.alias() == null)
-				{
-					item.alias(labels[i]);
-				}
-				i++;
+				item.alias(labels[i++]);
 			}
 
 			result = result.union(
