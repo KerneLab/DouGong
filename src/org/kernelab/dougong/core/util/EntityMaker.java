@@ -117,7 +117,7 @@ public class EntityMaker
 		@Override
 		public String getClassDeclaration()
 		{
-			return "public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name() + " extends "
+			return "public" + (isOutputAsInnerClass() ? " static" : "") + " class " + name().toUpperCase() + " extends "
 					+ sup().getSimpleName() + nl() + "{";
 		}
 
@@ -255,7 +255,7 @@ public class EntityMaker
 		@Override
 		public String getClassDeclaration()
 		{
-			return "class " + name() + " extends " + sup().getSimpleName() + " {";
+			return "class " + name().toUpperCase() + " extends " + sup().getSimpleName() + " {";
 		}
 
 		@Override
@@ -694,7 +694,7 @@ public class EntityMaker
 		{
 			return new File(Tools.getFolderPath(Tools.getFilePath(base())) //
 					+ (Tools.isNullOrWhite(pkg()) ? "" : (pkg().replace('.', File.separatorChar) + File.separatorChar)) //
-					+ name() + "." + style());
+					+ name().toUpperCase() + "." + style());
 		}
 		else
 		{
