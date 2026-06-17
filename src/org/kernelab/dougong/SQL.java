@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.kernelab.dougong.core.Column;
@@ -43,6 +42,7 @@ import org.kernelab.dougong.core.dml.param.Param;
 import org.kernelab.dougong.core.dml.param.ShortParam;
 import org.kernelab.dougong.core.dml.param.StringParam;
 import org.kernelab.dougong.core.dml.param.TimestampParam;
+import org.kernelab.dougong.core.util.ParamsContext;
 import org.kernelab.dougong.core.util.Recursor;
 import org.kernelab.dougong.semi.dml.ViewSelf;
 import org.kernelab.dougong.semi.dml.cond.AbstractLikeCondition;
@@ -506,26 +506,17 @@ public class SQL implements Serializable
 
 	public Map<String, Object> params(Iterable<Param<?>> params)
 	{
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
-
-		for (Param<?> param : params)
-		{
-			map.put(param.name(), param.value());
-		}
-
-		return map;
+		return ParamsContext.params(params);
 	}
 
 	public Map<String, Object> params(Param<?>... params)
 	{
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		return ParamsContext.params(params);
+	}
 
-		for (Param<?> param : params)
-		{
-			map.put(param.name(), param.value());
-		}
-
-		return map;
+	public ParamsContext paramsContext()
+	{
+		return provider().provideParamsContext();
 	}
 
 	/**

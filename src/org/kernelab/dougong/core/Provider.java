@@ -79,6 +79,7 @@ import org.kernelab.dougong.core.dml.param.TimestampParam;
 import org.kernelab.dougong.core.dml.test.NegativeSemiTestable;
 import org.kernelab.dougong.core.meta.Entitys.GenerateValueColumns;
 import org.kernelab.dougong.core.util.KeysFetcher;
+import org.kernelab.dougong.core.util.ParamsContext;
 import org.kernelab.dougong.core.util.Recursor;
 
 public interface Provider extends Castable, Serializable
@@ -413,6 +414,8 @@ public interface Provider extends Castable, Serializable
 	public String provideParameterExpression(String name);
 
 	public Class<? extends Param<?>> provideParameterType(Class<?> type);
+
+	public ParamsContext provideParamsContext();
 
 	/**
 	 * To provide a pivot clause object.

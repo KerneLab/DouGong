@@ -72,6 +72,7 @@ import org.kernelab.dougong.core.dml.param.TimestampParam;
 import org.kernelab.dougong.core.meta.AgentMeta;
 import org.kernelab.dougong.core.meta.Entitys;
 import org.kernelab.dougong.core.meta.TypeMeta;
+import org.kernelab.dougong.core.util.ParamsContext;
 import org.kernelab.dougong.core.util.Recursor;
 import org.kernelab.dougong.core.util.Utils;
 import org.kernelab.dougong.semi.ddl.AbstractAbsoluteKey;
@@ -878,6 +879,12 @@ public abstract class AbstractProvider extends AbstractCastable implements Provi
 		{
 			return (Class<? extends Param<?>>) ObjectParam.class;
 		}
+	}
+
+	@Override
+	public ParamsContext provideParamsContext()
+	{
+		return provideProvider(new ParamsContext());
 	}
 
 	@Override
