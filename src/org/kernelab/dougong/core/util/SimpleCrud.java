@@ -2,6 +2,7 @@ package org.kernelab.dougong.core.util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.kernelab.basis.Canal;
@@ -36,6 +37,19 @@ public abstract class SimpleCrud
 			throws SQLException
 	{
 		return kit.update(makeInsert(table, params, pairs), params.map());
+	}
+
+	public static <E> Iterable<E> list(Object... items)
+	{
+		return Canal.of(items).map(new Mapper<Object, E>()
+		{
+			@SuppressWarnings("unchecked")
+			@Override
+			public E map(Object el) throws Exception
+			{
+				return (E) el;
+			}
+		});
 	}
 
 	protected static String makeCond(final ParamsContext params, Map<Expression, Object> where)
@@ -202,6 +216,17 @@ public abstract class SimpleCrud
 		sql.append(" WHERE ");
 		sql.append(makeCond(params, where));
 		return sql.toString();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K> Map<K, Object> pairs(Object... pairs)
+	{
+		Map<K, Object> map = new LinkedHashMap<K, Object>();
+		for (int i = 0; i < pairs.length - 1; i += 2)
+		{
+			map.put((K) pairs[i], pairs[i + 1]);
+		}
+		return map;
 	}
 
 	public static ResultSet query(SQLKit kit, Table table, ParamsContext params, Map<Expression, Object> where,
