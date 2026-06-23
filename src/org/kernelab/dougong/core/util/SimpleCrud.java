@@ -39,7 +39,7 @@ public abstract class SimpleCrud
 		return kit.update(makeInsert(table, params, pairs), params.map());
 	}
 
-	public static <E> Iterable<E> list(Object... items)
+	public static <E> Iterable<E> items(Object... items)
 	{
 		return Canal.of(items).map(new Mapper<Object, E>()
 		{
