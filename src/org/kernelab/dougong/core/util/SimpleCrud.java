@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.kernelab.basis.Canal;
 import org.kernelab.basis.Canal.Tuple2;
@@ -15,8 +16,12 @@ import org.kernelab.dougong.core.Column;
 import org.kernelab.dougong.core.Provider;
 import org.kernelab.dougong.core.Table;
 import org.kernelab.dougong.core.dml.Condition;
+import org.kernelab.dougong.core.dml.Delete;
 import org.kernelab.dougong.core.dml.Expression;
+import org.kernelab.dougong.core.dml.Insert;
 import org.kernelab.dougong.core.dml.Item;
+import org.kernelab.dougong.core.dml.Select;
+import org.kernelab.dougong.core.dml.Update;
 import org.kernelab.dougong.core.dml.cond.ComposableCondition;
 
 public abstract class SimpleCrud
@@ -24,19 +29,19 @@ public abstract class SimpleCrud
 	public static int delete(SQLKit kit, Table table, ParamsContext params, Map<Expression, Object> where)
 			throws SQLException
 	{
-		return kit.update(makeDelete(table, params, where), params.map());
+		return kit.update(makeDelete(table, params, where).toString(), params.map());
 	}
 
 	public static boolean exists(SQLKit kit, Table table, ParamsContext params, Map<Expression, Object> where)
 			throws SQLException
 	{
-		return kit.exists(makeExists(table, params, where), params.map());
+		return kit.exists(makeExists(table, params, where).toString(), params.map());
 	}
 
 	public static int insert(SQLKit kit, Table table, ParamsContext params, Map<Column, Object> pairs)
 			throws SQLException
 	{
-		return kit.update(makeInsert(table, params, pairs), params.map());
+		return kit.update(makeInsert(table, params, pairs).toString(), params.map());
 	}
 
 	public static <E> Iterable<E> items(Object... items)
@@ -52,42 +57,9 @@ public abstract class SimpleCrud
 		});
 	}
 
-	protected static String makeCond(final ParamsContext params, Map<Expression, Object> where)
+	public static Condition makeCond(final ParamsContext params, Map<Expression, Object> where)
 	{
-		return Canal.of(where).map(new Mapper<Tuple2<Expression, Object>, String>()
-		{
-			@Override
-			public String map(Tuple2<Expression, Object> t) throws Exception
-			{
-				StringBuilder b = new StringBuilder();
-				t._1.toString(b);
-				b.append('=');
-				if (t._2 instanceof Expression)
-				{
-					((Expression) t._2).toStringExpress(b);
-				}
-				else
-				{
-					b.append('?').append(params.nextBy(t._2).name()).append('?');
-				}
-				return b.toString();
-			}
-		}).toString(" AND ");
-	}
-
-	protected static String makeDelete(Table table, ParamsContext params, Map<Expression, Object> where)
-	{
-		StringBuilder sql = new StringBuilder();
-		sql.append("DELETE FROM ");
-		table.toStringDeletable(sql);
-		sql.append(" WHERE ");
-		sql.append(makeCond(params, where));
-		return sql.toString();
-	}
-
-	protected static String makeExists(Table table, final ParamsContext params, Map<Expression, Object> where)
-	{
-		Condition cond = Canal.of(where).map(new Mapper<Tuple2<Expression, Object>, ComposableCondition>()
+		return Canal.of(where).map(new Mapper<Tuple2<Expression, Object>, ComposableCondition>()
 		{
 			@Override
 			public ComposableCondition map(Tuple2<Expression, Object> t) throws Exception
@@ -109,113 +81,64 @@ public abstract class SimpleCrud
 				return a.and(b);
 			}
 		}).get();
-
-		Provider p = table.provider();
-
-		Item one = p.provideStringItem("1");
-
-		return p.providePrimitive().from(table).where(cond).select(one.as("X")).limit(one).toString();
 	}
 
-	protected static String makeInsert(Table table, final ParamsContext params, Map<Column, Object> pairs)
+	public static Delete makeDelete(Table table, ParamsContext params, Map<Expression, Object> where)
+	{
+		return table.provider().providePrimitive().from(table).where(makeCond(params, where)).delete();
+	}
+
+	public static Select makeExists(Table table, final ParamsContext params, Map<Expression, Object> where)
+	{
+		Provider p = table.provider();
+		Item one = p.provideStringItem("1");
+		return p.providePrimitive().from(table).where(makeCond(params, where)).select(one.as("X")).limit(one);
+	}
+
+	public static Insert makeInsert(Table table, final ParamsContext params, Map<Column, Object> pairs)
 	{
 		final Provider p = table.provider();
-
-		StringBuilder[] buf = Canal.of(pairs).fold(new StringBuilder[] { new StringBuilder(), new StringBuilder() },
-				new Reducer<Tuple2<Column, Object>, StringBuilder[]>()
+		return p.provideInsert().into(table).columns(pairs.keySet().toArray(new Column[0]))
+				.values(Canal.of(pairs.values()).map(new Mapper<Object, Expression>()
 				{
 					@Override
-					public StringBuilder[] reduce(StringBuilder[] res, Tuple2<Column, Object> dat) throws Exception
+					public Expression map(Object el) throws Exception
 					{
-						if (res[0].length() > 0)
+						if (el instanceof Expression)
 						{
-							res[0].append(',');
-						}
-						p.provideOutputColumnInsert(res[0], dat._1);
-
-						if (res[1].length() > 0)
-						{
-							res[1].append(',');
-						}
-						if (dat._2 instanceof Expression)
-						{
-							((Expression) dat._2).toStringExpress(res[1]);
+							return (Expression) el;
 						}
 						else
 						{
-							res[1].append('?').append(params.nextBy(dat._2).name()).append('?');
+							return params.nextBy(el);
 						}
-
-						return res;
 					}
-				});
-
-		StringBuilder sql = new StringBuilder();
-		sql.append("INSERT INTO ");
-		table.toStringInsertable(sql);
-		sql.append(" (");
-		sql.append(buf[0]);
-		sql.append(") VALUES (");
-		sql.append(buf[1]);
-		sql.append(")");
-		return sql.toString();
+				}).collectAsList().toArray(new Expression[0]));
 	}
 
-	protected static String makeSelect(Table table, ParamsContext params, Map<Expression, Object> where,
+	public static Select makeSelect(Table table, ParamsContext params, Map<Expression, Object> where,
 			Iterable<Expression> select)
 	{
-		String sel = Canal.of(select).map(new Mapper<Expression, String>()
-		{
-			@Override
-			public String map(Expression c) throws Exception
-			{
-				StringBuilder b = new StringBuilder();
-				c.toStringSelected(b);
-				return b.toString();
-			}
-		}).toString(",");
-
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT ");
-		sql.append(sel);
-		sql.append(" FROM ");
-		table.toStringViewed(sql);
-		sql.append(" WHERE ");
-		sql.append(makeCond(params, where));
-		return sql.toString();
+		return table.provider().providePrimitive().from(table).where(makeCond(params, where))
+				.select(Canal.of(select).collectAsList().toArray(new Expression[0]));
 	}
 
-	protected static String makeUpdate(Table table, final ParamsContext params, Map<Expression, Object> where,
+	public static Update makeUpdate(Table table, final ParamsContext params, Map<Expression, Object> where,
 			Map<Column, Object> update)
 	{
-		String set = Canal.of(update).map(new Mapper<Tuple2<Column, Object>, String>()
+		Update upd = table.provider().providePrimitive().from(table).where(makeCond(params, where)).update();
+		for (Entry<Column, Object> pair : update.entrySet())
 		{
-			@Override
-			public String map(Tuple2<Column, Object> t) throws Exception
+			if (pair.getValue() instanceof Expression)
 			{
-				StringBuilder b = new StringBuilder();
-				t._1.toString(b);
-				b.append('=');
-				if (t._2 instanceof Expression)
-				{
-					((Expression) t._2).toStringExpress(b);
-				}
-				else
-				{
-					b.append('?').append(params.nextBy(t._2).name()).append('?');
-				}
-				return b.toString();
+				upd.set(pair.getKey(), (Expression) pair.getValue());
 			}
-		}).toString(",");
-
-		StringBuilder sql = new StringBuilder();
-		sql.append("UPDATE ");
-		table.toStringUpdatable(sql);
-		sql.append(" SET ");
-		sql.append(set);
-		sql.append(" WHERE ");
-		sql.append(makeCond(params, where));
-		return sql.toString();
+			else
+			{
+				upd.set(pair.getKey(), params.nextBy(pair.getValue()));
+			}
+		}
+		return upd;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -232,18 +155,18 @@ public abstract class SimpleCrud
 	public static ResultSet query(SQLKit kit, Table table, ParamsContext params, Map<Expression, Object> where,
 			Iterable<Expression> select) throws SQLException
 	{
-		return kit.query(makeSelect(table, params, where, select), params.map());
+		return kit.query(makeSelect(table, params, where, select).toString(), params.map());
 	}
 
 	public static Sequel select(SQLKit kit, Table table, ParamsContext params, Map<Expression, Object> where,
 			Iterable<Expression> select) throws SQLException
 	{
-		return kit.execute(makeSelect(table, params, where, select), params.map());
+		return kit.execute(makeSelect(table, params, where, select).toString(), params.map());
 	}
 
 	public static int update(SQLKit kit, Table table, ParamsContext params, Map<Expression, Object> where,
 			Map<Column, Object> update) throws SQLException
 	{
-		return kit.update(makeUpdate(table, params, where, update), params.map());
+		return kit.update(makeUpdate(table, params, where, update).toString(), params.map());
 	}
 }
